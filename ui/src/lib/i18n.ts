@@ -68,6 +68,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Appearance": "外观",
     "Interface": "界面",
     "Language": "语言",
+    "Instance Settings": "实例设置",
+    "Heartbeats": "心跳",
     "Hiring": "招聘",
     "Display language": "显示语言",
     "Choose the UI language for this browser.": "为当前浏览器选择界面语言。",
