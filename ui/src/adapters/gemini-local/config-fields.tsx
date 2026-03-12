@@ -3,13 +3,11 @@ import {
   DraftInput,
   Field,
 } from "../../components/agent-config-primitives";
+import { useI18n } from "../../context/I18nContext";
 import { ChoosePathButton } from "../../components/PathInstructionsModal";
 
 const inputClass =
   "w-full rounded-md border border-border px-2.5 py-1.5 bg-transparent outline-none text-sm font-mono placeholder:text-muted-foreground/40";
-const instructionsFileHint =
-  "Absolute path to a markdown file (e.g. AGENTS.md) that defines this agent's behavior. Prepended to the Gemini prompt at runtime.";
-
 export function GeminiLocalConfigFields({
   isCreate,
   values,
@@ -18,9 +16,14 @@ export function GeminiLocalConfigFields({
   eff,
   mark,
 }: AdapterConfigFieldsProps) {
+  const { t } = useI18n();
+
   return (
     <>
-      <Field label="Agent instructions file" hint={instructionsFileHint}>
+      <Field
+        label={t("Agent instructions file")}
+        hint={t("Absolute path to a markdown file (e.g. AGENTS.md) that defines this agent's behavior. Prepended to the Gemini prompt at runtime.")}
+      >
         <div className="flex items-center gap-2">
           <DraftInput
             value={
