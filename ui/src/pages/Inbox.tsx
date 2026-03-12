@@ -10,14 +10,14 @@ import { agentsApi } from "../api/agents";
 import { heartbeatsApi } from "../api/heartbeats";
 import { useCompany } from "../context/CompanyContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
+import { useI18n } from "../context/I18nContext";
 import { queryKeys } from "../lib/queryKeys";
 import { createIssueDetailLocationState } from "../lib/issueDetailBreadcrumb";
+import { StatusIcon } from "../components/StatusIcon";
+import { PriorityIcon } from "../components/PriorityIcon";
 import { EmptyState } from "../components/EmptyState";
 import { PageSkeleton } from "../components/PageSkeleton";
 import { ApprovalCard } from "../components/ApprovalCard";
-import { IssueRow } from "../components/IssueRow";
-import { PriorityIcon } from "../components/PriorityIcon";
-import { StatusIcon } from "../components/StatusIcon";
 import { StatusBadge } from "../components/StatusBadge";
 import { timeAgo } from "../lib/timeAgo";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ import {
 import {
   Inbox as InboxIcon,
   AlertTriangle,
+  Clock,
   ArrowUpRight,
   XCircle,
   X,
@@ -56,14 +57,16 @@ type InboxCategoryFilter =
   | "join_requests"
   | "approvals"
   | "failed_runs"
-  | "alerts";
+  | "alerts"
+  | "stale_work";
 type InboxApprovalFilter = "all" | "actionable" | "resolved";
 type SectionKey =
   | "issues_i_touched"
   | "join_requests"
   | "approvals"
   | "failed_runs"
-  | "alerts";
+  | "alerts"
+  | "stale_work";
 
 const RUN_SOURCE_LABELS: Record<string, string> = {
   timer: "Scheduled",
@@ -71,6 +74,19 @@ const RUN_SOURCE_LABELS: Record<string, string> = {
   on_demand: "Manual",
   automation: "Automation",
 };
+
+const STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000;
+
+function getStaleIssues(issues: Issue[]): Issue[] {
+  const now = Date.now();
+  return issues
+    .filter(
+      (issue) =>
+        ["in_progress", "todo"].includes(issue.status) &&
+        now - new Date(issue.updatedAt).getTime() > STALE_THRESHOLD_MS,
+    )
+    .sort((a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime());
+}
 
 function firstNonEmptyLine(value: string | null | undefined): string | null {
   if (!value) return null;
@@ -108,11 +124,12 @@ function FailedRunCard({
   issueLinkState: unknown;
   onDismiss: () => void;
 }) {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const issueId = readIssueIdFromRun(run);
   const issue = issueId ? issueById.get(issueId) ?? null : null;
-  const sourceLabel = RUN_SOURCE_LABELS[run.invocationSource] ?? "Manual";
+  const sourceLabel = t(RUN_SOURCE_LABELS[run.invocationSource] ?? "Manual");
   const displayError = runFailureMessage(run);
 
   const retryRun = useMutation({
@@ -131,7 +148,7 @@ function FailedRunCard({
         payload,
       });
       if (!("id" in result)) {
-        throw new Error("Retry was skipped because the agent is not currently invokable.");
+        throw new Error(t("Retry was skipped because the agent is not currently invokable."));
       }
       return result;
     },
@@ -149,7 +166,7 @@ function FailedRunCard({
         type="button"
         onClick={onDismiss}
         className="absolute right-2 top-2 z-10 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground group-hover:opacity-100"
-        aria-label="Dismiss"
+        aria-label={t("Dismiss")}
       >
         <X className="h-4 w-4" />
       </button>
@@ -167,7 +184,7 @@ function FailedRunCard({
           </Link>
         ) : (
           <span className="block text-sm text-muted-foreground">
-            {run.errorCode ? `Error code: ${run.errorCode}` : "No linked issue"}
+            {run.errorCode ? t("Error code: {code}", { code: run.errorCode }) : t("No linked issue")}
           </span>
         )}
 
@@ -180,12 +197,12 @@ function FailedRunCard({
               {linkedAgentName ? (
                 <Identity name={linkedAgentName} size="sm" />
               ) : (
-                <span className="text-sm font-medium">Agent {run.agentId.slice(0, 8)}</span>
+                <span className="text-sm font-medium">{t("Agent")} {run.agentId.slice(0, 8)}</span>
               )}
               <StatusBadge status={run.status} />
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              {sourceLabel} run failed {timeAgo(run.createdAt)}
+              {t("{source} run failed {time}", { source: sourceLabel, time: timeAgo(run.createdAt) })}
             </p>
           </div>
           <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
@@ -198,7 +215,7 @@ function FailedRunCard({
               disabled={retryRun.isPending}
             >
               <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-              {retryRun.isPending ? "Retrying…" : "Retry"}
+              {retryRun.isPending ? t("Retrying…") : t("Retry")}
             </Button>
             <Button
               type="button"
@@ -208,24 +225,24 @@ function FailedRunCard({
               asChild
             >
               <Link to={`/agents/${run.agentId}/runs/${run.id}`}>
-                Open run
+                {t("Open run")}
                 <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
               </Link>
             </Button>
           </div>
         </div>
 
-        <div className="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm">
-          {displayError}
-        </div>
+          <div className="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm">
+            {t(displayError)}
+          </div>
 
         <div className="text-xs">
-          <span className="font-mono text-muted-foreground">run {run.id.slice(0, 8)}</span>
+          <span className="font-mono text-muted-foreground">{t("run {id}", { id: run.id.slice(0, 8) })}</span>
         </div>
 
         {retryRun.isError && (
           <div className="text-xs text-destructive">
-            {retryRun.error instanceof Error ? retryRun.error.message : "Failed to retry run"}
+            {retryRun.error instanceof Error ? retryRun.error.message : t("Failed to retry run")}
           </div>
         )}
       </div>
@@ -234,6 +251,7 @@ function FailedRunCard({
 }
 
 export function Inbox() {
+  const { t } = useI18n();
   const { selectedCompanyId } = useCompany();
   const { setBreadcrumbs } = useBreadcrumbs();
   const navigate = useNavigate();
@@ -263,8 +281,8 @@ export function Inbox() {
   });
 
   useEffect(() => {
-    setBreadcrumbs([{ label: "Inbox" }]);
-  }, [setBreadcrumbs]);
+    setBreadcrumbs([{ label: t("Inbox") }]);
+  }, [setBreadcrumbs, t]);
 
   useEffect(() => {
     saveLastInboxTab(tab);
@@ -334,6 +352,10 @@ export function Inbox() {
     () => touchedIssues.filter((issue) => issue.isUnreadForMe),
     [touchedIssues],
   );
+  const staleIssues = useMemo(
+    () => getStaleIssues(issues ?? []).filter((issue) => !dismissed.has(`stale:${issue.id}`)),
+    [issues, dismissed],
+  );
 
   const agentById = useMemo(() => {
     const map = new Map<string, string>();
@@ -351,15 +373,6 @@ export function Inbox() {
     () => getLatestFailedRunsByAgent(heartbeatRuns ?? []).filter((r) => !dismissed.has(`run:${r.id}`)),
     [heartbeatRuns, dismissed],
   );
-  const liveIssueIds = useMemo(() => {
-    const ids = new Set<string>();
-    for (const run of heartbeatRuns ?? []) {
-      if (run.status !== "running" && run.status !== "queued") continue;
-      const issueId = readIssueIdFromRun(run);
-      if (issueId) ids.add(issueId);
-    }
-    return ids;
-  }, [heartbeatRuns]);
 
   const allApprovals = useMemo(
     () =>
@@ -394,22 +407,22 @@ export function Inbox() {
       setActionError(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.approvals.list(selectedCompanyId!) });
       navigate(`/approvals/${id}?resolved=approved`);
-    },
-    onError: (err) => {
-      setActionError(err instanceof Error ? err.message : "Failed to approve");
-    },
-  });
+      },
+      onError: (err) => {
+        setActionError(err instanceof Error ? err.message : t("Failed to approve"));
+      },
+    });
 
   const rejectMutation = useMutation({
     mutationFn: (id: string) => approvalsApi.reject(id),
     onSuccess: () => {
       setActionError(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.approvals.list(selectedCompanyId!) });
-    },
-    onError: (err) => {
-      setActionError(err instanceof Error ? err.message : "Failed to reject");
-    },
-  });
+      },
+      onError: (err) => {
+        setActionError(err instanceof Error ? err.message : t("Failed to reject"));
+      },
+    });
 
   const approveJoinMutation = useMutation({
     mutationFn: (joinRequest: JoinRequest) =>
@@ -420,11 +433,11 @@ export function Inbox() {
       queryClient.invalidateQueries({ queryKey: queryKeys.sidebarBadges(selectedCompanyId!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.agents.list(selectedCompanyId!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.companies.all });
-    },
-    onError: (err) => {
-      setActionError(err instanceof Error ? err.message : "Failed to approve join request");
-    },
-  });
+      },
+      onError: (err) => {
+        setActionError(err instanceof Error ? err.message : t("Failed to approve join request"));
+      },
+    });
 
   const rejectJoinMutation = useMutation({
     mutationFn: (joinRequest: JoinRequest) =>
@@ -433,11 +446,11 @@ export function Inbox() {
       setActionError(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.access.joinRequests(selectedCompanyId!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.sidebarBadges(selectedCompanyId!) });
-    },
-    onError: (err) => {
-      setActionError(err instanceof Error ? err.message : "Failed to reject join request");
-    },
-  });
+      },
+      onError: (err) => {
+        setActionError(err instanceof Error ? err.message : t("Failed to reject join request"));
+      },
+    });
 
   const [fadingOutIssues, setFadingOutIssues] = useState<Set<string>>(new Set());
 
@@ -493,7 +506,7 @@ export function Inbox() {
   });
 
   if (!selectedCompanyId) {
-    return <EmptyState icon={InboxIcon} message="Select a company to view inbox." />;
+    return <EmptyState icon={InboxIcon} message={t("Select a company to view inbox.")} />;
   }
 
   const hasRunFailures = failedRuns.length > 0;
@@ -506,6 +519,7 @@ export function Inbox() {
   const hasAlerts = showAggregateAgentError || showBudgetAlert;
   const hasJoinRequests = joinRequests.length > 0;
   const hasTouchedIssues = touchedIssues.length > 0;
+  const hasStaleIssues = staleIssues.length > 0;
 
   const showJoinRequestsCategory =
     allCategoryFilter === "everything" || allCategoryFilter === "join_requests";
@@ -515,6 +529,7 @@ export function Inbox() {
   const showFailedRunsCategory =
     allCategoryFilter === "everything" || allCategoryFilter === "failed_runs";
   const showAlertsCategory = allCategoryFilter === "everything" || allCategoryFilter === "alerts";
+  const showStaleCategory = allCategoryFilter === "everything" || allCategoryFilter === "stale_work";
 
   const approvalsToRender = tab === "all" ? filteredAllApprovals : actionableApprovals;
   const showTouchedSection =
@@ -531,12 +546,14 @@ export function Inbox() {
   const showFailedRunsSection =
     tab === "all" ? showFailedRunsCategory && hasRunFailures : tab === "unread" && hasRunFailures;
   const showAlertsSection = tab === "all" ? showAlertsCategory && hasAlerts : tab === "unread" && hasAlerts;
+  const showStaleSection = tab === "all" && showStaleCategory && hasStaleIssues;
 
   const visibleSections = [
     showFailedRunsSection ? "failed_runs" : null,
     showAlertsSection ? "alerts" : null,
     showApprovalsSection ? "approvals" : null,
     showJoinRequestsSection ? "join_requests" : null,
+    showStaleSection ? "stale_work" : null,
     showTouchedSection ? "issues_i_touched" : null,
   ].filter((key): key is SectionKey => key !== null);
 
@@ -556,51 +573,51 @@ export function Inbox() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-2">
-          <Tabs value={tab} onValueChange={(value) => navigate(`/inbox/${value}`)}>
-            <PageTabBar
-              items={[
-                {
-                  value: "recent",
-                  label: "Recent",
-                },
-                { value: "unread", label: "Unread" },
-                { value: "all", label: "All" },
-              ]}
-            />
-          </Tabs>
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <Tabs value={tab} onValueChange={(value) => navigate(`/inbox/${value}`)}>
+          <PageTabBar
+            items={[
+              {
+                value: "recent",
+                label: t("Recent"),
+              },
+              { value: "unread", label: t("Unread") },
+              { value: "all", label: t("All") },
+            ]}
+          />
+        </Tabs>
 
+        <div className="flex flex-wrap items-center gap-2">
           {canMarkAllRead && (
             <Button
               type="button"
               variant="outline"
               size="sm"
-              className="h-8 shrink-0"
+              className="h-8"
               onClick={() => markAllReadMutation.mutate(unreadIssueIds)}
               disabled={markAllReadMutation.isPending}
             >
-              {markAllReadMutation.isPending ? "Marking…" : "Mark all as read"}
+              {markAllReadMutation.isPending ? t("Marking…") : t("Mark all as read")}
             </Button>
           )}
-        </div>
 
-        {tab === "all" && (
-          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          {tab === "all" && (
+            <>
             <Select
               value={allCategoryFilter}
               onValueChange={(value) => setAllCategoryFilter(value as InboxCategoryFilter)}
             >
               <SelectTrigger className="h-8 w-[170px] text-xs">
-                <SelectValue placeholder="Category" />
+                <SelectValue placeholder={t("Category")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="everything">All categories</SelectItem>
-                <SelectItem value="issues_i_touched">My recent issues</SelectItem>
-                <SelectItem value="join_requests">Join requests</SelectItem>
-                <SelectItem value="approvals">Approvals</SelectItem>
-                <SelectItem value="failed_runs">Failed runs</SelectItem>
-                <SelectItem value="alerts">Alerts</SelectItem>
+                <SelectItem value="everything">{t("All categories")}</SelectItem>
+                <SelectItem value="issues_i_touched">{t("My recent issues")}</SelectItem>
+                <SelectItem value="join_requests">{t("Join requests")}</SelectItem>
+                <SelectItem value="approvals">{t("Approvals")}</SelectItem>
+                <SelectItem value="failed_runs">{t("Failed runs")}</SelectItem>
+                <SelectItem value="alerts">{t("Alerts")}</SelectItem>
+                <SelectItem value="stale_work">{t("Stale work")}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -610,17 +627,18 @@ export function Inbox() {
                 onValueChange={(value) => setAllApprovalFilter(value as InboxApprovalFilter)}
               >
                 <SelectTrigger className="h-8 w-[170px] text-xs">
-                  <SelectValue placeholder="Approval status" />
+                  <SelectValue placeholder={t("Approval status")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All approval statuses</SelectItem>
-                  <SelectItem value="actionable">Needs action</SelectItem>
-                  <SelectItem value="resolved">Resolved</SelectItem>
+                  <SelectItem value="all">{t("All approval statuses")}</SelectItem>
+                  <SelectItem value="actionable">{t("Needs action")}</SelectItem>
+                  <SelectItem value="resolved">{t("Resolved")}</SelectItem>
                 </SelectContent>
               </Select>
             )}
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </div>
 
       {approvalsError && <p className="text-sm text-destructive">{approvalsError.message}</p>}
@@ -635,10 +653,10 @@ export function Inbox() {
           icon={InboxIcon}
           message={
             tab === "unread"
-              ? "No new inbox items."
+              ? t("No new inbox items.")
               : tab === "recent"
-                ? "No recent inbox items."
-                : "No inbox items match these filters."
+                ? t("No recent inbox items.")
+                : t("No inbox items match these filters.")
           }
         />
       )}
@@ -648,7 +666,7 @@ export function Inbox() {
           {showSeparatorBefore("approvals") && <Separator />}
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              {tab === "unread" ? "Approvals Needing Action" : "Approvals"}
+              {tab === "unread" ? t("Approvals Needing Action") : t("Approvals")}
             </h3>
             <div className="grid gap-3">
               {approvalsToRender.map((approval) => (
@@ -676,7 +694,7 @@ export function Inbox() {
           {showSeparatorBefore("join_requests") && <Separator />}
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Join Requests
+              {t("Join Requests")}
             </h3>
             <div className="grid gap-3">
               {joinRequests.map((joinRequest) => (
@@ -685,19 +703,26 @@ export function Inbox() {
                     <div className="space-y-1">
                       <p className="text-sm font-medium">
                         {joinRequest.requestType === "human"
-                          ? "Human join request"
-                          : `Agent join request${joinRequest.agentName ? `: ${joinRequest.agentName}` : ""}`}
+                          ? t("Human join request")
+                          : joinRequest.agentName
+                            ? t("Agent join request: {name}", { name: joinRequest.agentName })
+                            : t("Agent join request")}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        requested {timeAgo(joinRequest.createdAt)} from IP {joinRequest.requestIp}
+                        {t("requested {time} from IP {ip}", {
+                          time: timeAgo(joinRequest.createdAt),
+                          ip: joinRequest.requestIp,
+                        })}
                       </p>
                       {joinRequest.requestEmailSnapshot && (
                         <p className="text-xs text-muted-foreground">
-                          email: {joinRequest.requestEmailSnapshot}
+                          {t("email: {email}", { email: joinRequest.requestEmailSnapshot })}
                         </p>
                       )}
                       {joinRequest.adapterType && (
-                        <p className="text-xs text-muted-foreground">adapter: {joinRequest.adapterType}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("adapter: {adapter}", { adapter: joinRequest.adapterType })}
+                        </p>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
@@ -707,14 +732,14 @@ export function Inbox() {
                         disabled={approveJoinMutation.isPending || rejectJoinMutation.isPending}
                         onClick={() => rejectJoinMutation.mutate(joinRequest)}
                       >
-                        Reject
+                        {t("Reject")}
                       </Button>
                       <Button
                         size="sm"
                         disabled={approveJoinMutation.isPending || rejectJoinMutation.isPending}
                         onClick={() => approveJoinMutation.mutate(joinRequest)}
                       >
-                        Approve
+                        {t("Approve")}
                       </Button>
                     </div>
                   </div>
@@ -730,7 +755,7 @@ export function Inbox() {
           {showSeparatorBefore("failed_runs") && <Separator />}
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Failed Runs
+              {t("Failed Runs")}
             </h3>
             <div className="grid gap-3">
               {failedRuns.map((run) => (
@@ -753,7 +778,7 @@ export function Inbox() {
           {showSeparatorBefore("alerts") && <Separator />}
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Alerts
+              {t("Alerts")}
             </h3>
             <div className="divide-y divide-border border border-border">
               {showAggregateAgentError && (
@@ -764,15 +789,16 @@ export function Inbox() {
                   >
                     <AlertTriangle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
                     <span className="text-sm">
-                      <span className="font-medium">{dashboard!.agents.error}</span>{" "}
-                      {dashboard!.agents.error === 1 ? "agent has" : "agents have"} errors
+                      {dashboard!.agents.error === 1
+                        ? t("{count} agent has errors", { count: dashboard!.agents.error })
+                        : t("{count} agents have errors", { count: dashboard!.agents.error })}
                     </span>
                   </Link>
                   <button
                     type="button"
                     onClick={() => dismiss("alert:agent-errors")}
                     className="rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground group-hover/alert:opacity-100"
-                    aria-label="Dismiss"
+                    aria-label={t("Dismiss")}
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -786,16 +812,16 @@ export function Inbox() {
                   >
                     <AlertTriangle className="h-4 w-4 shrink-0 text-yellow-400" />
                     <span className="text-sm">
-                      Budget at{" "}
-                      <span className="font-medium">{dashboard!.costs.monthUtilizationPercent}%</span>{" "}
-                      utilization this month
+                      {t("Budget at {percent}% utilization this month", {
+                        percent: dashboard!.costs.monthUtilizationPercent,
+                      })}
                     </span>
                   </Link>
                   <button
                     type="button"
                     onClick={() => dismiss("alert:budget")}
                     className="rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground group-hover/alert:opacity-100"
-                    aria-label="Dismiss"
+                    aria-label={t("Dismiss")}
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -806,56 +832,166 @@ export function Inbox() {
         </>
       )}
 
+      {showStaleSection && (
+        <>
+          {showSeparatorBefore("stale_work") && <Separator />}
+          <div>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("Stale Work")}
+            </h3>
+            <div className="divide-y divide-border border border-border">
+              {staleIssues.map((issue) => (
+                <div
+                  key={issue.id}
+                  className="group/stale relative flex items-start gap-2 overflow-hidden px-3 py-3 transition-colors hover:bg-accent/50 sm:items-center sm:gap-3 sm:px-4"
+                >
+                  {/* Status icon - left column on mobile; Clock icon on desktop */}
+                  <span className="shrink-0 sm:hidden">
+                    <StatusIcon status={issue.status} />
+                  </span>
+                  <Clock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground hidden sm:block sm:mt-0" />
+
+                  <Link
+                    to={`/issues/${issue.identifier ?? issue.id}`}
+                    className="flex min-w-0 flex-1 cursor-pointer flex-col gap-1 no-underline text-inherit sm:flex-row sm:items-center sm:gap-3"
+                  >
+                    <span className="line-clamp-2 text-sm sm:order-2 sm:flex-1 sm:min-w-0 sm:line-clamp-none sm:truncate">
+                      {issue.title}
+                    </span>
+                    <span className="flex items-center gap-2 sm:order-1 sm:shrink-0">
+                      <span className="hidden sm:inline-flex"><PriorityIcon priority={issue.priority} /></span>
+                      <span className="hidden sm:inline-flex"><StatusIcon status={issue.status} /></span>
+                      <span className="shrink-0 text-xs font-mono text-muted-foreground">
+                        {issue.identifier ?? issue.id.slice(0, 8)}
+                      </span>
+                        {issue.assigneeAgentId &&
+                        (() => {
+                          const name = agentName(issue.assigneeAgentId);
+                          return name ? (
+                            <span className="hidden sm:inline-flex"><Identity name={name} size="sm" /></span>
+                          ) : null;
+                        })()}
+                      <span className="text-xs text-muted-foreground sm:hidden">&middot;</span>
+                      <span className="shrink-0 text-xs text-muted-foreground sm:order-last">
+                        {t("updated {time}", { time: timeAgo(issue.updatedAt) })}
+                      </span>
+                    </span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => dismiss(`stale:${issue.id}`)}
+                    className="mt-0.5 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground group-hover/stale:opacity-100 sm:mt-0"
+                    aria-label={t("Dismiss")}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
       {showTouchedSection && (
         <>
           {showSeparatorBefore("issues_i_touched") && <Separator />}
           <div>
-            <div>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("My Recent Issues")}
+            </h3>
+            <div className="divide-y divide-border border border-border">
               {(tab === "unread" ? unreadTouchedIssues : touchedIssues).map((issue) => {
                 const isUnread = issue.isUnreadForMe && !fadingOutIssues.has(issue.id);
                 const isFading = fadingOutIssues.has(issue.id);
                 return (
-                  <IssueRow
+                  <Link
                     key={issue.id}
-                    issue={issue}
-                    issueLinkState={issueLinkState}
-                    desktopMetaLeading={(
-                      <>
-                        <span className="hidden sm:inline-flex">
-                          <PriorityIcon priority={issue.priority} />
-                        </span>
-                        <span className="hidden shrink-0 sm:inline-flex">
-                          <StatusIcon status={issue.status} />
-                        </span>
-                        <span className="shrink-0 font-mono text-xs text-muted-foreground">
+                    to={`/issues/${issue.identifier ?? issue.id}`}
+                    state={issueLinkState}
+                    className="flex min-w-0 cursor-pointer items-start gap-2 px-3 py-3 no-underline text-inherit transition-colors hover:bg-accent/50 sm:items-center sm:gap-3 sm:px-4"
+                  >
+                    {/* Status icon - left column on mobile, inline on desktop */}
+                    <span className="shrink-0 sm:hidden">
+                      <StatusIcon status={issue.status} />
+                    </span>
+
+                    {/* Right column on mobile: title + metadata stacked */}
+                    <span className="flex min-w-0 flex-1 flex-col gap-1 sm:contents">
+                      <span className="line-clamp-2 text-sm sm:order-2 sm:flex-1 sm:min-w-0 sm:line-clamp-none sm:truncate">
+                        {issue.title}
+                      </span>
+                      <span className="flex items-center gap-2 sm:order-1 sm:shrink-0">
+                        {(isUnread || isFading) ? (
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              markReadMutation.mutate(issue.id);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                markReadMutation.mutate(issue.id);
+                              }
+                            }}
+                            className="hidden sm:inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-blue-500/20"
+                            aria-label={t("Mark as read")}
+                          >
+                            <span
+                              className={`h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 transition-opacity duration-300 ${
+                                isFading ? "opacity-0" : "opacity-100"
+                              }`}
+                            />
+                          </span>
+                        ) : (
+                          <span className="hidden sm:inline-flex h-4 w-4 shrink-0" />
+                        )}
+                        <span className="hidden sm:inline-flex"><PriorityIcon priority={issue.priority} /></span>
+                        <span className="hidden sm:inline-flex"><StatusIcon status={issue.status} /></span>
+                        <span className="text-xs font-mono text-muted-foreground">
                           {issue.identifier ?? issue.id.slice(0, 8)}
                         </span>
-                        {liveIssueIds.has(issue.id) && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-1.5 py-0.5 sm:gap-1.5 sm:px-2">
-                            <span className="relative flex h-2 w-2">
-                              <span className="absolute inline-flex h-full w-full animate-pulse rounded-full bg-blue-400 opacity-75" />
-                              <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-500" />
-                            </span>
-                            <span className="hidden text-[11px] font-medium text-blue-600 dark:text-blue-400 sm:inline">
-                              Live
-                            </span>
-                          </span>
-                        )}
-                      </>
+                        <span className="text-xs text-muted-foreground sm:hidden">
+                          &middot;
+                        </span>
+                        <span className="text-xs text-muted-foreground sm:order-last">
+                          {issue.lastExternalCommentAt
+                            ? t("commented {time}", { time: timeAgo(issue.lastExternalCommentAt) })
+                            : t("updated {time}", { time: timeAgo(issue.updatedAt) })}
+                        </span>
+                      </span>
+                    </span>
+
+                    {/* Unread dot - right side, vertically centered (mobile only; desktop keeps inline) */}
+                    {(isUnread || isFading) && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          markReadMutation.mutate(issue.id);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            markReadMutation.mutate(issue.id);
+                          }
+                        }}
+                        className="shrink-0 self-center cursor-pointer sm:hidden"
+                        aria-label={t("Mark as read")}
+                      >
+                        <span
+                          className={`block h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 transition-opacity duration-300 ${
+                            isFading ? "opacity-0" : "opacity-100"
+                          }`}
+                        />
+                      </span>
                     )}
-                    mobileMeta={
-                      issue.lastExternalCommentAt
-                        ? `commented ${timeAgo(issue.lastExternalCommentAt)}`
-                        : `updated ${timeAgo(issue.updatedAt)}`
-                    }
-                    unreadState={isUnread ? "visible" : isFading ? "fading" : "hidden"}
-                    onMarkRead={() => markReadMutation.mutate(issue.id)}
-                    trailingMeta={
-                      issue.lastExternalCommentAt
-                        ? `commented ${timeAgo(issue.lastExternalCommentAt)}`
-                        : `updated ${timeAgo(issue.updatedAt)}`
-                    }
-                  />
+                  </Link>
                 );
               })}
             </div>

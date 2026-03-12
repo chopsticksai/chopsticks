@@ -29,6 +29,7 @@ import {
 } from "@mdxeditor/editor";
 import { buildProjectMentionHref, parseProjectMentionHref } from "@paperclipai/shared";
 import { cn } from "../lib/utils";
+import { useI18n } from "../context/I18nContext";
 
 /* ---- Mention types ---- */
 
@@ -201,6 +202,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
   mentions,
   onSubmit,
 }: MarkdownEditorProps, forwardedRef) {
+  const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
   const ref = useRef<MDXEditorMethods>(null);
   const latestValueRef = useRef(value);
@@ -253,7 +255,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
             setUploadError(null);
             return src;
           } catch (err) {
-            const message = err instanceof Error ? err.message : "Image upload failed";
+            const message = err instanceof Error ? err.message : t("Image upload failed");
             setUploadError(message);
             throw err;
           }
@@ -555,7 +557,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
       <MDXEditor
         ref={ref}
         markdown={value}
-        placeholder={placeholder}
+        placeholder={placeholder ? t(placeholder) : undefined}
         onChange={(next) => {
           latestValueRef.current = next;
           onChange(next);
@@ -614,7 +616,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
             !bordered && "inset-0 rounded-sm",
           )}
         >
-          Drop image to upload
+          {t("Drop image to upload")}
         </div>
       )}
       {uploadError && (

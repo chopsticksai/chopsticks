@@ -2,20 +2,34 @@ import { Link } from "@/lib/router";
 import { Identity } from "./Identity";
 import { timeAgo } from "../lib/timeAgo";
 import { cn } from "../lib/utils";
+import { useI18n } from "../context/I18nContext";
+import { getPriorityLabel, getStatusLabel } from "../lib/i18n";
 import { deriveProjectUrlKey, type ActivityEvent, type Agent } from "@paperclipai/shared";
 
 const ACTION_VERBS: Record<string, string> = {
+  "agent_api_key.claimed": "claimed API key",
   "issue.created": "created",
   "issue.updated": "updated",
+  "issue.approval_linked": "linked approval to",
+  "issue.approval_unlinked": "unlinked approval from",
   "issue.checked_out": "checked out",
+  "issue.checkout_lock_adopted": "adopted checkout lock for",
   "issue.released": "released",
   "issue.comment_added": "commented on",
   "issue.attachment_added": "attached file to",
   "issue.attachment_removed": "removed attachment from",
   "issue.commented": "commented on",
+  "issue.read_marked": "marked as read",
   "issue.deleted": "deleted",
+  "asset.created": "created",
   "agent.created": "created",
+  "agent.deleted": "deleted",
+  "agent.hire_created": "started hire for",
+  "agent.config_rolled_back": "rolled back configuration for",
+  "agent.instructions_path_updated": "updated instructions path for",
+  "agent.permissions_updated": "updated permissions for",
   "agent.updated": "updated",
+  "agent.updated_from_join_replay": "synced join replay for",
   "agent.paused": "paused",
   "agent.resumed": "resumed",
   "agent.terminated": "terminated",
@@ -25,44 +39,78 @@ const ACTION_VERBS: Record<string, string> = {
   "heartbeat.invoked": "invoked heartbeat for",
   "heartbeat.cancelled": "cancelled heartbeat for",
   "approval.created": "requested approval",
+  "approval.comment_added": "commented on",
   "approval.approved": "approved",
   "approval.rejected": "rejected",
+  "approval.requester_wakeup_failed": "failed to wake requester for",
+  "approval.requester_wakeup_queued": "queued requester wakeup for",
+  "approval.resubmitted": "resubmitted",
+  "approval.revision_requested": "requested revision for",
+  "join.approved": "approved join request for",
+  "join.rejected": "rejected join request for",
   "project.created": "created",
   "project.updated": "updated",
   "project.deleted": "deleted",
+  "project.workspace_created": "created workspace for",
+  "project.workspace_deleted": "deleted workspace for",
+  "project.workspace_updated": "updated workspace for",
   "goal.created": "created",
   "goal.updated": "updated",
   "goal.deleted": "deleted",
   "cost.reported": "reported cost for",
   "cost.recorded": "recorded cost for",
+  "label.created": "created label",
+  "label.deleted": "deleted label",
+  "secret.created": "created secret",
+  "secret.deleted": "deleted secret",
+  "secret.rotated": "rotated secret",
+  "secret.updated": "updated secret",
+  "invite.created": "created invite",
+  "invite.openclaw_prompt_created": "generated OpenClaw invite prompt",
+  "invite.revoked": "revoked invite",
+  "hire_hook.error": "hire hook errored for",
+  "hire_hook.failed": "hire hook failed for",
+  "hire_hook.succeeded": "hire hook succeeded for",
   "company.created": "created company",
+  "company.imported": "imported",
   "company.updated": "updated company",
   "company.archived": "archived",
   "company.budget_updated": "updated budget for",
+  create: "created",
+  created: "created",
+  update: "updated",
+  updated: "updated",
+  skip: "skipped",
+  skipped: "skipped",
 };
 
-function humanizeValue(value: unknown): string {
-  if (typeof value !== "string") return String(value ?? "none");
-  return value.replace(/_/g, " ");
-}
-
-function formatVerb(action: string, details?: Record<string, unknown> | null): string {
+function formatVerb(
+  action: string,
+  details: Record<string, unknown> | null | undefined,
+  t: (text: string, values?: Record<string, string | number>) => string,
+): string {
   if (action === "issue.updated" && details) {
     const previous = (details._previous ?? {}) as Record<string, unknown>;
     if (details.status !== undefined) {
       const from = previous.status;
       return from
-        ? `changed status from ${humanizeValue(from)} to ${humanizeValue(details.status)} on`
-        : `changed status to ${humanizeValue(details.status)} on`;
+        ? t("changed status from {from} to {to} on", {
+            from: getStatusLabel(String(from)),
+            to: getStatusLabel(String(details.status)),
+          })
+        : t("changed status to {to} on", { to: getStatusLabel(String(details.status)) });
     }
     if (details.priority !== undefined) {
       const from = previous.priority;
       return from
-        ? `changed priority from ${humanizeValue(from)} to ${humanizeValue(details.priority)} on`
-        : `changed priority to ${humanizeValue(details.priority)} on`;
+        ? t("changed priority from {from} to {to} on", {
+            from: getPriorityLabel(String(from)),
+            to: getPriorityLabel(String(details.priority)),
+          })
+        : t("changed priority to {to} on", { to: getPriorityLabel(String(details.priority)) });
     }
   }
-  return ACTION_VERBS[action] ?? action.replace(/[._]/g, " ");
+  return t(ACTION_VERBS[action] ?? action.replace(/[._]/g, " "));
 }
 
 function entityLink(entityType: string, entityId: string, name?: string | null): string | null {
@@ -85,7 +133,8 @@ interface ActivityRowProps {
 }
 
 export function ActivityRow({ event, agentMap, entityNameMap, entityTitleMap, className }: ActivityRowProps) {
-  const verb = formatVerb(event.action, event.details);
+  const { t } = useI18n();
+  const verb = formatVerb(event.action, event.details, t);
 
   const isHeartbeatEvent = event.entityType === "heartbeat_run";
   const heartbeatAgentId = isHeartbeatEvent
@@ -103,7 +152,7 @@ export function ActivityRow({ event, agentMap, entityNameMap, entityTitleMap, cl
     : entityLink(event.entityType, event.entityId, name);
 
   const actor = event.actorType === "agent" ? agentMap.get(event.actorId) : null;
-  const actorName = actor?.name ?? (event.actorType === "system" ? "System" : event.actorType === "user" ? "Board" : event.actorId || "Unknown");
+  const actorName = actor?.name ?? (event.actorType === "system" ? t("System") : event.actorType === "user" ? t("Board") : event.actorId || t("Unknown"));
 
   const inner = (
     <div className="flex gap-3">

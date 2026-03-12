@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { translateText } from "../lib/i18n";
 
 export interface Breadcrumb {
   label: string;
@@ -23,7 +24,7 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
     if (breadcrumbs.length === 0) {
       document.title = "Paperclip";
     } else {
-      const parts = [...breadcrumbs].reverse().map((b) => b.label);
+      const parts = [...breadcrumbs].reverse().map((b) => translateText(b.label));
       document.title = `${parts.join(" · ")} · Paperclip`;
     }
   }, [breadcrumbs]);

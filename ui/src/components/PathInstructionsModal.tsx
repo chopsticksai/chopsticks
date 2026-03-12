@@ -8,6 +8,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { useI18n } from "../context/I18nContext";
 
 type Platform = "mac" | "windows" | "linux";
 
@@ -62,6 +63,7 @@ export function PathInstructionsModal({
   onOpenChange,
 }: PathInstructionsModalProps) {
   const [platform, setPlatform] = useState<Platform>(detectPlatform);
+  const { t } = useI18n();
 
   const current = instructions[platform];
 
@@ -69,11 +71,12 @@ export function PathInstructionsModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-base">How to get a full path</DialogTitle>
+          <DialogTitle className="text-base">{t("How to get a full path")}</DialogTitle>
           <DialogDescription>
-            Paste the absolute path (e.g.{" "}
+            {t("Paste the absolute path (e.g.")}
+            {" "}
             <code className="text-xs bg-muted px-1 py-0.5 rounded">/Users/you/project</code>
-            ) into the input field.
+            {t(") into the input field.")}
           </DialogDescription>
         </DialogHeader>
 
@@ -92,7 +95,7 @@ export function PathInstructionsModal({
               onClick={() => setPlatform(p.id)}
             >
               <p.icon className="h-3.5 w-3.5" />
-              {p.label}
+              {t(p.label)}
             </button>
           ))}
         </div>
@@ -104,14 +107,14 @@ export function PathInstructionsModal({
               <span className="text-muted-foreground font-mono text-xs mt-0.5 shrink-0">
                 {i + 1}.
               </span>
-              <span>{step}</span>
+              <span>{t(step)}</span>
             </li>
           ))}
         </ol>
 
         {current.tip && (
           <p className="text-xs text-muted-foreground border-l-2 border-border pl-3">
-            {current.tip}
+            {t(current.tip)}
           </p>
         )}
       </DialogContent>
@@ -125,6 +128,7 @@ export function PathInstructionsModal({
  */
 export function ChoosePathButton({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
   return (
     <>
       <button
@@ -135,7 +139,7 @@ export function ChoosePathButton({ className }: { className?: string }) {
         )}
         onClick={() => setOpen(true)}
       >
-        Choose
+        {t("Choose")}
       </button>
       <PathInstructionsModal open={open} onOpenChange={setOpen} />
     </>

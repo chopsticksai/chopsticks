@@ -10,6 +10,8 @@ import { projectsApi } from "../api/projects";
 import { useCompany } from "../context/CompanyContext";
 import { usePanel } from "../context/PanelContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
+import { useI18n } from "../context/I18nContext";
+import { getPriorityLabel, getStatusLabel, translateText } from "../lib/i18n";
 import { queryKeys } from "../lib/queryKeys";
 import { readIssueDetailBreadcrumb } from "../lib/issueDetailBreadcrumb";
 import { useProjectOrder } from "../hooks/useProjectOrder";
@@ -73,11 +75,6 @@ const ACTION_LABELS: Record<string, string> = {
   "approval.rejected": "rejected",
 };
 
-function humanizeValue(value: unknown): string {
-  if (typeof value !== "string") return String(value ?? "none");
-  return value.replace(/_/g, " ");
-}
-
 function asRecord(value: unknown): Record<string, unknown> | null {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
   return value as Record<string, unknown>;
@@ -106,31 +103,37 @@ function formatAction(action: string, details?: Record<string, unknown> | null):
       const from = previous.status;
       parts.push(
         from
-          ? `changed the status from ${humanizeValue(from)} to ${humanizeValue(details.status)}`
-          : `changed the status to ${humanizeValue(details.status)}`
+          ? translateText("changed status from {from} to {to} on", {
+              from: getStatusLabel(String(from)),
+              to: getStatusLabel(String(details.status)),
+            })
+          : translateText("changed status to {to} on", { to: getStatusLabel(String(details.status)) })
       );
     }
     if (details.priority !== undefined) {
       const from = previous.priority;
       parts.push(
         from
-          ? `changed the priority from ${humanizeValue(from)} to ${humanizeValue(details.priority)}`
-          : `changed the priority to ${humanizeValue(details.priority)}`
+          ? translateText("changed priority from {from} to {to} on", {
+              from: getPriorityLabel(String(from)),
+              to: getPriorityLabel(String(details.priority)),
+            })
+          : translateText("changed priority to {to} on", { to: getPriorityLabel(String(details.priority)) })
       );
     }
     if (details.assigneeAgentId !== undefined || details.assigneeUserId !== undefined) {
       parts.push(
         details.assigneeAgentId || details.assigneeUserId
-          ? "assigned the issue"
-          : "unassigned the issue",
+          ? translateText("assigned the issue")
+          : translateText("unassigned the issue"),
       );
     }
-    if (details.title !== undefined) parts.push("updated the title");
-    if (details.description !== undefined) parts.push("updated the description");
+    if (details.title !== undefined) parts.push(translateText("updated the title"));
+    if (details.description !== undefined) parts.push(translateText("updated the description"));
 
     if (parts.length > 0) return parts.join(", ");
   }
-  return ACTION_LABELS[action] ?? action.replace(/[._]/g, " ");
+  return translateText(ACTION_LABELS[action] ?? action.replace(/[._]/g, " "));
 }
 
 function ActorIdentity({ evt, agentMap }: { evt: ActivityEvent; agentMap: Map<string, Agent> }) {
@@ -139,12 +142,13 @@ function ActorIdentity({ evt, agentMap }: { evt: ActivityEvent; agentMap: Map<st
     const agent = agentMap.get(id);
     return <Identity name={agent?.name ?? id.slice(0, 8)} size="sm" />;
   }
-  if (evt.actorType === "system") return <Identity name="System" size="sm" />;
-  if (evt.actorType === "user") return <Identity name="Board" size="sm" />;
-  return <Identity name={id || "Unknown"} size="sm" />;
+  if (evt.actorType === "system") return <Identity name={translateText("System")} size="sm" />;
+  if (evt.actorType === "user") return <Identity name={translateText("Board")} size="sm" />;
+  return <Identity name={id || translateText("Unknown")} size="sm" />;
 }
 
 export function IssueDetail() {
+  const { t } = useI18n();
   const { issueId } = useParams<{ issueId: string }>();
   const { selectedCompanyId } = useCompany();
   const { openPanel, closePanel, panelVisible, setPanelVisible } = usePanel();
@@ -304,11 +308,11 @@ export function IssueDetail() {
       options.push({ id: `agent:${agent.id}`, label: agent.name });
     }
     if (currentUserId) {
-      const label = currentUserId === "local-board" ? "Board" : "Me (Board)";
+      const label = currentUserId === "local-board" ? t("Board") : t("Me (Board)");
       options.push({ id: `user:${currentUserId}`, label });
     }
     return options;
-  }, [agents, currentUserId]);
+  }, [agents, currentUserId, t]);
 
   const currentAssigneeValue = useMemo(() => {
     if (issue?.assigneeAgentId) return `agent:${issue.assigneeAgentId}`;
@@ -455,7 +459,7 @@ export function IssueDetail() {
       invalidateIssue();
     },
     onError: (err) => {
-      setAttachmentError(err instanceof Error ? err.message : "Upload failed");
+      setAttachmentError(err instanceof Error ? err.message : t("Upload failed"));
     },
   });
 
@@ -467,17 +471,17 @@ export function IssueDetail() {
       invalidateIssue();
     },
     onError: (err) => {
-      setAttachmentError(err instanceof Error ? err.message : "Delete failed");
+      setAttachmentError(err instanceof Error ? err.message : t("Delete failed"));
     },
   });
 
   useEffect(() => {
-    const titleLabel = issue?.title ?? issueId ?? "Issue";
+    const titleLabel = issue?.title ?? issueId ?? t("Issue");
     setBreadcrumbs([
       sourceBreadcrumb,
       { label: hasLiveRuns ? `🔵 ${titleLabel}` : titleLabel },
     ]);
-  }, [setBreadcrumbs, sourceBreadcrumb, issue, issueId, hasLiveRuns]);
+  }, [setBreadcrumbs, sourceBreadcrumb, issue, issueId, hasLiveRuns, t]);
 
   // Redirect to identifier-based URL if navigated via UUID
   useEffect(() => {
@@ -502,7 +506,7 @@ export function IssueDetail() {
     return () => closePanel();
   }, [issue]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (isLoading) return <p className="text-sm text-muted-foreground">Loading...</p>;
+  if (isLoading) return <p className="text-sm text-muted-foreground">{t("Loading...")}</p>;
   if (error) return <p className="text-sm text-destructive">{error.message}</p>;
   if (!issue) return null;
 
@@ -546,7 +550,7 @@ export function IssueDetail() {
       {issue.hiddenAt && (
         <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           <EyeOff className="h-4 w-4 shrink-0" />
-          This issue is hidden
+          {t("This issue is hidden")}
         </div>
       )}
 
@@ -568,7 +572,7 @@ export function IssueDetail() {
                 <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-400" />
               </span>
-              Live
+              {t("Live")}
             </span>
           )}
 
@@ -583,7 +587,7 @@ export function IssueDetail() {
           ) : (
             <span className="inline-flex items-center gap-1 text-xs text-muted-foreground opacity-50 px-1 -mx-1 py-0.5">
               <Hexagon className="h-3 w-3 shrink-0" />
-              No project
+              {t("No project")}
             </span>
           )}
 
@@ -613,7 +617,7 @@ export function IssueDetail() {
             size="icon-xs"
             className="ml-auto md:hidden shrink-0"
             onClick={() => setMobilePropsOpen(true)}
-            title="Properties"
+            title={t("Properties")}
           >
             <SlidersHorizontal className="h-4 w-4" />
           </Button>
@@ -627,7 +631,7 @@ export function IssueDetail() {
                 panelVisible ? "opacity-0 pointer-events-none w-0 overflow-hidden" : "opacity-100",
               )}
               onClick={() => setPanelVisible(true)}
-              title="Show properties"
+              title={t("Show properties")}
             >
               <SlidersHorizontal className="h-4 w-4" />
             </Button>
@@ -650,7 +654,7 @@ export function IssueDetail() {
                 }}
               >
                 <EyeOff className="h-3 w-3" />
-                Hide this Issue
+                {t("Hide this Issue")}
               </button>
             </PopoverContent>
             </Popover>
@@ -669,7 +673,7 @@ export function IssueDetail() {
           onSave={(description) => updateIssue.mutate({ description })}
           as="p"
           className="text-[15px] leading-7 text-foreground"
-          placeholder="Add a description..."
+          placeholder={t("Add a description...")}
           multiline
           mentions={mentionOptions}
           imageUploadHandler={async (file) => {
@@ -681,7 +685,7 @@ export function IssueDetail() {
 
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="text-sm font-medium text-muted-foreground">Attachments</h3>
+          <h3 className="text-sm font-medium text-muted-foreground">{t("Attachments")}</h3>
           <div className="flex items-center gap-2">
             <input
               ref={fileInputRef}
@@ -697,7 +701,7 @@ export function IssueDetail() {
               disabled={uploadAttachment.isPending}
             >
               <Paperclip className="h-3.5 w-3.5 mr-1.5" />
-              {uploadAttachment.isPending ? "Uploading..." : "Upload image"}
+              {uploadAttachment.isPending ? t("Uploading...") : t("Upload image")}
             </Button>
           </div>
         </div>
@@ -707,7 +711,7 @@ export function IssueDetail() {
         )}
 
         {(!attachments || attachments.length === 0) ? (
-          <p className="text-xs text-muted-foreground">No attachments yet.</p>
+          <p className="text-xs text-muted-foreground">{t("No attachments yet.")}</p>
         ) : (
           <div className="space-y-2">
             {attachments.map((attachment) => (
@@ -727,7 +731,7 @@ export function IssueDetail() {
                     className="text-muted-foreground hover:text-destructive"
                     onClick={() => deleteAttachment.mutate(attachment.id)}
                     disabled={deleteAttachment.isPending}
-                    title="Delete attachment"
+                    title={t("Delete attachment")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -739,7 +743,7 @@ export function IssueDetail() {
                   <a href={attachment.contentPath} target="_blank" rel="noreferrer">
                     <img
                       src={attachment.contentPath}
-                      alt={attachment.originalFilename ?? "attachment"}
+                      alt={attachment.originalFilename ?? t("attachment")}
                       className="mt-2 max-h-56 rounded border border-border object-contain bg-accent/10"
                       loading="lazy"
                     />
@@ -757,15 +761,15 @@ export function IssueDetail() {
         <TabsList variant="line" className="w-full justify-start gap-1">
           <TabsTrigger value="comments" className="gap-1.5">
             <MessageSquare className="h-3.5 w-3.5" />
-            Comments
+            {t("Comments")}
           </TabsTrigger>
           <TabsTrigger value="subissues" className="gap-1.5">
             <ListTree className="h-3.5 w-3.5" />
-            Sub-issues
+            {t("Sub-issues")}
           </TabsTrigger>
           <TabsTrigger value="activity" className="gap-1.5">
             <ActivityIcon className="h-3.5 w-3.5" />
-            Activity
+            {t("Activity")}
           </TabsTrigger>
         </TabsList>
 
@@ -800,7 +804,7 @@ export function IssueDetail() {
 
         <TabsContent value="subissues">
           {childIssues.length === 0 ? (
-            <p className="text-xs text-muted-foreground">No sub-issues.</p>
+            <p className="text-xs text-muted-foreground">{t("No sub-issues.")}</p>
           ) : (
             <div className="border border-border rounded-lg divide-y divide-border">
               {childIssues.map((child) => (
@@ -832,7 +836,7 @@ export function IssueDetail() {
 
         <TabsContent value="activity">
           {!activity || activity.length === 0 ? (
-            <p className="text-xs text-muted-foreground">No activity yet.</p>
+            <p className="text-xs text-muted-foreground">{t("No activity yet.")}</p>
           ) : (
             <div className="space-y-1.5">
               {activity.slice(0, 20).map((evt) => (
@@ -855,7 +859,7 @@ export function IssueDetail() {
         >
           <CollapsibleTrigger className="flex w-full items-center justify-between px-3 py-2 text-left">
             <span className="text-sm font-medium text-muted-foreground">
-              Linked Approvals ({linkedApprovals.length})
+              {t("Linked Approvals ({count})", { count: linkedApprovals.length })}
             </span>
             <ChevronDown
               className={cn("h-4 w-4 text-muted-foreground transition-transform", secondaryOpen.approvals && "rotate-180")}
@@ -891,7 +895,7 @@ export function IssueDetail() {
           className="rounded-lg border border-border"
         >
           <CollapsibleTrigger className="flex w-full items-center justify-between px-3 py-2 text-left">
-            <span className="text-sm font-medium text-muted-foreground">Cost Summary</span>
+            <span className="text-sm font-medium text-muted-foreground">{t("Cost Summary")}</span>
             <ChevronDown
               className={cn("h-4 w-4 text-muted-foreground transition-transform", secondaryOpen.cost && "rotate-180")}
             />
@@ -899,7 +903,7 @@ export function IssueDetail() {
           <CollapsibleContent>
             <div className="border-t border-border px-3 py-2">
               {!issueCostSummary.hasCost && !issueCostSummary.hasTokens ? (
-                <div className="text-xs text-muted-foreground">No cost data yet.</div>
+                <div className="text-xs text-muted-foreground">{t("No cost data yet.")}</div>
               ) : (
                 <div className="flex flex-wrap gap-3 text-xs text-muted-foreground tabular-nums">
                   {issueCostSummary.hasCost && (
@@ -926,7 +930,7 @@ export function IssueDetail() {
       <Sheet open={mobilePropsOpen} onOpenChange={setMobilePropsOpen}>
         <SheetContent side="bottom" className="max-h-[85dvh] pb-[env(safe-area-inset-bottom)]">
           <SheetHeader>
-            <SheetTitle className="text-sm">Properties</SheetTitle>
+            <SheetTitle className="text-sm">{t("Properties")}</SheetTitle>
           </SheetHeader>
           <ScrollArea className="flex-1 overflow-y-auto">
             <div className="px-4 pb-4">

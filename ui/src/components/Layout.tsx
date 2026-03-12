@@ -18,6 +18,7 @@ import { MobileBottomNav } from "./MobileBottomNav";
 import { useDialog } from "../context/DialogContext";
 import { usePanel } from "../context/PanelContext";
 import { useCompany } from "../context/CompanyContext";
+import { useI18n } from "../context/I18nContext";
 import { useSidebar } from "../context/SidebarContext";
 import { useTheme } from "../context/ThemeContext";
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
@@ -40,6 +41,7 @@ export function Layout() {
     setSelectedCompanyId,
   } = useCompany();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useI18n();
   const { companyPrefix } = useParams<{ companyPrefix: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -222,7 +224,7 @@ export function Layout() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[200] focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        Skip to Main Content
+        {t("Skip to Main Content")}
       </a>
       {/* Mobile backdrop */}
       {isMobile && sidebarOpen && (
@@ -230,7 +232,7 @@ export function Layout() {
           type="button"
           className="fixed inset-0 z-40 bg-black/50"
           onClick={() => setSidebarOpen(false)}
-          aria-label="Close sidebar"
+          aria-label={t("Close sidebar")}
         />
       )}
 
@@ -272,8 +274,8 @@ export function Layout() {
                 size="icon-sm"
                 className="text-muted-foreground shrink-0"
                 onClick={toggleTheme}
-                aria-label={`Switch to ${nextTheme} mode`}
-                title={`Switch to ${nextTheme} mode`}
+                aria-label={t(`Switch to ${nextTheme} mode`)}
+                title={t(`Switch to ${nextTheme} mode`)}
               >
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
@@ -319,8 +321,8 @@ export function Layout() {
                 size="icon-sm"
                 className="text-muted-foreground shrink-0"
                 onClick={toggleTheme}
-                aria-label={`Switch to ${nextTheme} mode`}
-                title={`Switch to ${nextTheme} mode`}
+                aria-label={t(`Switch to ${nextTheme} mode`)}
+                title={t(`Switch to ${nextTheme} mode`)}
               >
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>

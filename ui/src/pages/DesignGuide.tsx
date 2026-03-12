@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BookOpen,
   Bot,
@@ -123,16 +123,19 @@ import { FilterBar, type FilterValue } from "@/components/FilterBar";
 import { InlineEditor } from "@/components/InlineEditor";
 import { PageSkeleton } from "@/components/PageSkeleton";
 import { Identity } from "@/components/Identity";
+import { useI18n } from "../context/I18nContext";
+import { getPriorityLabel, getStatusLabel } from "../lib/i18n";
 
 /* ------------------------------------------------------------------ */
 /*  Section wrapper                                                    */
 /* ------------------------------------------------------------------ */
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const { t } = useI18n();
   return (
     <section className="space-y-4">
       <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-        {title}
+        {t(title)}
       </h3>
       <Separator />
       {children}
@@ -141,9 +144,10 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 function SubSection({ title, children }: { title: string; children: React.ReactNode }) {
+  const { t } = useI18n();
   return (
     <div className="space-y-3">
-      <h4 className="text-sm font-medium">{title}</h4>
+      <h4 className="text-sm font-medium">{t(title)}</h4>
       {children}
     </div>
   );
@@ -154,6 +158,7 @@ function SubSection({ title, children }: { title: string; children: React.ReactN
 /* ------------------------------------------------------------------ */
 
 function Swatch({ name, cssVar }: { name: string; cssVar: string }) {
+  const { t } = useI18n();
   return (
     <div className="flex items-center gap-3">
       <div
@@ -162,7 +167,7 @@ function Swatch({ name, cssVar }: { name: string; cssVar: string }) {
       />
       <div>
         <p className="text-xs font-mono">{cssVar}</p>
-        <p className="text-xs text-muted-foreground">{name}</p>
+        <p className="text-xs text-muted-foreground">{t(name)}</p>
       </div>
     </div>
   );
@@ -173,28 +178,54 @@ function Swatch({ name, cssVar }: { name: string; cssVar: string }) {
 /* ------------------------------------------------------------------ */
 
 export function DesignGuide() {
+  const { t, locale } = useI18n();
   const [status, setStatus] = useState("todo");
   const [priority, setPriority] = useState("medium");
   const [selectValue, setSelectValue] = useState("in_progress");
   const [menuChecked, setMenuChecked] = useState(true);
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
-  const [inlineText, setInlineText] = useState("Click to edit this text");
-  const [inlineTitle, setInlineTitle] = useState("Editable Title");
-  const [inlineDesc, setInlineDesc] = useState(
-    "This is an editable description. Click to edit it — the textarea auto-sizes to fit the content without layout shift."
-  );
-  const [filters, setFilters] = useState<FilterValue[]>([
-    { key: "status", label: "Status", value: "Active" },
-    { key: "priority", label: "Priority", value: "High" },
-  ]);
+  const [inlineText, setInlineText] = useState("");
+  const [inlineTitle, setInlineTitle] = useState("");
+  const [inlineDesc, setInlineDesc] = useState("");
+  const [filters, setFilters] = useState<FilterValue[]>([]);
+  const buildDemoFilters = (): FilterValue[] => [
+    { key: "status", label: t("Status"), value: getStatusLabel("active", locale) },
+    { key: "priority", label: t("Priority"), value: getPriorityLabel("high", locale) },
+  ];
+  const sampleDateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: "medium" });
+  const sampleDateJan15 = sampleDateFormatter.format(new Date(2025, 0, 15));
+  const sampleDateJan16 = sampleDateFormatter.format(new Date(2025, 0, 16));
+  const sampleCurrencyFormatter = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  const sampleCompactCurrencyFormatter = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  useEffect(() => {
+    setInlineText(t("Click to edit this text"));
+    setInlineTitle(t("Editable Title"));
+    setInlineDesc(
+      t(
+        "This is an editable description. Click to edit it - the textarea auto-sizes to fit the content without layout shift."
+      )
+    );
+    setFilters(buildDemoFilters());
+  }, [locale, t]);
 
   return (
     <div className="space-y-10 max-w-4xl">
       {/* Page header */}
       <div>
-        <h2 className="text-xl font-bold">Design Guide</h2>
+        <h2 className="text-xl font-bold">{t("Design Guide")}</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Every component, style, and pattern used across Paperclip.
+          {t("Every component, style, and pattern used across Paperclip.")}
         </p>
       </div>
 
@@ -203,7 +234,7 @@ export function DesignGuide() {
       {/* ============================================================ */}
       <Section title="Component Coverage">
         <p className="text-sm text-muted-foreground">
-          This page should be updated when new UI primitives or app-level patterns ship.
+          {t("This page should be updated when new UI primitives or app-level patterns ship.")}
         </p>
         <div className="grid gap-6 md:grid-cols-2">
           <SubSection title="UI primitives">
@@ -279,25 +310,25 @@ export function DesignGuide() {
       {/* ============================================================ */}
       <Section title="Typography">
         <div className="space-y-3">
-          <h2 className="text-xl font-bold">Page Title — text-xl font-bold</h2>
-          <h2 className="text-lg font-semibold">Section Title — text-lg font-semibold</h2>
+          <h2 className="text-xl font-bold">{t("Page Title - text-xl font-bold")}</h2>
+          <h2 className="text-lg font-semibold">{t("Section Title - text-lg font-semibold")}</h2>
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Section Heading — text-sm font-semibold uppercase tracking-wide
+            {t("Section Heading - text-sm font-semibold uppercase tracking-wide")}
           </h3>
-          <p className="text-sm font-medium">Card Title — text-sm font-medium</p>
-          <p className="text-sm font-semibold">Card Title Alt — text-sm font-semibold</p>
-          <p className="text-sm">Body text — text-sm</p>
+          <p className="text-sm font-medium">{t("Card Title - text-sm font-medium")}</p>
+          <p className="text-sm font-semibold">{t("Card Title Alt - text-sm font-semibold")}</p>
+          <p className="text-sm">{t("Body text - text-sm")}</p>
           <p className="text-sm text-muted-foreground">
-            Muted description — text-sm text-muted-foreground
+            {t("Muted description - text-sm text-muted-foreground")}
           </p>
           <p className="text-xs text-muted-foreground">
-            Tiny label — text-xs text-muted-foreground
+            {t("Tiny label - text-xs text-muted-foreground")}
           </p>
           <p className="text-sm font-mono text-muted-foreground">
-            Mono identifier — text-sm font-mono text-muted-foreground
+            {t("Mono identifier - text-sm font-mono text-muted-foreground")}
           </p>
-          <p className="text-2xl font-bold">Large stat — text-2xl font-bold</p>
-          <p className="font-mono text-xs">Log/code text — font-mono text-xs</p>
+          <p className="text-2xl font-bold">{t("Large stat - text-2xl font-bold")}</p>
+          <p className="font-mono text-xs">{t("Log/code text - font-mono text-xs")}</p>
         </div>
       </Section>
 
@@ -330,21 +361,21 @@ export function DesignGuide() {
       <Section title="Buttons">
         <SubSection title="Variants">
           <div className="flex items-center gap-2 flex-wrap">
-            <Button variant="default">Default</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="outline">Outline</Button>
-            <Button variant="ghost">Ghost</Button>
-            <Button variant="destructive">Destructive</Button>
-            <Button variant="link">Link</Button>
+            <Button variant="default">{t("Default")}</Button>
+            <Button variant="secondary">{t("Secondary")}</Button>
+            <Button variant="outline">{t("Outline")}</Button>
+            <Button variant="ghost">{t("Ghost")}</Button>
+            <Button variant="destructive">{t("Destructive")}</Button>
+            <Button variant="link">{t("Link")}</Button>
           </div>
         </SubSection>
 
         <SubSection title="Sizes">
           <div className="flex items-center gap-2 flex-wrap">
-            <Button size="xs">Extra Small</Button>
-            <Button size="sm">Small</Button>
-            <Button size="default">Default</Button>
-            <Button size="lg">Large</Button>
+            <Button size="xs">{t("Extra Small")}</Button>
+            <Button size="sm">{t("Small")}</Button>
+            <Button size="default">{t("Default")}</Button>
+            <Button size="lg">{t("Large")}</Button>
           </div>
         </SubSection>
 
@@ -359,17 +390,17 @@ export function DesignGuide() {
 
         <SubSection title="With icons">
           <div className="flex items-center gap-2 flex-wrap">
-            <Button><Plus /> New Issue</Button>
-            <Button variant="outline"><Upload /> Upload</Button>
-            <Button variant="destructive"><Trash2 /> Delete</Button>
-            <Button size="sm"><Plus /> Add</Button>
+            <Button><Plus /> {t("New Issue")}</Button>
+            <Button variant="outline"><Upload /> {t("Upload")}</Button>
+            <Button variant="destructive"><Trash2 /> {t("Delete")}</Button>
+            <Button size="sm"><Plus /> {t("Add")}</Button>
           </div>
         </SubSection>
 
         <SubSection title="States">
           <div className="flex items-center gap-2 flex-wrap">
-            <Button disabled>Disabled</Button>
-            <Button variant="outline" disabled>Disabled Outline</Button>
+            <Button disabled>{t("Disabled")}</Button>
+            <Button variant="outline" disabled>{t("Disabled Outline")}</Button>
           </div>
         </SubSection>
       </Section>
@@ -380,11 +411,11 @@ export function DesignGuide() {
       <Section title="Badges">
         <SubSection title="Variants">
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant="default">Default</Badge>
-            <Badge variant="secondary">Secondary</Badge>
-            <Badge variant="outline">Outline</Badge>
-            <Badge variant="destructive">Destructive</Badge>
-            <Badge variant="ghost">Ghost</Badge>
+            <Badge variant="default">{t("Default")}</Badge>
+            <Badge variant="secondary">{t("Secondary")}</Badge>
+            <Badge variant="outline">{t("Outline")}</Badge>
+            <Badge variant="destructive">{t("Destructive")}</Badge>
+            <Badge variant="ghost">{t("Ghost")}</Badge>
           </div>
         </SubSection>
       </Section>
@@ -413,14 +444,18 @@ export function DesignGuide() {
               (s) => (
                 <div key={s} className="flex items-center gap-1.5">
                   <StatusIcon status={s} />
-                  <span className="text-xs text-muted-foreground">{s}</span>
+                  <span className="text-xs text-muted-foreground">{getStatusLabel(s, locale)}</span>
                 </div>
               )
             )}
           </div>
           <div className="flex items-center gap-2 mt-2">
             <StatusIcon status={status} onChange={setStatus} />
-            <span className="text-sm">Click the icon to change status (current: {status})</span>
+            <span className="text-sm">
+              {t("Click the icon to change status (current: {status})", {
+                status: getStatusLabel(status, locale),
+              })}
+            </span>
           </div>
         </SubSection>
 
@@ -429,13 +464,17 @@ export function DesignGuide() {
             {["critical", "high", "medium", "low"].map((p) => (
               <div key={p} className="flex items-center gap-1.5">
                 <PriorityIcon priority={p} />
-                <span className="text-xs text-muted-foreground">{p}</span>
+                <span className="text-xs text-muted-foreground">{getPriorityLabel(p, locale)}</span>
               </div>
             ))}
           </div>
           <div className="flex items-center gap-2 mt-2">
             <PriorityIcon priority={priority} onChange={setPriority} />
-            <span className="text-sm">Click the icon to change (current: {priority})</span>
+            <span className="text-sm">
+              {t("Click the icon to change (current: {priority})", {
+                priority: getPriorityLabel(priority, locale),
+              })}
+            </span>
           </div>
         </SubSection>
 
@@ -446,7 +485,7 @@ export function DesignGuide() {
                 <span className="relative flex h-2.5 w-2.5">
                   <span className={`inline-flex h-full w-full rounded-full ${agentStatusDot[label] ?? agentStatusDotDefault}`} />
                 </span>
-                <span className="text-xs text-muted-foreground">{label}</span>
+                <span className="text-xs text-muted-foreground">{getStatusLabel(label, locale)}</span>
               </div>
             ))}
           </div>
@@ -461,7 +500,15 @@ export function DesignGuide() {
               ["automation", "bg-muted text-muted-foreground"],
             ].map(([label, cls]) => (
               <span key={label} className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${cls}`}>
-                {label}
+                {t(
+                  label === "timer"
+                    ? "Timer"
+                    : label === "assignment"
+                      ? "Assignment"
+                      : label === "on_demand"
+                        ? "On-demand"
+                        : "Automation"
+                )}
               </span>
             ))}
           </div>
@@ -474,27 +521,27 @@ export function DesignGuide() {
       <Section title="Form Elements">
         <div className="grid gap-6 md:grid-cols-2">
           <SubSection title="Input">
-            <Input placeholder="Default input" />
-            <Input placeholder="Disabled input" disabled className="mt-2" />
+            <Input placeholder={t("Default input")} />
+            <Input placeholder={t("Disabled input")} disabled className="mt-2" />
           </SubSection>
 
           <SubSection title="Textarea">
-            <Textarea placeholder="Write something..." />
+            <Textarea placeholder={t("Write something...")} />
           </SubSection>
 
           <SubSection title="Checkbox & Label">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Checkbox id="check1" defaultChecked />
-                <Label htmlFor="check1">Checked item</Label>
+                <Label htmlFor="check1">{t("Checked item")}</Label>
               </div>
               <div className="flex items-center gap-2">
                 <Checkbox id="check2" />
-                <Label htmlFor="check2">Unchecked item</Label>
+                <Label htmlFor="check2">{t("Unchecked item")}</Label>
               </div>
               <div className="flex items-center gap-2">
                 <Checkbox id="check3" disabled />
-                <Label htmlFor="check3">Disabled item</Label>
+                <Label htmlFor="check3">{t("Disabled item")}</Label>
               </div>
             </div>
           </SubSection>
@@ -502,7 +549,7 @@ export function DesignGuide() {
           <SubSection title="Inline Editor">
             <div className="space-y-4">
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Title (single-line)</p>
+                <p className="text-xs text-muted-foreground mb-1">{t("Title (single-line)")}</p>
                 <InlineEditor
                   value={inlineTitle}
                   onSave={setInlineTitle}
@@ -511,7 +558,7 @@ export function DesignGuide() {
                 />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Body text (single-line)</p>
+                <p className="text-xs text-muted-foreground mb-1">{t("Body text (single-line)")}</p>
                 <InlineEditor
                   value={inlineText}
                   onSave={setInlineText}
@@ -520,13 +567,15 @@ export function DesignGuide() {
                 />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Description (multiline, auto-sizing)</p>
+                <p className="text-xs text-muted-foreground mb-1">
+                  {t("Description (multiline, auto-sizing)")}
+                </p>
                 <InlineEditor
                   value={inlineDesc}
                   onSave={setInlineDesc}
                   as="p"
                   className="text-sm text-muted-foreground"
-                  placeholder="Add a description..."
+                  placeholder={t("Add a description...")}
                   multiline
                 />
               </div>
@@ -543,28 +592,30 @@ export function DesignGuide() {
           <SubSection title="Default size">
             <Select value={selectValue} onValueChange={setSelectValue}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select status" />
+                <SelectValue placeholder={t("Select status")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="backlog">Backlog</SelectItem>
-                <SelectItem value="todo">Todo</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="in_review">In Review</SelectItem>
-                <SelectItem value="done">Done</SelectItem>
+                <SelectItem value="backlog">{getStatusLabel("backlog", locale)}</SelectItem>
+                <SelectItem value="todo">{getStatusLabel("todo", locale)}</SelectItem>
+                <SelectItem value="in_progress">{getStatusLabel("in_progress", locale)}</SelectItem>
+                <SelectItem value="in_review">{getStatusLabel("in_review", locale)}</SelectItem>
+                <SelectItem value="done">{getStatusLabel("done", locale)}</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">Current value: {selectValue}</p>
+            <p className="text-xs text-muted-foreground">
+              {t("Current value: {value}", { value: getStatusLabel(selectValue, locale) })}
+            </p>
           </SubSection>
           <SubSection title="Small trigger">
             <Select defaultValue="high">
               <SelectTrigger size="sm" className="w-full">
-                <SelectValue />
+              <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="critical">Critical</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="critical">{getPriorityLabel("critical", locale)}</SelectItem>
+                <SelectItem value="high">{getPriorityLabel("high", locale)}</SelectItem>
+                <SelectItem value="medium">{getPriorityLabel("medium", locale)}</SelectItem>
+                <SelectItem value="low">{getPriorityLabel("low", locale)}</SelectItem>
               </SelectContent>
             </Select>
           </SubSection>
@@ -578,30 +629,30 @@ export function DesignGuide() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
-              Quick Actions
+              {t("Quick Actions")}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-56">
             <DropdownMenuItem>
               <Check className="h-4 w-4" />
-              Mark as done
+              {t("Mark as done")}
               <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <BookOpen className="h-4 w-4" />
-              Open docs
+              {t("Open docs")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuCheckboxItem
               checked={menuChecked}
               onCheckedChange={(value) => setMenuChecked(value === true)}
             >
-              Watch issue
+              {t("Watch issue")}
             </DropdownMenuCheckboxItem>
             <DropdownMenuItem variant="destructive">
               <Trash2 className="h-4 w-4" />
-              Delete issue
+              {t("Delete issue")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -613,14 +664,14 @@ export function DesignGuide() {
       <Section title="Popover">
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm">Open Popover</Button>
+            <Button variant="outline" size="sm">{t("Open Popover")}</Button>
           </PopoverTrigger>
           <PopoverContent className="space-y-2">
-            <p className="text-sm font-medium">Agent heartbeat</p>
+            <p className="text-sm font-medium">{t("Agent heartbeat")}</p>
             <p className="text-xs text-muted-foreground">
-              Last run succeeded 24s ago. Next timer run in 9m.
+              {t("Last run succeeded 24s ago. Next timer run in 9m.")}
             </p>
-            <Button size="xs">Wake now</Button>
+            <Button size="xs">{t("Wake now")}</Button>
           </PopoverContent>
         </Popover>
       </Section>
@@ -632,13 +683,13 @@ export function DesignGuide() {
         <Collapsible open={collapsibleOpen} onOpenChange={setCollapsibleOpen} className="space-y-2">
           <CollapsibleTrigger asChild>
             <Button variant="outline" size="sm">
-              {collapsibleOpen ? "Hide" : "Show"} advanced filters
+              {collapsibleOpen ? t("Hide") : t("Show")} {t("advanced filters")}
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="rounded-md border border-border p-3">
             <div className="space-y-2">
-              <Label htmlFor="owner-filter">Owner</Label>
-              <Input id="owner-filter" placeholder="Filter by agent name" />
+              <Label htmlFor="owner-filter">{t("Owner")}</Label>
+              <Input id="owner-filter" placeholder={t("Filter by agent name")} />
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -650,26 +701,29 @@ export function DesignGuide() {
       <Section title="Sheet">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm">Open Side Panel</Button>
+            <Button variant="outline" size="sm">{t("Open Side Panel")}</Button>
           </SheetTrigger>
           <SheetContent side="right">
             <SheetHeader>
-              <SheetTitle>Issue Properties</SheetTitle>
-              <SheetDescription>Edit metadata without leaving the current page.</SheetDescription>
+              <SheetTitle>{t("Issue Properties")}</SheetTitle>
+              <SheetDescription>{t("Edit metadata without leaving the current page.")}</SheetDescription>
             </SheetHeader>
             <div className="space-y-4 px-4">
               <div className="space-y-1">
-                <Label htmlFor="sheet-title">Title</Label>
-                <Input id="sheet-title" defaultValue="Improve onboarding docs" />
+                <Label htmlFor="sheet-title">{t("Title")}</Label>
+                <Input id="sheet-title" defaultValue={t("Improve onboarding docs")} />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="sheet-description">Description</Label>
-                <Textarea id="sheet-description" defaultValue="Capture setup pitfalls and screenshots." />
+                <Label htmlFor="sheet-description">{t("Description")}</Label>
+                <Textarea
+                  id="sheet-description"
+                  defaultValue={t("Capture setup pitfalls and screenshots.")}
+                />
               </div>
             </div>
             <SheetFooter>
-              <Button variant="outline">Cancel</Button>
-              <Button>Save</Button>
+              <Button variant="outline">{t("Cancel")}</Button>
+              <Button>{t("Save")}</Button>
             </SheetFooter>
           </SheetContent>
         </Sheet>
@@ -683,7 +737,9 @@ export function DesignGuide() {
           <div className="space-y-2 p-3">
             {Array.from({ length: 12 }).map((_, i) => (
               <div key={i} className="rounded-md border border-border p-2 text-sm">
-                Heartbeat run #{i + 1}: completed successfully
+                {t("Heartbeat run #{count}: completed successfully", {
+                  count: i + 1,
+                })}
               </div>
             ))}
           </div>
@@ -696,28 +752,28 @@ export function DesignGuide() {
       <Section title="Command (CMDK)">
         <div className="rounded-md border border-border">
           <Command>
-            <CommandInput placeholder="Type a command or search..." />
+            <CommandInput placeholder={t("Type a command or search...")} />
             <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup heading="Pages">
+              <CommandEmpty>{t("No results found.")}</CommandEmpty>
+              <CommandGroup heading={t("Pages")}>
                 <CommandItem>
                   <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
+                  {t("Dashboard")}
                 </CommandItem>
                 <CommandItem>
                   <CircleDot className="h-4 w-4" />
-                  Issues
+                  {t("Issues")}
                 </CommandItem>
               </CommandGroup>
               <CommandSeparator />
-              <CommandGroup heading="Actions">
+              <CommandGroup heading={t("Actions")}>
                 <CommandItem>
                   <CommandIcon className="h-4 w-4" />
-                  Open command palette
+                  {t("Open command palette")}
                 </CommandItem>
                 <CommandItem>
                   <Plus className="h-4 w-4" />
-                  Create new issue
+                  {t("Create new issue")}
                 </CommandItem>
               </CommandGroup>
             </CommandList>
@@ -732,15 +788,15 @@ export function DesignGuide() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="#">Projects</BreadcrumbLink>
+              <BreadcrumbLink href="#">{t("Projects")}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="#">Paperclip App</BreadcrumbLink>
+              <BreadcrumbLink href="#">{t("Paperclip App")}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Issue List</BreadcrumbPage>
+              <BreadcrumbPage>{t("Issue List")}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -753,25 +809,35 @@ export function DesignGuide() {
         <SubSection title="Standard Card">
           <Card>
             <CardHeader>
-              <CardTitle>Card Title</CardTitle>
-              <CardDescription>Card description with supporting text.</CardDescription>
+              <CardTitle>{t("Card Title")}</CardTitle>
+              <CardDescription>{t("Card description with supporting text.")}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm">Card content goes here. This is the main body area.</p>
+              <p className="text-sm">{t("Card content goes here. This is the main body area.")}</p>
             </CardContent>
             <CardFooter className="gap-2">
-              <Button size="sm">Action</Button>
-              <Button variant="outline" size="sm">Cancel</Button>
+              <Button size="sm">{t("Action")}</Button>
+              <Button variant="outline" size="sm">{t("Cancel")}</Button>
             </CardFooter>
           </Card>
         </SubSection>
 
         <SubSection title="Metric Cards">
           <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-            <MetricCard icon={Bot} value={12} label="Active Agents" description="+3 this week" />
-            <MetricCard icon={CircleDot} value={48} label="Open Issues" />
-            <MetricCard icon={DollarSign} value="$1,234" label="Monthly Cost" description="Under budget" />
-            <MetricCard icon={Zap} value="99.9%" label="Uptime" />
+            <MetricCard
+              icon={Bot}
+              value={12}
+              label={t("Active Agents")}
+              description={t("+3 this week")}
+            />
+            <MetricCard icon={CircleDot} value={48} label={t("Open Issues")} />
+            <MetricCard
+              icon={DollarSign}
+              value={sampleCompactCurrencyFormatter.format(1234)}
+              label={t("Monthly Cost")}
+              description={t("Under budget")}
+            />
+            <MetricCard icon={Zap} value="99.9%" label={t("Uptime")} />
           </div>
         </SubSection>
       </Section>
@@ -783,22 +849,22 @@ export function DesignGuide() {
         <SubSection title="Default (pill) variant">
           <Tabs defaultValue="overview">
             <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="runs">Runs</TabsTrigger>
-              <TabsTrigger value="config">Config</TabsTrigger>
-              <TabsTrigger value="costs">Costs</TabsTrigger>
+              <TabsTrigger value="overview">{t("Overview")}</TabsTrigger>
+              <TabsTrigger value="runs">{t("Runs")}</TabsTrigger>
+              <TabsTrigger value="config">{t("Config")}</TabsTrigger>
+              <TabsTrigger value="costs">{t("Costs")}</TabsTrigger>
             </TabsList>
             <TabsContent value="overview">
-              <p className="text-sm text-muted-foreground py-4">Overview tab content.</p>
+              <p className="text-sm text-muted-foreground py-4">{t("Overview tab content.")}</p>
             </TabsContent>
             <TabsContent value="runs">
-              <p className="text-sm text-muted-foreground py-4">Runs tab content.</p>
+              <p className="text-sm text-muted-foreground py-4">{t("Runs tab content.")}</p>
             </TabsContent>
             <TabsContent value="config">
-              <p className="text-sm text-muted-foreground py-4">Config tab content.</p>
+              <p className="text-sm text-muted-foreground py-4">{t("Config tab content.")}</p>
             </TabsContent>
             <TabsContent value="costs">
-              <p className="text-sm text-muted-foreground py-4">Costs tab content.</p>
+              <p className="text-sm text-muted-foreground py-4">{t("Costs tab content.")}</p>
             </TabsContent>
           </Tabs>
         </SubSection>
@@ -806,18 +872,20 @@ export function DesignGuide() {
         <SubSection title="Line variant">
           <Tabs defaultValue="summary">
             <TabsList variant="line">
-              <TabsTrigger value="summary">Summary</TabsTrigger>
-              <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="comments">Comments</TabsTrigger>
+              <TabsTrigger value="summary">{t("Summary")}</TabsTrigger>
+              <TabsTrigger value="details">{t("Details")}</TabsTrigger>
+              <TabsTrigger value="comments">{t("Comments")}</TabsTrigger>
             </TabsList>
             <TabsContent value="summary">
-              <p className="text-sm text-muted-foreground py-4">Summary content with underline tabs.</p>
+              <p className="text-sm text-muted-foreground py-4">
+                {t("Summary content with underline tabs.")}
+              </p>
             </TabsContent>
             <TabsContent value="details">
-              <p className="text-sm text-muted-foreground py-4">Details content.</p>
+              <p className="text-sm text-muted-foreground py-4">{t("Details content.")}</p>
             </TabsContent>
             <TabsContent value="comments">
-              <p className="text-sm text-muted-foreground py-4">Comments content.</p>
+              <p className="text-sm text-muted-foreground py-4">{t("Comments content.")}</p>
             </TabsContent>
           </Tabs>
         </SubSection>
@@ -836,8 +904,8 @@ export function DesignGuide() {
               </>
             }
             identifier="PAP-001"
-            title="Implement authentication flow"
-            subtitle="Assigned to Agent Alpha"
+            title={t("Implement authentication flow")}
+            subtitle={t("Assigned to Agent Alpha")}
             trailing={<StatusBadge status="in_progress" />}
             onClick={() => {}}
           />
@@ -849,8 +917,8 @@ export function DesignGuide() {
               </>
             }
             identifier="PAP-002"
-            title="Set up CI/CD pipeline"
-            subtitle="Completed 2 days ago"
+            title={t("Set up CI/CD pipeline")}
+            subtitle={t("Completed 2 days ago")}
             trailing={<StatusBadge status="done" />}
             onClick={() => {}}
           />
@@ -862,7 +930,7 @@ export function DesignGuide() {
               </>
             }
             identifier="PAP-003"
-            title="Write API documentation"
+            title={t("Write API documentation")}
             trailing={<StatusBadge status="todo" />}
             onClick={() => {}}
           />
@@ -874,8 +942,8 @@ export function DesignGuide() {
               </>
             }
             identifier="PAP-004"
-            title="Deploy to production"
-            subtitle="Blocked by PAP-001"
+            title={t("Deploy to production")}
+            subtitle={t("Blocked by PAP-001")}
             trailing={<StatusBadge status="blocked" />}
             selected
           />
@@ -895,14 +963,9 @@ export function DesignGuide() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() =>
-              setFilters([
-                { key: "status", label: "Status", value: "Active" },
-                { key: "priority", label: "Priority", value: "High" },
-              ])
-            }
+            onClick={() => setFilters(buildDemoFilters())}
           >
-            Reset filters
+            {t("Reset filters")}
           </Button>
         )}
       </Section>
@@ -961,15 +1024,15 @@ export function DesignGuide() {
         <div className="flex items-center gap-4">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="sm">Hover me</Button>
+              <Button variant="outline" size="sm">{t("Hover me")}</Button>
             </TooltipTrigger>
-            <TooltipContent>This is a tooltip</TooltipContent>
+            <TooltipContent>{t("This is a tooltip")}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon-sm"><Settings /></Button>
             </TooltipTrigger>
-            <TooltipContent>Settings</TooltipContent>
+            <TooltipContent>{t("Settings")}</TooltipContent>
           </Tooltip>
         </div>
       </Section>
@@ -980,28 +1043,30 @@ export function DesignGuide() {
       <Section title="Dialog">
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline">Open Dialog</Button>
+            <Button variant="outline">{t("Open Dialog")}</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Dialog Title</DialogTitle>
+              <DialogTitle>{t("Dialog Title")}</DialogTitle>
               <DialogDescription>
-                This is a sample dialog showing the standard layout with header, content, and footer.
+                {t(
+                  "This is a sample dialog showing the standard layout with header, content, and footer."
+                )}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-3">
               <div>
-                <Label>Name</Label>
-                <Input placeholder="Enter a name" className="mt-1.5" />
+                <Label>{t("Name")}</Label>
+                <Input placeholder={t("Enter a name")} className="mt-1.5" />
               </div>
               <div>
-                <Label>Description</Label>
-                <Textarea placeholder="Describe..." className="mt-1.5" />
+                <Label>{t("Description")}</Label>
+                <Textarea placeholder={t("Describe...")} className="mt-1.5" />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline">Cancel</Button>
-              <Button>Save</Button>
+              <Button variant="outline">{t("Cancel")}</Button>
+              <Button>{t("Save")}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -1014,8 +1079,8 @@ export function DesignGuide() {
         <div className="border border-border rounded-md">
           <EmptyState
             icon={Inbox}
-            message="No items to show. Create your first one to get started."
-            action="Create Item"
+            message={t("No items to show. Create your first one to get started.")}
+            action={t("Create Item")}
             onAction={() => {}}
           />
         </div>
@@ -1027,9 +1092,9 @@ export function DesignGuide() {
       <Section title="Progress Bars (Budget)">
         <div className="space-y-3">
           {[
-            { label: "Under budget (40%)", pct: 40, color: "bg-green-400" },
-            { label: "Warning (75%)", pct: 75, color: "bg-yellow-400" },
-            { label: "Over budget (95%)", pct: 95, color: "bg-red-400" },
+            { label: t("Under budget (40%)"), pct: 40, color: "bg-green-400" },
+            { label: t("Warning (75%)"), pct: 75, color: "bg-yellow-400" },
+            { label: t("Over budget (95%)"), pct: 95, color: "bg-red-400" },
           ].map(({ label, pct, color }) => (
             <div key={label} className="space-y-1">
               <div className="flex items-center justify-between">
@@ -1052,19 +1117,19 @@ export function DesignGuide() {
       {/* ============================================================ */}
       <Section title="Log Viewer">
         <div className="bg-neutral-950 rounded-lg p-3 font-mono text-xs max-h-80 overflow-y-auto">
-          <div className="text-foreground">[12:00:01] INFO  Agent started successfully</div>
-          <div className="text-foreground">[12:00:02] INFO  Processing task PAP-001</div>
-          <div className="text-yellow-400">[12:00:05] WARN  Rate limit approaching (80%)</div>
-          <div className="text-foreground">[12:00:08] INFO  Task PAP-001 completed</div>
-          <div className="text-red-400">[12:00:12] ERROR Connection timeout to upstream service</div>
-          <div className="text-blue-300">[12:00:12] SYS   Retrying connection in 5s...</div>
-          <div className="text-foreground">[12:00:17] INFO  Reconnected successfully</div>
+          <div className="text-foreground">{t("[12:00:01] INFO  Agent started successfully")}</div>
+          <div className="text-foreground">{t("[12:00:02] INFO  Processing task PAP-001")}</div>
+          <div className="text-yellow-400">{t("[12:00:05] WARN  Rate limit approaching (80%)")}</div>
+          <div className="text-foreground">{t("[12:00:08] INFO  Task PAP-001 completed")}</div>
+          <div className="text-red-400">{t("[12:00:12] ERROR Connection timeout to upstream service")}</div>
+          <div className="text-blue-300">{t("[12:00:12] SYS   Retrying connection in 5s...")}</div>
+          <div className="text-foreground">{t("[12:00:17] INFO  Reconnected successfully")}</div>
           <div className="flex items-center gap-1.5">
             <span className="relative flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 animate-pulse" />
               <span className="inline-flex h-full w-full rounded-full bg-cyan-400" />
             </span>
-            <span className="text-cyan-400">Live</span>
+            <span className="text-cyan-400">{t("Live")}</span>
           </div>
         </div>
       </Section>
@@ -1075,23 +1140,23 @@ export function DesignGuide() {
       <Section title="Property Row Pattern">
         <div className="border border-border rounded-md p-4 space-y-1 max-w-sm">
           <div className="flex items-center justify-between py-1.5">
-            <span className="text-xs text-muted-foreground">Status</span>
+            <span className="text-xs text-muted-foreground">{t("Status")}</span>
             <StatusBadge status="active" />
           </div>
           <div className="flex items-center justify-between py-1.5">
-            <span className="text-xs text-muted-foreground">Priority</span>
+            <span className="text-xs text-muted-foreground">{t("Priority")}</span>
             <PriorityIcon priority="high" />
           </div>
           <div className="flex items-center justify-between py-1.5">
-            <span className="text-xs text-muted-foreground">Assignee</span>
+            <span className="text-xs text-muted-foreground">{t("Assignee")}</span>
             <div className="flex items-center gap-1.5">
               <Avatar size="sm"><AvatarFallback>A</AvatarFallback></Avatar>
               <span className="text-xs">Agent Alpha</span>
             </div>
           </div>
           <div className="flex items-center justify-between py-1.5">
-            <span className="text-xs text-muted-foreground">Created</span>
-            <span className="text-xs">Jan 15, 2025</span>
+            <span className="text-xs text-muted-foreground">{t("Created")}</span>
+            <span className="text-xs">{sampleDateJan15}</span>
           </div>
         </div>
       </Section>
@@ -1104,22 +1169,22 @@ export function DesignGuide() {
           <div className="w-60 border border-border rounded-md p-3 space-y-0.5 bg-card">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-accent text-accent-foreground">
               <LayoutDashboard className="h-4 w-4" />
-              Dashboard
+              {t("Dashboard")}
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground cursor-pointer">
               <CircleDot className="h-4 w-4" />
-              Issues
+              {t("Issues")}
               <span className="ml-auto text-xs bg-primary text-primary-foreground rounded-full px-1.5 py-0.5">
                 12
               </span>
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground cursor-pointer">
               <Bot className="h-4 w-4" />
-              Agents
+              {t("Agents")}
             </div>
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground cursor-pointer">
               <Hexagon className="h-4 w-4" />
-              Projects
+              {t("Projects")}
             </div>
           </div>
         </SubSection>
@@ -1128,11 +1193,11 @@ export function DesignGuide() {
           <div className="flex items-center border border-border rounded-md w-fit">
             <button className="px-3 py-1.5 text-xs font-medium bg-accent text-foreground rounded-l-md">
               <ListTodo className="h-3.5 w-3.5 inline mr-1" />
-              List
+              {t("List")}
             </button>
             <button className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-accent/50 rounded-r-md">
               <Target className="h-3.5 w-3.5 inline mr-1" />
-              Org
+              {t("Org")}
             </button>
           </div>
         </SubSection>
@@ -1145,20 +1210,20 @@ export function DesignGuide() {
         <div>
           <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-t-md">
             <StatusIcon status="in_progress" />
-            <span className="text-sm font-medium">In Progress</span>
+            <span className="text-sm font-medium">{getStatusLabel("in_progress", locale)}</span>
             <span className="text-xs text-muted-foreground ml-1">2</span>
           </div>
           <div className="border border-border rounded-b-md">
             <EntityRow
               leading={<PriorityIcon priority="high" />}
               identifier="PAP-101"
-              title="Build agent heartbeat system"
+              title={t("Build agent heartbeat system")}
               onClick={() => {}}
             />
             <EntityRow
               leading={<PriorityIcon priority="medium" />}
               identifier="PAP-102"
-              title="Add cost tracking dashboard"
+              title={t("Add cost tracking dashboard")}
               onClick={() => {}}
             />
           </div>
@@ -1170,26 +1235,28 @@ export function DesignGuide() {
       {/* ============================================================ */}
       <Section title="Comment Thread Pattern">
         <div className="space-y-3 max-w-2xl">
-          <h3 className="text-sm font-semibold">Comments (2)</h3>
+          <h3 className="text-sm font-semibold">{t("Comments ({count})", { count: 2 })}</h3>
           <div className="space-y-3">
             <div className="rounded-md border border-border p-3">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-medium text-muted-foreground">Agent</span>
-                <span className="text-xs text-muted-foreground">Jan 15, 2025</span>
+                <span className="text-xs font-medium text-muted-foreground">{t("Agent")}</span>
+                <span className="text-xs text-muted-foreground">{sampleDateJan15}</span>
               </div>
-              <p className="text-sm">Started working on the authentication module. Will need API keys configured.</p>
+              <p className="text-sm">
+                {t("Started working on the authentication module. Will need API keys configured.")}
+              </p>
             </div>
             <div className="rounded-md border border-border p-3">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-medium text-muted-foreground">Human</span>
-                <span className="text-xs text-muted-foreground">Jan 16, 2025</span>
+                <span className="text-xs font-medium text-muted-foreground">{t("Human")}</span>
+                <span className="text-xs text-muted-foreground">{sampleDateJan16}</span>
               </div>
-              <p className="text-sm">API keys have been added to the vault. Please proceed.</p>
+              <p className="text-sm">{t("API keys have been added to the vault. Please proceed.")}</p>
             </div>
           </div>
           <div className="space-y-2">
-            <Textarea placeholder="Leave a comment..." rows={3} />
-            <Button size="sm">Comment</Button>
+            <Textarea placeholder={t("Leave a comment...")} rows={3} />
+            <Button size="sm">{t("Comment")}</Button>
           </div>
         </div>
       </Section>
@@ -1202,26 +1269,26 @@ export function DesignGuide() {
           <table className="w-full text-xs">
             <thead className="border-b border-border bg-accent/20">
               <tr>
-                <th className="text-left px-3 py-2 font-medium text-muted-foreground">Model</th>
-                <th className="text-left px-3 py-2 font-medium text-muted-foreground">Tokens</th>
-                <th className="text-left px-3 py-2 font-medium text-muted-foreground">Cost</th>
+                <th className="text-left px-3 py-2 font-medium text-muted-foreground">{t("Model")}</th>
+                <th className="text-left px-3 py-2 font-medium text-muted-foreground">{t("Tokens")}</th>
+                <th className="text-left px-3 py-2 font-medium text-muted-foreground">{t("Cost")}</th>
               </tr>
             </thead>
             <tbody>
               <tr className="border-b border-border">
                 <td className="px-3 py-2">claude-sonnet-4-20250514</td>
                 <td className="px-3 py-2 font-mono">1.2M</td>
-                <td className="px-3 py-2 font-mono">$18.00</td>
+                <td className="px-3 py-2 font-mono">{sampleCurrencyFormatter.format(18)}</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="px-3 py-2">claude-haiku-4-20250506</td>
                 <td className="px-3 py-2 font-mono">500k</td>
-                <td className="px-3 py-2 font-mono">$1.25</td>
+                <td className="px-3 py-2 font-mono">{sampleCurrencyFormatter.format(1.25)}</td>
               </tr>
               <tr>
-                <td className="px-3 py-2 font-medium">Total</td>
+                <td className="px-3 py-2 font-medium">{t("Total")}</td>
                 <td className="px-3 py-2 font-mono">1.7M</td>
-                <td className="px-3 py-2 font-mono font-medium">$19.25</td>
+                <td className="px-3 py-2 font-mono font-medium">{sampleCurrencyFormatter.format(19.25)}</td>
               </tr>
             </tbody>
           </table>
@@ -1258,12 +1325,12 @@ export function DesignGuide() {
       {/* ============================================================ */}
       <Section title="Separator">
         <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">Horizontal</p>
+          <p className="text-sm text-muted-foreground">{t("Horizontal")}</p>
           <Separator />
           <div className="flex items-center gap-4 h-8">
-            <span className="text-sm">Left</span>
+            <span className="text-sm">{t("Left")}</span>
             <Separator orientation="vertical" />
-            <span className="text-sm">Right</span>
+            <span className="text-sm">{t("Right")}</span>
           </div>
         </div>
       </Section>
@@ -1309,12 +1376,12 @@ export function DesignGuide() {
       <Section title="Keyboard Shortcuts">
         <div className="border border-border rounded-md divide-y divide-border text-sm">
           {[
-            ["Cmd+K / Ctrl+K", "Open Command Palette"],
-            ["C", "New Issue (outside inputs)"],
-            ["[", "Toggle Sidebar"],
-            ["]", "Toggle Properties Panel"],
-
-            ["Cmd+Enter / Ctrl+Enter", "Submit markdown comment"],
+            ["Cmd+K / Ctrl+K", t("Open Command Palette")],
+            ["C", t("New Issue (outside inputs)")],
+            ["[", t("Toggle Sidebar")],
+            ["]", t("Toggle Properties Panel")],
+            ["Cmd+1..9 / Ctrl+1..9", t("Switch Company (by rail order)")],
+            ["Cmd+Enter / Ctrl+Enter", t("Submit markdown comment")],
           ].map(([key, desc]) => (
             <div key={key} className="flex items-center justify-between px-4 py-2">
               <span className="text-muted-foreground">{desc}</span>

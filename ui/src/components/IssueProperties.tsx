@@ -7,6 +7,7 @@ import { authApi } from "../api/auth";
 import { issuesApi } from "../api/issues";
 import { projectsApi } from "../api/projects";
 import { useCompany } from "../context/CompanyContext";
+import { useI18n } from "../context/I18nContext";
 import { queryKeys } from "../lib/queryKeys";
 import { useProjectOrder } from "../hooks/useProjectOrder";
 import { getRecentAssigneeIds, sortAgentsByRecency, trackRecentAssignee } from "../lib/recent-assignees";
@@ -30,9 +31,10 @@ interface IssuePropertiesProps {
 }
 
 function PropertyRow({ label, children }: { label: string; children: React.ReactNode }) {
+  const { t } = useI18n();
   return (
     <div className="flex items-center gap-3 py-1.5">
-      <span className="text-xs text-muted-foreground shrink-0 w-20">{label}</span>
+      <span className="text-xs text-muted-foreground shrink-0 w-20">{t(label)}</span>
       <div className="flex items-center gap-1.5 min-w-0 flex-1">{children}</div>
     </div>
   );
@@ -62,6 +64,7 @@ function PropertyPicker({
   extra?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const { t } = useI18n();
   const btnCn = cn(
     "inline-flex items-center gap-1.5 cursor-pointer hover:bg-accent/50 rounded px-1 -mx-1 py-0.5 transition-colors",
     triggerClassName,
@@ -101,6 +104,7 @@ function PropertyPicker({
 }
 
 export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProps) {
+  const { t } = useI18n();
   const { selectedCompanyId } = useCompany();
   const queryClient = useQueryClient();
   const companyId = issue.companyId ?? selectedCompanyId;
@@ -175,7 +179,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
   };
 
   const projectName = (id: string | null) => {
-    if (!id) return id?.slice(0, 8) ?? "None";
+    if (!id) return id?.slice(0, 8) ?? t("None");
     const project = orderedProjects.find((p) => p.id === id);
     return project?.name ?? id.slice(0, 8);
   };
@@ -209,9 +213,9 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
   const userLabel = (userId: string | null | undefined) =>
     userId
       ? userId === "local-board"
-        ? "Board"
+        ? t("Board")
         : currentUserId && userId === currentUserId
-          ? "Me"
+          ? t("Me")
           : userId.slice(0, 5)
       : null;
   const assigneeUserLabel = userLabel(issue.assigneeUserId);
@@ -239,7 +243,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
   ) : (
     <>
       <Tag className="h-3.5 w-3.5 text-muted-foreground" />
-      <span className="text-sm text-muted-foreground">No labels</span>
+      <span className="text-sm text-muted-foreground">{t("No labels")}</span>
     </>
   );
 
@@ -247,7 +251,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
     <>
       <input
         className="w-full px-2 py-1.5 text-xs bg-transparent outline-none border-b border-border mb-1 placeholder:text-muted-foreground/50"
-        placeholder="Search labels..."
+        placeholder={t("Search labels...")}
         value={labelSearch}
         onChange={(e) => setLabelSearch(e.target.value)}
         autoFocus={!inline}
@@ -276,7 +280,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
                   type="button"
                   className="p-1 text-muted-foreground hover:text-destructive rounded"
                   onClick={() => deleteLabel.mutate(label.id)}
-                  title={`Delete ${label.name}`}
+                  title={t("Delete {name}", { name: label.name })}
                 >
                   <Trash2 className="h-3 w-3" />
                 </button>
@@ -294,7 +298,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
           />
           <input
             className="flex-1 px-2 py-1.5 text-xs bg-transparent outline-none rounded placeholder:text-muted-foreground/50"
-            placeholder="New label"
+            placeholder={t("New label")}
             value={newLabelName}
             onChange={(e) => setNewLabelName(e.target.value)}
           />
@@ -310,7 +314,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
           }
         >
           <Plus className="h-3 w-3" />
-          {createLabel.isPending ? "Creating…" : "Create label"}
+          {createLabel.isPending ? t("Creating…") : t("Create label")}
         </button>
       </div>
     </>
@@ -326,7 +330,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
   ) : (
     <>
       <User className="h-3.5 w-3.5 text-muted-foreground" />
-      <span className="text-sm text-muted-foreground">Unassigned</span>
+      <span className="text-sm text-muted-foreground">{t("Unassigned")}</span>
     </>
   );
 
@@ -334,7 +338,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
     <>
       <input
         className="w-full px-2 py-1.5 text-xs bg-transparent outline-none border-b border-border mb-1 placeholder:text-muted-foreground/50"
-        placeholder="Search assignees..."
+        placeholder={t("Search assignees...")}
         value={assigneeSearch}
         onChange={(e) => setAssigneeSearch(e.target.value)}
         autoFocus={!inline}
@@ -347,7 +351,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
           )}
           onClick={() => { onUpdate({ assigneeAgentId: null, assigneeUserId: null }); setAssigneeOpen(false); }}
         >
-          No assignee
+          {t("No assignee")}
         </button>
         {issue.createdByUserId && (
           <button
@@ -361,7 +365,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
             }}
           >
             <User className="h-3 w-3 shrink-0 text-muted-foreground" />
-            {creatorUserLabel ? `Assign to ${creatorUserLabel === "Me" ? "me" : creatorUserLabel}` : "Assign to requester"}
+            {creatorUserLabel ? t("Assign to {name}", { name: creatorUserLabel }) : t("Assign to requester")}
           </button>
         )}
         {sortedAgents
@@ -398,7 +402,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
   ) : (
     <>
       <Hexagon className="h-3.5 w-3.5 text-muted-foreground" />
-      <span className="text-sm text-muted-foreground">No project</span>
+      <span className="text-sm text-muted-foreground">{t("No project")}</span>
     </>
   );
 
@@ -406,7 +410,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
     <>
       <input
         className="w-full px-2 py-1.5 text-xs bg-transparent outline-none border-b border-border mb-1 placeholder:text-muted-foreground/50"
-        placeholder="Search projects..."
+        placeholder={t("Search projects...")}
         value={projectSearch}
         onChange={(e) => setProjectSearch(e.target.value)}
         autoFocus={!inline}
@@ -422,7 +426,7 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
             setProjectOpen(false);
           }}
         >
-          No project
+          {t("No project")}
         </button>
         {orderedProjects
           .filter((p) => {
@@ -535,10 +539,10 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
             <div className="flex items-center justify-between gap-3 rounded-md border border-border px-2 py-1.5 w-full">
               <div className="min-w-0">
                 <div className="text-sm">
-                  {usesIsolatedExecutionWorkspace ? "Isolated issue checkout" : "Project primary checkout"}
+                  {usesIsolatedExecutionWorkspace ? t("Isolated issue checkout") : t("Project primary checkout")}
                 </div>
                 <div className="text-[11px] text-muted-foreground">
-                  Toggle whether this issue runs in its own execution workspace.
+                  {t("Toggle whether this issue runs in its own execution workspace.")}
                 </div>
               </div>
               <button

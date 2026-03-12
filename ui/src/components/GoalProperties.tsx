@@ -6,6 +6,7 @@ import { GOAL_STATUSES, GOAL_LEVELS } from "@paperclipai/shared";
 import { agentsApi } from "../api/agents";
 import { goalsApi } from "../api/goals";
 import { useCompany } from "../context/CompanyContext";
+import { useI18n } from "../context/I18nContext";
 import { queryKeys } from "../lib/queryKeys";
 import { StatusBadge } from "./StatusBadge";
 import { formatDate, cn, agentUrl } from "../lib/utils";
@@ -19,9 +20,10 @@ interface GoalPropertiesProps {
 }
 
 function PropertyRow({ label, children }: { label: string; children: React.ReactNode }) {
+  const { t } = useI18n();
   return (
     <div className="flex items-center gap-3 py-1.5">
-      <span className="text-xs text-muted-foreground shrink-0 w-20">{label}</span>
+      <span className="text-xs text-muted-foreground shrink-0 w-20">{t(label)}</span>
       <div className="flex items-center gap-1.5 min-w-0">{children}</div>
     </div>
   );
@@ -42,6 +44,7 @@ function PickerButton({
   onChange: (value: string) => void;
   children: React.ReactNode;
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -62,7 +65,7 @@ function PickerButton({
               setOpen(false);
             }}
           >
-            {label(opt)}
+            {t(label(opt))}
           </Button>
         ))}
       </PopoverContent>
@@ -71,6 +74,7 @@ function PickerButton({
 }
 
 export function GoalProperties({ goal, onUpdate }: GoalPropertiesProps) {
+  const { t } = useI18n();
   const { selectedCompanyId } = useCompany();
 
   const { data: agents } = useQuery({
@@ -117,10 +121,10 @@ export function GoalProperties({ goal, onUpdate }: GoalPropertiesProps) {
               options={GOAL_LEVELS}
               onChange={(level) => onUpdate({ level })}
             >
-              <span className="text-sm capitalize">{goal.level}</span>
+              <span className="text-sm capitalize">{t(label(goal.level))}</span>
             </PickerButton>
           ) : (
-            <span className="text-sm capitalize">{goal.level}</span>
+            <span className="text-sm capitalize">{t(label(goal.level))}</span>
           )}
         </PropertyRow>
 
@@ -133,7 +137,7 @@ export function GoalProperties({ goal, onUpdate }: GoalPropertiesProps) {
               {ownerAgent.name}
             </Link>
           ) : (
-            <span className="text-sm text-muted-foreground">None</span>
+            <span className="text-sm text-muted-foreground">{t("None")}</span>
           )}
         </PropertyRow>
 

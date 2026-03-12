@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@/lib/router";
 import { X } from "lucide-react";
 import { useToast, type ToastItem, type ToastTone } from "../context/ToastContext";
+import { useI18n } from "../context/I18nContext";
 import { cn } from "../lib/utils";
 
 const toneClasses: Record<ToastTone, string> = {
@@ -25,6 +26,7 @@ function AnimatedToast({
   toast: ToastItem;
   onDismiss: (id: string) => void;
 }) {
+  const { t } = useI18n();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -63,7 +65,7 @@ function AnimatedToast({
         </div>
         <button
           type="button"
-          aria-label="Dismiss notification"
+          aria-label={t("Dismiss notification")}
           onClick={() => onDismiss(toast.id)}
           className="mt-0.5 shrink-0 rounded p-1 opacity-50 hover:bg-black/10 hover:opacity-100 dark:hover:bg-white/10"
         >

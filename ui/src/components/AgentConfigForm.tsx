@@ -28,6 +28,7 @@ import { cn } from "../lib/utils";
 import { extractModelName, extractProviderId } from "../lib/model-utils";
 import { queryKeys } from "../lib/queryKeys";
 import { useCompany } from "../context/CompanyContext";
+import { useI18n } from "../context/I18nContext";
 import {
   Field,
   ToggleField,
@@ -164,6 +165,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
   const isCreate = mode === "create";
   const cards = props.sectionLayout === "cards";
   const { selectedCompanyId } = useCompany();
+  const { t } = useI18n();
   const queryClient = useQueryClient();
 
   const { data: availableSecrets = [] } = useQuery({
@@ -672,7 +674,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
                     codexSearchEnabled &&
                     currentThinkingEffort === "minimal" && (
                       <p className="text-xs text-amber-400">
-                        Codex may reject `minimal` thinking when search is enabled.
+                        {t("Codex may reject `minimal` thinking when search is enabled.")}
                       </p>
                     )}
                 </>

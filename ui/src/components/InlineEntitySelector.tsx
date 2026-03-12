@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useMemo, useRef, useState, type ReactNode } from
 import { Check } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "../lib/utils";
+import { useI18n } from "../context/I18nContext";
 
 export interface InlineEntityOption {
   id: string;
@@ -43,6 +44,7 @@ export const InlineEntitySelector = forwardRef<HTMLButtonElement, InlineEntitySe
     },
     ref,
   ) {
+    const { t } = useI18n();
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState("");
     const [highlightedIndex, setHighlightedIndex] = useState(0);
@@ -50,9 +52,11 @@ export const InlineEntitySelector = forwardRef<HTMLButtonElement, InlineEntitySe
     const shouldPreventCloseAutoFocusRef = useRef(false);
     const isPointerDownRef = useRef(false);
 
+    const translatedNoneLabel = t(noneLabel);
+
     const allOptions = useMemo<InlineEntityOption[]>(
-      () => [{ id: "", label: noneLabel, searchText: noneLabel }, ...options],
-      [noneLabel, options],
+      () => [{ id: "", label: translatedNoneLabel, searchText: translatedNoneLabel }, ...options],
+      [options, translatedNoneLabel],
     );
 
     const filteredOptions = useMemo(() => {
@@ -109,7 +113,7 @@ export const InlineEntitySelector = forwardRef<HTMLButtonElement, InlineEntitySe
           >
             {renderTriggerValue
               ? renderTriggerValue(currentOption)
-              : (currentOption?.label ?? <span className="text-muted-foreground">{placeholder}</span>)}
+              : (currentOption?.label ?? <span className="text-muted-foreground">{t(placeholder)}</span>)}
           </button>
         </PopoverTrigger>
         <PopoverContent
@@ -137,7 +141,7 @@ export const InlineEntitySelector = forwardRef<HTMLButtonElement, InlineEntitySe
           <input
             ref={inputRef}
             className="w-full border-b border-border bg-transparent px-2 py-1.5 text-sm outline-none placeholder:text-muted-foreground/60"
-            placeholder={searchPlaceholder}
+            placeholder={t(searchPlaceholder)}
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);
@@ -176,7 +180,7 @@ export const InlineEntitySelector = forwardRef<HTMLButtonElement, InlineEntitySe
           />
           <div className="max-h-56 overflow-y-auto overscroll-contain py-1 touch-pan-y">
             {filteredOptions.length === 0 ? (
-              <p className="px-2 py-2 text-xs text-muted-foreground">{emptyMessage}</p>
+              <p className="px-2 py-2 text-xs text-muted-foreground">{t(emptyMessage)}</p>
             ) : (
               filteredOptions.map((option, index) => {
                 const isSelected = option.id === value;

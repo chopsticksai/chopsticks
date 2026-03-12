@@ -3,6 +3,7 @@ import { Link } from "@/lib/router";
 import { AGENT_ROLE_LABELS, type Agent, type AgentRuntimeState } from "@paperclipai/shared";
 import { agentsApi } from "../api/agents";
 import { useCompany } from "../context/CompanyContext";
+import { useI18n } from "../context/I18nContext";
 import { queryKeys } from "../lib/queryKeys";
 import { StatusBadge } from "./StatusBadge";
 import { Identity } from "./Identity";
@@ -28,15 +29,17 @@ const adapterLabels: Record<string, string> = {
 const roleLabels = AGENT_ROLE_LABELS as Record<string, string>;
 
 function PropertyRow({ label, children }: { label: string; children: React.ReactNode }) {
+  const { t } = useI18n();
   return (
     <div className="flex items-center gap-3 py-1.5">
-      <span className="text-xs text-muted-foreground shrink-0 w-20">{label}</span>
+      <span className="text-xs text-muted-foreground shrink-0 w-20">{t(label)}</span>
       <div className="flex items-center gap-1.5 min-w-0">{children}</div>
     </div>
   );
 }
 
 export function AgentProperties({ agent, runtimeState }: AgentPropertiesProps) {
+  const { t } = useI18n();
   const { selectedCompanyId } = useCompany();
 
   const { data: agents } = useQuery({
@@ -54,7 +57,7 @@ export function AgentProperties({ agent, runtimeState }: AgentPropertiesProps) {
           <StatusBadge status={agent.status} />
         </PropertyRow>
         <PropertyRow label="Role">
-          <span className="text-sm">{roleLabels[agent.role] ?? agent.role}</span>
+          <span className="text-sm">{t(roleLabels[agent.role] ?? agent.role)}</span>
         </PropertyRow>
         {agent.title && (
           <PropertyRow label="Title">
@@ -62,7 +65,7 @@ export function AgentProperties({ agent, runtimeState }: AgentPropertiesProps) {
           </PropertyRow>
         )}
         <PropertyRow label="Adapter">
-          <span className="text-sm font-mono">{adapterLabels[agent.adapterType] ?? agent.adapterType}</span>
+          <span className="text-sm font-mono">{t(adapterLabels[agent.adapterType] ?? agent.adapterType)}</span>
         </PropertyRow>
       </div>
 
