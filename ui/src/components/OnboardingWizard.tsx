@@ -746,7 +746,7 @@ export function OnboardingWizard() {
                           showMoreAdapters ? "rotate-0" : "-rotate-90"
                         )}
                       />
-                      More Agent Adapter Types
+                      {t("More Agent Adapter Types")}
                     </button>
 
                     {showMoreAdapters && (
@@ -818,12 +818,11 @@ export function OnboardingWizard() {
                             }}
                           >
                             <opt.icon className="h-4 w-4" />
-                            <span className="font-medium">{opt.label}</span>
+                            <span className="font-medium">{t(opt.label)}</span>
                             <span className="text-muted-foreground text-[10px]">
                               {opt.comingSoon
-                                ? (opt as { disabledLabel?: string })
-                                    .disabledLabel ?? "Coming soon"
-                                : opt.desc}
+                                ? t((opt as { disabledLabel?: string }).disabledLabel ?? "Coming soon")
+                                : t(opt.desc)}
                             </span>
                           </button>
                         ))}
@@ -989,7 +988,7 @@ export function OnboardingWizard() {
                       adapterEnvResult.status === "pass" ? (
                         <div className="flex items-center gap-2 rounded-md border border-green-300 dark:border-green-500/40 bg-green-50 dark:bg-green-500/10 px-3 py-2 text-xs text-green-700 dark:text-green-300 animate-in fade-in slide-in-from-bottom-1 duration-300">
                           <Check className="h-3.5 w-3.5 shrink-0" />
-                          <span className="font-medium">Passed</span>
+                          <span className="font-medium">{t("Passed")}</span>
                         </div>
                       ) : adapterEnvResult ? (
                         <AdapterEnvironmentResult result={adapterEnvResult} />

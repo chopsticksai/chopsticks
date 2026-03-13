@@ -177,6 +177,7 @@ function LegacySettingsRedirect() {
 }
 
 function OnboardingRoutePage() {
+  const { t } = useI18n();
   const { companies, loading } = useCompany();
   const { onboardingOpen, openOnboarding } = useDialog();
   const { companyPrefix } = useParams<{ companyPrefix?: string }>();
@@ -196,15 +197,15 @@ function OnboardingRoutePage() {
   }, [companyPrefix, loading, matchedCompany, onboardingOpen, openOnboarding]);
 
   const title = matchedCompany
-    ? `Add another agent to ${matchedCompany.name}`
+    ? t("Add another agent to {name}", { name: matchedCompany.name })
     : companies.length > 0
-      ? "Create another company"
-      : "Create your first company";
+      ? t("Create another company")
+      : t("Create your first company");
   const description = matchedCompany
-    ? "Run onboarding again to add an agent and a starter task for this company."
+    ? t("Run onboarding again to add an agent and a starter task for this company.")
     : companies.length > 0
-      ? "Run onboarding again to create another company and seed its first agent."
-      : "Get started by creating a company and your first agent.";
+      ? t("Run onboarding again to create another company and seed its first agent.")
+      : t("Get started by creating a company and your first agent.");
 
   return (
     <div className="mx-auto max-w-xl py-10">
@@ -219,7 +220,7 @@ function OnboardingRoutePage() {
                 : openOnboarding()
             }
           >
-            {matchedCompany ? "Add Agent" : "Start Onboarding"}
+            {matchedCompany ? t("Add Agent") : t("Start Onboarding")}
           </Button>
         </div>
       </div>
