@@ -3,7 +3,7 @@ title: Database
 summary: Embedded PGlite vs Docker Postgres vs hosted
 ---
 
-Paperclip uses PostgreSQL via Drizzle ORM. There are three ways to run the database.
+Swarmifyx uses PostgreSQL via Drizzle ORM. There are three ways to run the database.
 
 ## 1. Embedded PostgreSQL (Default)
 
@@ -16,7 +16,7 @@ pnpm dev
 On first start, the server:
 
 1. Creates `~/.swarmifyx/instances/default/db/` for storage
-2. Ensures the `paperclip` database exists
+2. Ensures the `swarmifyx` database exists
 3. Runs migrations automatically
 4. Starts serving requests
 
@@ -36,13 +36,13 @@ This starts PostgreSQL 17 on `localhost:5432`. Set the connection string:
 
 ```sh
 cp .env.example .env
-# DATABASE_URL=postgres://paperclip:paperclip@localhost:5432/paperclip
+# DATABASE_URL=postgres://swarmifyx:swarmifyx@localhost:5432/swarmifyx
 ```
 
 Push the schema:
 
 ```sh
-DATABASE_URL=postgres://paperclip:paperclip@localhost:5432/paperclip \
+DATABASE_URL=postgres://swarmifyx:swarmifyx@localhost:5432/swarmifyx \
   npx drizzle-kit push
 ```
 

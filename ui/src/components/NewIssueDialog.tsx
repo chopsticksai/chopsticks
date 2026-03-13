@@ -34,7 +34,7 @@ import {
   AlertTriangle,
   Tag,
   Calendar,
-  Paperclip,
+  BrainCircuit,
   Loader2,
 } from "lucide-react";
 import { cn } from "../lib/utils";
@@ -44,7 +44,7 @@ import { MarkdownEditor, type MarkdownEditorRef, type MentionOption } from "./Ma
 import { AgentIcon } from "./AgentIconPicker";
 import { InlineEntitySelector, type InlineEntityOption } from "./InlineEntitySelector";
 
-const DRAFT_KEY = "paperclip:issue-draft";
+const DRAFT_KEY = "swarmifyx:issue-draft";
 const DEBOUNCE_MS = 800;
 // TODO(issue-worktree-support): re-enable this UI once the workflow is ready to ship.
 const SHOW_EXPERIMENTAL_ISSUE_WORKTREE_UI = false;
@@ -436,8 +436,8 @@ export function NewIssueDialog() {
       : null;
     const executionWorkspaceSettings = executionWorkspacePolicy?.enabled
       ? {
-          mode: useIsolatedExecutionWorkspace ? "isolated" : "project_primary",
-        }
+        mode: useIsolatedExecutionWorkspace ? "isolated" : "project_primary",
+      }
       : null;
     createIssue.mutate({
       companyId: effectiveCompanyId,
@@ -490,13 +490,13 @@ export function NewIssueDialog() {
         ? "Codex options"
         : assigneeAdapterType === "opencode_local"
           ? "OpenCode options"
-        : "Agent options";
+          : "Agent options";
   const thinkingEffortOptions =
     assigneeAdapterType === "codex_local"
       ? ISSUE_THINKING_EFFORT_OPTIONS.codex_local
       : assigneeAdapterType === "opencode_local"
         ? ISSUE_THINKING_EFFORT_OPTIONS.opencode_local
-      : ISSUE_THINKING_EFFORT_OPTIONS.claude_local;
+        : ISSUE_THINKING_EFFORT_OPTIONS.claude_local;
   const recentAssigneeIds = useMemo(() => getRecentAssigneeIds(), [newIssueOpen]);
   const assigneeOptions = useMemo<InlineEntityOption[]>(
     () =>
@@ -621,9 +621,9 @@ export function NewIssueDialog() {
                   style={
                     dialogCompany?.brandColor
                       ? {
-                          backgroundColor: dialogCompany.brandColor,
-                          color: getContrastTextColor(dialogCompany.brandColor),
-                        }
+                        backgroundColor: dialogCompany.brandColor,
+                        color: getContrastTextColor(dialogCompany.brandColor),
+                      }
                       : undefined
                   }
                 >
@@ -651,9 +651,9 @@ export function NewIssueDialog() {
                       style={
                         c.brandColor
                           ? {
-                              backgroundColor: c.brandColor,
-                              color: getContrastTextColor(c.brandColor),
-                            }
+                            backgroundColor: c.brandColor,
+                            color: getContrastTextColor(c.brandColor),
+                          }
                           : undefined
                       }
                     >
@@ -994,7 +994,7 @@ export function NewIssueDialog() {
             onClick={() => attachInputRef.current?.click()}
             disabled={uploadDescriptionImage.isPending}
           >
-            <Paperclip className="h-3 w-3" />
+            <BrainCircuit className="h-3 w-3" />
             {uploadDescriptionImage.isPending ? "Uploading..." : "Image"}
           </button>
 

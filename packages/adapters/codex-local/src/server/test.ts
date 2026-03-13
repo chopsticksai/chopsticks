@@ -2,7 +2,7 @@ import type {
   AdapterEnvironmentCheck,
   AdapterEnvironmentTestContext,
   AdapterEnvironmentTestResult,
-} from "@paperclipai/adapter-utils";
+} from "@swarmifyx/adapter-utils";
 import {
   asString,
   asBoolean,
@@ -12,7 +12,7 @@ import {
   ensureCommandResolvable,
   ensurePathInEnv,
   runChildProcess,
-} from "@paperclipai/adapter-utils/server-utils";
+} from "@swarmifyx/adapter-utils/server-utils";
 import path from "node:path";
 import { parseCodexJsonl } from "./parse.js";
 
@@ -164,7 +164,7 @@ export async function testEnvironment(
           timeoutSec: 45,
           graceSec: 5,
           stdin: "Respond with hello.",
-          onLog: async () => {},
+          onLog: async () => { },
         },
       );
       const parsed = parseCodexJsonl(probe.stdout);
@@ -191,8 +191,8 @@ export async function testEnvironment(
           ...(hasHello
             ? {}
             : {
-                hint: "Try the probe manually (`codex exec --json -` then prompt: Respond with hello) to inspect full output.",
-              }),
+              hint: "Try the probe manually (`codex exec --json -` then prompt: Respond with hello) to inspect full output.",
+            }),
         });
       } else if (CODEX_AUTH_REQUIRED_RE.test(authEvidence)) {
         checks.push({

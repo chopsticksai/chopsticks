@@ -1,21 +1,46 @@
 import fs from "node:fs";
 import path from "node:path";
-import { paperclipConfigSchema, type PaperclipConfig } from "./schema.js";
+import { swarmifyxConfigSchema, type SwarmifyxConfig } from "./schema.js";
 import {
   resolveDefaultConfigPath,
-  resolvePaperclipInstanceId,
+  resolveSwarmifyxInstanceId,
 } from "./home.js";
 
 const DEFAULT_CONFIG_BASENAME = "config.json";
+const DEFAULT_ENV_BASENAME = ".env";
+const REPO_CONFIG_DIRNAME = ".swarmifyx";
+const LEGACY_REPO_CONFIG_DIRNAME = ".swarmifyx";
+
+function resolveLegacyRepoLocalSentinel(dir: string): string | null {
+  const legacyConfigPath = path.resolve(dir, LEGACY_REPO_CONFIG_DIRNAME, DEFAULT_CONFIG_BASENAME);
+  if (fs.existsSync(legacyConfigPath)) {
+    return legacyConfigPath;
+  }
+
+  const legacyEnvPath = path.resolve(dir, LEGACY_REPO_CONFIG_DIRNAME, DEFAULT_ENV_BASENAME);
+  if (fs.existsSync(legacyEnvPath)) {
+    return legacyEnvPath;
+  }
+
+  return null;
+}
 
 function findConfigFileFromAncestors(startDir: string): string | null {
   const absoluteStartDir = path.resolve(startDir);
   let currentDir = absoluteStartDir;
 
   while (true) {
-    const candidate = path.resolve(currentDir, ".paperclip", DEFAULT_CONFIG_BASENAME);
+    const candidate = path.resolve(currentDir, REPO_CONFIG_DIRNAME, DEFAULT_CONFIG_BASENAME);
     if (fs.existsSync(candidate)) {
       return candidate;
+    }
+
+    const legacySentinel = resolveLegacyRepoLocalSentinel(currentDir);
+    if (legacySentinel) {
+      const targetDir = path.resolve(currentDir, REPO_CONFIG_DIRNAME);
+      throw new Error(
+        `Legacy repo-local Swarmifyx files detected at ${legacySentinel}. SwarmifyX only auto-loads ${targetDir}. Move the repo-local files into ${targetDir} before rerunning this command.`,
+      );
     }
 
     const nextDir = path.resolve(currentDir, "..");
@@ -28,8 +53,8 @@ function findConfigFileFromAncestors(startDir: string): string | null {
 
 export function resolveConfigPath(overridePath?: string): string {
   if (overridePath) return path.resolve(overridePath);
-  if (process.env.PAPERCLIP_CONFIG) return path.resolve(process.env.PAPERCLIP_CONFIG);
-  return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath(resolvePaperclipInstanceId());
+  if (process.env.SWARMIFYX_CONFIG) return path.resolve(process.env.SWARMIFYX_CONFIG);
+  return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath(resolveSwarmifyxInstanceId());
 }
 
 function parseJson(filePath: string): unknown {
@@ -83,12 +108,12 @@ function formatValidationError(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
 }
 
-export function readConfig(configPath?: string): PaperclipConfig | null {
+export function readConfig(configPath?: string): SwarmifyxConfig | null {
   const filePath = resolveConfigPath(configPath);
   if (!fs.existsSync(filePath)) return null;
   const raw = parseJson(filePath);
   const migrated = migrateLegacyConfig(raw);
-  const parsed = paperclipConfigSchema.safeParse(migrated);
+  const parsed = swarmifyxConfigSchema.safeParse(migrated);
   if (!parsed.success) {
     throw new Error(`Invalid config at ${filePath}: ${formatValidationError(parsed.error)}`);
   }
@@ -96,7 +121,7 @@ export function readConfig(configPath?: string): PaperclipConfig | null {
 }
 
 export function writeConfig(
-  config: PaperclipConfig,
+  config: SwarmifyxConfig,
   configPath?: string,
 ): void {
   const filePath = resolveConfigPath(configPath);

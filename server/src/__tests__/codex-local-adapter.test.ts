@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { isCodexUnknownSessionError, parseCodexJsonl } from "@paperclipai/adapter-codex-local/server";
-import { parseCodexStdoutLine } from "@paperclipai/adapter-codex-local/ui";
-import { printCodexStreamEvent } from "@paperclipai/adapter-codex-local/cli";
+import { isCodexUnknownSessionError, parseCodexJsonl } from "@swarmifyx/adapter-codex-local/server";
+import { parseCodexStdoutLine } from "@swarmifyx/adapter-codex-local/ui";
+import { printCodexStreamEvent } from "@swarmifyx/adapter-codex-local/cli";
 
 describe("codex_local parser", () => {
   it("extracts session, summary, usage, and terminal error message", () => {
@@ -45,12 +45,12 @@ describe("codex_local ui stdout parser", () => {
       parseCodexStdoutLine(
         JSON.stringify({
           type: "item.completed",
-          item: { id: "item_1", type: "reasoning", text: "**Preparing to use paperclip skill**" },
+          item: { id: "item_1", type: "reasoning", text: "**Preparing to use swarmifyx skill**" },
         }),
         ts,
       ),
     ).toEqual([
-      { kind: "thinking", ts, text: "**Preparing to use paperclip skill**" },
+      { kind: "thinking", ts, text: "**Preparing to use swarmifyx skill**" },
     ]);
   });
 
@@ -107,7 +107,7 @@ describe("codex_local ui stdout parser", () => {
           item: {
             id: "item_52",
             type: "file_change",
-            changes: [{ path: "/Users/paperclipuser/project/ui/src/pages/AgentDetail.tsx", kind: "update" }],
+            changes: [{ path: "/Users/swarmifyxuser/project/ui/src/pages/AgentDetail.tsx", kind: "update" }],
             status: "completed",
           },
         }),
@@ -177,7 +177,7 @@ function stripAnsi(value: string): string {
 
 describe("codex_local cli formatter", () => {
   it("prints lifecycle, command execution, file change, and error events", () => {
-    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const spy = vi.spyOn(console, "log").mockImplementation(() => { });
 
     try {
       printCodexStreamEvent(JSON.stringify({ type: "turn.started" }), false);

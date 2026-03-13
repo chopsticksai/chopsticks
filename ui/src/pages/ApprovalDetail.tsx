@@ -14,7 +14,7 @@ import { PageSkeleton } from "../components/PageSkeleton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, ChevronRight, Sparkles } from "lucide-react";
-import type { ApprovalComment } from "@paperclipai/shared";
+import type { ApprovalComment } from "@swarmifyx/shared";
 import { MarkdownBody } from "../components/MarkdownBody";
 import { formatDateTime } from "../lib/utils";
 
@@ -161,21 +161,21 @@ export function ApprovalDetail() {
   const resolvedCta =
     primaryLinkedIssue
       ? {
-          label:
-            (linkedIssues?.length ?? 0) > 1
-              ? translateText("Review linked issues")
-              : translateText("Review linked issue"),
-          to: `/issues/${primaryLinkedIssue.identifier ?? primaryLinkedIssue.id}`,
-        }
+        label:
+          (linkedIssues?.length ?? 0) > 1
+            ? translateText("Review linked issues")
+            : translateText("Review linked issue"),
+        to: `/issues/${primaryLinkedIssue.identifier ?? primaryLinkedIssue.id}`,
+      }
       : linkedAgentId
         ? {
-            label: translateText("Open hired agent"),
-            to: `/agents/${linkedAgentId}`,
-          }
+          label: translateText("Open hired agent"),
+          to: `/agents/${linkedAgentId}`,
+        }
         : {
-            label: translateText("Back to approvals"),
-            to: "/approvals",
-          };
+          label: translateText("Back to approvals"),
+          to: "/approvals",
+        };
 
   return (
     <div className="space-y-6 max-w-3xl">

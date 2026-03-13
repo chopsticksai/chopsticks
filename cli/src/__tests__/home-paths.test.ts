@@ -5,8 +5,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   describeLocalInstancePaths,
   expandHomePrefix,
-  resolvePaperclipHomeDir,
-  resolvePaperclipInstanceId,
+  resolveSwarmifyxHomeDir,
+  resolveSwarmifyxInstanceId,
 } from "../config/home.js";
 
 const ORIGINAL_ENV = { ...process.env };
@@ -18,8 +18,8 @@ describe("home path resolution", () => {
   });
 
   it("defaults to ~/.swarmifyx and default instance", () => {
-    delete process.env.PAPERCLIP_HOME;
-    delete process.env.PAPERCLIP_INSTANCE_ID;
+    delete process.env.SWARMIFYX_HOME;
+    delete process.env.SWARMIFYX_INSTANCE_ID;
     const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), "swarmifyx-home-"));
     vi.spyOn(os, "homedir").mockReturnValue(fakeHome);
 
@@ -29,26 +29,26 @@ describe("home path resolution", () => {
     expect(paths.configPath).toBe(path.resolve(fakeHome, ".swarmifyx", "instances", "default", "config.json"));
   });
 
-  it("falls back to ~/.paperclip when the new home does not exist yet", () => {
-    delete process.env.PAPERCLIP_HOME;
-    delete process.env.PAPERCLIP_INSTANCE_ID;
+  it("throws a migration error when only the legacy ~/.swarmifyx home exists", () => {
+    delete process.env.SWARMIFYX_HOME;
+    delete process.env.SWARMIFYX_INSTANCE_ID;
     const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), "swarmifyx-home-"));
-    fs.mkdirSync(path.join(fakeHome, ".paperclip"), { recursive: true });
+    fs.mkdirSync(path.join(fakeHome, ".swarmifyx"), { recursive: true });
     vi.spyOn(os, "homedir").mockReturnValue(fakeHome);
 
-    expect(resolvePaperclipHomeDir()).toBe(path.resolve(fakeHome, ".paperclip"));
+    expect(() => resolveSwarmifyxHomeDir()).toThrow(/Legacy Swarmifyx home detected/);
   });
 
-  it("supports PAPERCLIP_HOME and explicit instance ids", () => {
-    process.env.PAPERCLIP_HOME = "~/paperclip-home";
+  it("supports SWARMIFYX_HOME and explicit instance ids", () => {
+    process.env.SWARMIFYX_HOME = "~/swarmifyx-home";
 
-    const home = resolvePaperclipHomeDir();
-    expect(home).toBe(path.resolve(os.homedir(), "paperclip-home"));
-    expect(resolvePaperclipInstanceId("dev_1")).toBe("dev_1");
+    const home = resolveSwarmifyxHomeDir();
+    expect(home).toBe(path.resolve(os.homedir(), "swarmifyx-home"));
+    expect(resolveSwarmifyxInstanceId("dev_1")).toBe("dev_1");
   });
 
   it("rejects invalid instance ids", () => {
-    expect(() => resolvePaperclipInstanceId("bad/id")).toThrow(/Invalid instance id/);
+    expect(() => resolveSwarmifyxInstanceId("bad/id")).toThrow(/Invalid instance id/);
   });
 
   it("expands ~ prefixes", () => {

@@ -3,7 +3,7 @@ title: CLI Overview
 summary: CLI installation and setup
 ---
 
-The Paperclip CLI handles instance setup, diagnostics, and control-plane operations.
+The Swarmifyx CLI handles instance setup, diagnostics, and control-plane operations.
 
 ## Usage
 
@@ -17,7 +17,7 @@ All commands support:
 
 | Flag | Description |
 |------|-------------|
-| `--data-dir <path>` | Local Paperclip data root (isolates from `~/.swarmifyx`) |
+| `--data-dir <path>` | Local Swarmifyx data root (isolates from `~/.swarmifyx`) |
 | `--api-base <url>` | API base URL |
 | `--api-key <token>` | API authentication token |
 | `--context <path>` | Context file path |
@@ -29,7 +29,7 @@ Company-scoped commands also accept `--company-id <id>`.
 For clean local instances, pass `--data-dir` on the command you run:
 
 ```sh
-pnpm swarmifyx run --data-dir ./tmp/paperclip-dev
+pnpm swarmifyx run --data-dir ./tmp/swarmifyx-dev
 ```
 
 ## Context Profiles
@@ -53,8 +53,8 @@ pnpm swarmifyx context use default
 To avoid storing secrets in context, use an env var:
 
 ```sh
-pnpm swarmifyx context set --api-key-env-var-name PAPERCLIP_API_KEY
-export PAPERCLIP_API_KEY=...
+pnpm swarmifyx context set --api-key-env-var-name SWARMIFYX_API_KEY
+export SWARMIFYX_API_KEY=...
 ```
 
 Context is stored at `~/.swarmifyx/context.json`.

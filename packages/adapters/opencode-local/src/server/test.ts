@@ -2,7 +2,7 @@ import type {
   AdapterEnvironmentCheck,
   AdapterEnvironmentTestContext,
   AdapterEnvironmentTestResult,
-} from "@paperclipai/adapter-utils";
+} from "@swarmifyx/adapter-utils";
 import {
   asString,
   asStringArray,
@@ -11,7 +11,7 @@ import {
   ensureCommandResolvable,
   ensurePathInEnv,
   runChildProcess,
-} from "@paperclipai/adapter-utils/server-utils";
+} from "@swarmifyx/adapter-utils/server-utils";
 import { discoverOpenCodeModels, ensureOpenCodeModelConfiguredAndAvailable } from "./models.js";
 import { parseOpenCodeJsonl } from "./parse.js";
 
@@ -243,7 +243,7 @@ export async function testEnvironment(
           timeoutSec: 60,
           graceSec: 5,
           stdin: "Respond with hello.",
-          onLog: async () => {},
+          onLog: async () => { },
         },
       );
 
@@ -271,8 +271,8 @@ export async function testEnvironment(
           ...(hasHello
             ? {}
             : {
-                hint: "Run `opencode run --format json` manually and prompt `Respond with hello` to inspect output.",
-              }),
+              hint: "Run `opencode run --format json` manually and prompt `Respond with hello` to inspect output.",
+            }),
         });
       } else if (/ProviderModelNotFoundError/i.test(authEvidence)) {
         checks.push({

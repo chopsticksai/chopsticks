@@ -1,4 +1,4 @@
-import type { TranscriptEntry } from "@paperclipai/adapter-utils";
+import type { TranscriptEntry } from "@swarmifyx/adapter-utils";
 
 function safeJsonParse(text: string): unknown {
   try {
@@ -56,9 +56,9 @@ export function parsePiStdoutLine(line: string, ts: string): TranscriptEntry[] {
   if (type === "turn_end") {
     const message = asRecord(parsed.message);
     const toolResults = parsed.toolResults as Array<Record<string, unknown>> | undefined;
-    
+
     const entries: TranscriptEntry[] = [];
-    
+
     if (message) {
       const content = message.content as string | Array<{ type: string; text?: string }>;
       const text = extractTextContent(content);
@@ -66,7 +66,7 @@ export function parsePiStdoutLine(line: string, ts: string): TranscriptEntry[] {
         entries.push({ kind: "assistant", ts, text });
       }
     }
-    
+
     // Process tool results
     if (toolResults) {
       for (const tr of toolResults) {
@@ -82,7 +82,7 @@ export function parsePiStdoutLine(line: string, ts: string): TranscriptEntry[] {
         });
       }
     }
-    
+
     return entries.length > 0 ? entries : [{ kind: "system", ts, text: "Turn ended" }];
   }
 
@@ -133,7 +133,7 @@ export function parsePiStdoutLine(line: string, ts: string): TranscriptEntry[] {
     const result = parsed.result;
     const isError = parsed.isError === true;
     const contentStr = typeof result === "string" ? result : JSON.stringify(result);
-    
+
     return [{
       kind: "tool_result",
       ts,

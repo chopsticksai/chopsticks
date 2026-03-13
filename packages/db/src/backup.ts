@@ -21,24 +21,30 @@ function expandHomePrefix(value: string): string {
   return value;
 }
 
-function resolvePaperclipHomeDir(): string {
-  const envHome = process.env.PAPERCLIP_HOME?.trim();
+function resolveSwarmifyxHomeDir(): string {
+  const envHome = process.env.SWARMIFYX_HOME?.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
-  const preferred = path.resolve(os.homedir(), ".swarmifyx");
-  const legacy = path.resolve(os.homedir(), ".paperclip");
-  return !existsSync(preferred) && existsSync(legacy) ? legacy : preferred;
+
+  const preferredHome = path.resolve(os.homedir(), ".swarmifyx");
+  const legacyHome = path.resolve(os.homedir(), ".swarmifyx");
+  if (!existsSync(preferredHome) && existsSync(legacyHome)) {
+    throw new Error(
+      `Legacy Swarmifyx home detected at ${legacyHome}. SwarmifyX now uses ${preferredHome} as the only default home. Move the directory or set SWARMIFYX_HOME explicitly during migration.`,
+    );
+  }
+  return preferredHome;
 }
 
-function resolvePaperclipInstanceId(): string {
-  const raw = process.env.PAPERCLIP_INSTANCE_ID?.trim() || "default";
+function resolveSwarmifyxInstanceId(): string {
+  const raw = process.env.SWARMIFYX_INSTANCE_ID?.trim() || "default";
   if (!/^[a-zA-Z0-9_-]+$/.test(raw)) {
-    throw new Error(`Invalid PAPERCLIP_INSTANCE_ID '${raw}'.`);
+    throw new Error(`Invalid SWARMIFYX_INSTANCE_ID '${raw}'.`);
   }
   return raw;
 }
 
 function resolveDefaultConfigPath(): string {
-  return path.resolve(resolvePaperclipHomeDir(), "instances", resolvePaperclipInstanceId(), "config.json");
+  return path.resolve(resolveSwarmifyxHomeDir(), "instances", resolveSwarmifyxInstanceId(), "config.json");
 }
 
 function readConfig(configPath: string): PartialConfig | null {
@@ -71,11 +77,11 @@ function resolveConnectionString(config: PartialConfig | null): string {
   }
 
   const port = resolveEmbeddedPort(config);
-  return `postgres://paperclip:paperclip@127.0.0.1:${port}/paperclip`;
+  return `postgres://swarmifyx:swarmifyx@127.0.0.1:${port}/swarmifyx`;
 }
 
 function resolveDefaultBackupDir(): string {
-  return path.resolve(resolvePaperclipHomeDir(), "instances", resolvePaperclipInstanceId(), "data", "backups");
+  return path.resolve(resolveSwarmifyxHomeDir(), "instances", resolveSwarmifyxInstanceId(), "data", "backups");
 }
 
 function resolveBackupDir(config: PartialConfig | null): string {
@@ -106,7 +112,7 @@ async function main() {
       connectionString,
       backupDir,
       retentionDays,
-      filenamePrefix: "paperclip",
+      filenamePrefix: "swarmifyx",
     });
 
     console.log(`Backup saved: ${formatDatabaseBackupResult(result)}`);

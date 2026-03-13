@@ -106,12 +106,12 @@ pnpm swarmifyx allowed-hostname my-tailscale-host
 Override with:
 
 ```sh
-PAPERCLIP_HOME=/custom/home PAPERCLIP_INSTANCE_ID=dev pnpm swarmifyx run
+SWARMIFYX_HOME=/custom/home SWARMIFYX_INSTANCE_ID=dev pnpm swarmifyx run
 ```
 
 Or pass `--data-dir` directly on any command:
 
 ```sh
-pnpm swarmifyx run --data-dir ./tmp/paperclip-dev
-pnpm swarmifyx doctor --data-dir ./tmp/paperclip-dev
+pnpm swarmifyx run --data-dir ./tmp/swarmifyx-dev
+pnpm swarmifyx doctor --data-dir ./tmp/swarmifyx-dev
 ```

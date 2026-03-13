@@ -6,6 +6,8 @@ const DEFAULT_INSTANCE_ID = "default";
 const CONFIG_BASENAME = "config.json";
 const ENV_BASENAME = ".env";
 const INSTANCE_ID_RE = /^[a-zA-Z0-9_-]+$/;
+const REPO_CONFIG_DIRNAME = ".swarmifyx";
+const LEGACY_REPO_CONFIG_DIRNAME = ".swarmifyx";
 
 type PartialConfig = {
   database?: {
@@ -20,20 +22,20 @@ type PartialConfig = {
 
 export type ResolvedDatabaseTarget =
   | {
-      mode: "postgres";
-      connectionString: string;
-      source: "DATABASE_URL" | "paperclip-env" | "config.database.connectionString";
-      configPath: string;
-      envPath: string;
-    }
+    mode: "postgres";
+    connectionString: string;
+    source: "DATABASE_URL" | "swarmifyx-env" | "config.database.connectionString";
+    configPath: string;
+    envPath: string;
+  }
   | {
-      mode: "embedded-postgres";
-      dataDir: string;
-      port: number;
-      source: `embedded-postgres@${number}`;
-      configPath: string;
-      envPath: string;
-    };
+    mode: "embedded-postgres";
+    dataDir: string;
+    port: number;
+    source: `embedded-postgres@${number}`;
+    configPath: string;
+    envPath: string;
+  };
 
 function expandHomePrefix(value: string): string {
   if (value === "~") return os.homedir();
@@ -41,45 +43,69 @@ function expandHomePrefix(value: string): string {
   return value;
 }
 
-function resolvePaperclipHomeDir(): string {
-  const envHome = process.env.PAPERCLIP_HOME?.trim();
+function resolveSwarmifyxHomeDir(): string {
+  const envHome = process.env.SWARMIFYX_HOME?.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
-  const preferred = path.resolve(os.homedir(), ".swarmifyx");
-  const legacy = path.resolve(os.homedir(), ".paperclip");
-  return !existsSync(preferred) && existsSync(legacy) ? legacy : preferred;
+
+  const preferredHome = path.resolve(os.homedir(), REPO_CONFIG_DIRNAME);
+  const legacyHome = path.resolve(os.homedir(), LEGACY_REPO_CONFIG_DIRNAME);
+  if (!existsSync(preferredHome) && existsSync(legacyHome)) {
+    throw new Error(
+      `Legacy Swarmifyx home detected at ${legacyHome}. SwarmifyX now uses ${preferredHome} as the only default home. Move the directory or set SWARMIFYX_HOME explicitly during migration.`,
+    );
+  }
+  return preferredHome;
 }
 
-function resolvePaperclipInstanceId(): string {
-  const raw = process.env.PAPERCLIP_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
+function resolveSwarmifyxInstanceId(): string {
+  const raw = process.env.SWARMIFYX_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
   if (!INSTANCE_ID_RE.test(raw)) {
-    throw new Error(`Invalid PAPERCLIP_INSTANCE_ID '${raw}'.`);
+    throw new Error(`Invalid SWARMIFYX_INSTANCE_ID '${raw}'.`);
   }
   return raw;
 }
 
 function resolveDefaultConfigPath(): string {
   return path.resolve(
-    resolvePaperclipHomeDir(),
+    resolveSwarmifyxHomeDir(),
     "instances",
-    resolvePaperclipInstanceId(),
+    resolveSwarmifyxInstanceId(),
     CONFIG_BASENAME,
   );
 }
 
 function resolveDefaultEmbeddedPostgresDir(): string {
-  return path.resolve(resolvePaperclipHomeDir(), "instances", resolvePaperclipInstanceId(), "db");
+  return path.resolve(resolveSwarmifyxHomeDir(), "instances", resolveSwarmifyxInstanceId(), "db");
 }
 
 function resolveHomeAwarePath(value: string): string {
   return path.resolve(expandHomePrefix(value));
 }
 
+function resolveLegacyRepoLocalSentinel(dir: string): string | null {
+  const legacyConfigPath = path.resolve(dir, LEGACY_REPO_CONFIG_DIRNAME, CONFIG_BASENAME);
+  if (existsSync(legacyConfigPath)) return legacyConfigPath;
+
+  const legacyEnvPath = path.resolve(dir, LEGACY_REPO_CONFIG_DIRNAME, ENV_BASENAME);
+  if (existsSync(legacyEnvPath)) return legacyEnvPath;
+
+  return null;
+}
+
 function findConfigFileFromAncestors(startDir: string): string | null {
   let currentDir = path.resolve(startDir);
 
   while (true) {
-    const candidate = path.resolve(currentDir, ".paperclip", CONFIG_BASENAME);
+    const candidate = path.resolve(currentDir, REPO_CONFIG_DIRNAME, CONFIG_BASENAME);
     if (existsSync(candidate)) return candidate;
+
+    const legacySentinel = resolveLegacyRepoLocalSentinel(currentDir);
+    if (legacySentinel) {
+      const targetDir = path.resolve(currentDir, REPO_CONFIG_DIRNAME);
+      throw new Error(
+        `Legacy repo-local Swarmifyx files detected at ${legacySentinel}. SwarmifyX only auto-loads ${targetDir}. Move the repo-local files into ${targetDir} before rerunning this command.`,
+      );
+    }
 
     const nextDir = path.resolve(currentDir, "..");
     if (nextDir === currentDir) return null;
@@ -87,14 +113,14 @@ function findConfigFileFromAncestors(startDir: string): string | null {
   }
 }
 
-function resolvePaperclipConfigPath(): string {
-  if (process.env.PAPERCLIP_CONFIG?.trim()) {
-    return path.resolve(process.env.PAPERCLIP_CONFIG.trim());
+function resolveSwarmifyxConfigPath(): string {
+  if (process.env.SWARMIFYX_CONFIG?.trim()) {
+    return path.resolve(process.env.SWARMIFYX_CONFIG.trim());
   }
   return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath();
 }
 
-function resolvePaperclipEnvPath(configPath: string): string {
+function resolveSwarmifyxEnvPath(configPath: string): string {
   return path.resolve(path.dirname(configPath), ENV_BASENAME);
 }
 
@@ -191,32 +217,32 @@ function readConfig(configPath: string): PartialConfig | null {
 
   const database =
     typeof migrated.database === "object" &&
-    migrated.database !== null &&
-    !Array.isArray(migrated.database)
+      migrated.database !== null &&
+      !Array.isArray(migrated.database)
       ? migrated.database
       : undefined;
 
   return {
     database: database
       ? {
-          mode: database.mode === "postgres" ? "postgres" : "embedded-postgres",
-          connectionString:
-            typeof database.connectionString === "string" ? database.connectionString : undefined,
-          embeddedPostgresDataDir:
-            typeof database.embeddedPostgresDataDir === "string"
-              ? database.embeddedPostgresDataDir
-              : undefined,
-          embeddedPostgresPort: asPositiveInt(database.embeddedPostgresPort) ?? undefined,
-          pgliteDataDir: typeof database.pgliteDataDir === "string" ? database.pgliteDataDir : undefined,
-          pglitePort: asPositiveInt(database.pglitePort) ?? undefined,
-        }
+        mode: database.mode === "postgres" ? "postgres" : "embedded-postgres",
+        connectionString:
+          typeof database.connectionString === "string" ? database.connectionString : undefined,
+        embeddedPostgresDataDir:
+          typeof database.embeddedPostgresDataDir === "string"
+            ? database.embeddedPostgresDataDir
+            : undefined,
+        embeddedPostgresPort: asPositiveInt(database.embeddedPostgresPort) ?? undefined,
+        pgliteDataDir: typeof database.pgliteDataDir === "string" ? database.pgliteDataDir : undefined,
+        pglitePort: asPositiveInt(database.pglitePort) ?? undefined,
+      }
       : undefined,
   };
 }
 
 export function resolveDatabaseTarget(): ResolvedDatabaseTarget {
-  const configPath = resolvePaperclipConfigPath();
-  const envPath = resolvePaperclipEnvPath(configPath);
+  const configPath = resolveSwarmifyxConfigPath();
+  const envPath = resolveSwarmifyxEnvPath(configPath);
   const envEntries = readEnvEntries(envPath);
 
   const envUrl = process.env.DATABASE_URL?.trim();
@@ -235,7 +261,7 @@ export function resolveDatabaseTarget(): ResolvedDatabaseTarget {
     return {
       mode: "postgres",
       connectionString: fileEnvUrl,
-      source: "paperclip-env",
+      source: "swarmifyx-env",
       configPath,
       envPath,
     };

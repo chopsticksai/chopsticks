@@ -1,4 +1,4 @@
-# @paperclipai/adapter-utils
+# @swarmifyx/adapter-utils
 
 ## 0.3.0
 

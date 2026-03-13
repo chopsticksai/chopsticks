@@ -41,7 +41,7 @@ import {
 } from "lucide-react";
 import { Identity } from "../components/Identity";
 import { PageTabBar } from "../components/PageTabBar";
-import type { HeartbeatRun, Issue, JoinRequest } from "@paperclipai/shared";
+import type { HeartbeatRun, Issue, JoinRequest } from "@swarmifyx/shared";
 import {
   ACTIONABLE_APPROVAL_STATUSES,
   getLatestFailedRunsByAgent,
@@ -232,9 +232,9 @@ function FailedRunCard({
           </div>
         </div>
 
-          <div className="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm">
-            {t(displayError)}
-          </div>
+        <div className="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm">
+          {t(displayError)}
+        </div>
 
         <div className="text-xs">
           <span className="font-mono text-muted-foreground">{t("run {id}", { id: run.id.slice(0, 8) })}</span>
@@ -407,22 +407,22 @@ export function Inbox() {
       setActionError(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.approvals.list(selectedCompanyId!) });
       navigate(`/approvals/${id}?resolved=approved`);
-      },
-      onError: (err) => {
-        setActionError(err instanceof Error ? err.message : t("Failed to approve"));
-      },
-    });
+    },
+    onError: (err) => {
+      setActionError(err instanceof Error ? err.message : t("Failed to approve"));
+    },
+  });
 
   const rejectMutation = useMutation({
     mutationFn: (id: string) => approvalsApi.reject(id),
     onSuccess: () => {
       setActionError(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.approvals.list(selectedCompanyId!) });
-      },
-      onError: (err) => {
-        setActionError(err instanceof Error ? err.message : t("Failed to reject"));
-      },
-    });
+    },
+    onError: (err) => {
+      setActionError(err instanceof Error ? err.message : t("Failed to reject"));
+    },
+  });
 
   const approveJoinMutation = useMutation({
     mutationFn: (joinRequest: JoinRequest) =>
@@ -433,11 +433,11 @@ export function Inbox() {
       queryClient.invalidateQueries({ queryKey: queryKeys.sidebarBadges(selectedCompanyId!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.agents.list(selectedCompanyId!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.companies.all });
-      },
-      onError: (err) => {
-        setActionError(err instanceof Error ? err.message : t("Failed to approve join request"));
-      },
-    });
+    },
+    onError: (err) => {
+      setActionError(err instanceof Error ? err.message : t("Failed to approve join request"));
+    },
+  });
 
   const rejectJoinMutation = useMutation({
     mutationFn: (joinRequest: JoinRequest) =>
@@ -446,11 +446,11 @@ export function Inbox() {
       setActionError(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.access.joinRequests(selectedCompanyId!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.sidebarBadges(selectedCompanyId!) });
-      },
-      onError: (err) => {
-        setActionError(err instanceof Error ? err.message : t("Failed to reject join request"));
-      },
-    });
+    },
+    onError: (err) => {
+      setActionError(err instanceof Error ? err.message : t("Failed to reject join request"));
+    },
+  });
 
   const [fadingOutIssues, setFadingOutIssues] = useState<Set<string>>(new Set());
 
@@ -603,39 +603,39 @@ export function Inbox() {
 
           {tab === "all" && (
             <>
-            <Select
-              value={allCategoryFilter}
-              onValueChange={(value) => setAllCategoryFilter(value as InboxCategoryFilter)}
-            >
-              <SelectTrigger className="h-8 w-[170px] text-xs">
-                <SelectValue placeholder={t("Category")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="everything">{t("All categories")}</SelectItem>
-                <SelectItem value="issues_i_touched">{t("My recent issues")}</SelectItem>
-                <SelectItem value="join_requests">{t("Join requests")}</SelectItem>
-                <SelectItem value="approvals">{t("Approvals")}</SelectItem>
-                <SelectItem value="failed_runs">{t("Failed runs")}</SelectItem>
-                <SelectItem value="alerts">{t("Alerts")}</SelectItem>
-                <SelectItem value="stale_work">{t("Stale work")}</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {showApprovalsCategory && (
               <Select
-                value={allApprovalFilter}
-                onValueChange={(value) => setAllApprovalFilter(value as InboxApprovalFilter)}
+                value={allCategoryFilter}
+                onValueChange={(value) => setAllCategoryFilter(value as InboxCategoryFilter)}
               >
                 <SelectTrigger className="h-8 w-[170px] text-xs">
-                  <SelectValue placeholder={t("Approval status")} />
+                  <SelectValue placeholder={t("Category")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t("All approval statuses")}</SelectItem>
-                  <SelectItem value="actionable">{t("Needs action")}</SelectItem>
-                  <SelectItem value="resolved">{t("Resolved")}</SelectItem>
+                  <SelectItem value="everything">{t("All categories")}</SelectItem>
+                  <SelectItem value="issues_i_touched">{t("My recent issues")}</SelectItem>
+                  <SelectItem value="join_requests">{t("Join requests")}</SelectItem>
+                  <SelectItem value="approvals">{t("Approvals")}</SelectItem>
+                  <SelectItem value="failed_runs">{t("Failed runs")}</SelectItem>
+                  <SelectItem value="alerts">{t("Alerts")}</SelectItem>
+                  <SelectItem value="stale_work">{t("Stale work")}</SelectItem>
                 </SelectContent>
               </Select>
-            )}
+
+              {showApprovalsCategory && (
+                <Select
+                  value={allApprovalFilter}
+                  onValueChange={(value) => setAllApprovalFilter(value as InboxApprovalFilter)}
+                >
+                  <SelectTrigger className="h-8 w-[170px] text-xs">
+                    <SelectValue placeholder={t("Approval status")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("All approval statuses")}</SelectItem>
+                    <SelectItem value="actionable">{t("Needs action")}</SelectItem>
+                    <SelectItem value="resolved">{t("Resolved")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             </>
           )}
         </div>
@@ -864,7 +864,7 @@ export function Inbox() {
                       <span className="shrink-0 text-xs font-mono text-muted-foreground">
                         {issue.identifier ?? issue.id.slice(0, 8)}
                       </span>
-                        {issue.assigneeAgentId &&
+                      {issue.assigneeAgentId &&
                         (() => {
                           const name = agentName(issue.assigneeAgentId);
                           return name ? (
@@ -940,9 +940,8 @@ export function Inbox() {
                             aria-label={t("Mark as read")}
                           >
                             <span
-                              className={`h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 transition-opacity duration-300 ${
-                                isFading ? "opacity-0" : "opacity-100"
-                              }`}
+                              className={`h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 transition-opacity duration-300 ${isFading ? "opacity-0" : "opacity-100"
+                                }`}
                             />
                           </span>
                         ) : (
@@ -985,9 +984,8 @@ export function Inbox() {
                         aria-label={t("Mark as read")}
                       >
                         <span
-                          className={`block h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 transition-opacity duration-300 ${
-                            isFading ? "opacity-0" : "opacity-100"
-                          }`}
+                          className={`block h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 transition-opacity duration-300 ${isFading ? "opacity-0" : "opacity-100"
+                            }`}
                         />
                       </span>
                     )}

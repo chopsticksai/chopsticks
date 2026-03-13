@@ -22,7 +22,7 @@
   <a href="https://github.com/cjc-x/swarmifyx/stargazers"><img src="https://img.shields.io/github/stars/cjc-x/swarmifyx?style=flat" alt="Stars" /></a>
 </p>
 
-> SwarmifyX is a fork of Paperclip and remains distributed under the MIT License.
+> SwarmifyX is a fork of Swarmifyx and remains distributed under the MIT License.
 
 ## What Is SwarmifyX?
 
@@ -55,7 +55,7 @@ If an AI agent is the employee, SwarmifyX is the company.
 
 ## Quickstart
 
-SwarmifyX is presented here under SwarmifyX branding, while the underlying codebase is currently maintained as a fork of Paperclip under the MIT License.
+SwarmifyX is presented here under SwarmifyX branding, while the underlying codebase is currently maintained as a fork of Swarmifyx under the MIT License.
 
 ```bash
 npx swarmifyx onboard --yes

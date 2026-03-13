@@ -26,7 +26,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import type { Project } from "@paperclipai/shared";
+import type { Project } from "@swarmifyx/shared";
 
 function SortableProjectItem({
   activeProjectRef,

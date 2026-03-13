@@ -1,4 +1,4 @@
-# @paperclipai/db
+# @swarmifyx/db
 
 ## 0.3.0
 
@@ -10,7 +10,7 @@
 
 - Updated dependencies [6077ae6]
 - Updated dependencies
-  - @paperclipai/shared@0.3.0
+  - @swarmifyx/shared@0.3.0
 
 ## 0.2.7
 
@@ -18,7 +18,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/shared@0.2.7
+  - @swarmifyx/shared@0.2.7
 
 ## 0.2.6
 
@@ -26,7 +26,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/shared@0.2.6
+  - @swarmifyx/shared@0.2.6
 
 ## 0.2.5
 
@@ -34,7 +34,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/shared@0.2.5
+  - @swarmifyx/shared@0.2.5
 
 ## 0.2.4
 
@@ -42,7 +42,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/shared@0.2.4
+  - @swarmifyx/shared@0.2.4
 
 ## 0.2.3
 
@@ -50,7 +50,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/shared@0.2.3
+  - @swarmifyx/shared@0.2.3
 
 ## 0.2.2
 
@@ -58,7 +58,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/shared@0.2.2
+  - @swarmifyx/shared@0.2.2
 
 ## 0.2.1
 
@@ -66,4 +66,4 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/shared@0.2.1
+  - @swarmifyx/shared@0.2.1

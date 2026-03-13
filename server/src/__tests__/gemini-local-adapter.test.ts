@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { isGeminiUnknownSessionError, parseGeminiJsonl } from "@paperclipai/adapter-gemini-local/server";
-import { parseGeminiStdoutLine } from "@paperclipai/adapter-gemini-local/ui";
-import { printGeminiStreamEvent } from "@paperclipai/adapter-gemini-local/cli";
+import { isGeminiUnknownSessionError, parseGeminiJsonl } from "@swarmifyx/adapter-gemini-local/server";
+import { parseGeminiStdoutLine } from "@swarmifyx/adapter-gemini-local/ui";
+import { printGeminiStreamEvent } from "@swarmifyx/adapter-gemini-local/cli";
 
 describe("gemini_local parser", () => {
   it("extracts session, summary, usage, cost, and terminal error message", () => {
@@ -144,7 +144,7 @@ function stripAnsi(value: string): string {
 
 describe("gemini_local cli formatter", () => {
   it("prints init, assistant, result, and error events", () => {
-    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const spy = vi.spyOn(console, "log").mockImplementation(() => { });
     let joined = "";
 
     try {

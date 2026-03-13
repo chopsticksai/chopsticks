@@ -10,13 +10,13 @@ import { fileURLToPath } from "node:url";
 import { Router } from "express";
 import type { Request } from "express";
 import { and, eq, isNull, desc } from "drizzle-orm";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@swarmifyx/db";
 import {
   agentApiKeys,
   authUsers,
   invites,
   joinRequests
-} from "@paperclipai/db";
+} from "@swarmifyx/db";
 import {
   acceptInviteSchema,
   claimJoinRequestApiKeySchema,
@@ -26,8 +26,8 @@ import {
   updateMemberPermissionsSchema,
   updateUserCompanyAccessSchema,
   PERMISSION_KEYS
-} from "@paperclipai/shared";
-import type { DeploymentExposure, DeploymentMode } from "@paperclipai/shared";
+} from "@swarmifyx/shared";
+import type { DeploymentExposure, DeploymentMode } from "@swarmifyx/shared";
 import {
   forbidden,
   conflict,
@@ -97,7 +97,7 @@ function requestBaseUrl(req: Request) {
 
 function readSkillMarkdown(skillName: string): string | null {
   const normalized = skillName.trim().toLowerCase();
-  if (normalized !== "paperclip" && normalized !== "paperclip-create-agent")
+  if (normalized !== "swarmifyx" && normalized !== "swarmifyx-create-agent")
     return null;
   const moduleDir = path.dirname(fileURLToPath(import.meta.url));
   const candidates = [
@@ -234,10 +234,10 @@ function extractHeaderEntries(input: unknown): Array<[string, unknown]> {
       )
         ? mapped.value
         : Object.prototype.hasOwnProperty.call(mapped, "token")
-        ? mapped.token
-        : Object.prototype.hasOwnProperty.call(mapped, "secret")
-        ? mapped.secret
-        : mapped;
+          ? mapped.token
+          : Object.prototype.hasOwnProperty.call(mapped, "secret")
+            ? mapped.secret
+            : mapped;
       entries.push([explicitKey, explicitValue]);
       continue;
     }
@@ -327,7 +327,7 @@ function generateEd25519PrivateKeyPem(): string {
 export function buildJoinDefaultsPayloadForAccept(input: {
   adapterType: string | null;
   defaultsPayload: unknown;
-  paperclipApiUrl?: unknown;
+  swarmifyxApiUrl?: unknown;
   inboundOpenClawAuthHeader?: string | null;
   inboundOpenClawTokenHeader?: string | null;
 }): unknown {
@@ -339,9 +339,9 @@ export function buildJoinDefaultsPayloadForAccept(input: {
     ? { ...(input.defaultsPayload as Record<string, unknown>) }
     : ({} as Record<string, unknown>);
 
-  if (!nonEmptyTrimmedString(merged.paperclipApiUrl)) {
-    const legacyPaperclipApiUrl = nonEmptyTrimmedString(input.paperclipApiUrl);
-    if (legacyPaperclipApiUrl) merged.paperclipApiUrl = legacyPaperclipApiUrl;
+  if (!nonEmptyTrimmedString(merged.swarmifyxApiUrl)) {
+    const legacySwarmifyxApiUrl = nonEmptyTrimmedString(input.swarmifyxApiUrl);
+    if (legacySwarmifyxApiUrl) merged.swarmifyxApiUrl = legacySwarmifyxApiUrl;
   }
   const mergedHeaders = normalizeHeaderMap(merged.headers) ?? {};
 
@@ -474,17 +474,17 @@ function summarizeOpenClawGatewayDefaultsForLog(defaultsPayload: unknown) {
   const headers = defaults ? normalizeHeaderMap(defaults.headers) : undefined;
   const gatewayTokenValue = headers
     ? headerMapGetIgnoreCase(headers, "x-openclaw-token") ??
-      headerMapGetIgnoreCase(headers, "x-openclaw-auth") ??
-      tokenFromAuthorizationHeader(
-        headerMapGetIgnoreCase(headers, "authorization")
-      )
+    headerMapGetIgnoreCase(headers, "x-openclaw-auth") ??
+    tokenFromAuthorizationHeader(
+      headerMapGetIgnoreCase(headers, "authorization")
+    )
     : null;
   return {
     present: Boolean(defaults),
     keys: defaults ? Object.keys(defaults).sort() : [],
     url: defaults ? nonEmptyTrimmedString(defaults.url) : null,
-    paperclipApiUrl: defaults
-      ? nonEmptyTrimmedString(defaults.paperclipApiUrl)
+    swarmifyxApiUrl: defaults
+      ? nonEmptyTrimmedString(defaults.swarmifyxApiUrl)
       : null,
     headerKeys: headers ? Object.keys(headers).sort() : [],
     sessionKeyStrategy: defaults
@@ -659,9 +659,8 @@ export function normalizeAgentDefaultsForJoin(input: {
       diagnostics.push({
         code: "openclaw_gateway_device_key_generate_failed",
         level: "warn",
-        message: `Failed to generate gateway device key: ${
-          err instanceof Error ? err.message : String(err)
-        }`,
+        message: `Failed to generate gateway device key: ${err instanceof Error ? err.message : String(err)
+          }`,
         hint:
           "Set agentDefaultsPayload.devicePrivateKeyPem explicitly or set disableDeviceAuth=true."
       });
@@ -673,11 +672,11 @@ export function normalizeAgentDefaultsForJoin(input: {
 
   const waitTimeoutMs =
     typeof defaults.waitTimeoutMs === "number" &&
-    Number.isFinite(defaults.waitTimeoutMs)
+      Number.isFinite(defaults.waitTimeoutMs)
       ? Math.floor(defaults.waitTimeoutMs)
       : typeof defaults.waitTimeoutMs === "string"
-      ? Number.parseInt(defaults.waitTimeoutMs.trim(), 10)
-      : NaN;
+        ? Number.parseInt(defaults.waitTimeoutMs.trim(), 10)
+        : NaN;
   if (Number.isFinite(waitTimeoutMs) && waitTimeoutMs > 0) {
     normalized.waitTimeoutMs = waitTimeoutMs;
   }
@@ -686,8 +685,8 @@ export function normalizeAgentDefaultsForJoin(input: {
     typeof defaults.timeoutSec === "number" && Number.isFinite(defaults.timeoutSec)
       ? Math.floor(defaults.timeoutSec)
       : typeof defaults.timeoutSec === "string"
-      ? Number.parseInt(defaults.timeoutSec.trim(), 10)
-      : NaN;
+        ? Number.parseInt(defaults.timeoutSec.trim(), 10)
+        : NaN;
   if (Number.isFinite(timeoutSec) && timeoutSec > 0) {
     normalized.timeoutSec = timeoutSec;
   }
@@ -721,35 +720,35 @@ export function normalizeAgentDefaultsForJoin(input: {
     }
   }
 
-  const rawPaperclipApiUrl =
-    typeof defaults.paperclipApiUrl === "string"
-      ? defaults.paperclipApiUrl.trim()
+  const rawSwarmifyxApiUrl =
+    typeof defaults.swarmifyxApiUrl === "string"
+      ? defaults.swarmifyxApiUrl.trim()
       : "";
-  if (rawPaperclipApiUrl) {
+  if (rawSwarmifyxApiUrl) {
     try {
-      const parsedPaperclipApiUrl = new URL(rawPaperclipApiUrl);
+      const parsedSwarmifyxApiUrl = new URL(rawSwarmifyxApiUrl);
       if (
-        parsedPaperclipApiUrl.protocol !== "http:" &&
-        parsedPaperclipApiUrl.protocol !== "https:"
+        parsedSwarmifyxApiUrl.protocol !== "http:" &&
+        parsedSwarmifyxApiUrl.protocol !== "https:"
       ) {
         diagnostics.push({
-          code: "openclaw_gateway_paperclip_api_url_protocol",
+          code: "openclaw_gateway_swarmifyx_api_url_protocol",
           level: "warn",
-          message: `paperclipApiUrl must use http:// or https:// (got ${parsedPaperclipApiUrl.protocol}).`
+          message: `swarmifyxApiUrl must use http:// or https:// (got ${parsedSwarmifyxApiUrl.protocol}).`
         });
       } else {
-        normalized.paperclipApiUrl = parsedPaperclipApiUrl.toString();
+        normalized.swarmifyxApiUrl = parsedSwarmifyxApiUrl.toString();
         diagnostics.push({
-          code: "openclaw_gateway_paperclip_api_url_configured",
+          code: "openclaw_gateway_swarmifyx_api_url_configured",
           level: "info",
-          message: `paperclipApiUrl set to ${parsedPaperclipApiUrl.toString()}`
+          message: `swarmifyxApiUrl set to ${parsedSwarmifyxApiUrl.toString()}`
         });
       }
     } catch {
       diagnostics.push({
-        code: "openclaw_gateway_paperclip_api_url_invalid",
+        code: "openclaw_gateway_swarmifyx_api_url_invalid",
         level: "warn",
-        message: `Invalid paperclipApiUrl: ${rawPaperclipApiUrl}`
+        message: `Invalid swarmifyxApiUrl: ${rawSwarmifyxApiUrl}`
       });
     }
   }
@@ -815,7 +814,7 @@ function buildOnboardingDiscoveryDiagnostics(input: {
       code: "openclaw_onboarding_api_loopback",
       level: "warn",
       message:
-        "Onboarding URL resolves to loopback hostname. Remote OpenClaw agents cannot reach localhost on your Paperclip host.",
+        "Onboarding URL resolves to loopback hostname. Remote OpenClaw agents cannot reach localhost on your Swarmifyx host.",
       hint: "Use a reachable hostname/IP (for example Tailscale hostname, Docker host alias, or public domain)."
     });
   }
@@ -828,7 +827,7 @@ function buildOnboardingDiscoveryDiagnostics(input: {
     diagnostics.push({
       code: "openclaw_onboarding_private_loopback_bind",
       level: "warn",
-      message: "Paperclip is bound to loopback in authenticated/private mode.",
+      message: "Swarmifyx is bound to loopback in authenticated/private mode.",
       hint: "Run with a reachable bind host or use pnpm dev --tailscale-auth for private-network onboarding."
     });
   }
@@ -904,7 +903,7 @@ function buildInviteOnboardingManifest(
   }
 ) {
   const baseUrl = requestBaseUrl(req);
-  const skillPath = "/api/skills/paperclip";
+  const skillPath = "/api/skills/swarmifyx";
   const skillUrl = baseUrl ? `${baseUrl}${skillPath}` : skillPath;
   const registrationEndpointPath = `/api/invites/${token}/accept`;
   const registrationEndpointUrl = baseUrl
@@ -931,7 +930,7 @@ function buildInviteOnboardingManifest(
     invite: toInviteSummaryResponse(req, token, invite),
     onboarding: {
       instructions:
-        "Join as an OpenClaw Gateway agent, save your one-time claim secret, wait for board approval, then claim your API key. Save the claim response token to ~/.openclaw/workspace/paperclip-claimed-api-key.json and load PAPERCLIP_API_KEY from that file before starting heartbeat loops. You MUST submit adapterType='openclaw_gateway', set agentDefaultsPayload.url to your ws:// or wss:// OpenClaw gateway endpoint, and include agentDefaultsPayload.headers.x-openclaw-token (or legacy x-openclaw-auth).",
+        "Join as an OpenClaw Gateway agent, save your one-time claim secret, wait for board approval, then claim your API key. Save the claim response token to ~/.openclaw/workspace/swarmifyx-claimed-api-key.json and load SWARMIFYX_API_KEY from that file before starting heartbeat loops. You MUST submit adapterType='openclaw_gateway', set agentDefaultsPayload.url to your ws:// or wss:// OpenClaw gateway endpoint, and include agentDefaultsPayload.headers.x-openclaw-token (or legacy x-openclaw-auth).",
       inviteMessage: extractInviteMessage(invite),
       recommendedAdapterType: "openclaw_gateway",
       requiredFields: {
@@ -940,7 +939,7 @@ function buildInviteOnboardingManifest(
         adapterType: "Use 'openclaw_gateway' for OpenClaw Gateway agents",
         capabilities: "Optional capability summary",
         agentDefaultsPayload:
-          "Adapter config for OpenClaw gateway. MUST include url (ws:// or wss://) and headers.x-openclaw-token (or legacy x-openclaw-auth). Optional fields: paperclipApiUrl, waitTimeoutMs, sessionKeyStrategy, sessionKey, role, scopes, disableDeviceAuth, devicePrivateKeyPem."
+          "Adapter config for OpenClaw gateway. MUST include url (ws:// or wss://) and headers.x-openclaw-token (or legacy x-openclaw-auth). Optional fields: swarmifyxApiUrl, waitTimeoutMs, sessionKeyStrategy, sessionKey, role, scopes, disableDeviceAuth, devicePrivateKeyPem."
       },
       registrationEndpoint: {
         method: "POST",
@@ -964,9 +963,9 @@ function buildInviteOnboardingManifest(
         diagnostics: discoveryDiagnostics,
         guidance:
           opts.deploymentMode === "authenticated" &&
-          opts.deploymentExposure === "private"
-            ? "If OpenClaw runs on another machine, ensure the Paperclip hostname is reachable and allowed via `pnpm swarmifyx allowed-hostname <host>`."
-            : "Ensure OpenClaw can reach this Paperclip API base URL for invite, claim, and skill bootstrap calls."
+            opts.deploymentExposure === "private"
+            ? "If OpenClaw runs on another machine, ensure the Swarmifyx hostname is reachable and allowed via `pnpm swarmifyx allowed-hostname <host>`."
+            : "Ensure OpenClaw can reach this Swarmifyx API base URL for invite, claim, and skill bootstrap calls."
       },
       textInstructions: {
         path: onboardingTextPath,
@@ -974,10 +973,10 @@ function buildInviteOnboardingManifest(
         contentType: "text/plain"
       },
       skill: {
-        name: "paperclip",
+        name: "swarmifyx",
         path: skillPath,
         url: skillUrl,
-        installPath: "~/.openclaw/skills/paperclip/SKILL.md"
+        installPath: "~/.openclaw/skills/swarmifyx/SKILL.md"
       }
     }
   };
@@ -1027,7 +1026,7 @@ export function buildInviteOnboardingTextDocument(
   };
 
   appendBlock(`
-    # Paperclip OpenClaw Gateway Onboarding
+    # Swarmifyx OpenClaw Gateway Onboarding
 
     This document is meant to be readable by both humans and agents.
 
@@ -1072,7 +1071,7 @@ export function buildInviteOnboardingTextDocument(
         capabilities: "OpenClaw agent adapter",
         agentDefaultsPayload: {
           url: "ws://127.0.0.1:18789",
-          paperclipApiUrl: "http://host.docker.internal:3100",
+          swarmifyxApiUrl: "http://host.docker.internal:3100",
           headers: { "x-openclaw-token": token },
           waitTimeoutMs: 120000,
           sessionKeyStrategy: "issue",
@@ -1084,15 +1083,14 @@ export function buildInviteOnboardingTextDocument(
     ' "$TOKEN")"
 
     ## Step 1: Submit agent join request
-    ${onboarding.registrationEndpoint.method} ${
-    onboarding.registrationEndpoint.url
-  }
+    ${onboarding.registrationEndpoint.method} ${onboarding.registrationEndpoint.url
+    }
 
     IMPORTANT: You MUST include agentDefaultsPayload.headers.x-openclaw-token with your gateway token.
     Legacy x-openclaw-auth is also accepted, but x-openclaw-token is preferred.
     Use adapterType "openclaw_gateway" and a ws:// or wss:// gateway URL.
     Pairing mode requirement:
-    - Keep device auth enabled (recommended). If devicePrivateKeyPem is omitted, Paperclip generates and persists one during join so pairing approvals are stable.
+    - Keep device auth enabled (recommended). If devicePrivateKeyPem is omitted, Swarmifyx generates and persists one during join so pairing approvals are stable.
     - You may set disableDeviceAuth=true only for special environments that cannot support pairing.
     - First run may return "pairing required" once; approve the pending pairing request in OpenClaw, then retry.
     Do NOT use /v1/responses or /hooks/* in this gateway join flow.
@@ -1105,7 +1103,7 @@ export function buildInviteOnboardingTextDocument(
       "capabilities": "Optional summary",
       "agentDefaultsPayload": {
         "url": "wss://your-openclaw-gateway.example",
-        "paperclipApiUrl": "https://paperclip-hostname-your-agent-can-reach:3100",
+        "swarmifyxApiUrl": "https://swarmifyx-hostname-your-agent-can-reach:3100",
         "headers": { "x-openclaw-token": "replace-me" },
         "waitTimeoutMs": 120000,
         "sessionKeyStrategy": "issue",
@@ -1120,11 +1118,10 @@ export function buildInviteOnboardingTextDocument(
     - claimApiKeyPath
 
     ## Step 2: Wait for board approval
-    The board approves the join request in Paperclip before key claim is allowed.
+    The board approves the join request in Swarmifyx before key claim is allowed.
 
     ## Step 3: Claim API key (one-time)
-    ${
-      onboarding.claimEndpointTemplate.method
+    ${onboarding.claimEndpointTemplate.method
     } /api/join-requests/{requestId}/claim-api-key
 
     Body (JSON):
@@ -1134,41 +1131,40 @@ export function buildInviteOnboardingTextDocument(
 
     On successful claim, save the full JSON response to:
 
-    - ~/.openclaw/workspace/paperclip-claimed-api-key.json
-    chmod 600 ~/.openclaw/workspace/paperclip-claimed-api-key.json
+    - ~/.openclaw/workspace/swarmifyx-claimed-api-key.json
+    chmod 600 ~/.openclaw/workspace/swarmifyx-claimed-api-key.json
 
-    And set the PAPERCLIP_API_KEY and PAPERCLIP_API_URL in your environment variables as specified here:
+    And set the SWARMIFYX_API_KEY and SWARMIFYX_API_URL in your environment variables as specified here:
     https://docs.openclaw.ai/help/environment
 
     e.g. 
 
     {
       env: {
-        PAPERCLIP_API_KEY: "...",
-        PAPERCLIP_API_URL: "...",
+        SWARMIFYX_API_KEY: "...",
+        SWARMIFYX_API_URL: "...",
       },
     }
 
-    Then set PAPERCLIP_API_KEY and PAPERCLIP_API_URL from the saved token field for every heartbeat run.
+    Then set SWARMIFYX_API_KEY and SWARMIFYX_API_URL from the saved token field for every heartbeat run.
 
     Important:
     - claim secrets expire
     - claim secrets are single-use
     - claim fails before board approval
 
-    ## Step 4: Install Paperclip skill in OpenClaw
+    ## Step 4: Install Swarmifyx skill in OpenClaw
     GET ${onboarding.skill.url}
     Install path: ${onboarding.skill.installPath}
 
-    Be sure to prepend your PAPERCLIP_API_URL to the top of your skill and note the path to your PAPERCLIP_API_URL
+    Be sure to prepend your SWARMIFYX_API_URL to the top of your skill and note the path to your SWARMIFYX_API_URL
 
     ## Text onboarding URL
     ${onboarding.textInstructions.url}
 
     ## Connectivity guidance
-    ${
-      onboarding.connectivity?.guidance ??
-      "Ensure Paperclip is reachable from your OpenClaw runtime."
+    ${onboarding.connectivity?.guidance ??
+    "Ensure Swarmifyx is reachable from your OpenClaw runtime."
     }
   `);
 
@@ -1176,12 +1172,12 @@ export function buildInviteOnboardingTextDocument(
     onboarding.connectivity?.connectionCandidates
   )
     ? onboarding.connectivity.connectionCandidates.filter(
-        (entry): entry is string => Boolean(entry)
-      )
+      (entry): entry is string => Boolean(entry)
+    )
     : [];
 
   if (connectionCandidates.length > 0) {
-    lines.push("## Suggested Paperclip base URLs to try");
+    lines.push("## Suggested Swarmifyx base URLs to try");
     for (const candidate of connectionCandidates) {
       lines.push(`- ${candidate}`);
     }
@@ -1189,12 +1185,12 @@ export function buildInviteOnboardingTextDocument(
 
       Test each candidate with:
       - GET <candidate>/api/health
-      - set the first reachable candidate as agentDefaultsPayload.paperclipApiUrl when submitting your join request
+      - set the first reachable candidate as agentDefaultsPayload.swarmifyxApiUrl when submitting your join request
 
       If none are reachable: ask your human operator for a reachable hostname/address and help them update network configuration.
       For authenticated/private mode, they may need:
       - pnpm swarmifyx allowed-hostname <host>
-      - then restart Paperclip and retry onboarding.
+      - then restart Swarmifyx and retry onboarding.
     `);
   }
 
@@ -1269,7 +1265,7 @@ function isLocalImplicit(req: Request) {
 }
 
 async function resolveActorEmail(db: Db, req: Request): Promise<string | null> {
-  if (isLocalImplicit(req)) return "local@paperclip.local";
+  if (isLocalImplicit(req)) return "local@swarmifyx.local";
   const userId = req.actor.userId;
   if (!userId) return null;
   const user = await db
@@ -1306,8 +1302,8 @@ function grantsFromDefaults(
       permissionKey: record.permissionKey as (typeof PERMISSION_KEYS)[number],
       scope:
         record.scope &&
-        typeof record.scope === "object" &&
-        !Array.isArray(record.scope)
+          typeof record.scope === "object" &&
+          !Array.isArray(record.scope)
           ? (record.scope as Record<string, unknown>)
           : null
     });
@@ -1609,10 +1605,10 @@ export function accessRoutes(
   router.get("/skills/index", (_req, res) => {
     res.json({
       skills: [
-        { name: "paperclip", path: "/api/skills/paperclip" },
+        { name: "swarmifyx", path: "/api/skills/swarmifyx" },
         {
-          name: "paperclip-create-agent",
-          path: "/api/skills/paperclip-create-agent"
+          name: "swarmifyx-create-agent",
+          path: "/api/skills/swarmifyx-create-agent"
         }
       ]
     });
@@ -1827,10 +1823,10 @@ export function accessRoutes(
       const inviteAlreadyAccepted = Boolean(invite.acceptedAt);
       const existingJoinRequestForInvite = inviteAlreadyAccepted
         ? await db
-            .select()
-            .from(joinRequests)
-            .where(eq(joinRequests.inviteId, invite.id))
-            .then((rows) => rows[0] ?? null)
+          .select()
+          .from(joinRequests)
+          .where(eq(joinRequests.inviteId, invite.id))
+          .then((rows) => rows[0] ?? null)
         : null;
 
       if (invite.inviteType === "bootstrap_ceo") {
@@ -1917,37 +1913,37 @@ export function accessRoutes(
 
       const replayMergedDefaults = inviteAlreadyAccepted
         ? mergeJoinDefaultsPayloadForReplay(
-            existingJoinRequestForInvite?.agentDefaultsPayload ?? null,
-            req.body.agentDefaultsPayload ?? null
-          )
+          existingJoinRequestForInvite?.agentDefaultsPayload ?? null,
+          req.body.agentDefaultsPayload ?? null
+        )
         : req.body.agentDefaultsPayload ?? null;
 
       const gatewayDefaultsPayload =
         requestType === "agent"
           ? buildJoinDefaultsPayloadForAccept({
-              adapterType,
-              defaultsPayload: replayMergedDefaults,
-              paperclipApiUrl: req.body.paperclipApiUrl ?? null,
-              inboundOpenClawAuthHeader: req.header("x-openclaw-auth") ?? null,
-              inboundOpenClawTokenHeader: req.header("x-openclaw-token") ?? null
-            })
+            adapterType,
+            defaultsPayload: replayMergedDefaults,
+            swarmifyxApiUrl: req.body.swarmifyxApiUrl ?? null,
+            inboundOpenClawAuthHeader: req.header("x-openclaw-auth") ?? null,
+            inboundOpenClawTokenHeader: req.header("x-openclaw-token") ?? null
+          })
           : null;
 
       const joinDefaults =
         requestType === "agent"
           ? normalizeAgentDefaultsForJoin({
-              adapterType,
-              defaultsPayload: gatewayDefaultsPayload,
-              deploymentMode: opts.deploymentMode,
-              deploymentExposure: opts.deploymentExposure,
-              bindHost: opts.bindHost,
-              allowedHostnames: opts.allowedHostnames
-            })
+            adapterType,
+            defaultsPayload: gatewayDefaultsPayload,
+            deploymentMode: opts.deploymentMode,
+            deploymentExposure: opts.deploymentExposure,
+            bindHost: opts.bindHost,
+            allowedHostnames: opts.allowedHostnames
+          })
           : {
-              normalized: null as Record<string, unknown> | null,
-              diagnostics: [] as JoinDiagnostic[],
-              fatalErrors: [] as string[]
-            };
+            normalized: null as Record<string, unknown> | null,
+            diagnostics: [] as JoinDiagnostic[],
+            fatalErrors: [] as string[]
+          };
 
       if (requestType === "agent" && joinDefaults.fatalErrors.length > 0) {
         throw badRequest(joinDefaults.fatalErrors.join("; "));
@@ -1982,70 +1978,70 @@ export function accessRoutes(
         requestType === "human" ? await resolveActorEmail(db, req) : null;
       const created = !inviteAlreadyAccepted
         ? await db.transaction(async (tx) => {
-            await tx
-              .update(invites)
-              .set({ acceptedAt: new Date(), updatedAt: new Date() })
-              .where(
-                and(
-                  eq(invites.id, invite.id),
-                  isNull(invites.acceptedAt),
-                  isNull(invites.revokedAt)
-                )
-              );
+          await tx
+            .update(invites)
+            .set({ acceptedAt: new Date(), updatedAt: new Date() })
+            .where(
+              and(
+                eq(invites.id, invite.id),
+                isNull(invites.acceptedAt),
+                isNull(invites.revokedAt)
+              )
+            );
 
-            const row = await tx
-              .insert(joinRequests)
-              .values({
-                inviteId: invite.id,
-                companyId,
-                requestType,
-                status: "pending_approval",
-                requestIp: requestIp(req),
-                requestingUserId:
-                  requestType === "human"
-                    ? req.actor.userId ?? "local-board"
-                    : null,
-                requestEmailSnapshot:
-                  requestType === "human" ? actorEmail : null,
-                agentName: requestType === "agent" ? req.body.agentName : null,
-                adapterType: requestType === "agent" ? adapterType : null,
-                capabilities:
-                  requestType === "agent"
-                    ? req.body.capabilities ?? null
-                    : null,
-                agentDefaultsPayload:
-                  requestType === "agent" ? joinDefaults.normalized : null,
-                claimSecretHash,
-                claimSecretExpiresAt
-              })
-              .returning()
-              .then((rows) => rows[0]);
-            return row;
-          })
-        : await db
-            .update(joinRequests)
-            .set({
+          const row = await tx
+            .insert(joinRequests)
+            .values({
+              inviteId: invite.id,
+              companyId,
+              requestType,
+              status: "pending_approval",
               requestIp: requestIp(req),
-              agentName:
-                requestType === "agent"
-                  ? req.body.agentName ??
-                    existingJoinRequestForInvite?.agentName ??
-                    null
+              requestingUserId:
+                requestType === "human"
+                  ? req.actor.userId ?? "local-board"
                   : null,
+              requestEmailSnapshot:
+                requestType === "human" ? actorEmail : null,
+              agentName: requestType === "agent" ? req.body.agentName : null,
+              adapterType: requestType === "agent" ? adapterType : null,
               capabilities:
                 requestType === "agent"
-                  ? req.body.capabilities ??
-                    existingJoinRequestForInvite?.capabilities ??
-                    null
+                  ? req.body.capabilities ?? null
                   : null,
-              adapterType: requestType === "agent" ? adapterType : null,
               agentDefaultsPayload:
                 requestType === "agent" ? joinDefaults.normalized : null,
-              updatedAt: new Date()
+              claimSecretHash,
+              claimSecretExpiresAt
             })
-            .where(eq(joinRequests.id, replayJoinRequestId as string))
             .returning()
             .then((rows) => rows[0]);
+          return row;
+        })
+        : await db
+          .update(joinRequests)
+          .set({
+            requestIp: requestIp(req),
+            agentName:
+              requestType === "agent"
+                ? req.body.agentName ??
+                existingJoinRequestForInvite?.agentName ??
+                null
+                : null,
+            capabilities:
+              requestType === "agent"
+                ? req.body.capabilities ??
+                existingJoinRequestForInvite?.capabilities ??
+                null
+                : null,
+            adapterType: requestType === "agent" ? adapterType : null,
+            agentDefaultsPayload:
+              requestType === "agent" ? joinDefaults.normalized : null,
+            updatedAt: new Date()
+          })
+          .where(eq(joinRequests.id, replayJoinRequestId as string))
+          .returning()
+          .then((rows) => rows[0]);
 
       if (!created) {
         throw conflict("Join request not found");
@@ -2102,10 +2098,10 @@ export function accessRoutes(
         if (expectedDefaults.url && !persistedDefaults.url)
           missingPersistedFields.push("url");
         if (
-          expectedDefaults.paperclipApiUrl &&
-          !persistedDefaults.paperclipApiUrl
+          expectedDefaults.swarmifyxApiUrl &&
+          !persistedDefaults.swarmifyxApiUrl
         ) {
-          missingPersistedFields.push("paperclipApiUrl");
+          missingPersistedFields.push("swarmifyxApiUrl");
         }
         if (expectedDefaults.gatewayToken && !persistedDefaults.gatewayToken) {
           missingPersistedFields.push("headers.x-openclaw-token");
@@ -2159,7 +2155,7 @@ export function accessRoutes(
           req.actor.type === "agent"
             ? req.actor.agentId ?? "invite-agent"
             : req.actor.userId ??
-              (requestType === "agent" ? "invite-anon" : "board"),
+            (requestType === "agent" ? "invite-anon" : "board"),
         action: inviteAlreadyAccepted
           ? "join.request_replayed"
           : "join.requested",
@@ -2335,7 +2331,7 @@ export function accessRoutes(
           adapterType: existing.adapterType ?? "process",
           adapterConfig:
             existing.agentDefaultsPayload &&
-            typeof existing.agentDefaultsPayload === "object"
+              typeof existing.agentDefaultsPayload === "object"
               ? (existing.agentDefaultsPayload as Record<string, unknown>)
               : {},
           runtimeConfig: {},
@@ -2397,7 +2393,7 @@ export function accessRoutes(
           source: "join_request",
           sourceId: requestId,
           approvedAt: new Date()
-        }).catch(() => {});
+        }).catch(() => { });
       }
 
       res.json(toJoinRequestResponse(approved));

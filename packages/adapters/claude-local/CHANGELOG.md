@@ -1,4 +1,4 @@
-# @paperclipai/adapter-claude-local
+# @swarmifyx/adapter-claude-local
 
 ## 0.3.0
 
@@ -9,7 +9,7 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.3.0
+  - @swarmifyx/adapter-utils@0.3.0
 
 ## 0.2.7
 
@@ -17,7 +17,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.2.7
+  - @swarmifyx/adapter-utils@0.2.7
 
 ## 0.2.6
 
@@ -25,7 +25,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.2.6
+  - @swarmifyx/adapter-utils@0.2.6
 
 ## 0.2.5
 
@@ -33,7 +33,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.2.5
+  - @swarmifyx/adapter-utils@0.2.5
 
 ## 0.2.4
 
@@ -41,7 +41,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.2.4
+  - @swarmifyx/adapter-utils@0.2.4
 
 ## 0.2.3
 
@@ -49,7 +49,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.2.3
+  - @swarmifyx/adapter-utils@0.2.3
 
 ## 0.2.2
 
@@ -57,7 +57,7 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.2.2
+  - @swarmifyx/adapter-utils@0.2.2
 
 ## 0.2.1
 
@@ -65,4 +65,4 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.2.1
+  - @swarmifyx/adapter-utils@0.2.1

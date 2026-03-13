@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
-import type { Agent, Issue, LiveEvent } from "@paperclipai/shared";
+import type { Agent, Issue, LiveEvent } from "@swarmifyx/shared";
 import { authApi } from "../api/auth";
 import { useCompany } from "./CompanyContext";
 import { useI18n } from "./I18nContext";
@@ -476,6 +476,20 @@ function gatedPushToast(
   if (id !== null) recordToastHit(gate, category);
 }
 
+function closeSocketSafely(socket: WebSocket | null, reason: string) {
+  if (!socket) return;
+  if (socket.readyState === WebSocket.CONNECTING) {
+    socket.onopen = () => {
+      socket.onopen = null;
+      socket.close(1000, reason);
+    };
+    return;
+  }
+  if (socket.readyState === WebSocket.OPEN) {
+    socket.close(1000, reason);
+  }
+}
+
 function handleLiveEvent(
   queryClient: QueryClient,
   expectedCompanyId: string,
@@ -613,7 +627,7 @@ export function LiveUpdatesProvider({ children }: { children: ReactNode }) {
         socket.onmessage = null;
         socket.onerror = null;
         socket.onclose = null;
-        socket.close(1000, "provider_unmount");
+        closeSocketSafely(socket, "provider_unmount");
       }
     };
   }, [queryClient, selectedCompanyId, pushToast, currentUserId, t]);

@@ -1,4 +1,4 @@
-# @paperclipai/adapter-pi-local
+# @swarmifyx/adapter-pi-local
 
 ## 0.3.0
 
@@ -9,4 +9,4 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.3.0
+  - @swarmifyx/adapter-utils@0.3.0

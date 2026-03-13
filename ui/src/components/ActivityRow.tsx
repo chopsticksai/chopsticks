@@ -4,7 +4,7 @@ import { timeAgo } from "../lib/timeAgo";
 import { cn } from "../lib/utils";
 import { useI18n } from "../context/I18nContext";
 import { getPriorityLabel, getStatusLabel } from "../lib/i18n";
-import { deriveProjectUrlKey, type ActivityEvent, type Agent } from "@paperclipai/shared";
+import { deriveProjectUrlKey, type ActivityEvent, type Agent } from "@swarmifyx/shared";
 
 const ACTION_VERBS: Record<string, string> = {
   "agent_api_key.claimed": "claimed API key",
@@ -95,18 +95,18 @@ function formatVerb(
       const from = previous.status;
       return from
         ? t("changed status from {from} to {to} on", {
-            from: getStatusLabel(String(from)),
-            to: getStatusLabel(String(details.status)),
-          })
+          from: getStatusLabel(String(from)),
+          to: getStatusLabel(String(details.status)),
+        })
         : t("changed status to {to} on", { to: getStatusLabel(String(details.status)) });
     }
     if (details.priority !== undefined) {
       const from = previous.priority;
       return from
         ? t("changed priority from {from} to {to} on", {
-            from: getPriorityLabel(String(from)),
-            to: getPriorityLabel(String(details.priority)),
-          })
+          from: getPriorityLabel(String(from)),
+          to: getPriorityLabel(String(details.priority)),
+        })
         : t("changed priority to {to} on", { to: getPriorityLabel(String(details.priority)) });
     }
   }

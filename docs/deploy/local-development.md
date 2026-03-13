@@ -1,9 +1,9 @@
 ---
 title: Local Development
-summary: Set up Paperclip for local development
+summary: Set up Swarmifyx for local development
 ---
 
-Run Paperclip locally with zero external dependencies.
+Run Swarmifyx locally with zero external dependencies.
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ This starts:
 - **API server** at `http://localhost:3100`
 - **UI** served by the API server in dev middleware mode (same origin)
 
-No Docker or external database required. Paperclip uses embedded PostgreSQL automatically.
+No Docker or external database required. Swarmifyx uses embedded PostgreSQL automatically.
 
 ## One-Command Bootstrap
 
@@ -94,7 +94,7 @@ pnpm dev
 Override with environment variables:
 
 ```sh
-PAPERCLIP_HOME=/custom/path PAPERCLIP_INSTANCE_ID=dev pnpm swarmifyx run
+SWARMIFYX_HOME=/custom/path SWARMIFYX_INSTANCE_ID=dev pnpm swarmifyx run
 ```
 
-Compatibility note: if `~/.swarmifyx` does not exist yet but legacy `~/.paperclip` does, Paperclip will continue using the legacy home until you migrate it or override `PAPERCLIP_HOME`.
+Compatibility note: `~/.swarmifyx` is now the only default local home. Legacy `~/.swarmifyx` homes are no longer auto-detected; move the directory to `~/.swarmifyx` or set `SWARMIFYX_HOME` explicitly during migration.

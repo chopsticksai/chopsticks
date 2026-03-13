@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# release.sh — Prepare and publish a Paperclip release.
+# release.sh — Prepare and publish a Swarmifyx release.
 #
 # Stable release:
 #   ./scripts/release.sh patch

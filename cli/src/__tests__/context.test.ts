@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   defaultClientContext,
   readContext,
@@ -10,12 +10,18 @@ import {
   writeContext,
 } from "../client/context.js";
 
+const ORIGINAL_CWD = process.cwd();
+
 function createTempContextPath(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "paperclip-cli-context-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "swarmifyx-cli-context-"));
   return path.join(dir, "context.json");
 }
 
 describe("client context store", () => {
+  afterEach(() => {
+    process.chdir(ORIGINAL_CWD);
+  });
+
   it("returns default context when file does not exist", () => {
     const contextPath = createTempContextPath();
     const context = readContext(contextPath);
@@ -30,7 +36,7 @@ describe("client context store", () => {
       {
         apiBase: "http://localhost:3100",
         companyId: "company-123",
-        apiKeyEnvVarName: "PAPERCLIP_AGENT_TOKEN",
+        apiKeyEnvVarName: "SWARMIFYX_AGENT_TOKEN",
       },
       contextPath,
     );
@@ -42,7 +48,7 @@ describe("client context store", () => {
     expect(context.profiles.work).toEqual({
       apiBase: "http://localhost:3100",
       companyId: "company-123",
-      apiKeyEnvVarName: "PAPERCLIP_AGENT_TOKEN",
+      apiKeyEnvVarName: "SWARMIFYX_AGENT_TOKEN",
     });
   });
 
@@ -66,5 +72,18 @@ describe("client context store", () => {
     const context = readContext(contextPath);
     expect(context.currentProfile).toBe("x");
     expect(context.profiles.x).toEqual({});
+  });
+
+  it("throws a migration error for legacy repo-local .swarmifyx/context.json", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "swarmifyx-cli-context-"));
+    const projectDir = path.join(tempDir, "repo");
+    fs.mkdirSync(path.join(projectDir, ".swarmifyx"), { recursive: true });
+    fs.writeFileSync(
+      path.join(projectDir, ".swarmifyx", "context.json"),
+      JSON.stringify(defaultClientContext(), null, 2),
+    );
+    process.chdir(projectDir);
+
+    expect(() => readContext()).toThrow(/Legacy repo-local Swarmifyx context detected/);
   });
 });

@@ -3,7 +3,7 @@ import type { Command } from "commander";
 import { PUBLIC_PRODUCT_NAME, publicCliCommand } from "../../config/branding.js";
 import { readConfig } from "../../config/store.js";
 import { readContext, resolveProfile, type ClientContextProfile } from "../../client/context.js";
-import { ApiRequestError, PaperclipApiClient } from "../../client/http.js";
+import { ApiRequestError, SwarmifyxApiClient } from "../../client/http.js";
 
 export interface BaseClientOptions {
   config?: string;
@@ -17,7 +17,7 @@ export interface BaseClientOptions {
 }
 
 export interface ResolvedClientContext {
-  api: PaperclipApiClient;
+  api: SwarmifyxApiClient;
   companyId?: string;
   profileName: string;
   profile: ClientContextProfile;
@@ -50,28 +50,28 @@ export function resolveCommandContext(
 
   const apiBase =
     options.apiBase?.trim() ||
-    process.env.PAPERCLIP_API_URL?.trim() ||
+    process.env.SWARMIFYX_API_URL?.trim() ||
     profile.apiBase ||
     inferApiBaseFromConfig(options.config);
 
   const apiKey =
     options.apiKey?.trim() ||
-    process.env.PAPERCLIP_API_KEY?.trim() ||
+    process.env.SWARMIFYX_API_KEY?.trim() ||
     readKeyFromProfileEnv(profile);
 
   const companyId =
     options.companyId?.trim() ||
-    process.env.PAPERCLIP_COMPANY_ID?.trim() ||
+    process.env.SWARMIFYX_COMPANY_ID?.trim() ||
     profile.companyId;
 
   if (opts?.requireCompany && !companyId) {
     throw new Error(
-      "Company ID is required. Pass --company-id, set PAPERCLIP_COMPANY_ID, " +
-        `or set context profile companyId via \`${publicCliCommand("context set")}\`.`,
+      "Company ID is required. Pass --company-id, set SWARMIFYX_COMPANY_ID, " +
+      `or set context profile companyId via \`${publicCliCommand("context set")}\`.`,
     );
   }
 
-  const api = new PaperclipApiClient({ apiBase, apiKey });
+  const api = new SwarmifyxApiClient({ apiBase, apiKey });
   return {
     api,
     companyId,
@@ -152,8 +152,8 @@ function renderValue(value: unknown): string {
 }
 
 function inferApiBaseFromConfig(configPath?: string): string {
-  const envHost = process.env.PAPERCLIP_SERVER_HOST?.trim() || "localhost";
-  let port = Number(process.env.PAPERCLIP_SERVER_PORT || "");
+  const envHost = process.env.SWARMIFYX_SERVER_HOST?.trim() || "localhost";
+  let port = Number(process.env.SWARMIFYX_SERVER_PORT || "");
 
   if (!Number.isFinite(port) || port <= 0) {
     try {

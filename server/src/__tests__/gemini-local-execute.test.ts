@@ -2,17 +2,17 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@paperclipai/adapter-gemini-local/server";
+import { execute } from "@swarmifyx/adapter-gemini-local/server";
 
 async function writeFakeGeminiCommand(commandPath: string): Promise<void> {
   const script = `#!/usr/bin/env node
 const fs = require("node:fs");
 
-const capturePath = process.env.PAPERCLIP_TEST_CAPTURE_PATH;
+const capturePath = process.env.SWARMIFYX_TEST_CAPTURE_PATH;
 const payload = {
   argv: process.argv.slice(2),
-  paperclipEnvKeys: Object.keys(process.env)
-    .filter((key) => key.startsWith("PAPERCLIP_"))
+  swarmifyxEnvKeys: Object.keys(process.env)
+    .filter((key) => key.startsWith("SWARMIFYX_"))
     .sort(),
 };
 if (capturePath) {
@@ -41,12 +41,12 @@ console.log(JSON.stringify({
 
 type CapturePayload = {
   argv: string[];
-  paperclipEnvKeys: string[];
+  swarmifyxEnvKeys: string[];
 };
 
 describe("gemini execute", () => {
-  it("passes prompt as final argument and injects paperclip env vars", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-gemini-execute-"));
+  it("passes prompt as final argument and injects swarmifyx env vars", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "swarmifyx-gemini-execute-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "gemini");
     const capturePath = path.join(root, "capture.json");
@@ -78,13 +78,13 @@ describe("gemini execute", () => {
           cwd: workspace,
           model: "gemini-2.5-pro",
           env: {
-            PAPERCLIP_TEST_CAPTURE_PATH: capturePath,
+            SWARMIFYX_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the paperclip heartbeat.",
+          promptTemplate: "Follow the swarmifyx heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
-        onLog: async () => {},
+        onLog: async () => { },
         onMeta: async (meta) => {
           invocationPrompt = meta.prompt ?? "";
         },
@@ -98,20 +98,20 @@ describe("gemini execute", () => {
       expect(capture.argv).toContain("stream-json");
       expect(capture.argv).toContain("--approval-mode");
       expect(capture.argv).toContain("yolo");
-      expect(capture.argv.at(-1)).toContain("Follow the paperclip heartbeat.");
-      expect(capture.argv.at(-1)).toContain("Paperclip runtime note:");
-      expect(capture.paperclipEnvKeys).toEqual(
+      expect(capture.argv.at(-1)).toContain("Follow the swarmifyx heartbeat.");
+      expect(capture.argv.at(-1)).toContain("Swarmifyx runtime note:");
+      expect(capture.swarmifyxEnvKeys).toEqual(
         expect.arrayContaining([
-          "PAPERCLIP_AGENT_ID",
-          "PAPERCLIP_API_KEY",
-          "PAPERCLIP_API_URL",
-          "PAPERCLIP_COMPANY_ID",
-          "PAPERCLIP_RUN_ID",
+          "SWARMIFYX_AGENT_ID",
+          "SWARMIFYX_API_KEY",
+          "SWARMIFYX_API_URL",
+          "SWARMIFYX_COMPANY_ID",
+          "SWARMIFYX_RUN_ID",
         ]),
       );
-      expect(invocationPrompt).toContain("Paperclip runtime note:");
-      expect(invocationPrompt).toContain("PAPERCLIP_API_URL");
-      expect(invocationPrompt).toContain("Paperclip API access note:");
+      expect(invocationPrompt).toContain("Swarmifyx runtime note:");
+      expect(invocationPrompt).toContain("SWARMIFYX_API_URL");
+      expect(invocationPrompt).toContain("Swarmifyx API access note:");
       expect(invocationPrompt).toContain("run_shell_command");
       expect(result.question).toBeNull();
     } finally {
@@ -125,7 +125,7 @@ describe("gemini execute", () => {
   });
 
   it("always passes --approval-mode yolo", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "paperclip-gemini-yolo-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "swarmifyx-gemini-yolo-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "gemini");
     const capturePath = path.join(root, "capture.json");
@@ -143,11 +143,11 @@ describe("gemini execute", () => {
         config: {
           command: commandPath,
           cwd: workspace,
-          env: { PAPERCLIP_TEST_CAPTURE_PATH: capturePath },
+          env: { SWARMIFYX_TEST_CAPTURE_PATH: capturePath },
         },
         context: {},
         authToken: "t",
-        onLog: async () => {},
+        onLog: async () => { },
       });
 
       const capture = JSON.parse(await fs.readFile(capturePath, "utf8")) as CapturePayload;

@@ -4,9 +4,9 @@ import net from "node:net";
 import { createHash, randomUUID } from "node:crypto";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
-import type { AdapterRuntimeServiceReport } from "@paperclipai/adapter-utils";
-import type { Db } from "@paperclipai/db";
-import { workspaceRuntimeServices } from "@paperclipai/db";
+import type { AdapterRuntimeServiceReport } from "@swarmifyx/adapter-utils";
+import type { Db } from "@swarmifyx/db";
+import { workspaceRuntimeServices } from "@swarmifyx/db";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { asNumber, asString, parseObject, renderTemplate } from "../adapters/utils.js";
 import { resolveHomeAwarePath } from "../home-paths.js";
@@ -194,7 +194,7 @@ function sanitizeBranchName(value: string): string {
     .replace(/[^A-Za-z0-9._/-]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^[-/.]+|[-/.]+$/g, "")
-    .slice(0, 120) || "paperclip-work";
+    .slice(0, 120) || "swarmifyx-work";
 }
 
 function isAbsolutePath(value: string) {
@@ -236,6 +236,77 @@ async function directoryExists(value: string) {
   return fs.stat(value).then((stats) => stats.isDirectory()).catch(() => false);
 }
 
+type GitWorktreeListEntry = {
+  worktree: string;
+  branch: string | null;
+  bare: boolean;
+  detached: boolean;
+};
+
+function parseGitWorktreeList(raw: string): GitWorktreeListEntry[] {
+  const entries: GitWorktreeListEntry[] = [];
+  let current: Partial<GitWorktreeListEntry> = {};
+
+  for (const line of raw.split("\n")) {
+    if (line.startsWith("worktree ")) {
+      current = { worktree: line.slice("worktree ".length) };
+      continue;
+    }
+    if (line.startsWith("branch ")) {
+      current.branch = line.slice("branch ".length);
+      continue;
+    }
+    if (line === "bare") {
+      current.bare = true;
+      continue;
+    }
+    if (line === "detached") {
+      current.detached = true;
+      continue;
+    }
+    if (line === "" && current.worktree) {
+      entries.push({
+        worktree: current.worktree,
+        branch: current.branch ?? null,
+        bare: current.bare ?? false,
+        detached: current.detached ?? false,
+      });
+      current = {};
+    }
+  }
+
+  if (current.worktree) {
+    entries.push({
+      worktree: current.worktree,
+      branch: current.branch ?? null,
+      bare: current.bare ?? false,
+      detached: current.detached ?? false,
+    });
+  }
+
+  return entries;
+}
+
+async function findCheckedOutBranchWorktree(input: {
+  repoRoot: string;
+  branchName: string;
+  targetWorktreePath: string;
+}): Promise<string | null> {
+  const branchRef = `refs/heads/${input.branchName}`;
+  const targetWorktreePath = path.resolve(input.targetWorktreePath);
+  const raw = await runGit(["worktree", "list", "--porcelain"], input.repoRoot);
+  const worktrees = parseGitWorktreeList(raw);
+
+  for (const worktree of worktrees) {
+    if (worktree.branch !== branchRef) continue;
+    const resolvedPath = path.resolve(worktree.worktree);
+    if (resolvedPath === targetWorktreePath) return null;
+    return resolvedPath;
+  }
+
+  return null;
+}
+
 function buildWorkspaceCommandEnv(input: {
   base: ExecutionWorkspaceInput;
   repoRoot: string;
@@ -246,24 +317,24 @@ function buildWorkspaceCommandEnv(input: {
   created: boolean;
 }) {
   const env: NodeJS.ProcessEnv = { ...process.env };
-  env.PAPERCLIP_WORKSPACE_CWD = input.worktreePath;
-  env.PAPERCLIP_WORKSPACE_PATH = input.worktreePath;
-  env.PAPERCLIP_WORKSPACE_WORKTREE_PATH = input.worktreePath;
-  env.PAPERCLIP_WORKSPACE_BRANCH = input.branchName;
-  env.PAPERCLIP_WORKSPACE_BASE_CWD = input.base.baseCwd;
-  env.PAPERCLIP_WORKSPACE_REPO_ROOT = input.repoRoot;
-  env.PAPERCLIP_WORKSPACE_SOURCE = input.base.source;
-  env.PAPERCLIP_WORKSPACE_REPO_REF = input.base.repoRef ?? "";
-  env.PAPERCLIP_WORKSPACE_REPO_URL = input.base.repoUrl ?? "";
-  env.PAPERCLIP_WORKSPACE_CREATED = input.created ? "true" : "false";
-  env.PAPERCLIP_PROJECT_ID = input.base.projectId ?? "";
-  env.PAPERCLIP_PROJECT_WORKSPACE_ID = input.base.workspaceId ?? "";
-  env.PAPERCLIP_AGENT_ID = input.agent.id;
-  env.PAPERCLIP_AGENT_NAME = input.agent.name;
-  env.PAPERCLIP_COMPANY_ID = input.agent.companyId;
-  env.PAPERCLIP_ISSUE_ID = input.issue?.id ?? "";
-  env.PAPERCLIP_ISSUE_IDENTIFIER = input.issue?.identifier ?? "";
-  env.PAPERCLIP_ISSUE_TITLE = input.issue?.title ?? "";
+  env.SWARMIFYX_WORKSPACE_CWD = input.worktreePath;
+  env.SWARMIFYX_WORKSPACE_PATH = input.worktreePath;
+  env.SWARMIFYX_WORKSPACE_WORKTREE_PATH = input.worktreePath;
+  env.SWARMIFYX_WORKSPACE_BRANCH = input.branchName;
+  env.SWARMIFYX_WORKSPACE_BASE_CWD = input.base.baseCwd;
+  env.SWARMIFYX_WORKSPACE_REPO_ROOT = input.repoRoot;
+  env.SWARMIFYX_WORKSPACE_SOURCE = input.base.source;
+  env.SWARMIFYX_WORKSPACE_REPO_REF = input.base.repoRef ?? "";
+  env.SWARMIFYX_WORKSPACE_REPO_URL = input.base.repoUrl ?? "";
+  env.SWARMIFYX_WORKSPACE_CREATED = input.created ? "true" : "false";
+  env.SWARMIFYX_PROJECT_ID = input.base.projectId ?? "";
+  env.SWARMIFYX_PROJECT_WORKSPACE_ID = input.base.workspaceId ?? "";
+  env.SWARMIFYX_AGENT_ID = input.agent.id;
+  env.SWARMIFYX_AGENT_NAME = input.agent.name;
+  env.SWARMIFYX_COMPANY_ID = input.agent.companyId;
+  env.SWARMIFYX_ISSUE_ID = input.issue?.id ?? "";
+  env.SWARMIFYX_ISSUE_IDENTIFIER = input.issue?.identifier ?? "";
+  env.SWARMIFYX_ISSUE_TITLE = input.issue?.title ?? "";
   return env;
 }
 
@@ -360,9 +431,10 @@ export async function realizeExecutionWorkspace(input: {
   });
   const branchName = sanitizeBranchName(renderedBranch);
   const configuredParentDir = asString(rawStrategy.worktreeParentDir, "");
+  const defaultWorktreeParentDir = path.join(repoRoot, ".swarmifyx", "worktrees");
   const worktreeParentDir = configuredParentDir
     ? resolveConfiguredPath(configuredParentDir, repoRoot)
-    : path.join(repoRoot, ".paperclip", "worktrees");
+    : defaultWorktreeParentDir;
   const worktreePath = path.join(worktreeParentDir, branchName);
   const baseRef = asString(rawStrategy.baseRef, input.base.repoRef ?? "HEAD");
 
@@ -393,6 +465,22 @@ export async function realizeExecutionWorkspace(input: {
       };
     }
     throw new Error(`Configured worktree path "${worktreePath}" already exists and is not a git worktree.`);
+  }
+
+  const conflictingWorktreePath = await findCheckedOutBranchWorktree({
+    repoRoot,
+    branchName,
+    targetWorktreePath: worktreePath,
+  });
+  if (conflictingWorktreePath) {
+    if (!configuredParentDir) {
+      throw new Error(
+        `Execution worktree branch "${branchName}" is already checked out at ${conflictingWorktreePath}. SwarmifyX now uses ${defaultWorktreeParentDir} as the default worktree root; remove or migrate the existing worktree before retrying, or set workspaceStrategy.worktreeParentDir explicitly.`,
+      );
+    }
+    throw new Error(
+      `Execution worktree branch "${branchName}" is already checked out at ${conflictingWorktreePath}. Clean up the existing worktree or change workspaceStrategy.branchTemplate before retrying.`,
+    );
   }
 
   await runGit(["worktree", "add", "-B", branchName, worktreePath, baseRef], repoRoot);
@@ -481,8 +569,8 @@ function resolveServiceScopeId(input: {
   const scopeTypeRaw = asString(input.service.reuseScope, input.service.lifecycle === "shared" ? "project_workspace" : "run");
   const scopeType =
     scopeTypeRaw === "project_workspace" ||
-    scopeTypeRaw === "execution_workspace" ||
-    scopeTypeRaw === "agent"
+      scopeTypeRaw === "execution_workspace" ||
+      scopeTypeRaw === "agent"
       ? scopeTypeRaw
       : "run";
   if (scopeType === "project_workspace") return { scopeType, scopeId: input.workspace.workspaceId ?? input.workspace.projectId };

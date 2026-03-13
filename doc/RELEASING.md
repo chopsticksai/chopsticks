@@ -1,6 +1,6 @@
-# Releasing Paperclip
+# Releasing Swarmifyx
 
-Maintainer runbook for shipping a full Paperclip release across npm, GitHub, and the website-facing changelog surface.
+Maintainer runbook for shipping a full Swarmifyx release across npm, GitHub, and the website-facing changelog surface.
 
 Windows note: everyday `pnpm` developer entrypoints are supported in PowerShell and `cmd.exe`, but the release/smoke helpers in `scripts/*.sh` still expect a POSIX shell such as Git Bash.
 
@@ -60,7 +60,7 @@ From the release worktree:
 
 ```bash
 VERSION=X.Y.Z
-claude --print --output-format stream-json --verbose --dangerously-skip-permissions --model claude-opus-4-6 "Use the release-changelog skill to draft or update releases/v${VERSION}.md for Paperclip. Read doc/RELEASING.md and .agents/skills/release-changelog/SKILL.md, then generate the stable changelog for v${VERSION} from commits since the last stable tag. Do not create a canary changelog."
+claude --print --output-format stream-json --verbose --dangerously-skip-permissions --model claude-opus-4-6 "Use the release-changelog skill to draft or update releases/v${VERSION}.md for Swarmifyx. Read doc/RELEASING.md and .agents/skills/release-changelog/SKILL.md, then generate the stable changelog for v${VERSION} from commits since the last stable tag. Do not create a canary changelog."
 ```
 
 ### 3. Verify and publish a canary
@@ -92,7 +92,7 @@ Then open a PR from `release/X.Y.Z` to `master` and merge without squash or reba
 
 ## Release Branches
 
-Paperclip uses one release branch per target stable version:
+Swarmifyx uses one release branch per target stable version:
 
 - `release/0.3.0`
 - `release/0.3.1`
@@ -122,7 +122,7 @@ Useful options:
 
 ```bash
 ./scripts/release-start.sh patch --dry-run
-./scripts/release-start.sh minor --worktree-dir ../paperclip-release-0.4.0
+./scripts/release-start.sh minor --worktree-dir ../swarmifyx-release-0.4.0
 ./scripts/release-start.sh patch --no-push
 ```
 
@@ -228,7 +228,7 @@ If you want to exercise onboarding from the current committed ref instead of npm
 
 ```bash
 ./scripts/clean-onboard-ref.sh
-PAPERCLIP_PORT=3234 ./scripts/clean-onboard-ref.sh
+SWARMIFYX_PORT=3234 ./scripts/clean-onboard-ref.sh
 ./scripts/clean-onboard-ref.sh HEAD
 ```
 

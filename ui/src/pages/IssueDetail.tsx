@@ -42,12 +42,12 @@ import {
   ListTree,
   MessageSquare,
   MoreHorizontal,
-  Paperclip,
+  BrainCircuit,
   SlidersHorizontal,
   Trash2,
 } from "lucide-react";
-import type { ActivityEvent } from "@paperclipai/shared";
-import type { Agent, IssueAttachment } from "@paperclipai/shared";
+import type { ActivityEvent } from "@swarmifyx/shared";
+import type { Agent, IssueAttachment } from "@swarmifyx/shared";
 
 type CommentReassignment = {
   assigneeAgentId: string | null;
@@ -104,9 +104,9 @@ function formatAction(action: string, details?: Record<string, unknown> | null):
       parts.push(
         from
           ? translateText("changed status from {from} to {to} on", {
-              from: getStatusLabel(String(from)),
-              to: getStatusLabel(String(details.status)),
-            })
+            from: getStatusLabel(String(from)),
+            to: getStatusLabel(String(details.status)),
+          })
           : translateText("changed status to {to} on", { to: getStatusLabel(String(details.status)) })
       );
     }
@@ -115,9 +115,9 @@ function formatAction(action: string, details?: Record<string, unknown> | null):
       parts.push(
         from
           ? translateText("changed priority from {from} to {to} on", {
-              from: getPriorityLabel(String(from)),
-              to: getPriorityLabel(String(details.priority)),
-            })
+            from: getPriorityLabel(String(from)),
+            to: getPriorityLabel(String(details.priority)),
+          })
           : translateText("changed priority to {to} on", { to: getPriorityLabel(String(details.priority)) })
       );
     }
@@ -642,21 +642,21 @@ export function IssueDetail() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </PopoverTrigger>
-            <PopoverContent className="w-44 p-1" align="end">
-              <button
-                className="flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50 text-destructive"
-                onClick={() => {
-                  updateIssue.mutate(
-                    { hiddenAt: new Date().toISOString() },
-                    { onSuccess: () => navigate("/issues/all") },
-                  );
-                  setMoreOpen(false);
-                }}
-              >
-                <EyeOff className="h-3 w-3" />
-                {t("Hide this Issue")}
-              </button>
-            </PopoverContent>
+              <PopoverContent className="w-44 p-1" align="end">
+                <button
+                  className="flex items-center gap-2 w-full px-2 py-1.5 text-xs rounded hover:bg-accent/50 text-destructive"
+                  onClick={() => {
+                    updateIssue.mutate(
+                      { hiddenAt: new Date().toISOString() },
+                      { onSuccess: () => navigate("/issues/all") },
+                    );
+                    setMoreOpen(false);
+                  }}
+                >
+                  <EyeOff className="h-3 w-3" />
+                  {t("Hide this Issue")}
+                </button>
+              </PopoverContent>
             </Popover>
           </div>
         </div>
@@ -700,7 +700,7 @@ export function IssueDetail() {
               onClick={() => fileInputRef.current?.click()}
               disabled={uploadAttachment.isPending}
             >
-              <Paperclip className="h-3.5 w-3.5 mr-1.5" />
+              <BrainCircuit className="h-3.5 w-3.5 mr-1.5" />
               {uploadAttachment.isPending ? t("Uploading...") : t("Upload image")}
             </Button>
           </div>
@@ -779,7 +779,7 @@ export function IssueDetail() {
             linkedRuns={timelineRuns}
             issueStatus={issue.status}
             agentMap={agentMap}
-            draftKey={`paperclip:issue-comment-draft:${issue.id}`}
+            draftKey={`swarmifyx:issue-comment-draft:${issue.id}`}
             enableReassign
             reassignOptions={commentReassignOptions}
             currentAssigneeValue={currentAssigneeValue}

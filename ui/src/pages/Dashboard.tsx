@@ -24,7 +24,7 @@ import { Bot, CircleDot, DollarSign, ShieldCheck, LayoutDashboard } from "lucide
 import { ActiveAgentsPanel } from "../components/ActiveAgentsPanel";
 import { ChartCard, RunActivityChart, PriorityChart, IssueStatusChart, SuccessRateChart } from "../components/ActivityCharts";
 import { PageSkeleton } from "../components/PageSkeleton";
-import type { Agent, Issue } from "@paperclipai/shared";
+import type { Agent, Issue } from "@swarmifyx/shared";
 
 function getRecentIssues(issues: Issue[]): Issue[] {
   return [...issues]
@@ -169,7 +169,7 @@ export function Dashboard() {
       return (
         <EmptyState
           icon={LayoutDashboard}
-          message="Welcome to Paperclip. Set up your first company and agent to get started."
+          message="Welcome to Swarmifyx. Set up your first company and agent to get started."
           action="Get Started"
           onAction={openOnboarding}
         />
@@ -246,9 +246,9 @@ export function Dashboard() {
                 <span>
                   {data.costs.monthBudgetCents > 0
                     ? t("{percent}% of {budget} budget", {
-                        percent: data.costs.monthUtilizationPercent,
-                        budget: formatCents(data.costs.monthBudgetCents),
-                      })
+                      percent: data.costs.monthUtilizationPercent,
+                      budget: formatCents(data.costs.monthBudgetCents),
+                    })
                     : t("Unlimited budget")}
                 </span>
               }

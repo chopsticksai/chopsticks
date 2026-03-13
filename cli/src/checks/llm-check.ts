@@ -1,8 +1,8 @@
-import type { PaperclipConfig } from "../config/schema.js";
+import type { SwarmifyxConfig } from "../config/schema.js";
 import { publicCliCommand } from "../config/branding.js";
 import type { CheckResult } from "./index.js";
 
-export async function llmCheck(config: PaperclipConfig): Promise<CheckResult> {
+export async function llmCheck(config: SwarmifyxConfig): Promise<CheckResult> {
   if (!config.llm) {
     return {
       name: "LLM provider",

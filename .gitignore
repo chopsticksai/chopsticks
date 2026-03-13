@@ -7,7 +7,7 @@ drizzle/meta/
 coverage/
 .DS_Store
 data/
-.paperclip/
+.swarmifyx/
 .swarmifyx/
 .pnpm-store/
 tmp-*
@@ -39,7 +39,7 @@ tmp/
 *.tmp
 .vscode/
 .claude/settings.local.json
-.paperclip-local/
+.swarmifyx-local/
 .swarmifyx-local/
 
 # Playwright

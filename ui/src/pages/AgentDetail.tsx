@@ -59,8 +59,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { AgentIcon, AgentIconPicker } from "../components/AgentIconPicker";
 import { RunTranscriptView, type TranscriptMode } from "../components/transcript/RunTranscriptView";
-import { isUuidLike, type Agent, type HeartbeatRun, type HeartbeatRunEvent, type AgentRuntimeState, type LiveEvent } from "@paperclipai/shared";
-import { redactHomePathUserSegments } from "@paperclipai/adapter-utils";
+import { isUuidLike, type Agent, type HeartbeatRun, type HeartbeatRunEvent, type AgentRuntimeState, type LiveEvent } from "@swarmifyx/shared";
+import { redactHomePathUserSegments } from "@swarmifyx/adapter-utils";
 import { agentRouteRef } from "../lib/utils";
 
 const runStatusIcons: Record<string, { icon: typeof CheckCircle2; color: string }> = {
@@ -748,8 +748,8 @@ function LatestRunCard({ runs, agentId }: { runs: HeartbeatRun[]; agentId: strin
             "inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium",
             run.invocationSource === "timer" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
               : run.invocationSource === "assignment" ? "bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-300"
-              : run.invocationSource === "on_demand" ? "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-300"
-              : "bg-muted text-muted-foreground"
+                : run.invocationSource === "on_demand" ? "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-300"
+                  : "bg-muted text-muted-foreground"
           )}>
             {translateText(sourceLabels[run.invocationSource] ?? run.invocationSource)}
           </span>
@@ -1161,8 +1161,8 @@ function RunListItem({ run, isSelected, agentId }: { run: HeartbeatRun; isSelect
           "inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium shrink-0",
           run.invocationSource === "timer" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
             : run.invocationSource === "assignment" ? "bg-violet-100 text-violet-700 dark:bg-violet-900/50 dark:text-violet-300"
-            : run.invocationSource === "on_demand" ? "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-300"
-            : "bg-muted text-muted-foreground"
+              : run.invocationSource === "on_demand" ? "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-300"
+                : "bg-muted text-muted-foreground"
         )}>
           {translateText(sourceLabels[run.invocationSource] ?? run.invocationSource)}
         </span>
@@ -1250,9 +1250,9 @@ function RunsTab({
         selectedRun ? "w-72" : "w-full",
       )}>
         <div className="sticky top-4 overflow-y-auto" style={{ maxHeight: "calc(100vh - 2rem)" }}>
-        {sorted.map((run) => (
-          <RunListItem key={run.id} run={run} isSelected={run.id === effectiveRunId} agentId={agentRouteId} />
-        ))}
+          {sorted.map((run) => (
+            <RunListItem key={run.id} run={run} isSelected={run.id === effectiveRunId} agentId={agentRouteId} />
+          ))}
         </div>
       </div>
 
@@ -1348,11 +1348,11 @@ function RunDetail({ run: initialRun, agentRouteId, adapterType }: { run: Heartb
         triggerDetail: "manual",
         reason: "retry_failed_run",
         payload: retryPayload,
-        }, run.companyId);
-        if (!("id" in result)) {
-          throw new Error(translateText("Retry was skipped because the agent is not currently invokable."));
-        }
-        return result;
+      }, run.companyId);
+      if (!("id" in result)) {
+        throw new Error(translateText("Retry was skipped because the agent is not currently invokable."));
+      }
+      return result;
     },
     onSuccess: (newRun) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.heartbeats(run.companyId, run.agentId) });
@@ -2366,7 +2366,7 @@ function KeysTab({ agentId, companyId }: { agentId: string; companyId?: string }
           {translateText("Create API Key")}
         </h3>
         <p className="text-xs text-muted-foreground">
-          {translateText("API keys allow this agent to authenticate calls to the Paperclip server.")}
+          {translateText("API keys allow this agent to authenticate calls to the Swarmifyx server.")}
         </p>
         <div className="flex items-center gap-2">
           <Input

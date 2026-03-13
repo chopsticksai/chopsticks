@@ -3,7 +3,7 @@ title: Deployment Modes
 summary: local_trusted vs authenticated (private/public)
 ---
 
-Paperclip supports two runtime modes with different security profiles.
+Swarmifyx supports two runtime modes with different security profiles.
 
 ## `local_trusted`
 
@@ -58,7 +58,7 @@ pnpm swarmifyx onboard
 
 ## Board Claim Flow
 
-When migrating from `local_trusted` to `authenticated`, Paperclip emits a one-time claim URL at startup:
+When migrating from `local_trusted` to `authenticated`, Swarmifyx emits a one-time claim URL at startup:
 
 ```
 /board-claim/<token>?code=<code>
@@ -81,5 +81,5 @@ pnpm swarmifyx configure --section server
 Runtime override via environment variable:
 
 ```sh
-PAPERCLIP_DEPLOYMENT_MODE=authenticated pnpm swarmifyx run
+SWARMIFYX_DEPLOYMENT_MODE=authenticated pnpm swarmifyx run
 ```

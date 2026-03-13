@@ -1,7 +1,7 @@
 import * as p from "@clack/prompts";
 import pc from "picocolors";
 import { readConfig, writeConfig, configExists, resolveConfigPath } from "../config/store.js";
-import type { PaperclipConfig } from "../config/schema.js";
+import type { SwarmifyxConfig } from "../config/schema.js";
 import { ensureLocalSecretsKeyFile } from "../config/secrets-key.js";
 import { promptDatabase } from "../prompts/database.js";
 import { promptLlm } from "../prompts/llm.js";
@@ -13,10 +13,10 @@ import {
   resolveDefaultBackupDir,
   resolveDefaultEmbeddedPostgresDir,
   resolveDefaultLogsDir,
-  resolvePaperclipInstanceId,
+  resolveSwarmifyxInstanceId,
 } from "../config/home.js";
 import { publicCliCommand } from "../config/branding.js";
-import { printPaperclipCliBanner } from "../utils/banner.js";
+import { printSwarmifyxCliBanner } from "../utils/banner.js";
 
 type Section = "llm" | "database" | "logging" | "server" | "storage" | "secrets";
 
@@ -29,8 +29,8 @@ const SECTION_LABELS: Record<Section, string> = {
   secrets: "Secrets",
 };
 
-function defaultConfig(): PaperclipConfig {
-  const instanceId = resolvePaperclipInstanceId();
+function defaultConfig(): SwarmifyxConfig {
+  const instanceId = resolveSwarmifyxInstanceId();
   return {
     $meta: {
       version: 1,
@@ -73,7 +73,7 @@ export async function configure(opts: {
   config?: string;
   section?: string;
 }): Promise<void> {
-  printPaperclipCliBanner();
+  printSwarmifyxCliBanner();
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("configure")} `)));
   const configPath = resolveConfigPath(opts.config);
 
@@ -83,7 +83,7 @@ export async function configure(opts: {
     return;
   }
 
-  let config: PaperclipConfig;
+  let config: SwarmifyxConfig;
   try {
     config = readConfig(opts.config) ?? defaultConfig();
   } catch (err) {
@@ -165,7 +165,7 @@ export async function configure(opts: {
           } else if (keyResult.status === "skipped_provider") {
             p.log.message(pc.dim("Skipping local key file management for non-local provider"));
           } else {
-            p.log.message(pc.dim("Skipping local key file management because PAPERCLIP_SECRETS_MASTER_KEY is set"));
+            p.log.message(pc.dim("Skipping local key file management because SWARMIFYX_SECRETS_MASTER_KEY is set"));
           }
         }
         break;

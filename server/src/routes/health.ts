@@ -1,8 +1,8 @@
 import { Router } from "express";
-import type { Db } from "@paperclipai/db";
+import type { Db } from "@swarmifyx/db";
 import { and, count, eq, gt, isNull, sql } from "drizzle-orm";
-import { instanceUserRoles, invites } from "@paperclipai/db";
-import type { DeploymentExposure, DeploymentMode } from "@paperclipai/shared";
+import { instanceUserRoles, invites } from "@swarmifyx/db";
+import type { DeploymentExposure, DeploymentMode } from "@swarmifyx/shared";
 
 export function healthRoutes(
   db?: Db,
@@ -12,11 +12,11 @@ export function healthRoutes(
     authReady: boolean;
     companyDeletionEnabled: boolean;
   } = {
-    deploymentMode: "local_trusted",
-    deploymentExposure: "private",
-    authReady: true,
-    companyDeletionEnabled: true,
-  },
+      deploymentMode: "local_trusted",
+      deploymentExposure: "private",
+      authReady: true,
+      companyDeletionEnabled: true,
+    },
 ) {
   const router = Router();
 

@@ -74,16 +74,16 @@ pnpm swarmifyx run
 
 ## Docker Quickstart (No local Node install)
 
-Build and run Paperclip in Docker:
+Build and run Swarmifyx in Docker:
 
 ```sh
-docker build -t paperclip-local .
-docker run --name paperclip \
+docker build -t swarmifyx-local .
+docker run --name swarmifyx \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e PAPERCLIP_HOME=/paperclip \
-  -v "$(pwd)/data/docker-paperclip:/paperclip" \
-  paperclip-local
+  -e SWARMIFYX_HOME=/swarmifyx \
+  -v "$(pwd)/data/docker-swarmifyx:/swarmifyx" \
+  swarmifyx-local
 ```
 
 Or use Compose:
@@ -104,10 +104,10 @@ The server will automatically use embedded PostgreSQL and persist data at:
 Override home and instance:
 
 ```sh
-PAPERCLIP_HOME=/custom/path PAPERCLIP_INSTANCE_ID=dev pnpm swarmifyx run
+SWARMIFYX_HOME=/custom/path SWARMIFYX_INSTANCE_ID=dev pnpm swarmifyx run
 ```
 
-Compatibility note: if `~/.swarmifyx` does not exist yet but legacy `~/.paperclip` does, Paperclip will keep using the legacy home until you migrate it or override `PAPERCLIP_HOME`.
+Compatibility note: Swarmifyx now treats `~/.swarmifyx` as the only default local home. Legacy `~/.swarmifyx` homes are no longer auto-detected; move the directory to `~/.swarmifyx` or set `SWARMIFYX_HOME` explicitly during migration.
 
 No Docker or external database is required for this mode.
 
@@ -125,27 +125,27 @@ pnpm swarmifyx configure --section storage
 
 ## Default Agent Workspaces
 
-When a local agent run has no resolved project/session workspace, Paperclip falls back to an agent home workspace under the instance root:
+When a local agent run has no resolved project/session workspace, Swarmifyx falls back to an agent home workspace under the instance root:
 
 - `~/.swarmifyx/instances/default/workspaces/<agent-id>`
 
-This path honors `PAPERCLIP_HOME` and `PAPERCLIP_INSTANCE_ID` in non-default setups.
+This path honors `SWARMIFYX_HOME` and `SWARMIFYX_INSTANCE_ID` in non-default setups.
 
 ## Worktree-local Instances
 
-When developing from multiple git worktrees, do not point two Paperclip servers at the same embedded PostgreSQL data directory.
+When developing from multiple git worktrees, do not point two Swarmifyx servers at the same embedded PostgreSQL data directory.
 
-Instead, create a repo-local Paperclip config plus an isolated instance for the worktree:
+Instead, create a repo-local Swarmifyx config plus an isolated instance for the worktree:
 
 ```sh
 swarmifyx worktree init
 # or create the git worktree and initialize it in one step:
-pnpm swarmifyx worktree:make paperclip-pr-432
+pnpm swarmifyx worktree:make swarmifyx-pr-432
 ```
 
 This command:
 
-- writes repo-local files at `.paperclip/config.json` and `.paperclip/.env`
+- writes repo-local files at `.swarmifyx/config.json` and `.swarmifyx/.env`
 - creates an isolated instance under `~/.swarmifyx-worktrees/instances/<worktree-id>/`
 - when run inside a linked git worktree, mirrors the effective git hooks into that worktree's private git dir
 - picks a free app port and embedded PostgreSQL port
@@ -157,9 +157,11 @@ Seed modes:
 - `full` makes a full logical clone of the source instance
 - `--no-seed` creates an empty isolated instance
 
-After `worktree init`, both the server and the CLI auto-load the repo-local `.paperclip/.env` when run inside that worktree, so normal commands like `pnpm dev`, `swarmifyx doctor`, and `swarmifyx db:backup` stay scoped to the worktree instance.
+After `worktree init`, both the server and the CLI auto-load the repo-local `.swarmifyx/.env` when run inside that worktree, so normal commands like `pnpm dev`, `swarmifyx doctor`, and `swarmifyx db:backup` stay scoped to the worktree instance.
 
-That repo-local env also sets `PAPERCLIP_IN_WORKTREE=true`, which the server can use for worktree-specific UI behavior such as an alternate favicon.
+Legacy repo-local `.swarmifyx/config.json` and `.swarmifyx/.env` files are no longer auto-loaded. Move them into `.swarmifyx/` or regenerate the worktree-local files before rerunning commands inside older worktrees.
+
+That repo-local env also sets `SWARMIFYX_IN_WORKTREE=true`, which the server can use for worktree-specific UI behavior such as an alternate favicon.
 
 Print shell exports explicitly when needed:
 
@@ -179,7 +181,7 @@ eval "$(swarmifyx worktree env)"
 | `--instance <id>` | Explicit isolated instance id |
 | `--home <path>` | Home root for worktree instances (default: `~/.swarmifyx-worktrees`) |
 | `--from-config <path>` | Source config.json to seed from |
-| `--from-data-dir <path>` | Source PAPERCLIP_HOME used when deriving the source config |
+| `--from-data-dir <path>` | Source SWARMIFYX_HOME used when deriving the source config |
 | `--from-instance <id>` | Source instance id (default: `default`) |
 | `--server-port <port>` | Preferred server port |
 | `--db-port <port>` | Preferred embedded Postgres port |
@@ -197,7 +199,7 @@ swarmifyx worktree init --from-data-dir ~/.swarmifyx
 swarmifyx worktree init --force
 ```
 
-**`pnpm swarmifyx worktree:make <name> [options]`** — Create `~/NAME` as a git worktree, then initialize an isolated Paperclip instance inside it. This combines `git worktree add` with `worktree init` in a single step.
+**`pnpm swarmifyx worktree:make <name> [options]`** — Create `~/NAME` as a git worktree, then initialize an isolated SwarmifyX instance inside it. This combines `git worktree add` with `worktree init` in a single step.
 
 | Option | Description |
 |---|---|
@@ -205,7 +207,7 @@ swarmifyx worktree init --force
 | `--instance <id>` | Explicit isolated instance id |
 | `--home <path>` | Home root for worktree instances (default: `~/.swarmifyx-worktrees`) |
 | `--from-config <path>` | Source config.json to seed from |
-| `--from-data-dir <path>` | Source PAPERCLIP_HOME used when deriving the source config |
+| `--from-data-dir <path>` | Source SWARMIFYX_HOME used when deriving the source config |
 | `--from-instance <id>` | Source instance id (default: `default`) |
 | `--server-port <port>` | Preferred server port |
 | `--db-port <port>` | Preferred embedded Postgres port |
@@ -216,12 +218,12 @@ swarmifyx worktree init --force
 Examples:
 
 ```sh
-pnpm swarmifyx worktree:make paperclip-pr-432
+pnpm swarmifyx worktree:make swarmifyx-pr-432
 pnpm swarmifyx worktree:make my-feature --start-point origin/main
 pnpm swarmifyx worktree:make experiment --no-seed
 ```
 
-**`pnpm swarmifyx worktree env [options]`** — Print shell exports for the current worktree-local Paperclip instance.
+**`pnpm swarmifyx worktree env [options]`** — Print shell exports for the current worktree-local Swarmifyx instance.
 
 | Option | Description |
 |---|---|
@@ -236,7 +238,9 @@ pnpm swarmifyx worktree env --json
 eval "$(pnpm swarmifyx worktree env)"
 ```
 
-For project execution worktrees, Paperclip can also run a project-defined provision command after it creates or reuses an isolated git worktree. Configure this on the project's execution workspace policy (`workspaceStrategy.provisionCommand`). The command runs inside the derived worktree and receives `PAPERCLIP_WORKSPACE_*`, `PAPERCLIP_PROJECT_ID`, `PAPERCLIP_AGENT_ID`, and `PAPERCLIP_ISSUE_*` environment variables so each repo can bootstrap itself however it wants.
+For project execution worktrees, Swarmifyx can also run a project-defined provision command after it creates or reuses an isolated git worktree. Configure this on the project's execution workspace policy (`workspaceStrategy.provisionCommand`). The command runs inside the derived worktree and receives `SWARMIFYX_WORKSPACE_*`, `SWARMIFYX_PROJECT_ID`, `SWARMIFYX_AGENT_ID`, and `SWARMIFYX_ISSUE_*` environment variables so each repo can bootstrap itself however it wants.
+
+Default execution worktrees now live under `.swarmifyx/worktrees`. Lingering legacy `.swarmifyx/worktrees` checkouts can block branch creation and should be removed, migrated, or replaced with an explicit `workspaceStrategy.worktreeParentDir`.
 
 ## Quick Health Checks
 
@@ -267,7 +271,7 @@ If you set `DATABASE_URL`, the server will use that instead of embedded PostgreS
 
 ## Automatic DB Backups
 
-Paperclip can run automatic DB backups on a timer. Defaults:
+Swarmifyx can run automatic DB backups on a timer. Defaults:
 
 - enabled
 - every 60 minutes
@@ -290,23 +294,23 @@ pnpm db:backup
 
 Environment overrides:
 
-- `PAPERCLIP_DB_BACKUP_ENABLED=true|false`
-- `PAPERCLIP_DB_BACKUP_INTERVAL_MINUTES=<minutes>`
-- `PAPERCLIP_DB_BACKUP_RETENTION_DAYS=<days>`
-- `PAPERCLIP_DB_BACKUP_DIR=/absolute/or/~/path`
+- `SWARMIFYX_DB_BACKUP_ENABLED=true|false`
+- `SWARMIFYX_DB_BACKUP_INTERVAL_MINUTES=<minutes>`
+- `SWARMIFYX_DB_BACKUP_RETENTION_DAYS=<days>`
+- `SWARMIFYX_DB_BACKUP_DIR=/absolute/or/~/path`
 
 ## Secrets in Dev
 
 Agent env vars now support secret references. By default, secret values are stored with local encryption and only secret refs are persisted in agent config.
 
 - Default local key path: `~/.swarmifyx/instances/default/secrets/master.key`
-- Override key material directly: `PAPERCLIP_SECRETS_MASTER_KEY`
-- Override key file path: `PAPERCLIP_SECRETS_MASTER_KEY_FILE`
+- Override key material directly: `SWARMIFYX_SECRETS_MASTER_KEY`
+- Override key file path: `SWARMIFYX_SECRETS_MASTER_KEY_FILE`
 
 Strict mode (recommended outside local trusted machines):
 
 ```sh
-PAPERCLIP_SECRETS_STRICT_MODE=true
+SWARMIFYX_SECRETS_STRICT_MODE=true
 ```
 
 When strict mode is enabled, sensitive env keys (for example `*_API_KEY`, `*_TOKEN`, `*_SECRET`) must use secret references instead of inline plain values.
@@ -329,7 +333,7 @@ pnpm secrets:migrate-inline-env --apply # apply migration
 Company deletion is intended as a dev/debug capability and can be disabled at runtime:
 
 ```sh
-PAPERCLIP_ENABLE_COMPANY_DELETION=false
+SWARMIFYX_ENABLE_COMPANY_DELETION=false
 ```
 
 Default behavior:
@@ -339,7 +343,7 @@ Default behavior:
 
 ## CLI Client Operations
 
-Paperclip CLI now includes client-side control-plane commands in addition to setup commands.
+Swarmifyx CLI now includes client-side control-plane commands in addition to setup commands.
 
 Quick examples:
 
@@ -372,7 +376,7 @@ Agent-oriented invite onboarding now exposes machine-readable API docs:
 - `GET /api/invites/:token/onboarding` returns onboarding manifest details (registration endpoint, claim endpoint template, skill install hints).
 - `GET /api/invites/:token/onboarding.txt` returns a plain-text onboarding doc intended for both human operators and agents (llm.txt-style handoff), including optional inviter message and suggested network host candidates.
 - `GET /api/skills/index` lists available skill documents.
-- `GET /api/skills/paperclip` returns the Paperclip heartbeat skill markdown.
+- `GET /api/skills/swarmifyx` returns the Swarmifyx heartbeat skill markdown.
 
 ## OpenClaw Join Smoke Test
 
@@ -392,12 +396,12 @@ What it validates:
 Required permissions:
 
 - This script performs board-governed actions (create invite, approve join, wakeup another agent).
-- In authenticated mode, run with board auth via `PAPERCLIP_AUTH_HEADER` or `PAPERCLIP_COOKIE`.
+- In authenticated mode, run with board auth via `SWARMIFYX_AUTH_HEADER` or `SWARMIFYX_COOKIE`.
 
 Optional auth flags (for authenticated mode):
 
-- `PAPERCLIP_AUTH_HEADER` (for example `Bearer ...`)
-- `PAPERCLIP_COOKIE` (session cookie header value)
+- `SWARMIFYX_AUTH_HEADER` (for example `Bearer ...`)
+- `SWARMIFYX_COOKIE` (session cookie header value)
 
 ## OpenClaw Docker UI One-Command Script
 
@@ -420,11 +424,11 @@ Model behavior for this smoke script:
 
 State behavior for this smoke script:
 
-- defaults to isolated config dir `~/.openclaw-paperclip-smoke`
+- defaults to isolated config dir `~/.openclaw-swarmifyx-smoke`
 - resets smoke agent state each run by default (`OPENCLAW_RESET_STATE=1`) to avoid stale provider/auth drift
 
 Networking behavior for this smoke script:
 
-- auto-detects and prints a Paperclip host URL reachable from inside OpenClaw Docker
-- default container-side host alias is `host.docker.internal` (override with `PAPERCLIP_HOST_FROM_CONTAINER` / `PAPERCLIP_HOST_PORT`)
-- if Paperclip rejects container hostnames in authenticated/private mode, allow `host.docker.internal` via `pnpm swarmifyx allowed-hostname host.docker.internal` and restart Paperclip
+- auto-detects and prints a Swarmifyx host URL reachable from inside OpenClaw Docker
+- default container-side host alias is `host.docker.internal` (override with `SWARMIFYX_HOST_FROM_CONTAINER` / `SWARMIFYX_HOST_PORT`)
+- if Swarmifyx rejects container hostnames in authenticated/private mode, allow `host.docker.internal` via `pnpm swarmifyx allowed-hostname host.docker.internal` and restart Swarmifyx

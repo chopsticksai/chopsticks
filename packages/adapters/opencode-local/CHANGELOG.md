@@ -1,4 +1,4 @@
-# @paperclipai/adapter-opencode-local
+# @swarmifyx/adapter-opencode-local
 
 ## 0.3.0
 
@@ -9,7 +9,7 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.3.0
+  - @swarmifyx/adapter-utils@0.3.0
 
 ## 0.2.7
 

@@ -1,4 +1,4 @@
-# Paperclip V1 Implementation Spec
+# Swarmifyx V1 Implementation Spec
 
 Status: Implementation contract for first release (V1)
 Date: 2026-02-17
@@ -13,7 +13,7 @@ When there is a conflict, `SPEC-implementation.md` controls V1 behavior.
 
 ## 2. V1 Outcomes
 
-Paperclip V1 must provide a full control-plane loop for autonomous agents:
+Swarmifyx V1 must provide a full control-plane loop for autonomous agents:
 
 1. A human board creates a company and defines goals.
 2. The board creates and manages agents in an org tree.
@@ -810,7 +810,7 @@ V1 is complete only when all criteria are true:
 
 V1 supports company import/export using a portable package contract:
 
-- exactly one JSON entrypoint: `paperclip.manifest.json`
+- exactly one JSON entrypoint: `swarmifyx.manifest.json`
 - all other package files are markdown with frontmatter
 - agent convention:
   - `agents/<slug>/AGENTS.md` (required for V1 export/import)

@@ -17,6 +17,7 @@ type EmbeddedPostgresCtor = new (opts: {
   password: string;
   port: number;
   persistent: boolean;
+  initdbFlags?: string[];
   onLog?: (message: unknown) => void;
   onError?: (message: unknown) => void;
 }) => EmbeddedPostgresInstance;
@@ -26,6 +27,19 @@ export type MigrationConnection = {
   source: string;
   stop: () => Promise<void>;
 };
+
+function buildEmbeddedPostgresConnectionString(port: number, databaseName: string): string {
+  return `postgres://${encodeURIComponent("swarmifyx")}:${encodeURIComponent("swarmifyx")}@127.0.0.1:${port}/${databaseName}`;
+}
+
+async function ensureEmbeddedPostgresAppConnectionString(
+  port: number,
+  databaseName: string,
+): Promise<string> {
+  const adminConnectionString = buildEmbeddedPostgresConnectionString(port, "postgres");
+  await ensurePostgresDatabase(adminConnectionString, databaseName);
+  return buildEmbeddedPostgresConnectionString(port, databaseName);
+}
 
 function readRunningPostmasterPid(postmasterPidFile: string): number | null {
   if (!existsSync(postmasterPidFile)) return null;
@@ -81,10 +95,12 @@ async function ensureEmbeddedPostgresConnection(
 
   if (runningPid) {
     const port = runningPort ?? preferredPort;
-    const adminConnectionString = `postgres://paperclip:paperclip@127.0.0.1:${port}/postgres`;
-    await ensurePostgresDatabase(adminConnectionString, "paperclip");
+    const appConnectionString = await ensureEmbeddedPostgresAppConnectionString(
+      port,
+      "swarmifyx",
+    );
     return {
-      connectionString: `postgres://paperclip:paperclip@127.0.0.1:${port}/paperclip`,
+      connectionString: appConnectionString,
       source: `embedded-postgres@${port}`,
       stop: async () => {},
     };
@@ -92,8 +108,8 @@ async function ensureEmbeddedPostgresConnection(
 
   const instance = new EmbeddedPostgres({
     databaseDir: dataDir,
-    user: "paperclip",
-    password: "paperclip",
+    user: "swarmifyx",
+    password: "swarmifyx",
     port: preferredPort,
     persistent: true,
     initdbFlags: ["--encoding=UTF8", "--locale=C"],
@@ -109,11 +125,13 @@ async function ensureEmbeddedPostgresConnection(
   }
   await instance.start();
 
-  const adminConnectionString = `postgres://paperclip:paperclip@127.0.0.1:${preferredPort}/postgres`;
-  await ensurePostgresDatabase(adminConnectionString, "paperclip");
+  const appConnectionString = await ensureEmbeddedPostgresAppConnectionString(
+    preferredPort,
+    "swarmifyx",
+  );
 
   return {
-    connectionString: `postgres://paperclip:paperclip@127.0.0.1:${preferredPort}/paperclip`,
+    connectionString: appConnectionString,
     source: `embedded-postgres@${preferredPort}`,
     stop: async () => {
       await instance.stop();

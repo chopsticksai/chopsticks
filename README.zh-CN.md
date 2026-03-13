@@ -23,7 +23,7 @@
   <a href="https://github.com/cjc-x/swarmifyx/stargazers"><img src="https://img.shields.io/github/stars/cjc-x/swarmifyx?style=flat" alt="Stars" /></a>
 </p>
 
-> SwarmifyX 基于 Paperclip fork，并继续遵循 [MIT License](LICENSE) 发布。
+> SwarmifyX 基于 Swarmifyx fork，并继续遵循 [MIT License](LICENSE) 发布。
 
 ## 什么是 SwarmifyX？
 
@@ -56,7 +56,7 @@ SwarmifyX 是面向“零人类公司”的开源调度系统。
 
 ## 快速开始
 
-当前仓库以 SwarmifyX 品牌对外呈现，底层代码仍然来自 Paperclip fork，并继续遵循 MIT License。
+当前仓库以 SwarmifyX 品牌对外呈现，底层代码仍然来自 Swarmifyx fork，并继续遵循 MIT License。
 
 ```bash
 npx swarmifyx onboard --yes

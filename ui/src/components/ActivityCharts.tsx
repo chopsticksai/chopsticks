@@ -1,4 +1,4 @@
-import type { HeartbeatRun } from "@paperclipai/shared";
+import type { HeartbeatRun } from "@swarmifyx/shared";
 import { formatDateValue, getPriorityLabel, getStatusLabel, translateText } from "../lib/i18n";
 
 /* ---- Utilities ---- */

@@ -4,3 +4,7 @@ packages:
   - server
   - ui
   - cli
+allowBuilds:
+  '@embedded-postgres/windows-x64': true
+  es5-ext: true
+  esbuild: true

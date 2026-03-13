@@ -1,6 +1,6 @@
 # CLI Reference
 
-Paperclip CLI now supports both:
+Swarmifyx CLI now supports both:
 
 - instance setup/diagnostics (`onboard`, `doctor`, `configure`, `env`, `allowed-hostname`)
 - control-plane client operations (issues, approvals, agents, activity, dashboard)
@@ -32,7 +32,7 @@ Mode taxonomy and design intent are documented in `doc/DEPLOYMENT-MODES.md`.
 Current CLI behavior:
 
 - `swarmifyx onboard` and `swarmifyx configure --section server` set deployment mode in config
-- runtime can override mode with `PAPERCLIP_DEPLOYMENT_MODE`
+- runtime can override mode with `SWARMIFYX_DEPLOYMENT_MODE`
 - `swarmifyx run` and `swarmifyx doctor` do not yet expose a direct `--mode` flag
 
 Target behavior (planned) is documented in `doc/DEPLOYMENT-MODES.md` section 5.
@@ -57,8 +57,8 @@ Company-scoped commands also support `--company-id <id>`.
 Use `--data-dir` on any CLI command to isolate all default local state (config/context/db/logs/storage/secrets) away from `~/.swarmifyx`:
 
 ```sh
-pnpm swarmifyx run --data-dir ./tmp/paperclip-dev
-pnpm swarmifyx issue list --data-dir ./tmp/paperclip-dev
+pnpm swarmifyx run --data-dir ./tmp/swarmifyx-dev
+pnpm swarmifyx issue list --data-dir ./tmp/swarmifyx-dev
 ```
 
 ## Context Profiles
@@ -75,8 +75,8 @@ pnpm swarmifyx context use default
 To avoid storing secrets in context, set `apiKeyEnvVarName` and keep the key in env:
 
 ```sh
-pnpm swarmifyx context set --api-key-env-var-name PAPERCLIP_API_KEY
-export PAPERCLIP_API_KEY=...
+pnpm swarmifyx context set --api-key-env-var-name SWARMIFYX_API_KEY
+export SWARMIFYX_API_KEY=...
 ```
 
 ## Company Commands
@@ -96,8 +96,8 @@ pnpm swarmifyx company delete 5cbe79ee-acb3-4597-896e-7662742593cd --yes --confi
 
 Notes:
 
-- Deletion is server-gated by `PAPERCLIP_ENABLE_COMPANY_DELETION`.
-- With agent authentication, company deletion is company-scoped. Use the current company ID/prefix (for example via `--company-id` or `PAPERCLIP_COMPANY_ID`), not another company.
+- Deletion is server-gated by `SWARMIFYX_ENABLE_COMPANY_DELETION`.
+- With agent authentication, company deletion is company-scoped. Use the current company ID/prefix (for example via `--company-id` or `SWARMIFYX_COMPANY_ID`), not another company.
 
 ## Issue Commands
 
@@ -119,11 +119,11 @@ pnpm swarmifyx agent get <agent-id>
 pnpm swarmifyx agent local-cli <agent-id-or-shortname> --company-id <company-id>
 ```
 
-`agent local-cli` is the quickest way to run local Claude/Codex manually as a Paperclip agent:
+`agent local-cli` is the quickest way to run local Claude/Codex manually as a Swarmifyx agent:
 
 - creates a new long-lived agent API key
-- installs missing Paperclip skills into `~/.codex/skills` and `~/.claude/skills`
-- prints `export ...` lines for `PAPERCLIP_API_URL`, `PAPERCLIP_COMPANY_ID`, `PAPERCLIP_AGENT_ID`, and `PAPERCLIP_API_KEY`
+- installs missing Swarmifyx skills into `~/.codex/skills` and `~/.claude/skills`
+- prints `export ...` lines for `SWARMIFYX_API_URL`, `SWARMIFYX_COMPANY_ID`, `SWARMIFYX_AGENT_ID`, and `SWARMIFYX_API_KEY`
 
 Example for shortname-based local setup:
 
@@ -178,7 +178,7 @@ Default local instance root is `~/.swarmifyx/instances/default`:
 Override base home or instance with env vars:
 
 ```sh
-PAPERCLIP_HOME=/custom/home PAPERCLIP_INSTANCE_ID=dev pnpm swarmifyx run
+SWARMIFYX_HOME=/custom/home SWARMIFYX_INSTANCE_ID=dev pnpm swarmifyx run
 ```
 
 ## Storage Configuration

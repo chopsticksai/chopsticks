@@ -2,7 +2,7 @@ import type {
   AdapterEnvironmentCheck,
   AdapterEnvironmentTestContext,
   AdapterEnvironmentTestResult,
-} from "@paperclipai/adapter-utils";
+} from "@swarmifyx/adapter-utils";
 import {
   asString,
   parseObject,
@@ -10,10 +10,10 @@ import {
   ensureCommandResolvable,
   ensurePathInEnv,
   runChildProcess,
-} from "@paperclipai/adapter-utils/server-utils";
+} from "@swarmifyx/adapter-utils/server-utils";
 import {
   asStringArray,
-} from "@paperclipai/adapter-utils/server-utils";
+} from "@swarmifyx/adapter-utils/server-utils";
 import { discoverPiModelsCached } from "./models.js";
 import { parsePiJsonl } from "./parse.js";
 
@@ -178,8 +178,8 @@ export async function testEnvironment(
 
   if (canRunProbe && configuredModel) {
     // Parse model for probe
-    const provider = configuredModel.includes("/") 
-      ? configuredModel.slice(0, configuredModel.indexOf("/")) 
+    const provider = configuredModel.includes("/")
+      ? configuredModel.slice(0, configuredModel.indexOf("/"))
       : "";
     const modelId = configuredModel.includes("/")
       ? configuredModel.slice(configuredModel.indexOf("/") + 1)
@@ -208,7 +208,7 @@ export async function testEnvironment(
           env: runtimeEnv,
           timeoutSec: 60,
           graceSec: 5,
-          onLog: async () => {},
+          onLog: async () => { },
         },
       );
 
@@ -236,8 +236,8 @@ export async function testEnvironment(
           ...(hasHello
             ? {}
             : {
-                hint: "Run `pi --mode json` manually and prompt `Respond with hello` to inspect output.",
-              }),
+              hint: "Run `pi --mode json` manually and prompt `Respond with hello` to inspect output.",
+            }),
         });
       } else if (PI_AUTH_REQUIRED_RE.test(authEvidence)) {
         checks.push({

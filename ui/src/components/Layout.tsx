@@ -24,6 +24,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import { useCompanyPageMemory } from "../hooks/useCompanyPageMemory";
 import { healthApi } from "../api/health";
+import { resolveCompanyRouteSync } from "../lib/company-routes";
 import { queryKeys } from "../lib/queryKeys";
 import { cn } from "../lib/utils";
 import { NotFoundPage } from "../pages/NotFound";
@@ -55,6 +56,17 @@ export function Layout() {
     const requestedPrefix = companyPrefix.toUpperCase();
     return companies.find((company) => company.issuePrefix.toUpperCase() === requestedPrefix) ?? null;
   }, [companies, companyPrefix]);
+  const routeSyncResolution = useMemo(
+    () =>
+      resolveCompanyRouteSync({
+        companies,
+        companyPrefix,
+        pathname: location.pathname,
+        search: location.search,
+        selectedCompanyId,
+      }),
+    [companies, companyPrefix, location.pathname, location.search, selectedCompanyId],
+  );
   const hasUnknownCompanyPrefix =
     Boolean(companyPrefix) && !companiesLoading && companies.length > 0 && !matchedCompany;
   const { data: health } = useQuery({
@@ -73,36 +85,17 @@ export function Layout() {
   }, [companies, companiesLoading, openOnboarding, health?.deploymentMode]);
 
   useEffect(() => {
-    if (!companyPrefix || companiesLoading || companies.length === 0) return;
+    if (companiesLoading || routeSyncResolution.kind === "none") return;
 
-    if (!matchedCompany) {
-      const fallback = (selectedCompanyId ? companies.find((company) => company.id === selectedCompanyId) : null)
-        ?? companies[0]
-        ?? null;
-      if (fallback && selectedCompanyId !== fallback.id) {
-        setSelectedCompanyId(fallback.id, { source: "route_sync" });
-      }
+    if (routeSyncResolution.kind === "redirect") {
+      navigate(routeSyncResolution.to, { replace: true });
       return;
     }
-
-    if (companyPrefix !== matchedCompany.issuePrefix) {
-      const suffix = location.pathname.replace(/^\/[^/]+/, "");
-      navigate(`/${matchedCompany.issuePrefix}${suffix}${location.search}`, { replace: true });
-      return;
-    }
-
-    if (selectedCompanyId !== matchedCompany.id) {
-      setSelectedCompanyId(matchedCompany.id, { source: "route_sync" });
-    }
+    setSelectedCompanyId(routeSyncResolution.companyId, { source: "route_sync" });
   }, [
-    companyPrefix,
-    companies,
     companiesLoading,
-    matchedCompany,
-    location.pathname,
-    location.search,
     navigate,
-    selectedCompanyId,
+    routeSyncResolution,
     setSelectedCompanyId,
   ]);
 

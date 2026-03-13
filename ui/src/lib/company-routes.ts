@@ -1,3 +1,5 @@
+import type { Company } from "@swarmifyx/shared";
+
 const BOARD_ROUTE_ROOTS = new Set([
   "dashboard",
   "companies",
@@ -15,6 +17,13 @@ const BOARD_ROUTE_ROOTS = new Set([
 ]);
 
 const GLOBAL_ROUTE_ROOTS = new Set(["auth", "invite", "board-claim", "docs", "instance"]);
+
+type RouteCompany = Pick<Company, "id" | "issuePrefix" | "status">;
+
+export type CompanyRouteSyncResolution =
+  | { kind: "none" }
+  | { kind: "set_selected"; companyId: string }
+  | { kind: "redirect"; to: string };
 
 export function normalizeCompanyPrefix(prefix: string): string {
   return prefix.trim().toUpperCase();
@@ -82,4 +91,74 @@ export function toCompanyRelativePath(path: string): string {
   }
 
   return `${pathname}${search}${hash}`;
+}
+
+function findRoutableCompany(
+  companies: RouteCompany[],
+  selectedCompanyId: string | null | undefined,
+): RouteCompany | null {
+  const selectedCompany = selectedCompanyId
+    ? companies.find((company) => company.id === selectedCompanyId && company.status !== "archived") ?? null
+    : null;
+
+  return selectedCompany ?? companies.find((company) => company.status !== "archived") ?? companies[0] ?? null;
+}
+
+export function resolveCompanyRouteSync(params: {
+  companies: RouteCompany[];
+  companyPrefix?: string | null;
+  pathname: string;
+  search?: string;
+  selectedCompanyId?: string | null;
+}): CompanyRouteSyncResolution {
+  const {
+    companies,
+    companyPrefix,
+    pathname,
+    search = "",
+    selectedCompanyId = null,
+  } = params;
+
+  if (!companyPrefix || companies.length === 0) {
+    return { kind: "none" };
+  }
+
+  const requestedPrefix = normalizeCompanyPrefix(companyPrefix);
+  const matchedCompany =
+    companies.find((company) => normalizeCompanyPrefix(company.issuePrefix) === requestedPrefix) ?? null;
+
+  if (!matchedCompany) {
+    const fallback = findRoutableCompany(companies, selectedCompanyId);
+    if (fallback && fallback.id !== selectedCompanyId) {
+      return { kind: "set_selected", companyId: fallback.id };
+    }
+    return { kind: "none" };
+  }
+
+  if (matchedCompany.status === "archived") {
+    const fallback = findRoutableCompany(companies, selectedCompanyId);
+    if (!fallback || fallback.id === matchedCompany.id) {
+      return { kind: "none" };
+    }
+
+    const suffix = pathname.replace(/^\/[^/]+/, "");
+    return {
+      kind: "redirect",
+      to: `/${fallback.issuePrefix}${suffix}${search}`,
+    };
+  }
+
+  if (companyPrefix !== matchedCompany.issuePrefix) {
+    const suffix = pathname.replace(/^\/[^/]+/, "");
+    return {
+      kind: "redirect",
+      to: `/${matchedCompany.issuePrefix}${suffix}${search}`,
+    };
+  }
+
+  if (selectedCompanyId !== matchedCompany.id) {
+    return { kind: "set_selected", companyId: matchedCompany.id };
+  }
+
+  return { kind: "none" };
 }

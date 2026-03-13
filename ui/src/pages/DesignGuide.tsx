@@ -225,7 +225,7 @@ export function DesignGuide() {
       <div>
         <h2 className="text-xl font-bold">{t("Design Guide")}</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          {t("Every component, style, and pattern used across Paperclip.")}
+          {t("Every component, style, and pattern used across Swarmifyx.")}
         </p>
       </div>
 
@@ -609,7 +609,7 @@ export function DesignGuide() {
           <SubSection title="Small trigger">
             <Select defaultValue="high">
               <SelectTrigger size="sm" className="w-full">
-              <SelectValue />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="critical">{getPriorityLabel("critical", locale)}</SelectItem>
@@ -792,7 +792,7 @@ export function DesignGuide() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="#">{t("Paperclip App")}</BreadcrumbLink>
+              <BreadcrumbLink href="#">{t("Swarmifyx App")}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -907,7 +907,7 @@ export function DesignGuide() {
             title={t("Implement authentication flow")}
             subtitle={t("Assigned to Agent Alpha")}
             trailing={<StatusBadge status="in_progress" />}
-            onClick={() => {}}
+            onClick={() => { }}
           />
           <EntityRow
             leading={
@@ -920,7 +920,7 @@ export function DesignGuide() {
             title={t("Set up CI/CD pipeline")}
             subtitle={t("Completed 2 days ago")}
             trailing={<StatusBadge status="done" />}
-            onClick={() => {}}
+            onClick={() => { }}
           />
           <EntityRow
             leading={
@@ -932,7 +932,7 @@ export function DesignGuide() {
             identifier="PAP-003"
             title={t("Write API documentation")}
             trailing={<StatusBadge status="todo" />}
-            onClick={() => {}}
+            onClick={() => { }}
           />
           <EntityRow
             leading={
@@ -1081,7 +1081,7 @@ export function DesignGuide() {
             icon={Inbox}
             message={t("No items to show. Create your first one to get started.")}
             action={t("Create Item")}
-            onAction={() => {}}
+            onAction={() => { }}
           />
         </div>
       </Section>
@@ -1218,13 +1218,13 @@ export function DesignGuide() {
               leading={<PriorityIcon priority="high" />}
               identifier="PAP-101"
               title={t("Build agent heartbeat system")}
-              onClick={() => {}}
+              onClick={() => { }}
             />
             <EntityRow
               leading={<PriorityIcon priority="medium" />}
               identifier="PAP-102"
               title={t("Add cost tracking dashboard")}
-              onClick={() => {}}
+              onClick={() => { }}
             />
           </div>
         </div>
