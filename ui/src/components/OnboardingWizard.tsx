@@ -600,7 +600,6 @@ export function OnboardingWizard() {
                   </button>
                   ))}
                 </div>
-              </div>
 
               {/* Step content */}
               {step === 1 && (
