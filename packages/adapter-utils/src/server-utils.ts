@@ -222,7 +222,7 @@ async function resolveSpawnTarget(
     const commandLine = [quoteForCmd(executable), ...args.map(quoteForCmd)].join(" ");
     return {
       command: shell,
-      args: ["/d", "/s", "/c", commandLine],
+      args: ["/d", "/s", "/c", `chcp 65001 >nul & ${commandLine}`],
     };
   }
 
@@ -434,7 +434,7 @@ export async function runChildProcess(
     // Strip Claude Code nesting-guard env vars so spawned `claude` processes
     // don't refuse to start with "cannot be launched inside another session".
     // These vars leak in when the Swarmifyx server itself is started from
-    // within a Claude Code session (e.g. `npx swarmifyxai run` in a terminal
+    // within a Claude Code session (e.g. `npx swarmifyx run` in a terminal
     // owned by Claude Code) or when cron inherits a contaminated shell env.
     const CLAUDE_CODE_NESTING_VARS = [
       "CLAUDECODE",

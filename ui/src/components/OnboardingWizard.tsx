@@ -23,6 +23,7 @@ import { translateText } from "../lib/i18n";
 import { getUIAdapter } from "../adapters";
 import { defaultCreateValues } from "./agent-config-defaults";
 import { parseOnboardingGoalInput } from "../lib/onboarding-goal";
+import { DEFAULT_CODEBUDDY_LOCAL_MODEL } from "@swarmifyx/adapter-codebuddy-local";
 import {
   DEFAULT_CODEX_LOCAL_BYPASS_APPROVALS_AND_SANDBOX,
   DEFAULT_CODEX_LOCAL_MODEL
@@ -30,6 +31,7 @@ import {
 import { DEFAULT_CURSOR_LOCAL_MODEL } from "@swarmifyx/adapter-cursor-local";
 import { DEFAULT_GEMINI_LOCAL_MODEL } from "@swarmifyx/adapter-gemini-local";
 import { AsciiArtAnimation } from "./AsciiArtAnimation";
+import { CodeBuddyLogoIcon } from "./CodeBuddyLogoIcon";
 import { ChoosePathButton } from "./PathInstructionsModal";
 import { HintIcon } from "./agent-config-primitives";
 import { OpenCodeLogoIcon } from "./OpenCodeLogoIcon";
@@ -56,6 +58,7 @@ import {
 type Step = 1 | 2 | 3 | 4;
 type AdapterType =
   | "claude_local"
+  | "codebuddy_local"
   | "codex_local"
   | "gemini_local"
   | "opencode_local"
@@ -67,7 +70,7 @@ type AdapterType =
 
 const DEFAULT_TASK_DESCRIPTION = `Setup yourself as the CEO. Use the ceo persona found here: 
 
-https://github.com/swarmifyxai/companies/blob/main/default/ceo/AGENTS.md
+https://github.com/cjc-x/companies/blob/main/default/ceo/AGENTS.md
 
 Ensure you have a folder agents/ceo and then download this AGENTS.md as well as the sibling HEARTBEAT.md, SOUL.md, and TOOLS.md. and set that AGENTS.md as the path to your agents instruction file
 
@@ -179,27 +182,43 @@ export function OnboardingWizard() {
   });
   const isLocalAdapter =
     adapterType === "claude_local" ||
+    adapterType === "codebuddy_local" ||
     adapterType === "codex_local" ||
     adapterType === "gemini_local" ||
     adapterType === "opencode_local" ||
     adapterType === "cursor";
   const effectiveAdapterCommand =
     command.trim() ||
-    (adapterType === "codex_local"
-      ? "codex"
-      : adapterType === "gemini_local"
-        ? "gemini"
-        : adapterType === "cursor"
-          ? "agent"
-          : adapterType === "opencode_local"
-            ? "opencode"
-            : "claude");
+    (adapterType === "codebuddy_local"
+      ? "codebuddy"
+      : adapterType === "codex_local"
+        ? "codex"
+        : adapterType === "gemini_local"
+          ? "gemini"
+          : adapterType === "cursor"
+            ? "agent"
+            : adapterType === "opencode_local"
+              ? "opencode"
+              : "claude");
 
   useEffect(() => {
     if (step !== 2) return;
     setAdapterEnvResult(null);
     setAdapterEnvError(null);
   }, [step, adapterType, cwd, model, command, args, url]);
+
+  useEffect(() => {
+    if (
+      adapterType === "codebuddy_local" ||
+      adapterType === "gemini_local" ||
+      adapterType === "opencode_local" ||
+      adapterType === "pi_local" ||
+      adapterType === "cursor" ||
+      adapterType === "openclaw_gateway"
+    ) {
+      setShowMoreAdapters(true);
+    }
+  }, [adapterType]);
 
   const selectedModel = (adapterModels ?? []).find((m) => m.id === model);
   const hasAnthropicApiKeyOverrideCheck =
@@ -285,17 +304,20 @@ export function OnboardingWizard() {
       adapterType,
       cwd,
       model:
-        adapterType === "codex_local"
-          ? model || DEFAULT_CODEX_LOCAL_MODEL
-          : adapterType === "gemini_local"
-            ? model || DEFAULT_GEMINI_LOCAL_MODEL
-            : adapterType === "cursor"
-              ? model || DEFAULT_CURSOR_LOCAL_MODEL
-              : model,
+        adapterType === "codebuddy_local"
+          ? model || DEFAULT_CODEBUDDY_LOCAL_MODEL
+          : adapterType === "codex_local"
+            ? model || DEFAULT_CODEX_LOCAL_MODEL
+            : adapterType === "gemini_local"
+              ? model || DEFAULT_GEMINI_LOCAL_MODEL
+              : adapterType === "cursor"
+                ? model || DEFAULT_CURSOR_LOCAL_MODEL
+                : model,
       command,
       args,
       url,
-      dangerouslySkipPermissions: adapterType === "claude_local",
+      dangerouslySkipPermissions:
+        adapterType === "claude_local" || adapterType === "codebuddy_local",
       dangerouslyBypassSandbox:
         adapterType === "codex_local"
           ? DEFAULT_CODEX_LOCAL_BYPASS_APPROVALS_AND_SANDBOX
@@ -763,12 +785,15 @@ export function OnboardingWizard() {
                           onClick={() => {
                             const nextType = opt.value as AdapterType;
                             setAdapterType(nextType);
+                            if (nextType === "codebuddy_local" && !model) {
+                              setModel(DEFAULT_CODEBUDDY_LOCAL_MODEL);
+                              return;
+                            }
                             if (nextType === "codex_local" && !model) {
                               setModel(DEFAULT_CODEX_LOCAL_MODEL);
+                              return;
                             }
-                            if (nextType !== "codex_local") {
-                              setModel("");
-                            }
+                            setModel("");
                           }}
                         >
                           {opt.recommended && (
@@ -801,6 +826,12 @@ export function OnboardingWizard() {
                     {showMoreAdapters && (
                       <div className="grid grid-cols-2 gap-2 mt-2">
                         {[
+                          {
+                            value: "codebuddy_local" as const,
+                            label: "CodeBuddy",
+                            icon: CodeBuddyLogoIcon,
+                            desc: "Local CodeBuddy agent"
+                          },
                           {
                             value: "gemini_local" as const,
                             label: "Gemini CLI",
@@ -849,6 +880,10 @@ export function OnboardingWizard() {
                               if (opt.comingSoon) return;
                               const nextType = opt.value as AdapterType;
                               setAdapterType(nextType);
+                              if (nextType === "codebuddy_local" && !model) {
+                                setModel(DEFAULT_CODEBUDDY_LOCAL_MODEL);
+                                return;
+                              }
                               if (nextType === "gemini_local" && !model) {
                                 setModel(DEFAULT_GEMINI_LOCAL_MODEL);
                                 return;
@@ -881,6 +916,7 @@ export function OnboardingWizard() {
 
                   {/* Conditional adapter fields */}
                   {(adapterType === "claude_local" ||
+                    adapterType === "codebuddy_local" ||
                     adapterType === "codex_local" ||
                     adapterType === "gemini_local" ||
                     adapterType === "opencode_local" ||
@@ -1069,18 +1105,21 @@ export function OnboardingWizard() {
                           <p className="text-muted-foreground font-mono break-all">
                             {adapterType === "cursor"
                               ? `${effectiveAdapterCommand} -p --mode ask --output-format json \"Respond with hello.\"`
-                              : adapterType === "codex_local"
-                                ? `${effectiveAdapterCommand} exec --json -`
-                                : adapterType === "gemini_local"
-                                  ? `${effectiveAdapterCommand} --output-format json "Respond with hello."`
-                                  : adapterType === "opencode_local"
-                                    ? `${effectiveAdapterCommand} run --format json "Respond with hello."`
-                                    : `${effectiveAdapterCommand} --print - --output-format stream-json --verbose`}
+                              : adapterType === "codebuddy_local"
+                                ? `echo "Respond with hello." | ${effectiveAdapterCommand} -p --output-format stream-json --max-turns 1`
+                                : adapterType === "codex_local"
+                                  ? `${effectiveAdapterCommand} exec --json -`
+                                  : adapterType === "gemini_local"
+                                    ? `${effectiveAdapterCommand} --output-format json "Respond with hello."`
+                                    : adapterType === "opencode_local"
+                                      ? `${effectiveAdapterCommand} run --format json "Respond with hello."`
+                                      : `${effectiveAdapterCommand} --print - --output-format stream-json --verbose`}
                           </p>
                           <p className="text-muted-foreground">
                             {t("Prompt:")} <span className="font-mono">{t("Respond with hello.")}</span>
                           </p>
                           {adapterType === "cursor" ||
+                            adapterType === "codebuddy_local" ||
                             adapterType === "codex_local" ||
                             adapterType === "gemini_local" ||
                             adapterType === "opencode_local" ? (
@@ -1089,21 +1128,27 @@ export function OnboardingWizard() {
                               <span className="font-mono">
                                 {adapterType === "cursor"
                                   ? "CURSOR_API_KEY"
-                                  : adapterType === "gemini_local"
-                                    ? "GEMINI_API_KEY"
-                                    : "OPENAI_API_KEY"}
+                                  : adapterType === "codebuddy_local"
+                                    ? "CODEBUDDY_API_KEY (optional)"
+                                    : adapterType === "gemini_local"
+                                      ? "GEMINI_API_KEY"
+                                      : "OPENAI_API_KEY"}
                               </span>{" "}
                               {t("in env or run")}{" "}
                               <span className="font-mono">
                                 {adapterType === "cursor"
                                   ? "agent login"
-                                  : adapterType === "codex_local"
-                                    ? "codex login"
-                                    : adapterType === "gemini_local"
-                                      ? "gemini auth"
-                                      : "opencode auth login"}
+                                  : adapterType === "codebuddy_local"
+                                    ? "codebuddy"
+                                    : adapterType === "codex_local"
+                                      ? "codex login"
+                                      : adapterType === "gemini_local"
+                                        ? "gemini auth"
+                                        : "opencode auth login"}
                               </span>
-                              .
+                              {adapterType === "codebuddy_local"
+                                ? ` ${t("to complete authentication.")}`
+                                : "."}
                             </p>
                           ) : (
                             <p className="text-muted-foreground">

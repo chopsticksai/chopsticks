@@ -156,13 +156,13 @@ Guard:
 After publish, verify:
 
 ```bash
-npm view swarmifyxai@canary version
+npm view swarmifyx@canary version
 ```
 
 The user install path is:
 
 ```bash
-npx swarmifyxai@canary onboard
+npx swarmifyx@canary onboard
 ```
 
 ## Step 5 — Smoke Test the Canary
@@ -170,7 +170,7 @@ npx swarmifyxai@canary onboard
 Run:
 
 ```bash
-SWARMIFYXAI_VERSION=canary ./scripts/docker-onboard-smoke.sh
+swarmifyx_VERSION=canary ./scripts/docker-onboard-smoke.sh
 ```
 
 Confirm:

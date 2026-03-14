@@ -6,6 +6,12 @@ import {
 } from "@swarmifyx/adapter-claude-local/server";
 import { agentConfigurationDoc as claudeAgentConfigurationDoc, models as claudeModels } from "@swarmifyx/adapter-claude-local";
 import {
+  execute as codeBuddyExecute,
+  testEnvironment as codeBuddyTestEnvironment,
+  sessionCodec as codeBuddySessionCodec,
+} from "@swarmifyx/adapter-codebuddy-local/server";
+import { agentConfigurationDoc as codeBuddyAgentConfigurationDoc, models as codeBuddyModels } from "@swarmifyx/adapter-codebuddy-local";
+import {
   execute as codexExecute,
   testEnvironment as codexTestEnvironment,
   sessionCodec as codexSessionCodec,
@@ -75,6 +81,16 @@ const codexLocalAdapter: ServerAdapterModule = {
   agentConfigurationDoc: codexAgentConfigurationDoc,
 };
 
+const codeBuddyLocalAdapter: ServerAdapterModule = {
+  type: "codebuddy_local",
+  execute: codeBuddyExecute,
+  testEnvironment: codeBuddyTestEnvironment,
+  sessionCodec: codeBuddySessionCodec,
+  models: codeBuddyModels,
+  supportsLocalAgentJwt: true,
+  agentConfigurationDoc: codeBuddyAgentConfigurationDoc,
+};
+
 const cursorLocalAdapter: ServerAdapterModule = {
   type: "cursor",
   execute: cursorExecute,
@@ -131,6 +147,7 @@ const adaptersByType = new Map<string, ServerAdapterModule>(
   [
     claudeLocalAdapter,
     codexLocalAdapter,
+    codeBuddyLocalAdapter,
     openCodeLocalAdapter,
     piLocalAdapter,
     cursorLocalAdapter,

@@ -16,7 +16,7 @@ You run in **heartbeats** — short execution windows triggered by Swarmifyx. Ea
 
 Env vars auto-injected: `SWARMIFYX_AGENT_ID`, `SWARMIFYX_COMPANY_ID`, `SWARMIFYX_API_URL`, `SWARMIFYX_RUN_ID`. Optional wake-context vars may also be present: `SWARMIFYX_TASK_ID` (issue/task that triggered this wake), `SWARMIFYX_WAKE_REASON` (why this run was triggered), `SWARMIFYX_WAKE_COMMENT_ID` (specific comment that triggered this wake), `SWARMIFYX_APPROVAL_ID`, `SWARMIFYX_APPROVAL_STATUS`, and `SWARMIFYX_LINKED_ISSUE_IDS` (comma-separated). For local adapters, `SWARMIFYX_API_KEY` is auto-injected as a short-lived run JWT. For non-local adapters, your operator should set `SWARMIFYX_API_KEY` in adapter config. All requests use `Authorization: Bearer $SWARMIFYX_API_KEY`. All endpoints under `/api`, all JSON. Never hard-code the API URL.
 
-Manual local CLI mode (outside heartbeat runs): use `swarmifyxai agent local-cli <agent-id-or-shortname> --company-id <company-id>` to install Swarmifyx skills for Claude/Codex and print/export the required `SWARMIFYX_*` environment variables for that agent identity.
+Manual local CLI mode (outside heartbeat runs): use `swarmifyx agent local-cli <agent-id-or-shortname> --company-id <company-id>` to install Swarmifyx skills for Claude/Codex and print/export the required `SWARMIFYX_*` environment variables for that agent identity.
 
 **Run audit trail:** You MUST include `-H 'X-Swarmifyx-Run-Id: $SWARMIFYX_RUN_ID'` on ALL API requests that modify issues (checkout, update, comment, create subtask, release). This links your actions to the current heartbeat run for traceability.
 
@@ -260,7 +260,7 @@ Use this when validating Swarmifyx itself (assignment flow, checkouts, run visib
 1. Create a throwaway issue assigned to a known local agent (`claudecoder` or `codexcoder`):
 
 ```bash
-pnpm swarmifyxai issue create \
+pnpm swarmifyx issue create \
   --company-id "$SWARMIFYX_COMPANY_ID" \
   --title "Self-test: assignment/watch flow" \
   --description "Temporary validation issue" \
@@ -271,19 +271,19 @@ pnpm swarmifyxai issue create \
 2. Trigger and watch a heartbeat for that assignee:
 
 ```bash
-pnpm swarmifyxai heartbeat run --agent-id "$SWARMIFYX_AGENT_ID"
+pnpm swarmifyx heartbeat run --agent-id "$SWARMIFYX_AGENT_ID"
 ```
 
 3. Verify the issue transitions (`todo -> in_progress -> done` or `blocked`) and that comments are posted:
 
 ```bash
-pnpm swarmifyxai issue get <issue-id-or-identifier>
+pnpm swarmifyx issue get <issue-id-or-identifier>
 ```
 
 4. Reassignment test (optional): move the same issue between `claudecoder` and `codexcoder` and confirm wake/run behavior:
 
 ```bash
-pnpm swarmifyxai issue update <issue-id> --assignee-agent-id <other-agent-id> --status todo
+pnpm swarmifyx issue update <issue-id> --assignee-agent-id <other-agent-id> --status todo
 ```
 
 5. Cleanup: mark temporary issues done/cancelled with a clear note.

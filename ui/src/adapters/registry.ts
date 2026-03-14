@@ -1,5 +1,6 @@
 import type { UIAdapterModule } from "./types";
 import { claudeLocalUIAdapter } from "./claude-local";
+import { codeBuddyLocalUIAdapter } from "./codebuddy-local";
 import { codexLocalUIAdapter } from "./codex-local";
 import { cursorLocalUIAdapter } from "./cursor";
 import { geminiLocalUIAdapter } from "./gemini-local";
@@ -13,6 +14,7 @@ const adaptersByType = new Map<string, UIAdapterModule>(
   [
     claudeLocalUIAdapter,
     codexLocalUIAdapter,
+    codeBuddyLocalUIAdapter,
     geminiLocalUIAdapter,
     openCodeLocalUIAdapter,
     piLocalUIAdapter,

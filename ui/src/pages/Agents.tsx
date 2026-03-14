@@ -24,6 +24,7 @@ import { AGENT_ROLE_LABELS, type Agent } from "@swarmifyx/shared";
 
 const adapterLabels: Record<string, string> = {
   claude_local: "Claude",
+  codebuddy_local: "CodeBuddy",
   codex_local: "Codex",
   gemini_local: "Gemini",
   opencode_local: "OpenCode",

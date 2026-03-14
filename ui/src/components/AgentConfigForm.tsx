@@ -11,6 +11,7 @@ import type { AdapterModel } from "../api/agents";
 import { agentsApi } from "../api/agents";
 import { secretsApi } from "../api/secrets";
 import { assetsApi } from "../api/assets";
+import { DEFAULT_CODEBUDDY_LOCAL_MODEL } from "@swarmifyx/adapter-codebuddy-local";
 import {
   DEFAULT_CODEX_LOCAL_BYPASS_APPROVALS_AND_SANDBOX,
   DEFAULT_CODEX_LOCAL_MODEL,
@@ -42,6 +43,7 @@ import {
 import { defaultCreateValues } from "./agent-config-defaults";
 import { getUIAdapter } from "../adapters";
 import { ClaudeLocalAdvancedFields } from "../adapters/claude-local/config-fields";
+import { CodeBuddyLogoIcon } from "./CodeBuddyLogoIcon";
 import { MarkdownEditor } from "./MarkdownEditor";
 import { ChoosePathButton } from "./PathInstructionsModal";
 import { OpenCodeLogoIcon } from "./OpenCodeLogoIcon";
@@ -148,6 +150,14 @@ const cursorModeOptions = [
   { id: "", label: "Auto" },
   { id: "plan", label: "Plan" },
   { id: "ask", label: "Ask" },
+] as const;
+
+const codeBuddyThinkingEffortOptions = [
+  { id: "", label: "Auto" },
+  { id: "low", label: "Low" },
+  { id: "medium", label: "Medium" },
+  { id: "high", label: "High" },
+  { id: "xhigh", label: "XHigh" },
 ] as const;
 
 const claudeThinkingEffortOptions = [
@@ -284,6 +294,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
     : overlay.adapterType ?? props.agent.adapterType;
   const isLocal =
     adapterType === "claude_local" ||
+    adapterType === "codebuddy_local" ||
     adapterType === "codex_local" ||
     adapterType === "gemini_local" ||
     adapterType === "opencode_local" ||
@@ -365,6 +376,8 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
       ? codexThinkingEffortOptions
       : adapterType === "cursor"
         ? cursorModeOptions
+        : adapterType === "codebuddy_local"
+          ? codeBuddyThinkingEffortOptions
         : adapterType === "opencode_local"
           ? openCodeThinkingEffortOptions
           : claudeThinkingEffortOptions;
@@ -483,7 +496,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
             onClick={() => testEnvironment.mutate()}
             disabled={testEnvironment.isPending || !selectedCompanyId}
           >
-            {testEnvironment.isPending ? "Testing..." : "Test environment"}
+            {testEnvironment.isPending ? t("Testing...") : t("Test environment")}
           </Button>
         </div>
         <div className={cn(cards ? "border border-border rounded-lg p-4 space-y-3" : "px-4 pb-3 space-y-3")}>
@@ -499,6 +512,8 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
                     nextValues.model = DEFAULT_CODEX_LOCAL_MODEL;
                     nextValues.dangerouslyBypassSandbox =
                       DEFAULT_CODEX_LOCAL_BYPASS_APPROVALS_AND_SANDBOX;
+                  } else if (t === "codebuddy_local") {
+                    nextValues.model = DEFAULT_CODEBUDDY_LOCAL_MODEL;
                   } else if (t === "gemini_local") {
                     nextValues.model = DEFAULT_GEMINI_LOCAL_MODEL;
                   } else if (t === "cursor") {
@@ -517,6 +532,8 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
                       model:
                         t === "codex_local"
                           ? DEFAULT_CODEX_LOCAL_MODEL
+                          : t === "codebuddy_local"
+                            ? DEFAULT_CODEBUDDY_LOCAL_MODEL
                           : t === "gemini_local"
                             ? DEFAULT_GEMINI_LOCAL_MODEL
                             : t === "cursor"
@@ -543,7 +560,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
             <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
               {testEnvironment.error instanceof Error
                 ? testEnvironment.error.message
-                : "Environment test failed"}
+                : t("Environment test failed")}
             </div>
           )}
 
@@ -624,6 +641,8 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
                 placeholder={
                   adapterType === "codex_local"
                     ? "codex"
+                    : adapterType === "codebuddy_local"
+                      ? "codebuddy"
                     : adapterType === "gemini_local"
                       ? "gemini"
                       : adapterType === "cursor"
@@ -653,7 +672,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
               <p className="text-xs text-destructive">
                 {fetchedModelsError instanceof Error
                   ? fetchedModelsError.message
-                  : "Failed to load adapter models."}
+                  : t("Failed to load adapter models.")}
               </p>
             )}
 
@@ -877,8 +896,9 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
 }
 
 function AdapterEnvironmentResult({ result }: { result: AdapterEnvironmentTestResult }) {
+  const { t } = useI18n();
   const statusLabel =
-    result.status === "pass" ? "Passed" : result.status === "warn" ? "Warnings" : "Failed";
+    result.status === "pass" ? t("Passed") : result.status === "warn" ? t("Warnings") : t("Failed");
   const statusClass =
     result.status === "pass"
       ? "text-green-700 dark:text-green-300 border-green-300 dark:border-green-500/40 bg-green-50 dark:bg-green-500/10"
@@ -903,7 +923,11 @@ function AdapterEnvironmentResult({ result }: { result: AdapterEnvironmentTestRe
             <span className="mx-1 opacity-60">·</span>
             <span>{check.message}</span>
             {check.detail && <span className="block opacity-75 break-all">({check.detail})</span>}
-            {check.hint && <span className="block opacity-90 break-words">Hint: {check.hint}</span>}
+            {check.hint && (
+              <span className="block opacity-90 break-words">
+                {t("Hint: {hint}", { hint: check.hint })}
+              </span>
+            )}
           </div>
         ))}
       </div>
@@ -913,7 +937,7 @@ function AdapterEnvironmentResult({ result }: { result: AdapterEnvironmentTestRe
 
 /* ---- Internal sub-components ---- */
 
-const ENABLED_ADAPTER_TYPES = new Set(["claude_local", "codex_local", "gemini_local", "opencode_local", "cursor"]);
+const ENABLED_ADAPTER_TYPES = new Set(["claude_local", "codebuddy_local", "codex_local", "gemini_local", "opencode_local", "cursor"]);
 
 /** Display list includes all real adapter types plus UI-only coming-soon entries. */
 const ADAPTER_DISPLAY_LIST: { value: string; label: string; comingSoon: boolean }[] = [
@@ -931,13 +955,25 @@ function AdapterTypeDropdown({
   value: string;
   onChange: (type: string) => void;
 }) {
+  const { t } = useI18n();
+
+  function renderAdapterIcon(adapterType: string) {
+    if (adapterType === "codebuddy_local") {
+      return <CodeBuddyLogoIcon className="h-3.5 w-3.5" />;
+    }
+    if (adapterType === "opencode_local") {
+      return <OpenCodeLogoIcon className="h-3.5 w-3.5" />;
+    }
+    return null;
+  }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <button className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-sm hover:bg-accent/50 transition-colors w-full justify-between">
           <span className="inline-flex items-center gap-1.5">
-            {value === "opencode_local" ? <OpenCodeLogoIcon className="h-3.5 w-3.5" /> : null}
-            <span>{adapterLabels[value] ?? value}</span>
+            {renderAdapterIcon(value)}
+            <span>{t(adapterLabels[value] ?? value)}</span>
           </span>
           <ChevronDown className="h-3 w-3 text-muted-foreground" />
         </button>
@@ -959,11 +995,11 @@ function AdapterTypeDropdown({
             }}
           >
             <span className="inline-flex items-center gap-1.5">
-              {item.value === "opencode_local" ? <OpenCodeLogoIcon className="h-3.5 w-3.5" /> : null}
-              <span>{item.label}</span>
+              {renderAdapterIcon(item.value)}
+              <span>{t(item.label)}</span>
             </span>
             {item.comingSoon && (
-              <span className="text-[10px] text-muted-foreground">Coming soon</span>
+              <span className="text-[10px] text-muted-foreground">{t("Coming soon")}</span>
             )}
           </button>
         ))}

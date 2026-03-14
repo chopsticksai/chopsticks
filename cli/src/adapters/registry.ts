@@ -1,5 +1,6 @@
 import type { CLIAdapterModule } from "@swarmifyx/adapter-utils";
 import { printClaudeStreamEvent } from "@swarmifyx/adapter-claude-local/cli";
+import { printCodeBuddyStreamEvent } from "@swarmifyx/adapter-codebuddy-local/cli";
 import { printCodexStreamEvent } from "@swarmifyx/adapter-codex-local/cli";
 import { printCursorStreamEvent } from "@swarmifyx/adapter-cursor-local/cli";
 import { printGeminiStreamEvent } from "@swarmifyx/adapter-gemini-local/cli";
@@ -17,6 +18,11 @@ const claudeLocalCLIAdapter: CLIAdapterModule = {
 const codexLocalCLIAdapter: CLIAdapterModule = {
   type: "codex_local",
   formatStdoutEvent: printCodexStreamEvent,
+};
+
+const codeBuddyLocalCLIAdapter: CLIAdapterModule = {
+  type: "codebuddy_local",
+  formatStdoutEvent: printCodeBuddyStreamEvent,
 };
 
 const openCodeLocalCLIAdapter: CLIAdapterModule = {
@@ -48,6 +54,7 @@ const adaptersByType = new Map<string, CLIAdapterModule>(
   [
     claudeLocalCLIAdapter,
     codexLocalCLIAdapter,
+    codeBuddyLocalCLIAdapter,
     openCodeLocalCLIAdapter,
     piLocalCLIAdapter,
     cursorLocalCLIAdapter,

@@ -587,10 +587,10 @@ The Company Store is a registry for discovering and installing modules and templ
 ### CLI Commands
 
 ```bash
-pnpm swarmifyxai store list                    # browse available modules and templates
-pnpm swarmifyxai store install <module-id>     # install a module
-pnpm swarmifyxai store import <template-id>    # import a company template
-pnpm swarmifyxai store export                  # export current company as template
+pnpm swarmifyx store list                    # browse available modules and templates
+pnpm swarmifyx store install <module-id>     # install a module
+pnpm swarmifyx store import <template-id>    # import a company template
+pnpm swarmifyx store export                  # export current company as template
 ```
 
 ---

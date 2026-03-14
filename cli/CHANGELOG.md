@@ -1,4 +1,4 @@
-# swarmifyxai
+# swarmifyx
 
 ## 0.3.0
 

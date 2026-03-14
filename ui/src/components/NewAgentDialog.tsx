@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
   Bot,
+  ChevronDown,
   Code,
   Gem,
   MousePointer2,
@@ -21,10 +22,12 @@ import {
   Terminal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CodeBuddyLogoIcon } from "./CodeBuddyLogoIcon";
 import { OpenCodeLogoIcon } from "./OpenCodeLogoIcon";
 
 type AdvancedAdapterType =
   | "claude_local"
+  | "codebuddy_local"
   | "codex_local"
   | "gemini_local"
   | "opencode_local"
@@ -37,6 +40,7 @@ const ADVANCED_ADAPTER_OPTIONS: Array<{
   label: string;
   desc: string;
   icon: ComponentType<{ className?: string }>;
+  group: "primary" | "more";
   recommended?: boolean;
 }> = [
   {
@@ -44,6 +48,7 @@ const ADVANCED_ADAPTER_OPTIONS: Array<{
     label: "Claude Code",
     icon: Sparkles,
     desc: "Local Claude agent",
+    group: "primary",
     recommended: true,
   },
   {
@@ -51,37 +56,50 @@ const ADVANCED_ADAPTER_OPTIONS: Array<{
     label: "Codex",
     icon: Code,
     desc: "Local Codex agent",
+    group: "primary",
     recommended: true,
+  },
+  {
+    value: "codebuddy_local",
+    label: "CodeBuddy",
+    icon: CodeBuddyLogoIcon,
+    desc: "Local CodeBuddy agent",
+    group: "more",
   },
   {
     value: "gemini_local",
     label: "Gemini CLI",
     icon: Gem,
     desc: "Local Gemini agent",
+    group: "more",
   },
   {
     value: "opencode_local",
     label: "OpenCode",
     icon: OpenCodeLogoIcon,
     desc: "Local multi-provider agent",
+    group: "more",
   },
   {
     value: "pi_local",
     label: "Pi",
     icon: Terminal,
     desc: "Local Pi agent",
+    group: "more",
   },
   {
     value: "cursor",
     label: "Cursor",
     icon: MousePointer2,
     desc: "Local Cursor agent",
+    group: "more",
   },
   {
     value: "openclaw_gateway",
     label: "OpenClaw Gateway",
     icon: Bot,
     desc: "Invoke OpenClaw via gateway protocol",
+    group: "more",
   },
 ];
 
@@ -91,6 +109,7 @@ export function NewAgentDialog() {
   const { selectedCompanyId } = useCompany();
   const navigate = useNavigate();
   const [showAdvancedCards, setShowAdvancedCards] = useState(false);
+  const [showMoreAdapters, setShowMoreAdapters] = useState(false);
 
   const { data: agents } = useQuery({
     queryKey: queryKeys.agents.list(selectedCompanyId!),
@@ -125,6 +144,7 @@ export function NewAgentDialog() {
       onOpenChange={(open) => {
         if (!open) {
           setShowAdvancedCards(false);
+          setShowMoreAdapters(false);
           closeNewAgent();
         }
       }}
@@ -182,7 +202,10 @@ export function NewAgentDialog() {
               <div className="space-y-2">
                 <button
                   className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                  onClick={() => setShowAdvancedCards(false)}
+                  onClick={() => {
+                    setShowAdvancedCards(false);
+                    setShowMoreAdapters(false);
+                  }}
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
                   {t("Back")}
@@ -193,7 +216,7 @@ export function NewAgentDialog() {
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                {ADVANCED_ADAPTER_OPTIONS.map((opt) => (
+                {ADVANCED_ADAPTER_OPTIONS.filter((opt) => opt.group === "primary").map((opt) => (
                   <button
                     key={opt.value}
                     className={cn(
@@ -211,6 +234,38 @@ export function NewAgentDialog() {
                     <span className="text-muted-foreground text-[10px]">{t(opt.desc)}</span>
                   </button>
                 ))}
+              </div>
+
+              <div>
+                <button
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={() => setShowMoreAdapters((value) => !value)}
+                >
+                  <ChevronDown
+                    className={cn(
+                      "h-3 w-3 transition-transform",
+                      showMoreAdapters ? "rotate-0" : "-rotate-90",
+                    )}
+                  />
+                  {t("More Agent Adapter Types")}
+                </button>
+                {showMoreAdapters && (
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    {ADVANCED_ADAPTER_OPTIONS.filter((opt) => opt.group === "more").map((opt) => (
+                      <button
+                        key={opt.value}
+                        className={cn(
+                          "flex flex-col items-center gap-1.5 rounded-md border border-border p-3 text-xs transition-colors hover:bg-accent/50 relative"
+                        )}
+                        onClick={() => handleAdvancedAdapterPick(opt.value)}
+                      >
+                        <opt.icon className="h-4 w-4" />
+                        <span className="font-medium">{t(opt.label)}</span>
+                        <span className="text-muted-foreground text-[10px]">{t(opt.desc)}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </>
           )}

@@ -550,6 +550,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Recent run updates": "最近运行更新",
     "Waiting for run output...": "等待运行输出中...",
     "Claude options": "Claude 选项",
+    "CodeBuddy options": "CodeBuddy 选项",
     "Codex options": "Codex 选项",
     "OpenCode options": "OpenCode 选项",
     "Agent options": "代理选项",
@@ -567,12 +568,14 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Choose your adapter type for advanced setup.": "为高级配置选择适配器类型。",
     "Recommended": "推荐",
     "Claude Code": "Claude Code",
+    "CodeBuddy": "CodeBuddy",
     "Codex": "Codex",
     "Gemini CLI": "Gemini CLI",
     "OpenCode": "OpenCode",
     "Pi": "Pi",
     "Cursor": "Cursor",
     "Local Claude agent": "本地 Claude 代理",
+    "Local CodeBuddy agent": "本地 CodeBuddy 代理",
     "Local Codex agent": "本地 Codex 代理",
     "Local Gemini agent": "本地 Gemini 代理",
     "Local multi-provider agent": "本地多提供方代理",
@@ -1208,6 +1211,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "OpenClaw Gateway": "OpenClaw 网关",
     "Claude Code (local)": "Claude Code（本地）",
     "Claude (local)": "Claude（本地）",
+    "CodeBuddy (local)": "CodeBuddy（本地）",
     "Codex (local)": "Codex（本地）",
     "OpenCode (local)": "OpenCode（本地）",
     "Cursor (local)": "Cursor（本地）",
@@ -1229,8 +1233,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "The agent this one reports to in the org hierarchy.": "该代理在组织层级中的汇报对象。",
     "Describes what this agent can do. Shown in the org chart and used for task routing.":
       "描述该代理可以做什么。会显示在组织图中，并用于任务路由。",
-    "How this agent runs: local CLI (Claude/Codex/OpenCode), OpenClaw Gateway, spawned process, or generic HTTP webhook.":
-      "该代理的运行方式：本地 CLI（Claude/Codex/OpenCode）、OpenClaw 网关、派生进程或通用 HTTP Webhook。",
+    "How this agent runs: local CLI (Claude/CodeBuddy/Codex/Gemini/OpenCode/Cursor), OpenClaw Gateway, spawned process, or generic HTTP webhook.":
+      "该代理的运行方式：本地 CLI（Claude/CodeBuddy/Codex/Gemini/OpenCode/Cursor）、OpenClaw 网关、派生进程或通用 HTTP Webhook。",
     "Default working directory fallback for local adapters. Use an absolute path on the machine running Swarmifyx.":
       "本地适配器的默认工作目录回退值。请填写运行 Swarmifyx 的机器上的绝对路径。",
     "The prompt sent to the agent on each heartbeat. Supports {{ agent.id }}, {{ agent.name }}, {{ agent.role }} variables.":
@@ -1240,8 +1244,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
       "控制模型的推理深度。支持的值会因适配器或模型而不同。",
     "Enable Claude's Chrome integration by passing --chrome.":
       "通过传递 --chrome 启用 Claude 的 Chrome 集成。",
-    "Run Claude without permission prompts. Required for unattended operation.":
-      "运行 Claude 时跳过权限提示。无人值守运行时需要开启。",
+    "Run supported local agents without permission prompts. Required for unattended operation.":
+      "运行支持的本地代理时跳过权限提示。无人值守运行时需要开启。",
     "Run Codex without sandbox restrictions. Required for filesystem/network access.":
       "运行 Codex 时不受沙箱限制。访问文件系统或网络时需要开启。",
     "Enable Codex web search capability during runs.": "在运行期间启用 Codex 的网页搜索能力。",
@@ -1258,8 +1262,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Maximum number of agentic turns (tool calls) per heartbeat run.":
       "每次心跳运行允许的最大代理轮数（工具调用次数）。",
     "The command to execute (e.g. node, python).": "要执行的命令（例如 node、python）。",
-    "Override the path to the CLI command you want the adapter to call (e.g. /usr/local/bin/claude, codex, opencode).":
-      "覆盖适配器要调用的 CLI 命令路径（例如 /usr/local/bin/claude、codex、opencode）。",
+    "Override the path to the CLI command you want the adapter to call (e.g. /usr/local/bin/claude, codebuddy, codex, gemini, agent, opencode).":
+      "覆盖适配器要调用的 CLI 命令路径（例如 /usr/local/bin/claude、codebuddy、codex、gemini、agent、opencode）。",
     "Command-line arguments, comma-separated.": "命令行参数，使用逗号分隔。",
     "Extra CLI arguments for local adapters, comma-separated.": "本地适配器的额外 CLI 参数，使用逗号分隔。",
     "Environment variables injected into the adapter process. Use plain values or secret references.":
@@ -1327,6 +1331,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Bypass sandbox": "绕过沙箱",
     "Enable search": "启用搜索",
     "OpenClaw gateway token": "OpenClaw 网关令牌",
+    "CODEBUDDY_API_KEY (optional)": "CODEBUDDY_API_KEY（可选）",
     "Select a company to view org chart.": "选择一家公司以查看组织图。",
     "No agents in the organization. Create agents to build your org chart.":
       "组织中还没有代理。创建代理来搭建你的组织图。",
@@ -1338,6 +1343,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Failed to load adapter models.": "加载适配器模型失败。",
     "Codex may reject `minimal` thinking when search is enabled.":
       "启用搜索时，Codex 可能会拒绝 `minimal` 思考强度。",
+    "to complete authentication.": "完成认证。",
     "Secret name": "密钥名称",
     "Failed to create secret": "创建密钥失败",
     "KEY": "键",
@@ -1374,12 +1380,12 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "bash ./scripts/provision-worktree.sh": "bash ./scripts/provision-worktree.sh",
     "bash ./scripts/teardown-worktree.sh": "bash ./scripts/teardown-worktree.sh",
     [`Create your CEO HEARTBEAT.md`]: "创建你的 CEO HEARTBEAT.md",
-    [`Setup yourself as the CEO. Use the ceo persona found here: [https://github.com/swarmifyxai/companies/blob/main/default/ceo/AGENTS.md](https://github.com/swarmifyxai/companies/blob/main/default/ceo/AGENTS.md)
+    [`Setup yourself as the CEO. Use the ceo persona found here: [https://github.com/cjc-x/companies/blob/main/default/ceo/AGENTS.md](https://github.com/cjc-x/companies/blob/main/default/ceo/AGENTS.md)
 
 Ensure you have a folder agents/ceo and then download this AGENTS.md as well as the sibling HEARTBEAT.md, SOUL.md, and TOOLS.md. and set that AGENTS.md as the path to your agents instruction file
 
 And after you've finished that, hire yourself a Founding Engineer agent`]:
-      `先把自己设定为 CEO。使用这里的 ceo persona：[https://github.com/swarmifyxai/companies/blob/main/default/ceo/AGENTS.md](https://github.com/swarmifyxai/companies/blob/main/default/ceo/AGENTS.md)
+      `先把自己设定为 CEO。使用这里的 ceo persona：[https://github.com/cjc-x/companies/blob/main/default/ceo/AGENTS.md](https://github.com/cjc-x/companies/blob/main/default/ceo/AGENTS.md)
 
 请确保你有一个 agents/ceo 文件夹，然后下载这个 AGENTS.md，以及同级的 HEARTBEAT.md、SOUL.md 和 TOOLS.md，并把这个 AGENTS.md 设为你的代理说明文件路径。
 

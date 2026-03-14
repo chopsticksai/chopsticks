@@ -105,5 +105,5 @@ If full suite is too heavy locally, run at least:
 pnpm --filter @swarmifyx/server test:run -- openclaw-gateway
 pnpm --filter @swarmifyx/server typecheck
 pnpm --filter @swarmifyx/ui typecheck
-pnpm --filter swarmifyxai typecheck
+pnpm --filter swarmifyx typecheck
 ```

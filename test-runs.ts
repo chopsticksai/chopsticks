@@ -1,0 +1,1 @@
+import { PGlite } from '@electric-sql/pglite'; async function run() { const db = new PGlite('./data/pglite'); const runs = await db.query('SELECT agent_id, status, error, created_at, updated_at FROM agent_runs ORDER BY created_at DESC LIMIT 5'); console.log(JSON.stringify(runs.rows, null, 2)); process.exit(0); } run();

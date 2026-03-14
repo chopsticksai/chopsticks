@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { models as codeBuddyFallbackModels } from "@swarmifyx/adapter-codebuddy-local";
 import { models as codexFallbackModels } from "@swarmifyx/adapter-codex-local";
 import { models as cursorFallbackModels } from "@swarmifyx/adapter-cursor-local";
 import { resetOpenCodeModelsCacheForTests } from "@swarmifyx/adapter-opencode-local/server";
@@ -28,6 +29,11 @@ describe("adapter model listing", () => {
 
     expect(models).toEqual(codexFallbackModels);
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("returns codebuddy fallback models", async () => {
+    const models = await listAdapterModels("codebuddy_local");
+    expect(models).toEqual(codeBuddyFallbackModels);
   });
 
   it("loads codex models dynamically and merges fallback options", async () => {
