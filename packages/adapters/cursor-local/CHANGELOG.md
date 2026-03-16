@@ -1,4 +1,4 @@
-# @swarmifyx/adapter-cursor-local
+# @papertape/adapter-cursor-local
 
 ## 0.3.1
 
@@ -17,7 +17,7 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @swarmifyx/adapter-utils@0.3.0
+  - @papertape/adapter-utils@0.3.0
 
 ## 0.2.7
 

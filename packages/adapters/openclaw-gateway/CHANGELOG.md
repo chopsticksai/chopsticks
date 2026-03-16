@@ -1,4 +1,4 @@
-# @swarmifyx/adapter-openclaw-gateway
+# @papertape/adapter-openclaw-gateway
 
 ## 0.3.1
 
@@ -17,4 +17,4 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @swarmifyx/adapter-utils@0.3.0
+  - @papertape/adapter-utils@0.3.0

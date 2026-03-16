@@ -1,4 +1,4 @@
-# @swarmifyx/shared
+# @papertape/shared
 
 ## 0.3.1
 

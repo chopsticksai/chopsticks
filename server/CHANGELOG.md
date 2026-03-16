@@ -1,4 +1,4 @@
-# @swarmifyx/server
+# @papertape/server
 
 ## 0.3.1
 
@@ -27,15 +27,15 @@
 
 - Updated dependencies [6077ae6]
 - Updated dependencies
-  - @swarmifyx/shared@0.3.0
-  - @swarmifyx/adapter-utils@0.3.0
-  - @swarmifyx/adapter-claude-local@0.3.0
-  - @swarmifyx/adapter-codex-local@0.3.0
-  - @swarmifyx/adapter-cursor-local@0.3.0
-  - @swarmifyx/adapter-openclaw-gateway@0.3.0
-  - @swarmifyx/adapter-opencode-local@0.3.0
-  - @swarmifyx/adapter-pi-local@0.3.0
-  - @swarmifyx/db@0.3.0
+  - @papertape/shared@0.3.0
+  - @papertape/adapter-utils@0.3.0
+  - @papertape/adapter-claude-local@0.3.0
+  - @papertape/adapter-codex-local@0.3.0
+  - @papertape/adapter-cursor-local@0.3.0
+  - @papertape/adapter-openclaw-gateway@0.3.0
+  - @papertape/adapter-opencode-local@0.3.0
+  - @papertape/adapter-pi-local@0.3.0
+  - @papertape/db@0.3.0
 
 ## 0.2.7
 
@@ -43,12 +43,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @swarmifyx/shared@0.2.7
-  - @swarmifyx/adapter-utils@0.2.7
-  - @swarmifyx/db@0.2.7
-  - @swarmifyx/adapter-claude-local@0.2.7
-  - @swarmifyx/adapter-codex-local@0.2.7
-  - @swarmifyx/adapter-openclaw@0.2.7
+  - @papertape/shared@0.2.7
+  - @papertape/adapter-utils@0.2.7
+  - @papertape/db@0.2.7
+  - @papertape/adapter-claude-local@0.2.7
+  - @papertape/adapter-codex-local@0.2.7
+  - @papertape/adapter-openclaw@0.2.7
 
 ## 0.2.6
 
@@ -56,12 +56,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @swarmifyx/shared@0.2.6
-  - @swarmifyx/adapter-utils@0.2.6
-  - @swarmifyx/db@0.2.6
-  - @swarmifyx/adapter-claude-local@0.2.6
-  - @swarmifyx/adapter-codex-local@0.2.6
-  - @swarmifyx/adapter-openclaw@0.2.6
+  - @papertape/shared@0.2.6
+  - @papertape/adapter-utils@0.2.6
+  - @papertape/db@0.2.6
+  - @papertape/adapter-claude-local@0.2.6
+  - @papertape/adapter-codex-local@0.2.6
+  - @papertape/adapter-openclaw@0.2.6
 
 ## 0.2.5
 
@@ -69,12 +69,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @swarmifyx/shared@0.2.5
-  - @swarmifyx/adapter-utils@0.2.5
-  - @swarmifyx/db@0.2.5
-  - @swarmifyx/adapter-claude-local@0.2.5
-  - @swarmifyx/adapter-codex-local@0.2.5
-  - @swarmifyx/adapter-openclaw@0.2.5
+  - @papertape/shared@0.2.5
+  - @papertape/adapter-utils@0.2.5
+  - @papertape/db@0.2.5
+  - @papertape/adapter-claude-local@0.2.5
+  - @papertape/adapter-codex-local@0.2.5
+  - @papertape/adapter-openclaw@0.2.5
 
 ## 0.2.4
 
@@ -82,12 +82,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @swarmifyx/shared@0.2.4
-  - @swarmifyx/adapter-utils@0.2.4
-  - @swarmifyx/db@0.2.4
-  - @swarmifyx/adapter-claude-local@0.2.4
-  - @swarmifyx/adapter-codex-local@0.2.4
-  - @swarmifyx/adapter-openclaw@0.2.4
+  - @papertape/shared@0.2.4
+  - @papertape/adapter-utils@0.2.4
+  - @papertape/db@0.2.4
+  - @papertape/adapter-claude-local@0.2.4
+  - @papertape/adapter-codex-local@0.2.4
+  - @papertape/adapter-openclaw@0.2.4
 
 ## 0.2.3
 
@@ -95,12 +95,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @swarmifyx/shared@0.2.3
-  - @swarmifyx/adapter-utils@0.2.3
-  - @swarmifyx/db@0.2.3
-  - @swarmifyx/adapter-claude-local@0.2.3
-  - @swarmifyx/adapter-codex-local@0.2.3
-  - @swarmifyx/adapter-openclaw@0.2.3
+  - @papertape/shared@0.2.3
+  - @papertape/adapter-utils@0.2.3
+  - @papertape/db@0.2.3
+  - @papertape/adapter-claude-local@0.2.3
+  - @papertape/adapter-codex-local@0.2.3
+  - @papertape/adapter-openclaw@0.2.3
 
 ## 0.2.2
 
@@ -108,12 +108,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @swarmifyx/shared@0.2.2
-  - @swarmifyx/adapter-utils@0.2.2
-  - @swarmifyx/db@0.2.2
-  - @swarmifyx/adapter-claude-local@0.2.2
-  - @swarmifyx/adapter-codex-local@0.2.2
-  - @swarmifyx/adapter-openclaw@0.2.2
+  - @papertape/shared@0.2.2
+  - @papertape/adapter-utils@0.2.2
+  - @papertape/db@0.2.2
+  - @papertape/adapter-claude-local@0.2.2
+  - @papertape/adapter-codex-local@0.2.2
+  - @papertape/adapter-openclaw@0.2.2
 
 ## 0.2.1
 
@@ -121,9 +121,9 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @swarmifyx/shared@0.2.1
-  - @swarmifyx/adapter-utils@0.2.1
-  - @swarmifyx/db@0.2.1
-  - @swarmifyx/adapter-claude-local@0.2.1
-  - @swarmifyx/adapter-codex-local@0.2.1
-  - @swarmifyx/adapter-openclaw@0.2.1
+  - @papertape/shared@0.2.1
+  - @papertape/adapter-utils@0.2.1
+  - @papertape/db@0.2.1
+  - @papertape/adapter-claude-local@0.2.1
+  - @papertape/adapter-codex-local@0.2.1
+  - @papertape/adapter-openclaw@0.2.1

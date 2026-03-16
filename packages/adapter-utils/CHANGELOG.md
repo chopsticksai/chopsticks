@@ -1,4 +1,4 @@
-# @swarmifyx/adapter-utils
+# @papertape/adapter-utils
 
 ## 0.3.1
 
