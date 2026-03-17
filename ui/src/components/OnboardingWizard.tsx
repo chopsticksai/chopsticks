@@ -73,7 +73,7 @@ type AdapterType =
 
 const DEFAULT_TASK_DESCRIPTION = `Setup yourself as the CEO. Use the ceo persona found here: 
 
-https://github.com/cjc-x/companies/blob/main/default/ceo/AGENTS.md
+https://github.com/chopsticksai/companies/blob/main/default/ceo/AGENTS.md
 
 Ensure you have a folder agents/ceo and then download this AGENTS.md as well as the sibling HEARTBEAT.md, SOUL.md, and TOOLS.md. and set that AGENTS.md as the path to your agents instruction file
 
@@ -225,11 +225,11 @@ export function OnboardingWizard() {
           ? "gemini"
           : adapterType === "qwen_local"
             ? "qwen"
-          : adapterType === "cursor"
-            ? "agent"
-            : adapterType === "opencode_local"
-              ? "opencode"
-              : "claude");
+            : adapterType === "cursor"
+              ? "agent"
+              : adapterType === "opencode_local"
+                ? "opencode"
+                : "claude");
 
   useEffect(() => {
     if (step !== 2) return;
@@ -343,9 +343,9 @@ export function OnboardingWizard() {
               ? model || DEFAULT_GEMINI_LOCAL_MODEL
               : adapterType === "qwen_local"
                 ? model || DEFAULT_QWEN_LOCAL_MODEL
-              : adapterType === "cursor"
-                ? model || DEFAULT_CURSOR_LOCAL_MODEL
-                : model,
+                : adapterType === "cursor"
+                  ? model || DEFAULT_CURSOR_LOCAL_MODEL
+                  : model,
       command,
       args,
       url,
@@ -1113,13 +1113,13 @@ export function OnboardingWizard() {
                                 ? `echo "Respond with hello." | ${effectiveAdapterCommand} -p --output-format stream-json --max-turns 1`
                                 : adapterType === "codex_local"
                                   ? `${effectiveAdapterCommand} exec --json -`
-                                : adapterType === "gemini_local"
-                                  ? `${effectiveAdapterCommand} --output-format json "Respond with hello."`
-                                  : adapterType === "qwen_local"
-                                    ? `${effectiveAdapterCommand} --output-format stream-json --approval-mode yolo "Respond with hello."`
-                                    : adapterType === "opencode_local"
-                                      ? `${effectiveAdapterCommand} run --format json "Respond with hello."`
-                                      : `${effectiveAdapterCommand} --print - --output-format stream-json --verbose`}
+                                  : adapterType === "gemini_local"
+                                    ? `${effectiveAdapterCommand} --output-format json "Respond with hello."`
+                                    : adapterType === "qwen_local"
+                                      ? `${effectiveAdapterCommand} --output-format stream-json --approval-mode yolo "Respond with hello."`
+                                      : adapterType === "opencode_local"
+                                        ? `${effectiveAdapterCommand} run --format json "Respond with hello."`
+                                        : `${effectiveAdapterCommand} --print - --output-format stream-json --verbose`}
                           </p>
                           <p className="text-muted-foreground">
                             {t("Prompt:")} <span className="font-mono">{t("Respond with hello.")}</span>
@@ -1141,7 +1141,7 @@ export function OnboardingWizard() {
                                       ? "GEMINI_API_KEY"
                                       : adapterType === "qwen_local"
                                         ? "DASHSCOPE_API_KEY / BAILIAN_CODING_PLAN_API_KEY / OPENAI_API_KEY"
-                                      : "OPENAI_API_KEY"}
+                                        : "OPENAI_API_KEY"}
                               </span>{" "}
                               {t("in env or run")}{" "}
                               <span className="font-mono">
@@ -1151,11 +1151,11 @@ export function OnboardingWizard() {
                                     ? "codebuddy"
                                     : adapterType === "codex_local"
                                       ? "codex login"
-                                    : adapterType === "gemini_local"
+                                      : adapterType === "gemini_local"
                                         ? "gemini auth"
-                                      : adapterType === "qwen_local"
-                                        ? "qwen + /auth"
-                                        : "opencode auth login"}
+                                        : adapterType === "qwen_local"
+                                          ? "qwen + /auth"
+                                          : "opencode auth login"}
                               </span>
                               {adapterType === "codebuddy_local"
                                 ? ` ${t("to complete authentication.")}`

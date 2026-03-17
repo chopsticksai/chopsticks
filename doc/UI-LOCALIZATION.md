@@ -84,7 +84,7 @@ Localization scope includes more than top-level headings. It includes:
 
 - `DEFAULT_TASK_DESCRIPTION` must exist in English and Chinese.
 - The CEO persona link in `DEFAULT_TASK_DESCRIPTION` must point to
-  `https://github.com/cjc-x/companies/...`.
+  `https://github.com/chopsticksai/companies/...`.
 - User-visible current-product links that still point to
   `https://github.com/paperclipai/paperclip` must be updated to
   `https://github.com/chopsticksai/chopsticks`.

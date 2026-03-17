@@ -267,7 +267,7 @@ MIT &copy; 2026 Chopsticks
 
 ## Star 历史
 
-[![Star History Chart](https://api.star-history.com/image?repos=chopsticksai/chopsticks&type=date&legend=top-left)](https://www.star-history.com/?repos=cjc-x%2Fchopsticks&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/image?repos=chopsticksai/chopsticks&type=date&legend=top-left)](https://www.star-history.com/?repos=chopsticksai%2Fchopsticks&type=date&legend=top-left)
 
 <br/>
 

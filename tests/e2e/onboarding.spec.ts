@@ -234,7 +234,7 @@ test.describe("Onboarding wizard", () => {
     const descriptionInput = taskDescriptionInput(page);
     await expect(page.locator("h3", { hasText: "给它一个任务" })).toBeVisible({ timeout: 60_000 });
     await expect(titleInput).toHaveValue("创建你的 CEO HEARTBEAT.md", { timeout: 60_000 });
-    await expect(descriptionInput).toContainText("https://github.com/cjc-x/companies/blob/main/default/ceo/AGENTS.md");
+    await expect(descriptionInput).toContainText("https://github.com/chopsticksai/companies/blob/main/default/ceo/AGENTS.md");
 
     await onboardingLanguageButton(page).click();
     await page.getByRole("button", { name: "English" }).click();
