@@ -8,12 +8,12 @@ coverage/
 .DS_Store
 data/
 .chopsticks/
-.chopsticks/
 .pnpm-store/
 tmp-*
 cli/tmp/
 .idea/
 .vscode/
+pnpm-lock.yaml
 
 # Scratch/seed scripts (but not scripts/ dir)
 check-*.mjs
@@ -37,9 +37,7 @@ tmp/
 
 # Editor / tool temp files
 *.tmp
-.vscode/
 .claude/settings.local.json
-.chopsticks-local/
 .chopsticks-local/
 
 # Doc maintenance cursor
