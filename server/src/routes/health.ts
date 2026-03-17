@@ -1,8 +1,8 @@
 import { Router } from "express";
-import type { Db } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
 import { and, count, eq, gt, isNull, sql } from "drizzle-orm";
-import { instanceUserRoles, invites } from "@papertape/db";
-import type { DeploymentExposure, DeploymentMode } from "@papertape/shared";
+import { instanceUserRoles, invites } from "@chopsticks/db";
+import type { DeploymentExposure, DeploymentMode } from "@chopsticks/shared";
 
 export function healthRoutes(
   db?: Db,

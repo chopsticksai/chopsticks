@@ -1,6 +1,6 @@
 import { Router } from "express";
-import type { Db } from "@papertape/db";
-import { createGoalSchema, updateGoalSchema } from "@papertape/shared";
+import type { Db } from "@chopsticks/db";
+import { createGoalSchema, updateGoalSchema } from "@chopsticks/shared";
 import { validate } from "../middleware/validate.js";
 import { goalService, logActivity } from "../services/index.js";
 import { assertCompanyAccess, getActorInfo } from "./authz.js";

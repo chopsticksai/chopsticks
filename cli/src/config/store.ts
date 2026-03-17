@@ -1,14 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
-import { papertapeConfigSchema, type PapertapeConfig } from "./schema.js";
+import { chopsticksConfigSchema, type ChopsticksConfig } from "./schema.js";
 import {
   resolveDefaultConfigPath,
-  resolvePapertapeInstanceId,
+  resolveChopsticksInstanceId,
 } from "./home.js";
 
 const DEFAULT_CONFIG_BASENAME = "config.json";
 const DEFAULT_ENV_BASENAME = ".env";
-const REPO_CONFIG_DIRNAME = ".papertape";
+const REPO_CONFIG_DIRNAME = ".chopsticks";
 
 function findConfigFileFromAncestors(startDir: string): string | null {
   const absoluteStartDir = path.resolve(startDir);
@@ -30,8 +30,8 @@ function findConfigFileFromAncestors(startDir: string): string | null {
 
 export function resolveConfigPath(overridePath?: string): string {
   if (overridePath) return path.resolve(overridePath);
-  if (process.env.PAPERTAPE_CONFIG) return path.resolve(process.env.PAPERTAPE_CONFIG);
-  return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath(resolvePapertapeInstanceId());
+  if (process.env.CHOPSTICKS_CONFIG) return path.resolve(process.env.CHOPSTICKS_CONFIG);
+  return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath(resolveChopsticksInstanceId());
 }
 
 function parseJson(filePath: string): unknown {
@@ -57,11 +57,11 @@ function formatValidationError(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
 }
 
-export function readConfig(configPath?: string): PapertapeConfig | null {
+export function readConfig(configPath?: string): ChopsticksConfig | null {
   const filePath = resolveConfigPath(configPath);
   if (!fs.existsSync(filePath)) return null;
   const raw = parseJson(filePath);
-  const parsed = papertapeConfigSchema.safeParse(raw);
+  const parsed = chopsticksConfigSchema.safeParse(raw);
   if (!parsed.success) {
     throw new Error(`Invalid config at ${filePath}: ${formatValidationError(parsed.error)}`);
   }
@@ -69,7 +69,7 @@ export function readConfig(configPath?: string): PapertapeConfig | null {
 }
 
 export function writeConfig(
-  config: PapertapeConfig,
+  config: ChopsticksConfig,
   configPath?: string,
 ): void {
   const filePath = resolveConfigPath(configPath);

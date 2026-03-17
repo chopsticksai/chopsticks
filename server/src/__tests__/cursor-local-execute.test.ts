@@ -2,18 +2,18 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@papertape/adapter-cursor-local/server";
+import { execute } from "@chopsticks/adapter-cursor-local/server";
 
 async function writeFakeCursorCommand(commandPath: string): Promise<void> {
   const script = `#!/usr/bin/env node
 const fs = require("node:fs");
 
-const capturePath = process.env.PAPERTAPE_TEST_CAPTURE_PATH;
+const capturePath = process.env.CHOPSTICKS_TEST_CAPTURE_PATH;
 const payload = {
   argv: process.argv.slice(2),
   prompt: fs.readFileSync(0, "utf8"),
-  papertapeEnvKeys: Object.keys(process.env)
-    .filter((key) => key.startsWith("PAPERTAPE_"))
+  chopsticksEnvKeys: Object.keys(process.env)
+    .filter((key) => key.startsWith("CHOPSTICKS_"))
     .sort(),
 };
 if (capturePath) {
@@ -43,12 +43,12 @@ console.log(JSON.stringify({
 type CapturePayload = {
   argv: string[];
   prompt: string;
-  papertapeEnvKeys: string[];
+  chopsticksEnvKeys: string[];
 };
 
 describe("cursor execute", () => {
-  it("injects papertape env vars and prompt note by default", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "papertape-cursor-execute-"));
+  it("injects chopsticks env vars and prompt note by default", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-cursor-execute-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "agent");
     const capturePath = path.join(root, "capture.json");
@@ -80,9 +80,9 @@ describe("cursor execute", () => {
           cwd: workspace,
           model: "auto",
           env: {
-            PAPERTAPE_TEST_CAPTURE_PATH: capturePath,
+            CHOPSTICKS_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the papertape heartbeat.",
+          promptTemplate: "Follow the chopsticks heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -96,22 +96,22 @@ describe("cursor execute", () => {
       expect(result.errorMessage).toBeNull();
 
       const capture = JSON.parse(await fs.readFile(capturePath, "utf8")) as CapturePayload;
-      expect(capture.argv).not.toContain("Follow the papertape heartbeat.");
+      expect(capture.argv).not.toContain("Follow the chopsticks heartbeat.");
       expect(capture.argv).not.toContain("--mode");
       expect(capture.argv).not.toContain("ask");
-      expect(capture.papertapeEnvKeys).toEqual(
+      expect(capture.chopsticksEnvKeys).toEqual(
         expect.arrayContaining([
-          "PAPERTAPE_AGENT_ID",
-          "PAPERTAPE_API_KEY",
-          "PAPERTAPE_API_URL",
-          "PAPERTAPE_COMPANY_ID",
-          "PAPERTAPE_RUN_ID",
+          "CHOPSTICKS_AGENT_ID",
+          "CHOPSTICKS_API_KEY",
+          "CHOPSTICKS_API_URL",
+          "CHOPSTICKS_COMPANY_ID",
+          "CHOPSTICKS_RUN_ID",
         ]),
       );
-      expect(capture.prompt).toContain("Papertape runtime note:");
-      expect(capture.prompt).toContain("PAPERTAPE_API_KEY");
-      expect(invocationPrompt).toContain("Papertape runtime note:");
-      expect(invocationPrompt).toContain("PAPERTAPE_API_URL");
+      expect(capture.prompt).toContain("Chopsticks runtime note:");
+      expect(capture.prompt).toContain("CHOPSTICKS_API_KEY");
+      expect(invocationPrompt).toContain("Chopsticks runtime note:");
+      expect(invocationPrompt).toContain("CHOPSTICKS_API_URL");
     } finally {
       if (previousHome === undefined) {
         delete process.env.HOME;
@@ -123,7 +123,7 @@ describe("cursor execute", () => {
   });
 
   it("passes --mode when explicitly configured", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "papertape-cursor-execute-mode-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-cursor-execute-mode-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "agent");
     const capturePath = path.join(root, "capture.json");
@@ -155,9 +155,9 @@ describe("cursor execute", () => {
           model: "auto",
           mode: "ask",
           env: {
-            PAPERTAPE_TEST_CAPTURE_PATH: capturePath,
+            CHOPSTICKS_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the papertape heartbeat.",
+          promptTemplate: "Follow the chopsticks heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",

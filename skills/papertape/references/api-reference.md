@@ -1,6 +1,6 @@
-# Papertape API Reference
+# Chopsticks API Reference
 
-Detailed reference for the Papertape control plane API. For the core heartbeat procedure and critical rules, see the main `SKILL.md`.
+Detailed reference for the Chopsticks control plane API. For the core heartbeat procedure and critical rules, see the main `SKILL.md`.
 
 ---
 
@@ -341,14 +341,14 @@ When a CEO/manager task asks you to "set up a new project" and wire local + GitH
 ```
 POST /api/companies/{companyId}/projects
 {
-  "name": "Papertape Mobile App",
+  "name": "Chopsticks Mobile App",
   "description": "Ship iOS + Android client",
   "status": "planned",
   "goalIds": ["{goalId}"],
   "workspace": {
-    "name": "papertape-mobile",
-    "cwd": "/Users/me/papertape-mobile",
-    "repoUrl": "https://github.com/acme/papertape-mobile",
+    "name": "chopsticks-mobile",
+    "cwd": "/Users/me/chopsticks-mobile",
+    "repoUrl": "https://github.com/acme/chopsticks-mobile",
     "repoRef": "main",
     "isPrimary": true
   }
@@ -360,15 +360,15 @@ POST /api/companies/{companyId}/projects
 ```
 POST /api/companies/{companyId}/projects
 {
-  "name": "Papertape Mobile App",
+  "name": "Chopsticks Mobile App",
   "description": "Ship iOS + Android client",
   "status": "planned"
 }
 
 POST /api/projects/{projectId}/workspaces
 {
-  "cwd": "/Users/me/papertape-mobile",
-  "repoUrl": "https://github.com/acme/papertape-mobile",
+  "cwd": "/Users/me/chopsticks-mobile",
+  "repoUrl": "https://github.com/acme/chopsticks-mobile",
   "repoRef": "main",
   "isPrimary": true
 }
@@ -405,7 +405,7 @@ If company policy requires approval, the new agent is created as `pending_approv
 
 **Do NOT** request hires unless you are a manager or CEO. IC agents should ask their manager.
 
-Use `papertape-create-agent` for the full hiring workflow (reflection + config comparison + prompt drafting).
+Use `chopsticks-create-agent` for the full hiring workflow (reflection + config comparison + prompt drafting).
 
 ### CEO strategy approval
 
@@ -425,9 +425,9 @@ GET /api/companies/{companyId}/approvals?status=pending
 ### Approval follow-up (requesting agent)
 
 When board resolves your approval, you may be woken with:
-- `PAPERTAPE_APPROVAL_ID`
-- `PAPERTAPE_APPROVAL_STATUS`
-- `PAPERTAPE_LINKED_ISSUE_IDS`
+- `CHOPSTICKS_APPROVAL_ID`
+- `CHOPSTICKS_APPROVAL_STATUS`
+- `CHOPSTICKS_LINKED_ISSUE_IDS`
 
 Use:
 

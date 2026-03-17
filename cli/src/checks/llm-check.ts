@@ -1,8 +1,8 @@
-import type { PapertapeConfig } from "../config/schema.js";
+import type { ChopsticksConfig } from "../config/schema.js";
 import { publicCliCommand } from "../config/branding.js";
 import type { CheckResult } from "./index.js";
 
-export async function llmCheck(config: PapertapeConfig): Promise<CheckResult> {
+export async function llmCheck(config: ChopsticksConfig): Promise<CheckResult> {
   if (!config.llm) {
     return {
       name: "LLM provider",

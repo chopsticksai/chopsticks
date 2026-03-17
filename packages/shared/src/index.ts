@@ -178,7 +178,7 @@ export type {
   PluginLauncherDeclaration,
   PluginMinimumHostVersion,
   PluginUiDeclaration,
-  PapertapePluginManifestV1,
+  ChopsticksPluginManifestV1,
   PluginRecord,
   PluginStateRecord,
   PluginConfig,
@@ -348,7 +348,7 @@ export {
 } from "./project-mentions.js";
 
 export {
-  papertapeConfigSchema,
+  chopsticksConfigSchema,
   configMetaSchema,
   llmConfigSchema,
   databaseBackupConfigSchema,
@@ -361,7 +361,7 @@ export {
   storageLocalDiskConfigSchema,
   storageS3ConfigSchema,
   secretsLocalEncryptedConfigSchema,
-  type PapertapeConfig,
+  type ChopsticksConfig,
   type LlmConfig,
   type DatabaseBackupConfig,
   type DatabaseConfig,

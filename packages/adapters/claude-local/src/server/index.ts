@@ -6,7 +6,7 @@ export {
   isClaudeMaxTurnsResult,
   isClaudeUnknownSessionError,
 } from "./parse.js";
-import type { AdapterSessionCodec } from "@papertape/adapter-utils";
+import type { AdapterSessionCodec } from "@chopsticks/adapter-utils";
 
 function readNonEmptyString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;

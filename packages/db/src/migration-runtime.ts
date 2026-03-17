@@ -29,7 +29,7 @@ export type MigrationConnection = {
 };
 
 function buildEmbeddedPostgresConnectionString(port: number, databaseName: string): string {
-  return `postgres://${encodeURIComponent("papertape")}:${encodeURIComponent("papertape")}@127.0.0.1:${port}/${databaseName}`;
+  return `postgres://${encodeURIComponent("chopsticks")}:${encodeURIComponent("chopsticks")}@127.0.0.1:${port}/${databaseName}`;
 }
 
 async function ensureEmbeddedPostgresAppConnectionString(
@@ -97,7 +97,7 @@ async function ensureEmbeddedPostgresConnection(
     const port = runningPort ?? preferredPort;
     const appConnectionString = await ensureEmbeddedPostgresAppConnectionString(
       port,
-      "papertape",
+      "chopsticks",
     );
     return {
       connectionString: appConnectionString,
@@ -108,8 +108,8 @@ async function ensureEmbeddedPostgresConnection(
 
   const instance = new EmbeddedPostgres({
     databaseDir: dataDir,
-    user: "papertape",
-    password: "papertape",
+    user: "chopsticks",
+    password: "chopsticks",
     port: preferredPort,
     persistent: true,
     initdbFlags: ["--encoding=UTF8", "--locale=C"],
@@ -127,7 +127,7 @@ async function ensureEmbeddedPostgresConnection(
 
   const appConnectionString = await ensureEmbeddedPostgresAppConnectionString(
     preferredPort,
-    "papertape",
+    "chopsticks",
   );
 
   return {

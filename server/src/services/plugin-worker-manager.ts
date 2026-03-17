@@ -21,7 +21,7 @@
 import { fork, type ChildProcess } from "node:child_process";
 import { EventEmitter } from "node:events";
 import { createInterface, type Interface as ReadlineInterface } from "node:readline";
-import type { PapertapePluginManifestV1 } from "@papertape/shared";
+import type { ChopsticksPluginManifestV1 } from "@chopsticks/shared";
 import {
   JSONRPC_VERSION,
   JSONRPC_ERROR_CODES,
@@ -36,7 +36,7 @@ import {
   isJsonRpcSuccessResponse,
   JsonRpcParseError,
   JsonRpcCallError,
-} from "@papertape/plugin-sdk";
+} from "@chopsticks/plugin-sdk";
 import type {
   JsonRpcId,
   JsonRpcResponse,
@@ -47,7 +47,7 @@ import type {
   WorkerToHostMethodName,
   WorkerToHostMethods,
   InitializeParams,
-} from "@papertape/plugin-sdk";
+} from "@chopsticks/plugin-sdk";
 import { logger } from "../middleware/logger.js";
 
 // ---------------------------------------------------------------------------
@@ -156,7 +156,7 @@ export interface WorkerStartOptions {
   /** Absolute path to the plugin worker entrypoint (CJS bundle). */
   entrypointPath: string;
   /** Plugin manifest. */
-  manifest: PapertapePluginManifestV1;
+  manifest: ChopsticksPluginManifestV1;
   /** Resolved plugin configuration. */
   config: Record<string, unknown>;
   /** Host instance information for the initialize call. */
@@ -611,7 +611,7 @@ export function createPluginWorkerHandle(
       ...options.env,
       PATH: process.env.PATH ?? "",
       NODE_PATH: process.env.NODE_PATH ?? "",
-      PAPERTAPE_PLUGIN_ID: pluginId,
+      CHOPSTICKS_PLUGIN_ID: pluginId,
       NODE_ENV: process.env.NODE_ENV ?? "production",
       TZ: process.env.TZ ?? "UTC",
     };

@@ -28,14 +28,14 @@ Codex uses `previous_response_id` for session continuity. The adapter serializes
 
 ## Skills Injection
 
-The adapter symlinks Papertape skills into the global Codex skills directory (`~/.codex/skills`). Existing user skills are not overwritten.
+The adapter symlinks Chopsticks skills into the global Codex skills directory (`~/.codex/skills`). Existing user skills are not overwritten.
 
-When Papertape is running inside a managed worktree instance (`PAPERTAPE_IN_WORKTREE=true`), the adapter instead uses a worktree-isolated `CODEX_HOME` under the Papertape instance so Codex skills, sessions, logs, and other runtime state do not leak across checkouts. It seeds that isolated home from the user's main Codex home for shared auth/config continuity.
+When Chopsticks is running inside a managed worktree instance (`CHOPSTICKS_IN_WORKTREE=true`), the adapter instead uses a worktree-isolated `CODEX_HOME` under the Chopsticks instance so Codex skills, sessions, logs, and other runtime state do not leak across checkouts. It seeds that isolated home from the user's main Codex home for shared auth/config continuity.
 
 For manual local CLI usage outside heartbeat runs (for example running as `codexcoder` directly), use:
 
 ```sh
-pnpm papertape agent local-cli codexcoder --company-id <company-id>
+pnpm chopsticks agent local-cli codexcoder --company-id <company-id>
 ```
 
 This installs any missing skills, creates an agent API key, and prints shell exports to run as that agent.

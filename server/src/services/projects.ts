@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, inArray } from "drizzle-orm";
-import type { Db } from "@papertape/db";
-import { projects, projectGoals, goals, projectWorkspaces, workspaceRuntimeServices } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
+import { projects, projectGoals, goals, projectWorkspaces, workspaceRuntimeServices } from "@chopsticks/db";
 import {
   PROJECT_COLORS,
   deriveProjectUrlKey,
@@ -10,14 +10,14 @@ import {
   type ProjectGoalRef,
   type ProjectWorkspace,
   type WorkspaceRuntimeService,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import { listWorkspaceRuntimeServicesForProjectWorkspaces } from "./workspace-runtime.js";
 import { parseProjectExecutionWorkspacePolicy } from "./execution-workspace-policy.js";
 
 type ProjectRow = typeof projects.$inferSelect;
 type ProjectWorkspaceRow = typeof projectWorkspaces.$inferSelect;
 type WorkspaceRuntimeServiceRow = typeof workspaceRuntimeServices.$inferSelect;
-const REPO_ONLY_CWD_SENTINEL = "/__papertape_repo_only__";
+const REPO_ONLY_CWD_SENTINEL = "/__chopsticks_repo_only__";
 type CreateWorkspaceInput = {
   name?: string | null;
   cwd?: string | null;

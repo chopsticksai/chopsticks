@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type {
-  PapertapePluginManifestV1,
+  ChopsticksPluginManifestV1,
   PluginCapability,
   PluginEventType,
   Company,
@@ -9,7 +9,7 @@ import type {
   IssueComment,
   Agent,
   Goal,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import type {
   EventFilter,
   PluginContext,
@@ -28,7 +28,7 @@ import type {
 
 export interface TestHarnessOptions {
   /** Plugin manifest used to seed capability checks and metadata. */
-  manifest: PapertapePluginManifestV1;
+  manifest: ChopsticksPluginManifestV1;
   /** Optional capability override. Defaults to `manifest.capabilities`. */
   capabilities?: PluginCapability[];
   /** Initial config returned by `ctx.config.get()`. */
@@ -101,7 +101,7 @@ function allowsEvent(filter: EventFilter | undefined, event: PluginEvent): boole
   return true;
 }
 
-function requireCapability(manifest: PapertapePluginManifestV1, allowed: Set<PluginCapability>, capability: PluginCapability) {
+function requireCapability(manifest: ChopsticksPluginManifestV1, allowed: Set<PluginCapability>, capability: PluginCapability) {
   if (allowed.has(capability)) return;
   throw new Error(`Plugin '${manifest.id}' is missing required capability '${capability}' in test harness`);
 }
@@ -122,7 +122,7 @@ function isInCompany<T extends { companyId: string | null | undefined }>(
  * Create an in-memory host harness for plugin worker tests.
  *
  * The harness enforces declared capabilities and simulates host APIs, so tests
- * can validate plugin behavior without spinning up the Papertape server runtime.
+ * can validate plugin behavior without spinning up the Chopsticks server runtime.
  */
 export function createTestHarness(options: TestHarnessOptions): TestHarness {
   const manifest = options.manifest;

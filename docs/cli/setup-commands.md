@@ -5,32 +5,32 @@ summary: onboard、run、doctor 和 configure
 
 用于实例初始化和诊断的命令。
 
-## `papertape run`
+## `chopsticks run`
 
 单命令引导并启动：
 
 ```sh
-pnpm papertape run
+pnpm chopsticks run
 ```
 
 它会：
 
 1. 在缺少配置时自动完成引导
-2. 运行启用修复能力的 `papertape doctor`
+2. 运行启用修复能力的 `chopsticks doctor`
 3. 在检查通过后启动服务
 
 指定某个实例：
 
 ```sh
-pnpm papertape run --instance dev
+pnpm chopsticks run --instance dev
 ```
 
-## `papertape onboard`
+## `chopsticks onboard`
 
 首次交互式初始化：
 
 ```sh
-pnpm papertape onboard
+pnpm chopsticks onboard
 ```
 
 第一步会让你选择：
@@ -41,22 +41,22 @@ pnpm papertape onboard
 引导结束后立刻启动：
 
 ```sh
-pnpm papertape onboard --run
+pnpm chopsticks onboard --run
 ```
 
 使用非交互默认值并立即启动（服务监听后会打开浏览器）：
 
 ```sh
-pnpm papertape onboard --yes
+pnpm chopsticks onboard --yes
 ```
 
-## `papertape doctor`
+## `chopsticks doctor`
 
 带可选自动修复的健康检查：
 
 ```sh
-pnpm papertape doctor
-pnpm papertape doctor --repair
+pnpm chopsticks doctor
+pnpm chopsticks doctor --repair
 ```
 
 检查内容包括：
@@ -67,51 +67,51 @@ pnpm papertape doctor --repair
 - 存储配置
 - 缺失的 key 文件
 
-## `papertape configure`
+## `chopsticks configure`
 
 更新配置分区：
 
 ```sh
-pnpm papertape configure --section server
-pnpm papertape configure --section secrets
-pnpm papertape configure --section storage
+pnpm chopsticks configure --section server
+pnpm chopsticks configure --section secrets
+pnpm chopsticks configure --section storage
 ```
 
-## `papertape env`
+## `chopsticks env`
 
 显示解析后的环境配置：
 
 ```sh
-pnpm papertape env
+pnpm chopsticks env
 ```
 
-## `papertape allowed-hostname`
+## `chopsticks allowed-hostname`
 
 为 authenticated/private 模式放行私有主机名：
 
 ```sh
-pnpm papertape allowed-hostname my-tailscale-host
+pnpm chopsticks allowed-hostname my-tailscale-host
 ```
 
 ## 本地存储路径
 
 | Data | Default Path |
 |------|-------------|
-| 配置 | `~/.papertape/instances/default/config.json` |
-| 数据库 | `~/.papertape/instances/default/db` |
-| 日志 | `~/.papertape/instances/default/logs` |
-| 存储 | `~/.papertape/instances/default/data/storage` |
-| Secrets key | `~/.papertape/instances/default/secrets/master.key` |
+| 配置 | `~/.chopsticks/instances/default/config.json` |
+| 数据库 | `~/.chopsticks/instances/default/db` |
+| 日志 | `~/.chopsticks/instances/default/logs` |
+| 存储 | `~/.chopsticks/instances/default/data/storage` |
+| Secrets key | `~/.chopsticks/instances/default/secrets/master.key` |
 
 可以通过下面的方式覆盖：
 
 ```sh
-PAPERTAPE_HOME=/custom/home PAPERTAPE_INSTANCE_ID=dev pnpm papertape run
+CHOPSTICKS_HOME=/custom/home CHOPSTICKS_INSTANCE_ID=dev pnpm chopsticks run
 ```
 
 也可以直接在任意命令上加 `--data-dir`：
 
 ```sh
-pnpm papertape run --data-dir ./tmp/papertape-dev
-pnpm papertape doctor --data-dir ./tmp/papertape-dev
+pnpm chopsticks run --data-dir ./tmp/chopsticks-dev
+pnpm chopsticks doctor --data-dir ./tmp/chopsticks-dev
 ```

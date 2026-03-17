@@ -19,14 +19,14 @@ afterEach(() => {
 });
 
 describe("resolveConfigPath", () => {
-  it("prefers repo-local .papertape config files", () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "papertape-config-store-"));
+  it("prefers repo-local .chopsticks config files", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-config-store-"));
     const projectDir = path.join(tempDir, "repo");
-    fs.mkdirSync(path.join(projectDir, ".papertape"), { recursive: true });
-    fs.writeFileSync(path.join(projectDir, ".papertape", "config.json"), "{}\n");
-    delete process.env.PAPERTAPE_CONFIG;
+    fs.mkdirSync(path.join(projectDir, ".chopsticks"), { recursive: true });
+    fs.writeFileSync(path.join(projectDir, ".chopsticks", "config.json"), "{}\n");
+    delete process.env.CHOPSTICKS_CONFIG;
     process.chdir(projectDir);
 
-    expect(resolveConfigPath()).toBe(path.join(projectDir, ".papertape", "config.json"));
+    expect(resolveConfigPath()).toBe(path.join(projectDir, ".chopsticks", "config.json"));
   });
 });

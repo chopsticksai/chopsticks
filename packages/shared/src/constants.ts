@@ -361,7 +361,7 @@ export type PluginCapability = (typeof PLUGIN_CAPABILITIES)[number];
 
 /**
  * UI extension slot types. Each slot type corresponds to a mount point in the
- * Papertape UI where plugin components can be rendered.
+ * Chopsticks UI where plugin components can be rendered.
  *
  * @see PLUGIN_SPEC.md §19 — UI Extension Model
  */

@@ -3,7 +3,7 @@ import type {
   ExecutionWorkspaceStrategy,
   IssueExecutionWorkspaceSettings,
   ProjectExecutionWorkspacePolicy,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import { asString, parseObject } from "../adapters/utils.js";
 
 type ParsedExecutionWorkspaceMode = Exclude<ExecutionWorkspaceMode, "inherit">;

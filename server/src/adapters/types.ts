@@ -16,4 +16,4 @@ export type {
   AdapterSessionCodec,
   AdapterModel,
   ServerAdapterModule,
-} from "@papertape/adapter-utils";
+} from "@chopsticks/adapter-utils";

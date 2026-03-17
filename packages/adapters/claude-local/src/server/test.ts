@@ -2,7 +2,7 @@ import type {
   AdapterEnvironmentCheck,
   AdapterEnvironmentTestContext,
   AdapterEnvironmentTestResult,
-} from "@papertape/adapter-utils";
+} from "@chopsticks/adapter-utils";
 import {
   asString,
   asBoolean,
@@ -13,7 +13,7 @@ import {
   ensureCommandResolvable,
   ensurePathInEnv,
   runChildProcess,
-} from "@papertape/adapter-utils/server-utils";
+} from "@chopsticks/adapter-utils/server-utils";
 import path from "node:path";
 import { detectClaudeLoginRequired, parseClaudeStreamJson } from "./parse.js";
 

@@ -3,7 +3,7 @@ title: Docker
 summary: Docker Compose quickstart
 ---
 
-Run Papertape in Docker without installing Node or pnpm locally.
+Run Chopsticks in Docker without installing Node or pnpm locally.
 
 ## Compose Quickstart (Recommended)
 
@@ -16,30 +16,30 @@ Open [http://localhost:3100](http://localhost:3100).
 Defaults:
 
 - Host port: `3100`
-- Data directory: `./data/docker-papertape`
+- Data directory: `./data/docker-chopsticks`
 
 Override with environment variables:
 
 ```sh
-PAPERTAPE_PORT=3200 PAPERTAPE_DATA_DIR=./data/pc \
+CHOPSTICKS_PORT=3200 CHOPSTICKS_DATA_DIR=./data/pc \
   docker compose -f docker-compose.quickstart.yml up --build
 ```
 
 ## Manual Docker Build
 
 ```sh
-docker build -t papertape-local .
-docker run --name papertape \
+docker build -t chopsticks-local .
+docker run --name chopsticks \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e PAPERTAPE_HOME=/papertape \
-  -v "$(pwd)/data/docker-papertape:/papertape" \
-  papertape-local
+  -e CHOPSTICKS_HOME=/chopsticks \
+  -v "$(pwd)/data/docker-chopsticks:/chopsticks" \
+  chopsticks-local
 ```
 
 ## Data Persistence
 
-All data is persisted under the bind mount (`./data/docker-papertape`):
+All data is persisted under the bind mount (`./data/docker-chopsticks`):
 
 - Embedded PostgreSQL data
 - Uploaded assets
@@ -56,14 +56,14 @@ The Docker image pre-installs:
 Pass API keys to enable local adapter runs inside the container:
 
 ```sh
-docker run --name papertape \
+docker run --name chopsticks \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e PAPERTAPE_HOME=/papertape \
+  -e CHOPSTICKS_HOME=/chopsticks \
   -e OPENAI_API_KEY=sk-... \
   -e ANTHROPIC_API_KEY=sk-... \
-  -v "$(pwd)/data/docker-papertape:/papertape" \
-  papertape-local
+  -v "$(pwd)/data/docker-chopsticks:/chopsticks" \
+  chopsticks-local
 ```
 
 Without API keys, the app runs normally — adapter environment checks will surface missing prerequisites.

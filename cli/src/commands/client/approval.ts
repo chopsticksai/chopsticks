@@ -6,7 +6,7 @@ import {
   resubmitApprovalSchema,
   type Approval,
   type ApprovalComment,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import {
   addCommonClientOptions,
   formatInlineRecord,

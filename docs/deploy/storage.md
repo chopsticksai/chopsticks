@@ -3,14 +3,14 @@ title: 存储
 summary: 本地磁盘与兼容 S3 的存储
 ---
 
-Papertape 使用可配置的存储 provider 来保存上传文件（issue 附件、图片等）。
+Chopsticks 使用可配置的存储 provider 来保存上传文件（issue 附件、图片等）。
 
 ## 本地磁盘（默认）
 
 文件默认保存在：
 
 ```
-~/.papertape/instances/default/data/storage
+~/.chopsticks/instances/default/data/storage
 ```
 
 无需额外配置，适合本地开发和单机部署。
@@ -22,7 +22,7 @@ Papertape 使用可配置的存储 provider 来保存上传文件（issue 附件
 通过 CLI 配置：
 
 ```sh
-pnpm papertape configure --section storage
+pnpm chopsticks configure --section storage
 ```
 
 ## 配置
@@ -35,5 +35,5 @@ pnpm papertape configure --section storage
 存储配置会保存在实例配置文件中：
 
 ```
-~/.papertape/instances/default/config.json
+~/.chopsticks/instances/default/config.json
 ```

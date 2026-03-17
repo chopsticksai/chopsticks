@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { createServer } from "node:http";
 import { WebSocketServer } from "ws";
-import { execute, testEnvironment } from "@papertape/adapter-openclaw-gateway/server";
+import { execute, testEnvironment } from "@chopsticks/adapter-openclaw-gateway/server";
 import {
   buildOpenClawGatewayConfig,
   parseOpenClawGatewayStdoutLine,
-} from "@papertape/adapter-openclaw-gateway/ui";
-import type { AdapterExecutionContext } from "@papertape/adapter-utils";
+} from "@chopsticks/adapter-openclaw-gateway/ui";
+import type { AdapterExecutionContext } from "@chopsticks/adapter-utils";
 
 function buildContext(
   config: Record<string, unknown>,
@@ -422,18 +422,18 @@ describe("openclaw gateway adapter execute", () => {
               issueId: "issue-123",
               wakeReason: "issue_assigned",
               issueIds: ["issue-123"],
-              papertapeWorkspace: {
+              chopsticksWorkspace: {
                 cwd: "/tmp/worktrees/pap-123",
                 strategy: "git_worktree",
                 branchName: "pap-123-test",
               },
-              papertapeWorkspaces: [
+              chopsticksWorkspaces: [
                 {
                   id: "workspace-1",
                   cwd: "/tmp/project",
                 },
               ],
-              papertapeRuntimeServiceIntents: [
+              chopsticksRuntimeServiceIntents: [
                 {
                   name: "preview",
                   lifecycle: "ephemeral",
@@ -452,10 +452,10 @@ describe("openclaw gateway adapter execute", () => {
       const payload = gateway.getAgentPayload();
       expect(payload).toBeTruthy();
       expect(payload?.idempotencyKey).toBe("run-123");
-      expect(payload?.sessionKey).toBe("papertape:issue:issue-123");
+      expect(payload?.sessionKey).toBe("chopsticks:issue:issue-123");
       expect(String(payload?.message ?? "")).toContain("wake now");
-      expect(String(payload?.message ?? "")).toContain("PAPERTAPE_RUN_ID=run-123");
-      expect(String(payload?.message ?? "")).toContain("PAPERTAPE_TASK_ID=task-123");
+      expect(String(payload?.message ?? "")).toContain("CHOPSTICKS_RUN_ID=run-123");
+      expect(String(payload?.message ?? "")).toContain("CHOPSTICKS_TASK_ID=task-123");
 
       expect(logs.some((entry) => entry.includes("[openclaw-gateway:event] run=run-123 stream=assistant"))).toBe(true);
     } finally {

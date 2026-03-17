@@ -12,9 +12,9 @@ import {
   type DeploymentMode,
   type SecretProvider,
   type StorageProvider,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import { configExists, readConfig, resolveConfigPath, writeConfig } from "../config/store.js";
-import type { PapertapeConfig } from "../config/schema.js";
+import type { ChopsticksConfig } from "../config/schema.js";
 import { ensureAgentJwtSecret, resolveAgentJwtEnvFile } from "../config/env.js";
 import { ensureLocalSecretsKeyFile } from "../config/secrets-key.js";
 import { promptDatabase } from "../prompts/database.js";
@@ -29,11 +29,11 @@ import {
   resolveDefaultBackupDir,
   resolveDefaultEmbeddedPostgresDir,
   resolveDefaultLogsDir,
-  resolvePapertapeInstanceId,
+  resolveChopsticksInstanceId,
 } from "../config/home.js";
 import { publicCliCommand } from "../config/branding.js";
 import { bootstrapCeoInvite } from "./auth-bootstrap-ceo.js";
-import { printPapertapeCliBanner } from "../utils/banner.js";
+import { printChopsticksCliBanner } from "../utils/banner.js";
 
 type SetupMode = "quickstart" | "advanced";
 
@@ -44,35 +44,35 @@ type OnboardOptions = {
   invokedByRun?: boolean;
 };
 
-type OnboardDefaults = Pick<PapertapeConfig, "database" | "logging" | "server" | "auth" | "storage" | "secrets">;
+type OnboardDefaults = Pick<ChopsticksConfig, "database" | "logging" | "server" | "auth" | "storage" | "secrets">;
 
 const ONBOARD_ENV_KEYS = [
-  "PAPERTAPE_PUBLIC_URL",
+  "CHOPSTICKS_PUBLIC_URL",
   "DATABASE_URL",
-  "PAPERTAPE_DB_BACKUP_ENABLED",
-  "PAPERTAPE_DB_BACKUP_INTERVAL_MINUTES",
-  "PAPERTAPE_DB_BACKUP_RETENTION_DAYS",
-  "PAPERTAPE_DB_BACKUP_DIR",
-  "PAPERTAPE_DEPLOYMENT_MODE",
-  "PAPERTAPE_DEPLOYMENT_EXPOSURE",
+  "CHOPSTICKS_DB_BACKUP_ENABLED",
+  "CHOPSTICKS_DB_BACKUP_INTERVAL_MINUTES",
+  "CHOPSTICKS_DB_BACKUP_RETENTION_DAYS",
+  "CHOPSTICKS_DB_BACKUP_DIR",
+  "CHOPSTICKS_DEPLOYMENT_MODE",
+  "CHOPSTICKS_DEPLOYMENT_EXPOSURE",
   "HOST",
   "PORT",
   "SERVE_UI",
-  "PAPERTAPE_ALLOWED_HOSTNAMES",
-  "PAPERTAPE_AUTH_BASE_URL_MODE",
-  "PAPERTAPE_AUTH_PUBLIC_BASE_URL",
+  "CHOPSTICKS_ALLOWED_HOSTNAMES",
+  "CHOPSTICKS_AUTH_BASE_URL_MODE",
+  "CHOPSTICKS_AUTH_PUBLIC_BASE_URL",
   "BETTER_AUTH_URL",
   "BETTER_AUTH_BASE_URL",
-  "PAPERTAPE_STORAGE_PROVIDER",
-  "PAPERTAPE_STORAGE_LOCAL_DIR",
-  "PAPERTAPE_STORAGE_S3_BUCKET",
-  "PAPERTAPE_STORAGE_S3_REGION",
-  "PAPERTAPE_STORAGE_S3_ENDPOINT",
-  "PAPERTAPE_STORAGE_S3_PREFIX",
-  "PAPERTAPE_STORAGE_S3_FORCE_PATH_STYLE",
-  "PAPERTAPE_SECRETS_PROVIDER",
-  "PAPERTAPE_SECRETS_STRICT_MODE",
-  "PAPERTAPE_SECRETS_MASTER_KEY_FILE",
+  "CHOPSTICKS_STORAGE_PROVIDER",
+  "CHOPSTICKS_STORAGE_LOCAL_DIR",
+  "CHOPSTICKS_STORAGE_S3_BUCKET",
+  "CHOPSTICKS_STORAGE_S3_REGION",
+  "CHOPSTICKS_STORAGE_S3_ENDPOINT",
+  "CHOPSTICKS_STORAGE_S3_PREFIX",
+  "CHOPSTICKS_STORAGE_S3_FORCE_PATH_STYLE",
+  "CHOPSTICKS_SECRETS_PROVIDER",
+  "CHOPSTICKS_SECRETS_STRICT_MODE",
+  "CHOPSTICKS_SECRETS_MASTER_KEY_FILE",
 ] as const;
 
 function parseBooleanFromEnv(rawValue: string | undefined): boolean | null {
@@ -105,32 +105,32 @@ function quickstartDefaultsFromEnv(): {
   usedEnvKeys: string[];
   ignoredEnvKeys: Array<{ key: string; reason: string }>;
 } {
-  const instanceId = resolvePapertapeInstanceId();
+  const instanceId = resolveChopsticksInstanceId();
   const defaultStorage = defaultStorageConfig();
   const defaultSecrets = defaultSecretsConfig();
   const databaseUrl = process.env.DATABASE_URL?.trim() || undefined;
   const publicUrl =
-    process.env.PAPERTAPE_PUBLIC_URL?.trim() ||
-    process.env.PAPERTAPE_AUTH_PUBLIC_BASE_URL?.trim() ||
+    process.env.CHOPSTICKS_PUBLIC_URL?.trim() ||
+    process.env.CHOPSTICKS_AUTH_PUBLIC_BASE_URL?.trim() ||
     process.env.BETTER_AUTH_URL?.trim() ||
     process.env.BETTER_AUTH_BASE_URL?.trim() ||
     undefined;
   const deploymentMode =
-    parseEnumFromEnv<DeploymentMode>(process.env.PAPERTAPE_DEPLOYMENT_MODE, DEPLOYMENT_MODES) ?? "local_trusted";
+    parseEnumFromEnv<DeploymentMode>(process.env.CHOPSTICKS_DEPLOYMENT_MODE, DEPLOYMENT_MODES) ?? "local_trusted";
   const deploymentExposureFromEnv = parseEnumFromEnv<DeploymentExposure>(
-    process.env.PAPERTAPE_DEPLOYMENT_EXPOSURE,
+    process.env.CHOPSTICKS_DEPLOYMENT_EXPOSURE,
     DEPLOYMENT_EXPOSURES,
   );
   const deploymentExposure =
     deploymentMode === "local_trusted" ? "private" : (deploymentExposureFromEnv ?? "private");
   const authPublicBaseUrl = publicUrl;
   const authBaseUrlModeFromEnv = parseEnumFromEnv<AuthBaseUrlMode>(
-    process.env.PAPERTAPE_AUTH_BASE_URL_MODE,
+    process.env.CHOPSTICKS_AUTH_BASE_URL_MODE,
     AUTH_BASE_URL_MODES,
   );
   const authBaseUrlMode = authBaseUrlModeFromEnv ?? (authPublicBaseUrl ? "explicit" : "auto");
-  const allowedHostnamesFromEnv = process.env.PAPERTAPE_ALLOWED_HOSTNAMES
-    ? process.env.PAPERTAPE_ALLOWED_HOSTNAMES
+  const allowedHostnamesFromEnv = process.env.CHOPSTICKS_ALLOWED_HOSTNAMES
+    ? process.env.CHOPSTICKS_ALLOWED_HOSTNAMES
       .split(",")
       .map((value) => value.trim().toLowerCase())
       .filter((value) => value.length > 0)
@@ -145,19 +145,19 @@ function quickstartDefaultsFromEnv(): {
     })()
     : null;
   const storageProvider =
-    parseEnumFromEnv<StorageProvider>(process.env.PAPERTAPE_STORAGE_PROVIDER, STORAGE_PROVIDERS) ??
+    parseEnumFromEnv<StorageProvider>(process.env.CHOPSTICKS_STORAGE_PROVIDER, STORAGE_PROVIDERS) ??
     defaultStorage.provider;
   const secretsProvider =
-    parseEnumFromEnv<SecretProvider>(process.env.PAPERTAPE_SECRETS_PROVIDER, SECRET_PROVIDERS) ??
+    parseEnumFromEnv<SecretProvider>(process.env.CHOPSTICKS_SECRETS_PROVIDER, SECRET_PROVIDERS) ??
     defaultSecrets.provider;
-  const databaseBackupEnabled = parseBooleanFromEnv(process.env.PAPERTAPE_DB_BACKUP_ENABLED) ?? true;
+  const databaseBackupEnabled = parseBooleanFromEnv(process.env.CHOPSTICKS_DB_BACKUP_ENABLED) ?? true;
   const databaseBackupIntervalMinutes = Math.max(
     1,
-    parseNumberFromEnv(process.env.PAPERTAPE_DB_BACKUP_INTERVAL_MINUTES) ?? 60,
+    parseNumberFromEnv(process.env.CHOPSTICKS_DB_BACKUP_INTERVAL_MINUTES) ?? 60,
   );
   const databaseBackupRetentionDays = Math.max(
     1,
-    parseNumberFromEnv(process.env.PAPERTAPE_DB_BACKUP_RETENTION_DAYS) ?? 30,
+    parseNumberFromEnv(process.env.CHOPSTICKS_DB_BACKUP_RETENTION_DAYS) ?? 30,
   );
   const defaults: OnboardDefaults = {
     database: {
@@ -169,7 +169,7 @@ function quickstartDefaultsFromEnv(): {
         enabled: databaseBackupEnabled,
         intervalMinutes: databaseBackupIntervalMinutes,
         retentionDays: databaseBackupRetentionDays,
-        dir: resolvePathFromEnv(process.env.PAPERTAPE_DB_BACKUP_DIR) ?? resolveDefaultBackupDir(instanceId),
+        dir: resolvePathFromEnv(process.env.CHOPSTICKS_DB_BACKUP_DIR) ?? resolveDefaultBackupDir(instanceId),
       },
     },
     logging: {
@@ -193,32 +193,32 @@ function quickstartDefaultsFromEnv(): {
       provider: storageProvider,
       localDisk: {
         baseDir:
-          resolvePathFromEnv(process.env.PAPERTAPE_STORAGE_LOCAL_DIR) ?? defaultStorage.localDisk.baseDir,
+          resolvePathFromEnv(process.env.CHOPSTICKS_STORAGE_LOCAL_DIR) ?? defaultStorage.localDisk.baseDir,
       },
       s3: {
-        bucket: process.env.PAPERTAPE_STORAGE_S3_BUCKET ?? defaultStorage.s3.bucket,
-        region: process.env.PAPERTAPE_STORAGE_S3_REGION ?? defaultStorage.s3.region,
-        endpoint: process.env.PAPERTAPE_STORAGE_S3_ENDPOINT ?? defaultStorage.s3.endpoint,
-        prefix: process.env.PAPERTAPE_STORAGE_S3_PREFIX ?? defaultStorage.s3.prefix,
+        bucket: process.env.CHOPSTICKS_STORAGE_S3_BUCKET ?? defaultStorage.s3.bucket,
+        region: process.env.CHOPSTICKS_STORAGE_S3_REGION ?? defaultStorage.s3.region,
+        endpoint: process.env.CHOPSTICKS_STORAGE_S3_ENDPOINT ?? defaultStorage.s3.endpoint,
+        prefix: process.env.CHOPSTICKS_STORAGE_S3_PREFIX ?? defaultStorage.s3.prefix,
         forcePathStyle:
-          parseBooleanFromEnv(process.env.PAPERTAPE_STORAGE_S3_FORCE_PATH_STYLE) ??
+          parseBooleanFromEnv(process.env.CHOPSTICKS_STORAGE_S3_FORCE_PATH_STYLE) ??
           defaultStorage.s3.forcePathStyle,
       },
     },
     secrets: {
       provider: secretsProvider,
-      strictMode: parseBooleanFromEnv(process.env.PAPERTAPE_SECRETS_STRICT_MODE) ?? defaultSecrets.strictMode,
+      strictMode: parseBooleanFromEnv(process.env.CHOPSTICKS_SECRETS_STRICT_MODE) ?? defaultSecrets.strictMode,
       localEncrypted: {
         keyFilePath:
-          resolvePathFromEnv(process.env.PAPERTAPE_SECRETS_MASTER_KEY_FILE) ??
+          resolvePathFromEnv(process.env.CHOPSTICKS_SECRETS_MASTER_KEY_FILE) ??
           defaultSecrets.localEncrypted.keyFilePath,
       },
     },
   };
   const ignoredEnvKeys: Array<{ key: string; reason: string }> = [];
-  if (deploymentMode === "local_trusted" && process.env.PAPERTAPE_DEPLOYMENT_EXPOSURE !== undefined) {
+  if (deploymentMode === "local_trusted" && process.env.CHOPSTICKS_DEPLOYMENT_EXPOSURE !== undefined) {
     ignoredEnvKeys.push({
-      key: "PAPERTAPE_DEPLOYMENT_EXPOSURE",
+      key: "CHOPSTICKS_DEPLOYMENT_EXPOSURE",
       reason: "Ignored because deployment mode local_trusted always forces private exposure",
     });
   }
@@ -230,15 +230,15 @@ function quickstartDefaultsFromEnv(): {
   return { defaults, usedEnvKeys, ignoredEnvKeys };
 }
 
-function canCreateBootstrapInviteImmediately(config: Pick<PapertapeConfig, "database" | "server">): boolean {
+function canCreateBootstrapInviteImmediately(config: Pick<ChopsticksConfig, "database" | "server">): boolean {
   return config.server.deploymentMode === "authenticated" && config.database.mode !== "embedded-postgres";
 }
 
 export async function onboard(opts: OnboardOptions): Promise<void> {
-  printPapertapeCliBanner();
+  printChopsticksCliBanner();
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("onboard")} `)));
   const configPath = resolveConfigPath(opts.config);
-  const instance = describeLocalInstancePaths(resolvePapertapeInstanceId());
+  const instance = describeLocalInstancePaths(resolveChopsticksInstanceId());
   p.log.message(
     pc.dim(
       `Local home: ${instance.homeDir} | instance: ${instance.instanceId} | config: ${configPath}`,
@@ -286,7 +286,7 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
     setupMode = setupModeChoice as SetupMode;
   }
 
-  let llm: PapertapeConfig["llm"] | undefined;
+  let llm: ChopsticksConfig["llm"] | undefined;
   const { defaults: derivedDefaults, usedEnvKeys, ignoredEnvKeys } = quickstartDefaultsFromEnv();
   let {
     database,
@@ -305,7 +305,7 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
       const s = p.spinner();
       s.start("Testing database connection...");
       try {
-        const { createDb } = await import("@papertape/db");
+        const { createDb } = await import("@chopsticks/db");
         const db = createDb(database.connectionString);
         await db.execute("SELECT 1");
         s.stop("Database connection successful");
@@ -404,14 +404,14 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
   const jwtSecret = ensureAgentJwtSecret(configPath);
   const envFilePath = resolveAgentJwtEnvFile(configPath);
   if (jwtSecret.created) {
-    p.log.success(`Created ${pc.cyan("PAPERTAPE_AGENT_JWT_SECRET")} in ${pc.dim(envFilePath)}`);
-  } else if (process.env.PAPERTAPE_AGENT_JWT_SECRET?.trim()) {
-    p.log.info(`Using existing ${pc.cyan("PAPERTAPE_AGENT_JWT_SECRET")} from environment`);
+    p.log.success(`Created ${pc.cyan("CHOPSTICKS_AGENT_JWT_SECRET")} in ${pc.dim(envFilePath)}`);
+  } else if (process.env.CHOPSTICKS_AGENT_JWT_SECRET?.trim()) {
+    p.log.info(`Using existing ${pc.cyan("CHOPSTICKS_AGENT_JWT_SECRET")} from environment`);
   } else {
-    p.log.info(`Using existing ${pc.cyan("PAPERTAPE_AGENT_JWT_SECRET")} in ${pc.dim(envFilePath)}`);
+    p.log.info(`Using existing ${pc.cyan("CHOPSTICKS_AGENT_JWT_SECRET")} in ${pc.dim(envFilePath)}`);
   }
 
-  const config: PapertapeConfig = {
+  const config: ChopsticksConfig = {
     $meta: {
       version: 1,
       updatedAt: new Date().toISOString(),
@@ -445,7 +445,7 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
       `Auth URL mode: ${auth.baseUrlMode}${auth.publicBaseUrl ? ` (${auth.publicBaseUrl})` : ""}`,
       `Storage: ${storage.provider}`,
       `Secrets: ${secrets.provider} (strict mode ${secrets.strictMode ? "on" : "off"})`,
-      "Agent auth: PAPERTAPE_AGENT_JWT_SECRET configured",
+      "Agent auth: CHOPSTICKS_AGENT_JWT_SECRET configured",
     ].join("\n"),
     "Configuration saved",
   );
@@ -467,7 +467,7 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
   let shouldRunNow = opts.run === true || opts.yes === true;
   if (!shouldRunNow && !opts.invokedByRun && process.stdin.isTTY && process.stdout.isTTY) {
     const answer = await p.confirm({
-      message: "Start Papertape now?",
+      message: "Start Chopsticks now?",
       initialValue: true,
     });
     if (!p.isCancel(answer)) {
@@ -476,7 +476,7 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
   }
 
   if (shouldRunNow && !opts.invokedByRun) {
-    process.env.PAPERTAPE_OPEN_ON_LISTEN = "true";
+    process.env.CHOPSTICKS_OPEN_ON_LISTEN = "true";
     const { runCommand } = await import("./run.js");
     await runCommand({ config: configPath, repair: true, yes: true });
     return;

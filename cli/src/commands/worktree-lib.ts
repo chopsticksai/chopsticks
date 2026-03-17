@@ -1,8 +1,8 @@
 import path from "node:path";
-import type { PapertapeConfig } from "../config/schema.js";
+import type { ChopsticksConfig } from "../config/schema.js";
 import { expandHomePrefix } from "../config/home.js";
 
-export const DEFAULT_WORKTREE_HOME = "~/.papertape-worktrees";
+export const DEFAULT_WORKTREE_HOME = "~/.chopsticks-worktrees";
 export const WORKTREE_SEED_MODES = ["minimal", "full"] as const;
 
 export type WorktreeSeedMode = (typeof WORKTREE_SEED_MODES)[number];
@@ -95,7 +95,7 @@ export function resolveWorktreeLocalPaths(opts: {
   const cwd = path.resolve(opts.cwd);
   const homeDir = path.resolve(expandHomePrefix(opts.homeDir ?? DEFAULT_WORKTREE_HOME));
   const instanceRoot = path.resolve(homeDir, "instances", opts.instanceId);
-  const repoConfigDir = path.resolve(cwd, ".papertape");
+  const repoConfigDir = path.resolve(cwd, ".chopsticks");
   return {
     cwd,
     repoConfigDir,
@@ -126,12 +126,12 @@ export function rewriteLocalUrlPort(rawUrl: string | undefined, port: number): s
 }
 
 export function buildWorktreeConfig(input: {
-  sourceConfig: PapertapeConfig | null;
+  sourceConfig: ChopsticksConfig | null;
   paths: WorktreeLocalPaths;
   serverPort: number;
   databasePort: number;
   now?: Date;
-}): PapertapeConfig {
+}): ChopsticksConfig {
   const { sourceConfig, paths, serverPort, databasePort } = input;
   const nowIso = (input.now ?? new Date()).toISOString();
 
@@ -179,7 +179,7 @@ export function buildWorktreeConfig(input: {
         baseDir: paths.storageDir,
       },
       s3: {
-        bucket: source?.storage.s3.bucket ?? "papertape",
+        bucket: source?.storage.s3.bucket ?? "chopsticks",
         region: source?.storage.s3.region ?? "us-east-1",
         endpoint: source?.storage.s3.endpoint,
         prefix: source?.storage.s3.prefix ?? "",
@@ -198,11 +198,11 @@ export function buildWorktreeConfig(input: {
 
 export function buildWorktreeEnvEntries(paths: WorktreeLocalPaths): Record<string, string> {
   return {
-    PAPERTAPE_HOME: paths.homeDir,
-    PAPERTAPE_INSTANCE_ID: paths.instanceId,
-    PAPERTAPE_CONFIG: paths.configPath,
-    PAPERTAPE_CONTEXT: paths.contextPath,
-    PAPERTAPE_IN_WORKTREE: "true",
+    CHOPSTICKS_HOME: paths.homeDir,
+    CHOPSTICKS_INSTANCE_ID: paths.instanceId,
+    CHOPSTICKS_CONFIG: paths.configPath,
+    CHOPSTICKS_CONTEXT: paths.contextPath,
+    CHOPSTICKS_IN_WORKTREE: "true",
   };
 }
 

@@ -7,8 +7,8 @@ drizzle/meta/
 coverage/
 .DS_Store
 data/
-.papertape/
-.papertape/
+.chopsticks/
+.chopsticks/
 .pnpm-store/
 tmp-*
 cli/tmp/
@@ -39,8 +39,8 @@ tmp/
 *.tmp
 .vscode/
 .claude/settings.local.json
-.papertape-local/
-.papertape-local/
+.chopsticks-local/
+.chopsticks-local/
 
 # Doc maintenance cursor
 .doc-review-cursor

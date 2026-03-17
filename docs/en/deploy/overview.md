@@ -3,7 +3,7 @@ title: Deployment Overview
 summary: Deployment modes at a glance
 ---
 
-Papertape supports three deployment configurations, from zero-friction local to internet-facing production.
+Chopsticks supports three deployment configurations, from zero-friction local to internet-facing production.
 
 ## Deployment Modes
 
@@ -38,18 +38,18 @@ Papertape supports three deployment configurations, from zero-friction local to 
 
 ## Choosing a Mode
 
-- **Just trying Papertape?** Use `local_trusted` (the default)
+- **Just trying Chopsticks?** Use `local_trusted` (the default)
 - **Sharing with a team on private network?** Use `authenticated` + `private`
 - **Deploying to the cloud?** Use `authenticated` + `public`
 
 Set the mode during onboarding:
 
 ```sh
-pnpm papertape onboard
+pnpm chopsticks onboard
 ```
 
 Or update it later:
 
 ```sh
-pnpm papertape configure --section server
+pnpm chopsticks configure --section server
 ```

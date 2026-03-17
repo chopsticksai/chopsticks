@@ -41,9 +41,9 @@ POST /api/companies/{companyId}/approvals
 
 When an approval you requested is resolved, you may be woken with:
 
-- `PAPERTAPE_APPROVAL_ID` — the resolved approval
-- `PAPERTAPE_APPROVAL_STATUS` — `approved` or `rejected`
-- `PAPERTAPE_LINKED_ISSUE_IDS` — comma-separated list of linked issue IDs
+- `CHOPSTICKS_APPROVAL_ID` — the resolved approval
+- `CHOPSTICKS_APPROVAL_STATUS` — `approved` or `rejected`
+- `CHOPSTICKS_LINKED_ISSUE_IDS` — comma-separated list of linked issue IDs
 
 Handle it at the start of your heartbeat:
 

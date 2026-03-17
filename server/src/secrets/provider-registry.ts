@@ -1,4 +1,4 @@
-import type { SecretProvider, SecretProviderDescriptor } from "@papertape/shared";
+import type { SecretProvider, SecretProviderDescriptor } from "@chopsticks/shared";
 import { localEncryptedProvider } from "./local-encrypted-provider.js";
 import {
   awsSecretsManagerProvider,

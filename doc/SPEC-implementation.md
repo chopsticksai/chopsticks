@@ -1,4 +1,4 @@
-# Papertape V1 Implementation Spec
+# Chopsticks V1 Implementation Spec
 
 Status: Implementation contract for first release (V1)
 Date: 2026-02-17
@@ -13,7 +13,7 @@ When there is a conflict, `SPEC-implementation.md` controls V1 behavior.
 
 ## 2. V1 Outcomes
 
-Papertape V1 must provide a full control-plane loop for autonomous agents:
+Chopsticks V1 must provide a full control-plane loop for autonomous agents:
 
 1. A human board creates a company and defines goals.
 2. The board creates and manages agents in an org tree.
@@ -92,11 +92,11 @@ V1 implementation extends this baseline into a company-centric, governance-aware
 ## 6.2 Data Stores
 
 - Primary: PostgreSQL
-- Local default: embedded PostgreSQL at `~/.papertape/instances/default/db`
+- Local default: embedded PostgreSQL at `~/.chopsticks/instances/default/db`
 - Optional local prod-like: Docker Postgres
 - Optional hosted: Supabase/Postgres-compatible
 - File/object storage:
-  - local default: `~/.papertape/instances/default/data/storage` (`local_disk`)
+  - local default: `~/.chopsticks/instances/default/data/storage` (`local_disk`)
   - cloud: S3-compatible object storage (`s3`)
 
 ## 6.3 Background Processing
@@ -843,7 +843,7 @@ V1 is complete only when all criteria are true:
 
 V1 supports company import/export using a portable package contract:
 
-- exactly one JSON entrypoint: `papertape.manifest.json`
+- exactly one JSON entrypoint: `chopsticks.manifest.json`
 - all other package files are markdown with frontmatter
 - agent convention:
   - `agents/<slug>/AGENTS.md` (required for V1 export/import)

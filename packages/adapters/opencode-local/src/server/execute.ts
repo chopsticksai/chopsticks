@@ -2,25 +2,25 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AdapterExecutionContext, AdapterExecutionResult } from "@papertape/adapter-utils";
+import type { AdapterExecutionContext, AdapterExecutionResult } from "@chopsticks/adapter-utils";
 import {
   asString,
   asNumber,
   asStringArray,
   parseObject,
-  buildPapertapeEnv,
+  buildChopsticksEnv,
   redactEnvForLogs,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
   ensurePathInEnv,
   renderTemplate,
   runChildProcess,
-} from "@papertape/adapter-utils/server-utils";
+} from "@chopsticks/adapter-utils/server-utils";
 import { isOpenCodeUnknownSessionError, parseOpenCodeJsonl } from "./parse.js";
 import { ensureOpenCodeModelConfiguredAndAvailable } from "./models.js";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
-const PAPERTAPE_SKILLS_CANDIDATES = [
+const CHOPSTICKS_SKILLS_CANDIDATES = [
   path.resolve(__moduleDir, "../../skills"),
   path.resolve(__moduleDir, "../../../../../skills"),
 ];
@@ -45,8 +45,8 @@ function claudeSkillsHome(): string {
   return path.join(os.homedir(), ".claude", "skills");
 }
 
-async function resolvePapertapeSkillsDir(): Promise<string | null> {
-  for (const candidate of PAPERTAPE_SKILLS_CANDIDATES) {
+async function resolveChopsticksSkillsDir(): Promise<string | null> {
+  for (const candidate of CHOPSTICKS_SKILLS_CANDIDATES) {
     const isDir = await fs.stat(candidate).then((s) => s.isDirectory()).catch(() => false);
     if (isDir) return candidate;
   }
@@ -54,7 +54,7 @@ async function resolvePapertapeSkillsDir(): Promise<string | null> {
 }
 
 async function ensureOpenCodeSkillsInjected(onLog: AdapterExecutionContext["onLog"]) {
-  const skillsDir = await resolvePapertapeSkillsDir();
+  const skillsDir = await resolveChopsticksSkillsDir();
   if (!skillsDir) return;
 
   const skillsHome = claudeSkillsHome();
@@ -71,12 +71,12 @@ async function ensureOpenCodeSkillsInjected(onLog: AdapterExecutionContext["onLo
       await fs.symlink(source, target);
       await onLog(
         "stderr",
-        `[papertape] Injected OpenCode skill "${entry.name}" into ${skillsHome}\n`,
+        `[chopsticks] Injected OpenCode skill "${entry.name}" into ${skillsHome}\n`,
       );
     } catch (err) {
       await onLog(
         "stderr",
-        `[papertape] Failed to inject OpenCode skill "${entry.name}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
+        `[chopsticks] Failed to inject OpenCode skill "${entry.name}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
       );
     }
   }
@@ -87,21 +87,21 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Papertape work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your Chopsticks work.",
   );
   const command = asString(config.command, "opencode");
   const model = asString(config.model, "").trim();
   const variant = asString(config.variant, "").trim();
 
-  const workspaceContext = parseObject(context.papertapeWorkspace);
+  const workspaceContext = parseObject(context.chopsticksWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceId = asString(workspaceContext.workspaceId, "");
   const workspaceRepoUrl = asString(workspaceContext.repoUrl, "");
   const workspaceRepoRef = asString(workspaceContext.repoRef, "");
   const agentHome = asString(workspaceContext.agentHome, "");
-  const workspaceHints = Array.isArray(context.papertapeWorkspaces)
-    ? context.papertapeWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.chopsticksWorkspaces)
+    ? context.chopsticksWorkspaces.filter(
       (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
     )
     : [];
@@ -114,9 +114,9 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const envConfig = parseObject(config.env);
   const hasExplicitApiKey =
-    typeof envConfig.PAPERTAPE_API_KEY === "string" && envConfig.PAPERTAPE_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildPapertapeEnv(agent) };
-  env.PAPERTAPE_RUN_ID = runId;
+    typeof envConfig.CHOPSTICKS_API_KEY === "string" && envConfig.CHOPSTICKS_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildChopsticksEnv(agent) };
+  env.CHOPSTICKS_RUN_ID = runId;
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
     (typeof context.issueId === "string" && context.issueId.trim().length > 0 && context.issueId.trim()) ||
@@ -140,25 +140,25 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const linkedIssueIds = Array.isArray(context.issueIds)
     ? context.issueIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     : [];
-  if (wakeTaskId) env.PAPERTAPE_TASK_ID = wakeTaskId;
-  if (wakeReason) env.PAPERTAPE_WAKE_REASON = wakeReason;
-  if (wakeCommentId) env.PAPERTAPE_WAKE_COMMENT_ID = wakeCommentId;
-  if (approvalId) env.PAPERTAPE_APPROVAL_ID = approvalId;
-  if (approvalStatus) env.PAPERTAPE_APPROVAL_STATUS = approvalStatus;
-  if (linkedIssueIds.length > 0) env.PAPERTAPE_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
-  if (effectiveWorkspaceCwd) env.PAPERTAPE_WORKSPACE_CWD = effectiveWorkspaceCwd;
-  if (workspaceSource) env.PAPERTAPE_WORKSPACE_SOURCE = workspaceSource;
-  if (workspaceId) env.PAPERTAPE_WORKSPACE_ID = workspaceId;
-  if (workspaceRepoUrl) env.PAPERTAPE_WORKSPACE_REPO_URL = workspaceRepoUrl;
-  if (workspaceRepoRef) env.PAPERTAPE_WORKSPACE_REPO_REF = workspaceRepoRef;
+  if (wakeTaskId) env.CHOPSTICKS_TASK_ID = wakeTaskId;
+  if (wakeReason) env.CHOPSTICKS_WAKE_REASON = wakeReason;
+  if (wakeCommentId) env.CHOPSTICKS_WAKE_COMMENT_ID = wakeCommentId;
+  if (approvalId) env.CHOPSTICKS_APPROVAL_ID = approvalId;
+  if (approvalStatus) env.CHOPSTICKS_APPROVAL_STATUS = approvalStatus;
+  if (linkedIssueIds.length > 0) env.CHOPSTICKS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+  if (effectiveWorkspaceCwd) env.CHOPSTICKS_WORKSPACE_CWD = effectiveWorkspaceCwd;
+  if (workspaceSource) env.CHOPSTICKS_WORKSPACE_SOURCE = workspaceSource;
+  if (workspaceId) env.CHOPSTICKS_WORKSPACE_ID = workspaceId;
+  if (workspaceRepoUrl) env.CHOPSTICKS_WORKSPACE_REPO_URL = workspaceRepoUrl;
+  if (workspaceRepoRef) env.CHOPSTICKS_WORKSPACE_REPO_REF = workspaceRepoRef;
   if (agentHome) env.AGENT_HOME = agentHome;
-  if (workspaceHints.length > 0) env.PAPERTAPE_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+  if (workspaceHints.length > 0) env.CHOPSTICKS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
 
   for (const [key, value] of Object.entries(envConfig)) {
     if (typeof value === "string") env[key] = value;
   }
   if (!hasExplicitApiKey && authToken) {
-    env.PAPERTAPE_API_KEY = authToken;
+    env.CHOPSTICKS_API_KEY = authToken;
   }
   const runtimeEnv = Object.fromEntries(
     Object.entries(ensurePathInEnv({ ...process.env, ...env })).filter(
@@ -192,7 +192,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   if (runtimeSessionId && !canResumeSession) {
     await onLog(
       "stderr",
-      `[papertape] OpenCode session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[chopsticks] OpenCode session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
 
@@ -211,13 +211,13 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
         `Resolve any relative file references from ${instructionsDir}.\n\n`;
       await onLog(
         "stderr",
-        `[papertape] Loaded agent instructions file: ${resolvedInstructionsFilePath}\n`,
+        `[chopsticks] Loaded agent instructions file: ${resolvedInstructionsFilePath}\n`,
       );
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
       await onLog(
         "stderr",
-        `[papertape] Warning: could not read agent instructions file "${resolvedInstructionsFilePath}": ${reason}\n`,
+        `[chopsticks] Warning: could not read agent instructions file "${resolvedInstructionsFilePath}": ${reason}\n`,
       );
     }
   }
@@ -362,7 +362,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stderr",
-      `[papertape] OpenCode session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
+      `[chopsticks] OpenCode session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
     );
     const retry = await runAttempt(null);
     return toResult(retry, true);

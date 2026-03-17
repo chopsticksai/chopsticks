@@ -1,6 +1,6 @@
 import { Router } from "express";
-import type { Db } from "@papertape/db";
-import { createCostEventSchema, updateBudgetSchema } from "@papertape/shared";
+import type { Db } from "@chopsticks/db";
+import { createCostEventSchema, updateBudgetSchema } from "@chopsticks/shared";
 import { validate } from "../middleware/validate.js";
 import { costService, companyService, agentService, logActivity } from "../services/index.js";
 import { assertBoard, assertCompanyAccess, getActorInfo } from "./authz.js";

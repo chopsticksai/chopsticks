@@ -33,5 +33,5 @@ Operational fields:
 - graceSec (number, optional): SIGTERM grace period in seconds
 
 Notes:
-- When Papertape realizes a workspace/runtime for a run, it injects PAPERTAPE_WORKSPACE_* and PAPERTAPE_RUNTIME_* env vars for agent-side tooling.
+- When Chopsticks realizes a workspace/runtime for a run, it injects CHOPSTICKS_WORKSPACE_* and CHOPSTICKS_RUNTIME_* env vars for agent-side tooling.
 `;

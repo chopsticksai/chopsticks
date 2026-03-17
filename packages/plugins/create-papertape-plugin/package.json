@@ -1,9 +1,9 @@
 {
-  "name": "@papertape/create-papertape-plugin",
+  "name": "@chopsticks/create-chopsticks-plugin",
   "version": "0.1.0",
   "type": "module",
   "bin": {
-    "create-papertape-plugin": "./dist/index.js"
+    "create-chopsticks-plugin": "./dist/index.js"
   },
   "exports": {
     ".": "./src/index.ts"
@@ -11,7 +11,7 @@
   "publishConfig": {
     "access": "public",
     "bin": {
-      "create-papertape-plugin": "./dist/index.js"
+      "create-chopsticks-plugin": "./dist/index.js"
     },
     "exports": {
       ".": {
@@ -31,7 +31,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@papertape/plugin-sdk": "workspace:*"
+    "@chopsticks/plugin-sdk": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.6.0",

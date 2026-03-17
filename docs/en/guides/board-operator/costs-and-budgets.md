@@ -3,7 +3,7 @@ title: Costs and Budgets
 summary: Budget caps, cost tracking, and auto-pause enforcement
 ---
 
-Papertape tracks every token spent by every agent and enforces budget limits to prevent runaway costs.
+Chopsticks tracks every token spent by every agent and enforces budget limits to prevent runaway costs.
 
 ## How Cost Tracking Works
 
@@ -39,7 +39,7 @@ PATCH /api/agents/{agentId}
 
 ## Budget Enforcement
 
-Papertape enforces budgets automatically:
+Chopsticks enforces budgets automatically:
 
 | Threshold | Action |
 |-----------|--------|

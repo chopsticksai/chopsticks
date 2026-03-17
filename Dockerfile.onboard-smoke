@@ -1,20 +1,20 @@
 FROM ubuntu:24.04
 
 ARG NODE_MAJOR=20
-ARG PAPERTAPE_VERSION=latest
+ARG CHOPSTICKS_VERSION=latest
 ARG HOST_UID=10001
 
 ENV DEBIAN_FRONTEND=noninteractive \
-  PAPERTAPE_HOME=/papertape \
-  PAPERTAPE_OPEN_ON_LISTEN=false \
+  CHOPSTICKS_HOME=/chopsticks \
+  CHOPSTICKS_OPEN_ON_LISTEN=false \
   HOST=0.0.0.0 \
   PORT=3100 \
-  HOME=/home/papertape \
+  HOME=/home/chopsticks \
   LANG=en_US.UTF-8 \
   LC_ALL=en_US.UTF-8 \
   NPM_CONFIG_UPDATE_NOTIFIER=false \
   NODE_MAJOR=${NODE_MAJOR} \
-  PAPERTAPE_VERSION=${PAPERTAPE_VERSION}
+  CHOPSTICKS_VERSION=${CHOPSTICKS_VERSION}
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates curl gnupg locales \
@@ -26,15 +26,15 @@ RUN apt-get update \
   && apt-get update \
   && apt-get install -y --no-install-recommends nodejs \
   && locale-gen en_US.UTF-8 \
-  && groupadd --gid 10001 papertape \
-  && useradd --create-home --shell /bin/bash --uid "${HOST_UID}" --gid 10001 papertape \
-  && mkdir -p /papertape /home/papertape/workspace \
-  && chown -R papertape:papertape /papertape /home/papertape \
+  && groupadd --gid 10001 chopsticks \
+  && useradd --create-home --shell /bin/bash --uid "${HOST_UID}" --gid 10001 chopsticks \
+  && mkdir -p /chopsticks /home/chopsticks/workspace \
+  && chown -R chopsticks:chopsticks /chopsticks /home/chopsticks \
   && rm -rf /var/lib/apt/lists/*
 
-VOLUME ["/papertape"]
-WORKDIR /home/papertape/workspace
+VOLUME ["/chopsticks"]
+WORKDIR /home/chopsticks/workspace
 EXPOSE 3100
-USER papertape
+USER chopsticks
 
-CMD ["bash", "-lc", "set -euo pipefail; mkdir -p \"$PAPERTAPE_HOME\"; npx --yes \"papertape@${PAPERTAPE_VERSION}\" onboard --yes --data-dir \"$PAPERTAPE_HOME\""]
+CMD ["bash", "-lc", "set -euo pipefail; mkdir -p \"$CHOPSTICKS_HOME\"; npx --yes \"chopsticks@${CHOPSTICKS_VERSION}\" onboard --yes --data-dir \"$CHOPSTICKS_HOME\""]

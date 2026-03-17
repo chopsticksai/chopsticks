@@ -1,4 +1,4 @@
-import type { TranscriptEntry } from "@papertape/adapter-utils";
+import type { TranscriptEntry } from "@chopsticks/adapter-utils";
 import { normalizeCursorStreamLine } from "../shared/stream.js";
 
 function safeJsonParse(text: string): unknown {

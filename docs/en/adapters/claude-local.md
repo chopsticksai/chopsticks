@@ -45,15 +45,15 @@ If resume fails with an unknown session error, the adapter automatically retries
 
 ## Skills Injection
 
-The adapter creates a temporary directory with symlinks to Papertape skills and passes it via `--add-dir`. This makes skills discoverable without polluting the agent's working directory.
+The adapter creates a temporary directory with symlinks to Chopsticks skills and passes it via `--add-dir`. This makes skills discoverable without polluting the agent's working directory.
 
 For manual local CLI usage outside heartbeat runs (for example running as `claudecoder` directly), use:
 
 ```sh
-pnpm papertape agent local-cli claudecoder --company-id <company-id>
+pnpm chopsticks agent local-cli claudecoder --company-id <company-id>
 ```
 
-This installs Papertape skills in `~/.claude/skills`, creates an agent API key, and prints shell exports to run as that agent.
+This installs Chopsticks skills in `~/.claude/skills`, creates an agent API key, and prints shell exports to run as that agent.
 
 ## Environment Test
 

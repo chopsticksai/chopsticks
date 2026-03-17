@@ -170,7 +170,7 @@ export function InlineEditor({
           placeholder={placeholder}
           bordered={false}
           className="bg-transparent"
-          contentClassName={cn("papertape-edit-in-place-content", className)}
+          contentClassName={cn("chopsticks-edit-in-place-content", className)}
           imageUploadHandler={imageUploadHandler}
           mentions={mentions}
           onSubmit={() => {

@@ -1,6 +1,6 @@
 /**
  * Plugin secrets host-side handler — resolves secret references through the
- * Papertape secret provider system.
+ * Chopsticks secret provider system.
  *
  * When a plugin worker calls `ctx.secrets.resolve(secretRef)`, the JSON-RPC
  * request arrives at the host with `{ secretRef }`. This module provides the
@@ -34,9 +34,9 @@
  */
 
 import { eq, and, desc } from "drizzle-orm";
-import type { Db } from "@papertape/db";
-import { companySecrets, companySecretVersions, pluginConfig } from "@papertape/db";
-import type { SecretProvider } from "@papertape/shared";
+import type { Db } from "@chopsticks/db";
+import { companySecrets, companySecretVersions, pluginConfig } from "@chopsticks/db";
+import type { SecretProvider } from "@chopsticks/shared";
 import { getSecretProvider } from "../secrets/provider-registry.js";
 import { pluginRegistryService } from "./plugin-registry.js";
 

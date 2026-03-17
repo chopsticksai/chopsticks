@@ -96,7 +96,7 @@ function packLocalPackage(packagePath: string, outputDir: string): string {
   const packageName = packageJson.name ?? path.basename(packagePath);
   const packageVersion = packageJson.version ?? "0.0.0";
   const tarballFileName = `${packageName.replace(/^@/, "").replace("/", "-")}-${packageVersion}.tgz`;
-  const sdkBundleDir = path.join(outputDir, ".papertape-sdk");
+  const sdkBundleDir = path.join(outputDir, ".chopsticks-sdk");
 
   fs.mkdirSync(sdkBundleDir, { recursive: true });
   execFileSync("pnpm", ["build"], { cwd: packagePath, stdio: "pipe" });
@@ -111,7 +111,7 @@ function packLocalPackage(packagePath: string, outputDir: string): string {
 }
 
 /**
- * Generate a complete Papertape plugin starter project.
+ * Generate a complete Chopsticks plugin starter project.
  *
  * Output includes manifest/worker/UI entries, SDK harness tests, bundler presets,
  * and a local dev server script for hot-reload workflow.
@@ -136,7 +136,7 @@ export function scaffoldPluginProject(options: ScaffoldPluginOptions): string {
   }
 
   const displayName = options.displayName ?? makeDisplayName(options.pluginName);
-  const description = options.description ?? "A Papertape plugin";
+  const description = options.description ?? "A Chopsticks plugin";
   const author = options.author ?? "Plugin Author";
   const category = options.category ?? (template === "workspace" ? "workspace" : "connector");
   const manifestId = packageToManifestId(options.pluginName);
@@ -162,23 +162,23 @@ export function scaffoldPluginProject(options: ScaffoldPluginOptions): string {
       build: "node ./esbuild.config.mjs",
       "build:rollup": "rollup -c",
       dev: "node ./esbuild.config.mjs --watch",
-      "dev:ui": "papertape-plugin-dev-server --root . --ui-dir dist/ui --port 4177",
+      "dev:ui": "chopsticks-plugin-dev-server --root . --ui-dir dist/ui --port 4177",
       test: "vitest run --config ./vitest.config.ts",
       typecheck: "tsc --noEmit"
     },
-    papertapePlugin: {
+    chopsticksPlugin: {
       manifest: "./dist/manifest.js",
       worker: "./dist/worker.js",
       ui: "./dist/ui/"
     },
-    keywords: ["papertape", "plugin", category],
+    keywords: ["chopsticks", "plugin", category],
     author,
     license: "MIT",
     ...(packedSharedTarball
       ? {
         pnpm: {
           overrides: {
-            "@papertape/shared": `file:${toPosixPath(path.relative(outputDir, packedSharedTarball))}`,
+            "@chopsticks/shared": `file:${toPosixPath(path.relative(outputDir, packedSharedTarball))}`,
           },
         },
       }
@@ -186,10 +186,10 @@ export function scaffoldPluginProject(options: ScaffoldPluginOptions): string {
     devDependencies: {
       ...(packedSharedTarball
         ? {
-          "@papertape/shared": `file:${toPosixPath(path.relative(outputDir, packedSharedTarball))}`,
+          "@chopsticks/shared": `file:${toPosixPath(path.relative(outputDir, packedSharedTarball))}`,
         }
         : {}),
-      "@papertape/plugin-sdk": sdkDependency,
+      "@chopsticks/plugin-sdk": sdkDependency,
       "@rollup/plugin-node-resolve": "^16.0.1",
       "@rollup/plugin-typescript": "^12.1.2",
       "@types/node": "^24.6.0",
@@ -231,7 +231,7 @@ export function scaffoldPluginProject(options: ScaffoldPluginOptions): string {
   writeFile(
     path.join(outputDir, "esbuild.config.mjs"),
     `import esbuild from "esbuild";
-import { createPluginBundlerPresets } from "@papertape/plugin-sdk/bundlers";
+import { createPluginBundlerPresets } from "@chopsticks/plugin-sdk/bundlers";
 
 const presets = createPluginBundlerPresets({ uiEntry: "src/ui/index.tsx" });
 const watch = process.argv.includes("--watch");
@@ -254,7 +254,7 @@ if (watch) {
     path.join(outputDir, "rollup.config.mjs"),
     `import { nodeResolve } from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
-import { createPluginBundlerPresets } from "@papertape/plugin-sdk/bundlers";
+import { createPluginBundlerPresets } from "@chopsticks/plugin-sdk/bundlers";
 
 const presets = createPluginBundlerPresets({ uiEntry: "src/ui/index.tsx" });
 
@@ -298,9 +298,9 @@ export default defineConfig({
 
   writeFile(
     path.join(outputDir, "src", "manifest.ts"),
-    `import type { PapertapePluginManifestV1 } from "@papertape/plugin-sdk";
+    `import type { ChopsticksPluginManifestV1 } from "@chopsticks/plugin-sdk";
 
-const manifest: PapertapePluginManifestV1 = {
+const manifest: ChopsticksPluginManifestV1 = {
   id: ${quote(manifestId)},
   apiVersion: 1,
   version: "0.1.0",
@@ -335,7 +335,7 @@ export default manifest;
 
   writeFile(
     path.join(outputDir, "src", "worker.ts"),
-    `import { definePlugin, runWorker } from "@papertape/plugin-sdk";
+    `import { definePlugin, runWorker } from "@chopsticks/plugin-sdk";
 
 const plugin = definePlugin({
   async setup(ctx) {
@@ -367,7 +367,7 @@ runWorker(plugin, import.meta.url);
 
   writeFile(
     path.join(outputDir, "src", "ui", "index.tsx"),
-    `import { usePluginAction, usePluginData, type PluginWidgetProps } from "@papertape/plugin-sdk/ui";
+    `import { usePluginAction, usePluginData, type PluginWidgetProps } from "@chopsticks/plugin-sdk/ui";
 
 type HealthData = {
   status: "ok" | "degraded" | "error";
@@ -396,7 +396,7 @@ export function DashboardWidget(_props: PluginWidgetProps) {
   writeFile(
     path.join(outputDir, "tests", "plugin.spec.ts"),
     `import { describe, expect, it } from "vitest";
-import { createTestHarness } from "@papertape/plugin-sdk/testing";
+import { createTestHarness } from "@chopsticks/plugin-sdk/testing";
 import manifest from "../src/manifest.js";
 import plugin from "../src/worker.js";
 
@@ -434,10 +434,10 @@ pnpm test
 \`\`\`
 
 ${sdkDependency.startsWith("file:")
-  ? `This scaffold snapshots \`@papertape/plugin-sdk\` and \`@papertape/shared\` from a local Papertape checkout at:\n\n\`${toPosixPath(localSdkPath)}\`\n\nThe packed tarballs live in \`.papertape-sdk/\` for local development. Before publishing this plugin, switch those dependencies to published package versions once they are available on npm.\n\n`
+  ? `This scaffold snapshots \`@chopsticks/plugin-sdk\` and \`@chopsticks/shared\` from a local Chopsticks checkout at:\n\n\`${toPosixPath(localSdkPath)}\`\n\nThe packed tarballs live in \`.chopsticks-sdk/\` for local development. Before publishing this plugin, switch those dependencies to published package versions once they are available on npm.\n\n`
   : ""}
 
-## Install Into Papertape
+## Install Into Chopsticks
 
 \`\`\`bash
 curl -X POST http://127.0.0.1:3100/api/plugins/install \\
@@ -447,12 +447,12 @@ curl -X POST http://127.0.0.1:3100/api/plugins/install \\
 
 ## Build Options
 
-- \`pnpm build\` uses esbuild presets from \`@papertape/plugin-sdk/bundlers\`.
+- \`pnpm build\` uses esbuild presets from \`@chopsticks/plugin-sdk/bundlers\`.
 - \`pnpm build:rollup\` uses rollup presets from the same SDK.
 `,
   );
 
-  writeFile(path.join(outputDir, ".gitignore"), "dist\nnode_modules\n.papertape-sdk\n");
+  writeFile(path.join(outputDir, ".gitignore"), "dist\nnode_modules\n.chopsticks-sdk\n");
 
   return outputDir;
 }
@@ -465,7 +465,7 @@ function parseArg(name: string): string | undefined {
 
 function usageText(): string {
   return [
-    "Usage: create-papertape-plugin <name> [options]",
+    "Usage: create-chopsticks-plugin <name> [options]",
     "",
     "Options:",
     "  --template <default|connector|workspace>",
@@ -474,7 +474,7 @@ function usageText(): string {
     "  --description <text>",
     "  --author <name>",
     "  --category <connector|workspace|automation|ui>",
-    "  --sdk-path <papertape-sdk-path>",
+    "  --sdk-path <chopsticks-sdk-path>",
     "  -h, --help  Show this help message",
   ].join("\n");
 }

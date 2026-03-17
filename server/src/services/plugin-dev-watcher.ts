@@ -51,7 +51,7 @@ type PluginWatchTarget = {
 };
 
 type PluginPackageJson = {
-  papertapePlugin?: {
+  chopsticksPlugin?: {
     manifest?: string;
     worker?: string;
     ui?: string;
@@ -67,7 +67,7 @@ function shouldIgnorePath(filename: string | null | undefined): boolean {
       segment === "node_modules" ||
       segment === ".git" ||
       segment === ".vite" ||
-      segment === ".papertape-sdk" ||
+      segment === ".chopsticks-sdk" ||
       segment.startsWith("."),
   );
 }
@@ -127,9 +127,9 @@ export function resolvePluginWatchTargets(
   }
 
   const entrypointPaths = [
-    packageJson?.papertapePlugin?.manifest,
-    packageJson?.papertapePlugin?.worker,
-    packageJson?.papertapePlugin?.ui,
+    packageJson?.chopsticksPlugin?.manifest,
+    packageJson?.chopsticksPlugin?.worker,
+    packageJson?.chopsticksPlugin?.ui,
   ].filter((value): value is string => typeof value === "string" && value.length > 0);
 
   if (entrypointPaths.length === 0) {

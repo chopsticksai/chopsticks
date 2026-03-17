@@ -3,7 +3,7 @@ import {
   expandHomePrefix,
   resolveDefaultConfigPath,
   resolveDefaultContextPath,
-  resolvePapertapeInstanceId,
+  resolveChopsticksInstanceId,
 } from "./home.js";
 
 export interface DataDirOptionLike {
@@ -26,21 +26,21 @@ export function applyDataDirOverride(
   if (!rawDataDir) return null;
 
   const resolvedDataDir = path.resolve(expandHomePrefix(rawDataDir));
-  process.env.PAPERTAPE_HOME = resolvedDataDir;
+  process.env.CHOPSTICKS_HOME = resolvedDataDir;
 
   if (support.hasConfigOption) {
-    const hasConfigOverride = Boolean(options.config?.trim()) || Boolean(process.env.PAPERTAPE_CONFIG?.trim());
+    const hasConfigOverride = Boolean(options.config?.trim()) || Boolean(process.env.CHOPSTICKS_CONFIG?.trim());
     if (!hasConfigOverride) {
-      const instanceId = resolvePapertapeInstanceId(options.instance);
-      process.env.PAPERTAPE_INSTANCE_ID = instanceId;
-      process.env.PAPERTAPE_CONFIG = resolveDefaultConfigPath(instanceId);
+      const instanceId = resolveChopsticksInstanceId(options.instance);
+      process.env.CHOPSTICKS_INSTANCE_ID = instanceId;
+      process.env.CHOPSTICKS_CONFIG = resolveDefaultConfigPath(instanceId);
     }
   }
 
   if (support.hasContextOption) {
-    const hasContextOverride = Boolean(options.context?.trim()) || Boolean(process.env.PAPERTAPE_CONTEXT?.trim());
+    const hasContextOverride = Boolean(options.context?.trim()) || Boolean(process.env.CHOPSTICKS_CONTEXT?.trim());
     if (!hasContextOverride) {
-      process.env.PAPERTAPE_CONTEXT = resolveDefaultContextPath();
+      process.env.CHOPSTICKS_CONTEXT = resolveDefaultContextPath();
     }
   }
 

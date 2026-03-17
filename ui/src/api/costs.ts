@@ -1,4 +1,4 @@
-import type { CostSummary, CostByAgent } from "@papertape/shared";
+import type { CostSummary, CostByAgent } from "@chopsticks/shared";
 import { api } from "./client";
 
 export interface CostByProject {

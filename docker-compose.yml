@@ -2,11 +2,11 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: papertape
-      POSTGRES_PASSWORD: papertape
-      POSTGRES_DB: papertape
+      POSTGRES_USER: chopsticks
+      POSTGRES_PASSWORD: chopsticks
+      POSTGRES_DB: chopsticks
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U papertape -d papertape"]
+      test: ["CMD-SHELL", "pg_isready -U chopsticks -d chopsticks"]
       interval: 2s
       timeout: 5s
       retries: 30
@@ -20,19 +20,19 @@ services:
     ports:
       - "3100:3100"
     environment:
-      DATABASE_URL: postgres://papertape:papertape@db:5432/papertape
+      DATABASE_URL: postgres://chopsticks:chopsticks@db:5432/chopsticks
       PORT: "3100"
       SERVE_UI: "true"
-      PAPERTAPE_DEPLOYMENT_MODE: "authenticated"
-      PAPERTAPE_DEPLOYMENT_EXPOSURE: "private"
-      PAPERTAPE_PUBLIC_URL: "${PAPERTAPE_PUBLIC_URL:-http://localhost:3100}"
+      CHOPSTICKS_DEPLOYMENT_MODE: "authenticated"
+      CHOPSTICKS_DEPLOYMENT_EXPOSURE: "private"
+      CHOPSTICKS_PUBLIC_URL: "${CHOPSTICKS_PUBLIC_URL:-http://localhost:3100}"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
     volumes:
-      - papertape-data:/papertape
+      - chopsticks-data:/chopsticks
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
   pgdata:
-  papertape-data:
+  chopsticks-data:
