@@ -2,7 +2,7 @@ import type {
   HeartbeatRun,
   HeartbeatRunEvent,
   InstanceSchedulerHeartbeatAgent,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import { api } from "./client";
 
 export interface ActiveRunForIssue extends HeartbeatRun {

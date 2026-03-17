@@ -1,6 +1,6 @@
 import { and, eq, gte, sql } from "drizzle-orm";
-import type { Db } from "@papertape/db";
-import { agents, approvals, companies, costEvents, issues } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
+import { agents, approvals, companies, costEvents, issues } from "@chopsticks/db";
 import { notFound } from "../errors.js";
 
 export function dashboardService(db: Db) {

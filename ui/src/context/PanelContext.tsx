@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 
-const STORAGE_KEY = "papertape:panel-visible";
+const STORAGE_KEY = "chopsticks:panel-visible";
 
 interface PanelContextValue {
   panelContent: ReactNode | null;

@@ -31,17 +31,17 @@ if (process.env.npm_config_authenticated_private === "true") {
 
 const env = {
   ...process.env,
-  PAPERTAPE_UI_DEV_MIDDLEWARE: "true",
+  CHOPSTICKS_UI_DEV_MIDDLEWARE: "true",
 };
 
 if (tailscaleAuth) {
-  env.PAPERTAPE_DEPLOYMENT_MODE = "authenticated";
-  env.PAPERTAPE_DEPLOYMENT_EXPOSURE = "private";
-  env.PAPERTAPE_AUTH_BASE_URL_MODE = "auto";
+  env.CHOPSTICKS_DEPLOYMENT_MODE = "authenticated";
+  env.CHOPSTICKS_DEPLOYMENT_EXPOSURE = "private";
+  env.CHOPSTICKS_AUTH_BASE_URL_MODE = "auto";
   env.HOST = "0.0.0.0";
-  console.log("[papertape] dev mode: authenticated/private (tailscale-friendly) on 0.0.0.0");
+  console.log("[chopsticks] dev mode: authenticated/private (tailscale-friendly) on 0.0.0.0");
 } else {
-  console.log("[papertape] dev mode: local_trusted (default)");
+  console.log("[chopsticks] dev mode: local_trusted (default)");
 }
 
 const pnpmBin = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
@@ -102,10 +102,10 @@ async function runPnpm(args, options = {}) {
 
 async function maybePreflightMigrations() {
   if (mode !== "watch") return;
-  if (process.env.PAPERTAPE_MIGRATION_PROMPT === "never") return;
+  if (process.env.CHOPSTICKS_MIGRATION_PROMPT === "never") return;
 
   const status = await runPnpm(
-    ["--filter", "@papertape/db", "exec", "tsx", "src/migration-status.ts", "--json"],
+    ["--filter", "@chopsticks/db", "exec", "tsx", "src/migration-status.ts", "--json"],
     { env },
   );
   if (status.code !== 0) {
@@ -125,7 +125,7 @@ async function maybePreflightMigrations() {
     return;
   }
 
-  const autoApply = process.env.PAPERTAPE_MIGRATION_AUTO_APPLY === "true";
+  const autoApply = process.env.CHOPSTICKS_MIGRATION_AUTO_APPLY === "true";
   let shouldApply = autoApply;
 
   if (!autoApply) {
@@ -169,9 +169,9 @@ async function maybePreflightMigrations() {
 await maybePreflightMigrations();
 
 async function buildPluginSdk() {
-  console.log("[papertape] building plugin sdk...");
+  console.log("[chopsticks] building plugin sdk...");
   const result = await runPnpm(
-    ["--filter", "@papertape/plugin-sdk", "build"],
+    ["--filter", "@chopsticks/plugin-sdk", "build"],
     { stdio: "inherit" },
   );
   if (result.signal) {
@@ -179,7 +179,7 @@ async function buildPluginSdk() {
     return;
   }
   if (result.code !== 0) {
-    console.error("[papertape] plugin sdk build failed");
+    console.error("[chopsticks] plugin sdk build failed");
     process.exit(result.code);
   }
 }
@@ -187,11 +187,11 @@ async function buildPluginSdk() {
 await buildPluginSdk();
 
 if (mode === "watch") {
-  env.PAPERTAPE_MIGRATION_PROMPT = "never";
+  env.CHOPSTICKS_MIGRATION_PROMPT = "never";
 }
 
 const serverScript = mode === "watch" ? "dev:watch" : "dev";
-const child = spawnPnpm(["--filter", "@papertape/server", serverScript, ...forwardedArgs], {
+const child = spawnPnpm(["--filter", "@chopsticks/server", serverScript, ...forwardedArgs], {
   stdio: "inherit",
   env,
 });

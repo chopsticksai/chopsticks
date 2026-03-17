@@ -1,13 +1,13 @@
 ---
 name: release-changelog
 description: >
-  Generate the stable Papertape release changelog at releases/v{version}.md by
+  Generate the stable Chopsticks release changelog at releases/v{version}.md by
   reading commits, changesets, and merged PR context since the last stable tag.
 ---
 
 # Release Changelog Skill
 
-Generate the user-facing changelog for the **stable** Papertape release.
+Generate the user-facing changelog for the **stable** Chopsticks release.
 
 Output:
 
@@ -112,7 +112,7 @@ When a bullet item clearly maps to a merged pull request, add inline attribution
 end of the entry in this format:
 
 ```
-- **Feature name** — Description. ([#123](https://github.com/papertapeai/papertape/pull/123), @contributor1, @contributor2)
+- **Feature name** — Description. ([#123](https://github.com/chopsticksai/chopsticks/pull/123), @contributor1, @contributor2)
 ```
 
 Rules:

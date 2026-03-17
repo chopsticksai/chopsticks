@@ -1,4 +1,4 @@
-import type { AssetImage } from "@papertape/shared";
+import type { AssetImage } from "@chopsticks/shared";
 import { api } from "./client";
 
 export const assetsApi = {

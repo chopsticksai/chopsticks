@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { deriveAgentUrlKey, deriveProjectUrlKey } from "@papertape/shared";
+import { deriveAgentUrlKey, deriveProjectUrlKey } from "@chopsticks/shared";
 import {
   formatCurrency,
   formatDateTimeValue,

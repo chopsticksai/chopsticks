@@ -1,4 +1,4 @@
-import { definePlugin, runWorker } from "@papertape/plugin-sdk";
+import { definePlugin, runWorker } from "@chopsticks/plugin-sdk";
 import * as fs from "node:fs";
 import * as path from "node:path";
 

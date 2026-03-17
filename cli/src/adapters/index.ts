@@ -1,2 +1,2 @@
 export { getCLIAdapter } from "./registry.js";
-export type { CLIAdapterModule } from "@papertape/adapter-utils";
+export type { CLIAdapterModule } from "@chopsticks/adapter-utils";

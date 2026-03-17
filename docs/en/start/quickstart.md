@@ -1,17 +1,17 @@
 ---
 title: Quickstart
-summary: Get Papertape running in minutes
+summary: Get Chopsticks running in minutes
 ---
 
-Get Papertape running locally in under 5 minutes.
+Get Chopsticks running locally in under 5 minutes.
 
 ## Quick Start (Recommended)
 
 ```sh
-npx papertape onboard --yes
+npx chopsticks onboard --yes
 ```
 
-This walks you through setup, configures your environment, and gets Papertape running.
+This walks you through setup, configures your environment, and gets Chopsticks running.
 
 ## Local Development
 
@@ -24,19 +24,19 @@ pnpm dev
 
 This starts the API server and UI at [http://localhost:3100](http://localhost:3100).
 
-No external database required — Papertape uses an embedded PostgreSQL instance by default.
+No external database required — Chopsticks uses an embedded PostgreSQL instance by default.
 
 ## One-Command Bootstrap
 
 ```sh
-pnpm papertape run
+pnpm chopsticks run
 ```
 
 This auto-onboards if config is missing, runs health checks with auto-repair, and starts the server.
 
 ## What's Next
 
-Once Papertape is running:
+Once Chopsticks is running:
 
 1. Create your first company in the web UI
 2. Define a company goal
@@ -46,5 +46,5 @@ Once Papertape is running:
 6. Hit go — agents start their heartbeats and the company runs
 
 <Card title="Core Concepts" href="/en/start/core-concepts">
-  Learn the key concepts behind Papertape
+  Learn the key concepts behind Chopsticks
 </Card>

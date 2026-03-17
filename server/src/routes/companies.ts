@@ -1,12 +1,12 @@
 import { Router } from "express";
-import type { Db } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
 import {
   companyPortabilityExportSchema,
   companyPortabilityImportSchema,
   companyPortabilityPreviewSchema,
   createCompanySchema,
   updateCompanySchema,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import { forbidden } from "../errors.js";
 import { validate } from "../middleware/validate.js";
 import { accessService, companyPortabilityService, companyService, logActivity } from "../services/index.js";

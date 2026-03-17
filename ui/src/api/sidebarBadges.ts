@@ -1,4 +1,4 @@
-import type { SidebarBadges } from "@papertape/shared";
+import type { SidebarBadges } from "@chopsticks/shared";
 import { api } from "./client";
 
 export const sidebarBadgesApi = {

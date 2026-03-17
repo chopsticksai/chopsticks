@@ -1,5 +1,5 @@
 /**
- * `definePlugin` — the top-level helper for authoring a Papertape plugin.
+ * `definePlugin` — the top-level helper for authoring a Chopsticks plugin.
  *
  * Plugin authors call `definePlugin()` and export the result as the default
  * export from their worker entrypoint. The host imports the worker module,
@@ -11,7 +11,7 @@
  * @example
  * ```ts
  * // dist/worker.ts
- * import { definePlugin } from "@papertape/plugin-sdk";
+ * import { definePlugin } from "@chopsticks/plugin-sdk";
  *
  * export default definePlugin({
  *   async setup(ctx) {
@@ -200,7 +200,7 @@ export interface PluginDefinition {
 }
 
 // ---------------------------------------------------------------------------
-// PapertapePlugin — the sealed object returned by definePlugin()
+// ChopsticksPlugin — the sealed object returned by definePlugin()
 // ---------------------------------------------------------------------------
 
 /**
@@ -211,7 +211,7 @@ export interface PluginDefinition {
  *
  * @see PLUGIN_SPEC.md §14 — SDK Surface
  */
-export interface PapertapePlugin {
+export interface ChopsticksPlugin {
   /** The original plugin definition passed to `definePlugin()`. */
   readonly definition: PluginDefinition;
 }
@@ -221,18 +221,18 @@ export interface PapertapePlugin {
 // ---------------------------------------------------------------------------
 
 /**
- * Define a Papertape plugin.
+ * Define a Chopsticks plugin.
  *
  * Call this function in your worker entrypoint and export the result as the
  * default export. The host will import the module and call lifecycle methods
  * on the returned object.
  *
  * @param definition - Plugin lifecycle handlers
- * @returns A sealed `PapertapePlugin` object for the host to consume
+ * @returns A sealed `ChopsticksPlugin` object for the host to consume
  *
  * @example
  * ```ts
- * import { definePlugin } from "@papertape/plugin-sdk";
+ * import { definePlugin } from "@chopsticks/plugin-sdk";
  *
  * export default definePlugin({
  *   async setup(ctx) {
@@ -250,6 +250,6 @@ export interface PapertapePlugin {
  *
  * @see PLUGIN_SPEC.md §14.1 — Example SDK Shape
  */
-export function definePlugin(definition: PluginDefinition): PapertapePlugin {
+export function definePlugin(definition: PluginDefinition): ChopsticksPlugin {
   return Object.freeze({ definition });
 }

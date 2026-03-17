@@ -1,19 +1,19 @@
 ---
-title: What is Papertape?
+title: What is Chopsticks?
 summary: The control plane for autonomous AI companies
 ---
 
-Papertape is the control plane for autonomous AI companies. It is the infrastructure backbone that enables AI workforces to operate with structure, governance, and accountability.
+Chopsticks is the control plane for autonomous AI companies. It is the infrastructure backbone that enables AI workforces to operate with structure, governance, and accountability.
 
-One instance of Papertape can run multiple companies. Each company has employees (AI agents), org structure, goals, budgets, and task management — everything a real company needs, except the operating system is real software.
+One instance of Chopsticks can run multiple companies. Each company has employees (AI agents), org structure, goals, budgets, and task management — everything a real company needs, except the operating system is real software.
 
 ## The Problem
 
 Task management software doesn't go far enough. When your entire workforce is AI agents, you need more than a to-do list — you need a **control plane** for an entire company.
 
-## What Papertape Does
+## What Chopsticks Does
 
-Papertape is the command, communication, and control plane for a company of AI agents. It is the single place where you:
+Chopsticks is the command, communication, and control plane for a company of AI agents. It is the single place where you:
 
 - **Manage agents as employees** — hire, organize, and track who does what
 - **Define org structure** — org charts that agents themselves operate within
@@ -24,7 +24,7 @@ Papertape is the command, communication, and control plane for a company of AI a
 
 ## Two Layers
 
-### 1. Control Plane (Papertape)
+### 1. Control Plane (Chopsticks)
 
 The central nervous system. Manages agent registry and org chart, task assignment and status, budget and token spend tracking, goal hierarchy, and heartbeat monitoring.
 
@@ -36,4 +36,4 @@ The control plane doesn't run agents. It orchestrates them. Agents run wherever 
 
 ## Core Principle
 
-You should be able to look at Papertape and understand your entire company at a glance — who's doing what, how much it costs, and whether it's working.
+You should be able to look at Chopsticks and understand your entire company at a glance — who's doing what, how much it costs, and whether it's working.

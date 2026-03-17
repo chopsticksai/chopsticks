@@ -7,14 +7,14 @@ import { bootstrapCeoInvite } from "./auth-bootstrap-ceo.js";
 import { onboard } from "./onboard.js";
 import { doctor } from "./doctor.js";
 import { publicCliCommand } from "../config/branding.js";
-import { loadPapertapeEnvFile } from "../config/env.js";
+import { loadChopsticksEnvFile } from "../config/env.js";
 import { configExists, resolveConfigPath } from "../config/store.js";
-import type { PapertapeConfig } from "../config/schema.js";
+import type { ChopsticksConfig } from "../config/schema.js";
 import { readConfig } from "../config/store.js";
 import {
   describeLocalInstancePaths,
-  resolvePapertapeHomeDir,
-  resolvePapertapeInstanceId,
+  resolveChopsticksHomeDir,
+  resolveChopsticksInstanceId,
 } from "../config/home.js";
 
 interface RunOptions {
@@ -32,18 +32,18 @@ interface StartedServer {
 }
 
 export async function runCommand(opts: RunOptions): Promise<void> {
-  const instanceId = resolvePapertapeInstanceId(opts.instance);
-  process.env.PAPERTAPE_INSTANCE_ID = instanceId;
+  const instanceId = resolveChopsticksInstanceId(opts.instance);
+  process.env.CHOPSTICKS_INSTANCE_ID = instanceId;
 
-  const homeDir = resolvePapertapeHomeDir();
+  const homeDir = resolveChopsticksHomeDir();
   fs.mkdirSync(homeDir, { recursive: true });
 
   const paths = describeLocalInstancePaths(instanceId);
   fs.mkdirSync(paths.instanceRoot, { recursive: true });
 
   const configPath = resolveConfigPath(opts.config);
-  process.env.PAPERTAPE_CONFIG = configPath;
-  loadPapertapeEnvFile(configPath);
+  process.env.CHOPSTICKS_CONFIG = configPath;
+  loadChopsticksEnvFile(configPath);
 
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("run")} `)));
   p.log.message(pc.dim(`Home: ${paths.homeDir}`));
@@ -81,7 +81,7 @@ export async function runCommand(opts: RunOptions): Promise<void> {
     process.exit(1);
   }
 
-  p.log.step("Starting Papertape server...");
+  p.log.step("Starting Chopsticks server...");
   const startedServer = await importServerEntry();
 
   if (shouldGenerateBootstrapInviteAfterStart(config)) {
@@ -95,12 +95,12 @@ export async function runCommand(opts: RunOptions): Promise<void> {
 }
 
 function resolveBootstrapInviteBaseUrl(
-  config: PapertapeConfig,
+  config: ChopsticksConfig,
   startedServer: StartedServer,
 ): string {
   const explicitBaseUrl =
-    process.env.PAPERTAPE_PUBLIC_URL ??
-    process.env.PAPERTAPE_AUTH_PUBLIC_BASE_URL ??
+    process.env.CHOPSTICKS_PUBLIC_URL ??
+    process.env.CHOPSTICKS_AUTH_PUBLIC_BASE_URL ??
     process.env.BETTER_AUTH_URL ??
     process.env.BETTER_AUTH_BASE_URL ??
     (config.auth.baseUrlMode === "explicit" ? config.auth.publicBaseUrl : undefined);
@@ -142,10 +142,10 @@ function getMissingModuleSpecifier(err: unknown): string | null {
 }
 
 function maybeEnableUiDevMiddleware(entrypoint: string): void {
-  if (process.env.PAPERTAPE_UI_DEV_MIDDLEWARE !== undefined) return;
+  if (process.env.CHOPSTICKS_UI_DEV_MIDDLEWARE !== undefined) return;
   const normalized = entrypoint.replaceAll("\\", "/");
-  if (normalized.endsWith("/server/src/index.ts") || normalized.endsWith("@papertape/server/src/index.ts")) {
-    process.env.PAPERTAPE_UI_DEV_MIDDLEWARE = "true";
+  if (normalized.endsWith("/server/src/index.ts") || normalized.endsWith("@chopsticks/server/src/index.ts")) {
+    process.env.CHOPSTICKS_UI_DEV_MIDDLEWARE = "true";
   }
 }
 
@@ -159,35 +159,35 @@ async function importServerEntry(): Promise<StartedServer> {
     return await startServerFromModule(mod, devEntry);
   }
 
-  // Production mode: import the published @papertape/server package
+  // Production mode: import the published @chopsticks/server package
   try {
-    const mod = await import("@papertape/server");
-    return await startServerFromModule(mod, "@papertape/server");
+    const mod = await import("@chopsticks/server");
+    return await startServerFromModule(mod, "@chopsticks/server");
   } catch (err) {
     const missingSpecifier = getMissingModuleSpecifier(err);
-    const missingServerEntrypoint = !missingSpecifier || missingSpecifier === "@papertape/server";
+    const missingServerEntrypoint = !missingSpecifier || missingSpecifier === "@chopsticks/server";
     if (isModuleNotFoundError(err) && missingServerEntrypoint) {
       throw new Error(
-        `Could not locate a Papertape server entrypoint.\n` +
-        `Tried: ${devEntry}, @papertape/server\n` +
+        `Could not locate a Chopsticks server entrypoint.\n` +
+        `Tried: ${devEntry}, @chopsticks/server\n` +
         `${formatError(err)}`,
       );
     }
     throw new Error(
-      `Papertape server failed to start.\n` +
+      `Chopsticks server failed to start.\n` +
       `${formatError(err)}`,
     );
   }
 }
 
-function shouldGenerateBootstrapInviteAfterStart(config: PapertapeConfig): boolean {
+function shouldGenerateBootstrapInviteAfterStart(config: ChopsticksConfig): boolean {
   return config.server.deploymentMode === "authenticated" && config.database.mode === "embedded-postgres";
 }
 
 async function startServerFromModule(mod: unknown, label: string): Promise<StartedServer> {
   const startServer = (mod as { startServer?: () => Promise<StartedServer> }).startServer;
   if (typeof startServer !== "function") {
-    throw new Error(`Papertape server entrypoint did not export startServer(): ${label}`);
+    throw new Error(`Chopsticks server entrypoint did not export startServer(): ${label}`);
   }
   return await startServer();
 }

@@ -1,7 +1,7 @@
-import type { Project } from "@papertape/shared";
+import type { Project } from "@chopsticks/shared";
 
-export const PROJECT_ORDER_UPDATED_EVENT = "papertape:project-order-updated";
-const PROJECT_ORDER_STORAGE_PREFIX = "papertape.projectOrder";
+export const PROJECT_ORDER_UPDATED_EVENT = "chopsticks:project-order-updated";
+const PROJECT_ORDER_STORAGE_PREFIX = "chopsticks.projectOrder";
 const ANONYMOUS_USER_ID = "anonymous";
 
 type ProjectOrderUpdatedDetail = {

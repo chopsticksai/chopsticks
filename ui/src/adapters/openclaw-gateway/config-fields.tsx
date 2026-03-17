@@ -136,19 +136,19 @@ export function OpenClawGatewayConfigFields({
 
       {!isCreate && (
         <>
-          <Field label="Papertape API URL override">
+          <Field label="Chopsticks API URL override">
             <DraftInput
               value={
                 eff(
                   "adapterConfig",
-                  "papertapeApiUrl",
-                  String(config.papertapeApiUrl ?? ""),
+                  "chopsticksApiUrl",
+                  String(config.chopsticksApiUrl ?? ""),
                 )
               }
-              onCommit={(v) => mark("adapterConfig", "papertapeApiUrl", v || undefined)}
+              onCommit={(v) => mark("adapterConfig", "chopsticksApiUrl", v || undefined)}
               immediate
               className={inputClass}
-              placeholder="https://papertape.example"
+              placeholder="https://chopsticks.example"
             />
           </Field>
 
@@ -167,11 +167,11 @@ export function OpenClawGatewayConfigFields({
           {sessionStrategy === "fixed" && (
             <Field label="Session key">
               <DraftInput
-                value={eff("adapterConfig", "sessionKey", String(config.sessionKey ?? "papertape"))}
+                value={eff("adapterConfig", "sessionKey", String(config.sessionKey ?? "chopsticks"))}
                 onCommit={(v) => mark("adapterConfig", "sessionKey", v || undefined)}
                 immediate
                 className={inputClass}
-                placeholder="papertape"
+                placeholder="chopsticks"
               />
             </Field>
           )}
@@ -229,7 +229,7 @@ export function OpenClawGatewayConfigFields({
           <Field label="Device auth">
             <div className="text-xs text-muted-foreground leading-relaxed">
               {t(
-                "Always enabled for gateway agents. Papertape persists a device key during onboarding so pairing approvals remain stable across runs."
+                "Always enabled for gateway agents. Chopsticks persists a device key during onboarding so pairing approvals remain stable across runs."
               )}
             </div>
           </Field>

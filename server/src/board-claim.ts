@@ -1,8 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { and, eq } from "drizzle-orm";
-import type { Db } from "@papertape/db";
-import { companies, companyMemberships, instanceUserRoles } from "@papertape/db";
-import type { DeploymentMode } from "@papertape/shared";
+import type { Db } from "@chopsticks/db";
+import { companies, companyMemberships, instanceUserRoles } from "@chopsticks/db";
+import type { DeploymentMode } from "@chopsticks/shared";
 
 const LOCAL_BOARD_USER_ID = "local-board";
 const CLAIM_TTL_MS = 1000 * 60 * 60 * 24;

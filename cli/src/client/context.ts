@@ -4,7 +4,7 @@ import { resolveDefaultContextPath } from "../config/home.js";
 
 const DEFAULT_CONTEXT_BASENAME = "context.json";
 const DEFAULT_PROFILE = "default";
-const REPO_CONTEXT_DIRNAME = ".papertape";
+const REPO_CONTEXT_DIRNAME = ".chopsticks";
 
 export interface ClientContextProfile {
   apiBase?: string;
@@ -38,7 +38,7 @@ function findContextFileFromAncestors(startDir: string): string | null {
 
 export function resolveContextPath(overridePath?: string): string {
   if (overridePath) return path.resolve(overridePath);
-  if (process.env.PAPERTAPE_CONTEXT) return path.resolve(process.env.PAPERTAPE_CONTEXT);
+  if (process.env.CHOPSTICKS_CONTEXT) return path.resolve(process.env.CHOPSTICKS_CONTEXT);
   return findContextFileFromAncestors(process.cwd()) ?? resolveDefaultContextPath();
 }
 

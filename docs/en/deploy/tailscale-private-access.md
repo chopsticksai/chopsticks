@@ -1,11 +1,11 @@
 ---
 title: Tailscale Private Access
-summary: Run Papertape with Tailscale-friendly host binding and connect from other devices
+summary: Run Chopsticks with Tailscale-friendly host binding and connect from other devices
 ---
 
-Use this when you want to access Papertape over Tailscale (or a private LAN/VPN) instead of only `localhost`.
+Use this when you want to access Chopsticks over Tailscale (or a private LAN/VPN) instead of only `localhost`.
 
-## 1. Start Papertape in private authenticated mode
+## 1. Start Chopsticks in private authenticated mode
 
 ```sh
 pnpm dev --tailscale-auth
@@ -13,9 +13,9 @@ pnpm dev --tailscale-auth
 
 This configures:
 
-- `PAPERTAPE_DEPLOYMENT_MODE=authenticated`
-- `PAPERTAPE_DEPLOYMENT_EXPOSURE=private`
-- `PAPERTAPE_AUTH_BASE_URL_MODE=auto`
+- `CHOPSTICKS_DEPLOYMENT_MODE=authenticated`
+- `CHOPSTICKS_DEPLOYMENT_EXPOSURE=private`
+- `CHOPSTICKS_AUTH_BASE_URL_MODE=auto`
 - `HOST=0.0.0.0` (bind on all interfaces)
 
 Equivalent flag:
@@ -26,7 +26,7 @@ pnpm dev --authenticated-private
 
 ## 2. Find your reachable Tailscale address
 
-From the machine running Papertape:
+From the machine running Chopsticks:
 
 ```sh
 tailscale ip -4
@@ -34,9 +34,9 @@ tailscale ip -4
 
 You can also use your Tailscale MagicDNS hostname (for example `my-macbook.tailnet.ts.net`).
 
-## 3. Open Papertape from another device
+## 3. Open Chopsticks from another device
 
-Use the Tailscale IP or MagicDNS host with the Papertape port:
+Use the Tailscale IP or MagicDNS host with the Chopsticks port:
 
 ```txt
 http://<tailscale-host-or-ip>:3100
@@ -50,10 +50,10 @@ http://my-macbook.tailnet.ts.net:3100
 
 ## 4. Allow custom private hostnames when needed
 
-If you access Papertape with a custom private hostname, add it to the allowlist:
+If you access Chopsticks with a custom private hostname, add it to the allowlist:
 
 ```sh
-pnpm papertape allowed-hostname my-macbook.tailnet.ts.net
+pnpm chopsticks allowed-hostname my-macbook.tailnet.ts.net
 ```
 
 ## 5. Verify the server is reachable
@@ -72,6 +72,6 @@ Expected result:
 
 ## Troubleshooting
 
-- Login or redirect errors on a private hostname: add it with `papertape allowed-hostname`.
+- Login or redirect errors on a private hostname: add it with `chopsticks allowed-hostname`.
 - App only works on `localhost`: make sure you started with `--tailscale-auth` (or set `HOST=0.0.0.0` in private mode).
 - Can connect locally but not remotely: verify both devices are on the same Tailscale network and port `3100` is reachable.

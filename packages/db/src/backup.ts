@@ -21,22 +21,22 @@ function expandHomePrefix(value: string): string {
   return value;
 }
 
-function resolvePapertapeHomeDir(): string {
-  const envHome = process.env.PAPERTAPE_HOME?.trim();
+function resolveChopsticksHomeDir(): string {
+  const envHome = process.env.CHOPSTICKS_HOME?.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
-  return path.resolve(os.homedir(), ".papertape");
+  return path.resolve(os.homedir(), ".chopsticks");
 }
 
-function resolvePapertapeInstanceId(): string {
-  const raw = process.env.PAPERTAPE_INSTANCE_ID?.trim() || "default";
+function resolveChopsticksInstanceId(): string {
+  const raw = process.env.CHOPSTICKS_INSTANCE_ID?.trim() || "default";
   if (!/^[a-zA-Z0-9_-]+$/.test(raw)) {
-    throw new Error(`Invalid PAPERTAPE_INSTANCE_ID '${raw}'.`);
+    throw new Error(`Invalid CHOPSTICKS_INSTANCE_ID '${raw}'.`);
   }
   return raw;
 }
 
 function resolveDefaultConfigPath(): string {
-  return path.resolve(resolvePapertapeHomeDir(), "instances", resolvePapertapeInstanceId(), "config.json");
+  return path.resolve(resolveChopsticksHomeDir(), "instances", resolveChopsticksInstanceId(), "config.json");
 }
 
 function readConfig(configPath: string): PartialConfig | null {
@@ -111,11 +111,11 @@ function resolveConnectionString(config: PartialConfig | null): string {
   }
 
   const port = resolveEmbeddedPort(config);
-  return `postgres://papertape:papertape@127.0.0.1:${port}/papertape`;
+  return `postgres://chopsticks:chopsticks@127.0.0.1:${port}/chopsticks`;
 }
 
 function resolveDefaultBackupDir(): string {
-  return path.resolve(resolvePapertapeHomeDir(), "instances", resolvePapertapeInstanceId(), "data", "backups");
+  return path.resolve(resolveChopsticksHomeDir(), "instances", resolveChopsticksInstanceId(), "data", "backups");
 }
 
 function resolveBackupDir(config: PartialConfig | null): string {
@@ -146,7 +146,7 @@ async function main() {
       connectionString,
       backupDir,
       retentionDays,
-      filenamePrefix: "papertape",
+      filenamePrefix: "chopsticks",
     });
 
     console.log(`Backup saved: ${formatDatabaseBackupResult(result)}`);

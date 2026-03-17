@@ -23,7 +23,7 @@ interface ApiClientOptions {
   runId?: string;
 }
 
-export class PapertapeApiClient {
+export class ChopsticksApiClient {
   readonly apiBase: string;
   readonly apiKey?: string;
   readonly runId?: string;
@@ -73,7 +73,7 @@ export class PapertapeApiClient {
     }
 
     if (this.runId) {
-      headers["x-papertape-run-id"] = this.runId;
+      headers["x-chopsticks-run-id"] = this.runId;
     }
 
     const response = await fetch(url, {

@@ -1,6 +1,6 @@
 # Plugin Authoring Smoke Example
 
-A Papertape plugin
+A Chopsticks plugin
 
 ## Development
 
@@ -11,13 +11,13 @@ pnpm dev:ui         # local dev server with hot-reload events
 pnpm test
 ```
 
-## Install Into Papertape
+## Install Into Chopsticks
 
 ```bash
-pnpm papertape plugin install ./
+pnpm chopsticks plugin install ./
 ```
 
 ## Build Options
 
-- `pnpm build` uses esbuild presets from `@papertape/plugin-sdk/bundlers`.
+- `pnpm build` uses esbuild presets from `@chopsticks/plugin-sdk/bundlers`.
 - `pnpm build:rollup` uses rollup presets from the same SDK.

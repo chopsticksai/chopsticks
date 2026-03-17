@@ -1,9 +1,9 @@
 import fs from "node:fs";
-import type { PapertapeConfig } from "../config/schema.js";
+import type { ChopsticksConfig } from "../config/schema.js";
 import type { CheckResult } from "./index.js";
 import { resolveRuntimeLikePath } from "./path-resolver.js";
 
-export function logCheck(config: PapertapeConfig, configPath?: string): CheckResult {
+export function logCheck(config: ChopsticksConfig, configPath?: string): CheckResult {
   const logDir = resolveRuntimeLikePath(config.logging.logDir, configPath);
   const reportedDir = logDir;
 

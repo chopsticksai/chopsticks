@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { and, asc, desc, eq, gt, inArray, sql } from "drizzle-orm";
-import type { Db } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
 import {
   agents,
   agentRuntimeState,
@@ -12,7 +12,7 @@ import {
   issues,
   projects,
   projectWorkspaces,
-} from "@papertape/db";
+} from "@chopsticks/db";
 import { conflict, notFound } from "../errors.js";
 import { logger } from "../middleware/logger.js";
 import { publishLiveEvent } from "./live-events.js";
@@ -44,9 +44,9 @@ import { redactCurrentUserText, redactCurrentUserValue } from "../log-redaction.
 const MAX_LIVE_LOG_CHUNK_BYTES = 8 * 1024;
 const HEARTBEAT_MAX_CONCURRENT_RUNS_DEFAULT = 1;
 const HEARTBEAT_MAX_CONCURRENT_RUNS_MAX = 10;
-const DEFERRED_WAKE_CONTEXT_KEY = "_papertapeWakeContext";
+const DEFERRED_WAKE_CONTEXT_KEY = "_chopsticksWakeContext";
 const startLocksByAgent = new Map<string, Promise<void>>();
-const REPO_ONLY_CWD_SENTINEL = "/__papertape_repo_only__";
+const REPO_ONLY_CWD_SENTINEL = "/__chopsticks_repo_only__";
 const SESSIONED_LOCAL_ADAPTERS = new Set([
   "claude_local",
   "codex_local",
@@ -700,7 +700,7 @@ export function heartbeatService(db: Db) {
       readNonEmptyString(latestRun.error);
 
     const handoffMarkdown = [
-      "Papertape session handoff:",
+      "Chopsticks session handoff:",
       `- Previous session: ${sessionId}`,
       issueId ? `- Issue: ${issueId}` : "",
       `- Rotation reason: ${reason}`,
@@ -1457,7 +1457,7 @@ export function heartbeatService(db: Db) {
             ]
           : []),
       ];
-      context.papertapeWorkspace = {
+      context.chopsticksWorkspace = {
         cwd: executionWorkspace.cwd,
         source: executionWorkspace.source,
         mode: executionWorkspaceMode,
@@ -1470,7 +1470,7 @@ export function heartbeatService(db: Db) {
         worktreePath: executionWorkspace.worktreePath,
         agentHome: resolveDefaultAgentWorkspaceDir(agent.id),
       };
-      context.papertapeWorkspaces = resolvedWorkspace.workspaceHints;
+      context.chopsticksWorkspaces = resolvedWorkspace.workspaceHints;
       const runtimeServiceIntents = (() => {
         const runtimeConfig = parseObject(resolvedConfig.workspaceRuntime);
         return Array.isArray(runtimeConfig.services)
@@ -1480,9 +1480,9 @@ export function heartbeatService(db: Db) {
           : [];
       })();
       if (runtimeServiceIntents.length > 0) {
-        context.papertapeRuntimeServiceIntents = runtimeServiceIntents;
+        context.chopsticksRuntimeServiceIntents = runtimeServiceIntents;
       } else {
-        delete context.papertapeRuntimeServiceIntents;
+        delete context.chopsticksRuntimeServiceIntents;
       }
       if (executionWorkspace.projectId && !readNonEmptyString(context.projectId)) {
         context.projectId = executionWorkspace.projectId;
@@ -1504,9 +1504,9 @@ export function heartbeatService(db: Db) {
         issueId,
       });
       if (sessionCompaction.rotate) {
-        context.papertapeSessionHandoffMarkdown = sessionCompaction.handoffMarkdown;
-        context.papertapeSessionRotationReason = sessionCompaction.reason;
-        context.papertapePreviousSessionId = previousSessionDisplayId ?? runtimeSessionIdForAdapter;
+        context.chopsticksSessionHandoffMarkdown = sessionCompaction.handoffMarkdown;
+        context.chopsticksSessionRotationReason = sessionCompaction.reason;
+        context.chopsticksPreviousSessionId = previousSessionDisplayId ?? runtimeSessionIdForAdapter;
         runtimeSessionIdForAdapter = null;
         runtimeSessionParamsForAdapter = null;
         previousSessionDisplayId = null;
@@ -1516,9 +1516,9 @@ export function heartbeatService(db: Db) {
           );
         }
       } else {
-        delete context.papertapeSessionHandoffMarkdown;
-        delete context.papertapeSessionRotationReason;
-        delete context.papertapePreviousSessionId;
+        delete context.chopsticksSessionHandoffMarkdown;
+        delete context.chopsticksSessionRotationReason;
+        delete context.chopsticksPreviousSessionId;
       }
 
       const runtimeForAdapter = {
@@ -1622,7 +1622,7 @@ export function heartbeatService(db: Db) {
           });
         };
         for (const warning of runtimeWorkspaceWarnings) {
-          await onLog("stderr", `[papertape] ${warning}\n`);
+          await onLog("stderr", `[chopsticks] ${warning}\n`);
         }
         const adapterEnv = Object.fromEntries(
           Object.entries(parseObject(resolvedConfig.env)).filter(
@@ -1644,8 +1644,8 @@ export function heartbeatService(db: Db) {
           onLog,
         });
         if (runtimeServices.length > 0) {
-          context.papertapeRuntimeServices = runtimeServices;
-          context.papertapeRuntimePrimaryUrl =
+          context.chopsticksRuntimeServices = runtimeServices;
+          context.chopsticksRuntimePrimaryUrl =
             runtimeServices.find((service) => readNonEmptyString(service.url))?.url ?? null;
           await db
             .update(heartbeatRuns)
@@ -1668,7 +1668,7 @@ export function heartbeatService(db: Db) {
           } catch (err) {
             await onLog(
               "stderr",
-              `[papertape] Failed to post workspace-ready comment: ${err instanceof Error ? err.message : String(err)}\n`,
+              `[chopsticks] Failed to post workspace-ready comment: ${err instanceof Error ? err.message : String(err)}\n`,
             );
           }
         }
@@ -1699,7 +1699,7 @@ export function heartbeatService(db: Db) {
               runId: run.id,
               adapterType: agent.adapterType,
             },
-            "local agent jwt secret missing or invalid; running without injected PAPERTAPE_API_KEY",
+            "local agent jwt secret missing or invalid; running without injected CHOPSTICKS_API_KEY",
           );
         }
         const adapterResult = await adapter.execute({
@@ -1732,8 +1732,8 @@ export function heartbeatService(db: Db) {
             ...runtimeServices,
             ...adapterManagedRuntimeServices,
           ];
-          context.papertapeRuntimeServices = combinedRuntimeServices;
-          context.papertapeRuntimePrimaryUrl =
+          context.chopsticksRuntimeServices = combinedRuntimeServices;
+          context.chopsticksRuntimePrimaryUrl =
             combinedRuntimeServices.find((service) => readNonEmptyString(service.url))?.url ?? null;
           await db
             .update(heartbeatRuns)
@@ -1755,7 +1755,7 @@ export function heartbeatService(db: Db) {
             } catch (err) {
               await onLog(
                 "stderr",
-                `[papertape] Failed to post adapter-managed runtime comment: ${err instanceof Error ? err.message : String(err)}\n`,
+                `[chopsticks] Failed to post adapter-managed runtime comment: ${err instanceof Error ? err.message : String(err)}\n`,
               );
             }
           }

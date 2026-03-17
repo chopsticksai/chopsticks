@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
-import type { Db } from "@papertape/db";
-import { activityLog } from "@papertape/db";
-import { PLUGIN_EVENT_TYPES, type PluginEventType } from "@papertape/shared";
-import type { PluginEvent } from "@papertape/plugin-sdk";
+import type { Db } from "@chopsticks/db";
+import { activityLog } from "@chopsticks/db";
+import { PLUGIN_EVENT_TYPES, type PluginEventType } from "@chopsticks/shared";
+import type { PluginEvent } from "@chopsticks/plugin-sdk";
 import { publishLiveEvent } from "./live-events.js";
 import { redactCurrentUserValue } from "../log-redaction.js";
 import { sanitizeRecord } from "../redaction.js";

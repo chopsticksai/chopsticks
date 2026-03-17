@@ -96,7 +96,7 @@ export type {
   PluginLauncherDeclaration,
   PluginMinimumHostVersion,
   PluginUiDeclaration,
-  PapertapePluginManifestV1,
+  ChopsticksPluginManifestV1,
   PluginRecord,
   PluginStateRecord,
   PluginConfig,

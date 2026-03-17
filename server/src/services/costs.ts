@@ -1,6 +1,6 @@
 import { and, desc, eq, gte, isNotNull, lte, sql } from "drizzle-orm";
-import type { Db } from "@papertape/db";
-import { activityLog, agents, companies, costEvents, heartbeatRuns, issues, projects } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
+import { activityLog, agents, companies, costEvents, heartbeatRuns, issues, projects } from "@chopsticks/db";
 import { notFound, unprocessable } from "../errors.js";
 
 export interface CostDateRange {

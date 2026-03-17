@@ -62,14 +62,14 @@ describe("mergeJoinDefaultsPayloadForReplay", () => {
     const merged = mergeJoinDefaultsPayloadForReplay(
       {
         url: "ws://old.example:18789",
-        papertapeApiUrl: "http://host.docker.internal:3100",
+        chopsticksApiUrl: "http://host.docker.internal:3100",
         headers: {
           "x-openclaw-token": "old-token-1234567890",
           "x-custom": "keep-me",
         },
       },
       {
-        papertapeApiUrl: "https://papertape.example.com",
+        chopsticksApiUrl: "https://chopsticks.example.com",
         headers: {
           "x-openclaw-token": "new-token-1234567890",
         },
@@ -83,7 +83,7 @@ describe("mergeJoinDefaultsPayloadForReplay", () => {
     }) as Record<string, unknown>;
 
     expect(normalized.url).toBe("ws://old.example:18789");
-    expect(normalized.papertapeApiUrl).toBe("https://papertape.example.com");
+    expect(normalized.chopsticksApiUrl).toBe("https://chopsticks.example.com");
     expect(normalized.headers).toMatchObject({
       "x-openclaw-token": "new-token-1234567890",
       "x-custom": "keep-me",

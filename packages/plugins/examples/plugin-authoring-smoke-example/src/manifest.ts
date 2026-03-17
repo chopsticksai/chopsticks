@@ -1,11 +1,11 @@
-import type { PapertapePluginManifestV1 } from "@papertape/plugin-sdk";
+import type { ChopsticksPluginManifestV1 } from "@chopsticks/plugin-sdk";
 
-const manifest: PapertapePluginManifestV1 = {
-  id: "papertape.plugin-authoring-smoke-example",
+const manifest: ChopsticksPluginManifestV1 = {
+  id: "chopsticks.plugin-authoring-smoke-example",
   apiVersion: 1,
   version: "0.1.0",
   displayName: "Plugin Authoring Smoke Example",
-  description: "A Papertape plugin",
+  description: "A Chopsticks plugin",
   author: "Plugin Author",
   categories: ["connector"],
   capabilities: [

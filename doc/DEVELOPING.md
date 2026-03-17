@@ -34,7 +34,7 @@ pnpm dev
 
 Windows native shell support:
 
-- `pnpm dev`, `pnpm papertape ...`, `pnpm db:backup`, and `pnpm build:npm` are supported from PowerShell and `cmd.exe`
+- `pnpm dev`, `pnpm chopsticks ...`, `pnpm db:backup`, and `pnpm build:npm` are supported from PowerShell and `cmd.exe`
 - release and smoke helpers under `scripts/*.sh` still expect a POSIX shell such as Git Bash
 
 This starts:
@@ -55,7 +55,7 @@ This runs dev as `authenticated/private` and binds the server to `0.0.0.0` for p
 Allow additional private hostnames (for example custom Tailscale hostnames):
 
 ```sh
-pnpm papertape allowed-hostname dotta-macbook-pro
+pnpm chopsticks allowed-hostname dotta-macbook-pro
 ```
 
 ## One-Command Local Run
@@ -63,27 +63,27 @@ pnpm papertape allowed-hostname dotta-macbook-pro
 For a first-time local install, you can bootstrap and run in one command:
 
 ```sh
-pnpm papertape run
+pnpm chopsticks run
 ```
 
-`papertape run` does:
+`chopsticks run` does:
 
 1. auto-onboard if config is missing
-2. `papertape doctor` with repair enabled
+2. `chopsticks doctor` with repair enabled
 3. starts the server when checks pass
 
 ## Docker Quickstart (No local Node install)
 
-Build and run Papertape in Docker:
+Build and run Chopsticks in Docker:
 
 ```sh
-docker build -t papertape-local .
-docker run --name papertape \
+docker build -t chopsticks-local .
+docker run --name chopsticks \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e PAPERTAPE_HOME=/papertape \
-  -v "$(pwd)/data/docker-papertape:/papertape" \
-  papertape-local
+  -e CHOPSTICKS_HOME=/chopsticks \
+  -v "$(pwd)/data/docker-chopsticks:/chopsticks" \
+  chopsticks-local
 ```
 
 Or use Compose:
@@ -99,15 +99,15 @@ See `doc/DOCKER.md` for API key wiring (`OPENAI_API_KEY` / `ANTHROPIC_API_KEY`) 
 For local development, leave `DATABASE_URL` unset.
 The server will automatically use embedded PostgreSQL and persist data at:
 
-- `~/.papertape/instances/default/db`
+- `~/.chopsticks/instances/default/db`
 
 Override home and instance:
 
 ```sh
-PAPERTAPE_HOME=/custom/path PAPERTAPE_INSTANCE_ID=dev pnpm papertape run
+CHOPSTICKS_HOME=/custom/path CHOPSTICKS_INSTANCE_ID=dev pnpm chopsticks run
 ```
 
-Papertape uses `~/.papertape` as the default local home. Set `PAPERTAPE_HOME` explicitly if you want a different location.
+Chopsticks uses `~/.chopsticks` as the default local home. Set `CHOPSTICKS_HOME` explicitly if you want a different location.
 
 No Docker or external database is required for this mode.
 
@@ -115,38 +115,38 @@ No Docker or external database is required for this mode.
 
 For local development, the default storage provider is `local_disk`, which persists uploaded images/attachments at:
 
-- `~/.papertape/instances/default/data/storage`
+- `~/.chopsticks/instances/default/data/storage`
 
 Configure storage provider/settings:
 
 ```sh
-pnpm papertape configure --section storage
+pnpm chopsticks configure --section storage
 ```
 
 ## Default Agent Workspaces
 
-When a local agent run has no resolved project/session workspace, Papertape falls back to an agent home workspace under the instance root:
+When a local agent run has no resolved project/session workspace, Chopsticks falls back to an agent home workspace under the instance root:
 
-- `~/.papertape/instances/default/workspaces/<agent-id>`
+- `~/.chopsticks/instances/default/workspaces/<agent-id>`
 
-This path honors `PAPERTAPE_HOME` and `PAPERTAPE_INSTANCE_ID` in non-default setups.
+This path honors `CHOPSTICKS_HOME` and `CHOPSTICKS_INSTANCE_ID` in non-default setups.
 
 ## Worktree-local Instances
 
-When developing from multiple git worktrees, do not point two Papertape servers at the same embedded PostgreSQL data directory.
+When developing from multiple git worktrees, do not point two Chopsticks servers at the same embedded PostgreSQL data directory.
 
-Instead, create a repo-local Papertape config plus an isolated instance for the worktree:
+Instead, create a repo-local Chopsticks config plus an isolated instance for the worktree:
 
 ```sh
-papertape worktree init
+chopsticks worktree init
 # or create the git worktree and initialize it in one step:
-pnpm papertape worktree:make papertape-pr-432
+pnpm chopsticks worktree:make chopsticks-pr-432
 ```
 
 This command:
 
-- writes repo-local files at `.papertape/config.json` and `.papertape/.env`
-- creates an isolated instance under `~/.papertape-worktrees/instances/<worktree-id>/`
+- writes repo-local files at `.chopsticks/config.json` and `.chopsticks/.env`
+- creates an isolated instance under `~/.chopsticks-worktrees/instances/<worktree-id>/`
 - when run inside a linked git worktree, mirrors the effective git hooks into that worktree's private git dir
 - picks a free app port and embedded PostgreSQL port
 - by default seeds the isolated DB in `minimal` mode from your main instance via a logical SQL snapshot
@@ -157,29 +157,29 @@ Seed modes:
 - `full` makes a full logical clone of the source instance
 - `--no-seed` creates an empty isolated instance
 
-After `worktree init`, both the server and the CLI auto-load the repo-local `.papertape/.env` when run inside that worktree, so normal commands like `pnpm dev`, `papertape doctor`, and `papertape db:backup` stay scoped to the worktree instance.
+After `worktree init`, both the server and the CLI auto-load the repo-local `.chopsticks/.env` when run inside that worktree, so normal commands like `pnpm dev`, `chopsticks doctor`, and `chopsticks db:backup` stay scoped to the worktree instance.
 
-That repo-local env also sets `PAPERTAPE_IN_WORKTREE=true`, which the server can use for worktree-specific UI behavior such as an alternate favicon.
+That repo-local env also sets `CHOPSTICKS_IN_WORKTREE=true`, which the server can use for worktree-specific UI behavior such as an alternate favicon.
 
 Print shell exports explicitly when needed:
 
 ```sh
-papertape worktree env
+chopsticks worktree env
 # or:
-eval "$(papertape worktree env)"
+eval "$(chopsticks worktree env)"
 ```
 
 ### Worktree CLI Reference
 
-**`pnpm papertape worktree init [options]`** — Create repo-local config/env and an isolated instance for the current worktree.
+**`pnpm chopsticks worktree init [options]`** — Create repo-local config/env and an isolated instance for the current worktree.
 
 | Option | Description |
 |---|---|
 | `--name <name>` | Display name used to derive the instance id |
 | `--instance <id>` | Explicit isolated instance id |
-| `--home <path>` | Home root for worktree instances (default: `~/.papertape-worktrees`) |
+| `--home <path>` | Home root for worktree instances (default: `~/.chopsticks-worktrees`) |
 | `--from-config <path>` | Source config.json to seed from |
-| `--from-data-dir <path>` | Source PAPERTAPE_HOME used when deriving the source config |
+| `--from-data-dir <path>` | Source CHOPSTICKS_HOME used when deriving the source config |
 | `--from-instance <id>` | Source instance id (default: `default`) |
 | `--server-port <port>` | Preferred server port |
 | `--db-port <port>` | Preferred embedded Postgres port |
@@ -190,22 +190,22 @@ eval "$(papertape worktree env)"
 Examples:
 
 ```sh
-papertape worktree init --no-seed
-papertape worktree init --seed-mode full
-papertape worktree init --from-instance default
-papertape worktree init --from-data-dir ~/.papertape
-papertape worktree init --force
+chopsticks worktree init --no-seed
+chopsticks worktree init --seed-mode full
+chopsticks worktree init --from-instance default
+chopsticks worktree init --from-data-dir ~/.chopsticks
+chopsticks worktree init --force
 ```
 
-**`pnpm papertape worktree:make <name> [options]`** — Create `~/NAME` as a git worktree, then initialize an isolated Papertape instance inside it. This combines `git worktree add` with `worktree init` in a single step.
+**`pnpm chopsticks worktree:make <name> [options]`** — Create `~/NAME` as a git worktree, then initialize an isolated Chopsticks instance inside it. This combines `git worktree add` with `worktree init` in a single step.
 
 | Option | Description |
 |---|---|
 | `--start-point <ref>` | Remote ref to base the new branch on (e.g. `origin/main`) |
 | `--instance <id>` | Explicit isolated instance id |
-| `--home <path>` | Home root for worktree instances (default: `~/.papertape-worktrees`) |
+| `--home <path>` | Home root for worktree instances (default: `~/.chopsticks-worktrees`) |
 | `--from-config <path>` | Source config.json to seed from |
-| `--from-data-dir <path>` | Source PAPERTAPE_HOME used when deriving the source config |
+| `--from-data-dir <path>` | Source CHOPSTICKS_HOME used when deriving the source config |
 | `--from-instance <id>` | Source instance id (default: `default`) |
 | `--server-port <port>` | Preferred server port |
 | `--db-port <port>` | Preferred embedded Postgres port |
@@ -216,12 +216,12 @@ papertape worktree init --force
 Examples:
 
 ```sh
-pnpm papertape worktree:make papertape-pr-432
-pnpm papertape worktree:make my-feature --start-point origin/main
-pnpm papertape worktree:make experiment --no-seed
+pnpm chopsticks worktree:make chopsticks-pr-432
+pnpm chopsticks worktree:make my-feature --start-point origin/main
+pnpm chopsticks worktree:make experiment --no-seed
 ```
 
-**`pnpm papertape worktree env [options]`** — Print shell exports for the current worktree-local Papertape instance.
+**`pnpm chopsticks worktree env [options]`** — Print shell exports for the current worktree-local Chopsticks instance.
 
 | Option | Description |
 |---|---|
@@ -231,14 +231,14 @@ pnpm papertape worktree:make experiment --no-seed
 Examples:
 
 ```sh
-pnpm papertape worktree env
-pnpm papertape worktree env --json
-eval "$(pnpm papertape worktree env)"
+pnpm chopsticks worktree env
+pnpm chopsticks worktree env --json
+eval "$(pnpm chopsticks worktree env)"
 ```
 
-For project execution worktrees, Papertape can also run a project-defined provision command after it creates or reuses an isolated git worktree. Configure this on the project's execution workspace policy (`workspaceStrategy.provisionCommand`). The command runs inside the derived worktree and receives `PAPERTAPE_WORKSPACE_*`, `PAPERTAPE_PROJECT_ID`, `PAPERTAPE_AGENT_ID`, and `PAPERTAPE_ISSUE_*` environment variables so each repo can bootstrap itself however it wants.
+For project execution worktrees, Chopsticks can also run a project-defined provision command after it creates or reuses an isolated git worktree. Configure this on the project's execution workspace policy (`workspaceStrategy.provisionCommand`). The command runs inside the derived worktree and receives `CHOPSTICKS_WORKSPACE_*`, `CHOPSTICKS_PROJECT_ID`, `CHOPSTICKS_AGENT_ID`, and `CHOPSTICKS_ISSUE_*` environment variables so each repo can bootstrap itself however it wants.
 
-Default execution worktrees live under `.papertape/worktrees`. If branch creation is blocked by an existing checkout, remove the stale worktree or set `workspaceStrategy.worktreeParentDir` explicitly.
+Default execution worktrees live under `.chopsticks/worktrees`. If branch creation is blocked by an existing checkout, remove the stale worktree or set `workspaceStrategy.worktreeParentDir` explicitly.
 
 ## Quick Health Checks
 
@@ -259,7 +259,7 @@ Expected:
 To wipe local dev data and start fresh:
 
 ```sh
-rm -rf ~/.papertape/instances/default/db
+rm -rf ~/.chopsticks/instances/default/db
 pnpm dev
 ```
 
@@ -269,55 +269,55 @@ If you set `DATABASE_URL`, the server will use that instead of embedded PostgreS
 
 ## Automatic DB Backups
 
-Papertape can run automatic DB backups on a timer. Defaults:
+Chopsticks can run automatic DB backups on a timer. Defaults:
 
 - enabled
 - every 60 minutes
 - retain 30 days
-- backup dir: `~/.papertape/instances/default/data/backups`
+- backup dir: `~/.chopsticks/instances/default/data/backups`
 
 Configure these in:
 
 ```sh
-pnpm papertape configure --section database
+pnpm chopsticks configure --section database
 ```
 
 Run a one-off backup manually:
 
 ```sh
-pnpm papertape db:backup
+pnpm chopsticks db:backup
 # or:
 pnpm db:backup
 ```
 
 Environment overrides:
 
-- `PAPERTAPE_DB_BACKUP_ENABLED=true|false`
-- `PAPERTAPE_DB_BACKUP_INTERVAL_MINUTES=<minutes>`
-- `PAPERTAPE_DB_BACKUP_RETENTION_DAYS=<days>`
-- `PAPERTAPE_DB_BACKUP_DIR=/absolute/or/~/path`
+- `CHOPSTICKS_DB_BACKUP_ENABLED=true|false`
+- `CHOPSTICKS_DB_BACKUP_INTERVAL_MINUTES=<minutes>`
+- `CHOPSTICKS_DB_BACKUP_RETENTION_DAYS=<days>`
+- `CHOPSTICKS_DB_BACKUP_DIR=/absolute/or/~/path`
 
 ## Secrets in Dev
 
 Agent env vars now support secret references. By default, secret values are stored with local encryption and only secret refs are persisted in agent config.
 
-- Default local key path: `~/.papertape/instances/default/secrets/master.key`
-- Override key material directly: `PAPERTAPE_SECRETS_MASTER_KEY`
-- Override key file path: `PAPERTAPE_SECRETS_MASTER_KEY_FILE`
+- Default local key path: `~/.chopsticks/instances/default/secrets/master.key`
+- Override key material directly: `CHOPSTICKS_SECRETS_MASTER_KEY`
+- Override key file path: `CHOPSTICKS_SECRETS_MASTER_KEY_FILE`
 
 Strict mode (recommended outside local trusted machines):
 
 ```sh
-PAPERTAPE_SECRETS_STRICT_MODE=true
+CHOPSTICKS_SECRETS_STRICT_MODE=true
 ```
 
 When strict mode is enabled, sensitive env keys (for example `*_API_KEY`, `*_TOKEN`, `*_SECRET`) must use secret references instead of inline plain values.
 
 CLI configuration support:
 
-- `pnpm papertape onboard` writes a default `secrets` config section (`local_encrypted`, strict mode off, key file path set) and creates a local key file when needed.
-- `pnpm papertape configure --section secrets` lets you update provider/strict mode/key path and creates the local key file when needed.
-- `pnpm papertape doctor` validates secrets adapter configuration and can create a missing local key file with `--repair`.
+- `pnpm chopsticks onboard` writes a default `secrets` config section (`local_encrypted`, strict mode off, key file path set) and creates a local key file when needed.
+- `pnpm chopsticks configure --section secrets` lets you update provider/strict mode/key path and creates the local key file when needed.
+- `pnpm chopsticks doctor` validates secrets adapter configuration and can create a missing local key file with `--repair`.
 
 Migration helper for existing inline env secrets:
 
@@ -331,7 +331,7 @@ pnpm secrets:migrate-inline-env --apply # apply migration
 Company deletion is intended as a dev/debug capability and can be disabled at runtime:
 
 ```sh
-PAPERTAPE_ENABLE_COMPANY_DELETION=false
+CHOPSTICKS_ENABLE_COMPANY_DELETION=false
 ```
 
 Default behavior:
@@ -341,27 +341,27 @@ Default behavior:
 
 ## CLI Client Operations
 
-Papertape CLI now includes client-side control-plane commands in addition to setup commands.
+Chopsticks CLI now includes client-side control-plane commands in addition to setup commands.
 
 Quick examples:
 
 ```sh
-pnpm papertape issue list --company-id <company-id>
-pnpm papertape issue create --company-id <company-id> --title "Investigate checkout conflict"
-pnpm papertape issue update <issue-id> --status in_progress --comment "Started triage"
+pnpm chopsticks issue list --company-id <company-id>
+pnpm chopsticks issue create --company-id <company-id> --title "Investigate checkout conflict"
+pnpm chopsticks issue update <issue-id> --status in_progress --comment "Started triage"
 ```
 
 Set defaults once with context profiles:
 
 ```sh
-pnpm papertape context set --api-base http://localhost:3100 --company-id <company-id>
+pnpm chopsticks context set --api-base http://localhost:3100 --company-id <company-id>
 ```
 
 Then run commands without repeating flags:
 
 ```sh
-pnpm papertape issue list
-pnpm papertape dashboard get
+pnpm chopsticks issue list
+pnpm chopsticks dashboard get
 ```
 
 See full command reference in `doc/CLI.md`.
@@ -374,7 +374,7 @@ Agent-oriented invite onboarding now exposes machine-readable API docs:
 - `GET /api/invites/:token/onboarding` returns onboarding manifest details (registration endpoint, claim endpoint template, skill install hints).
 - `GET /api/invites/:token/onboarding.txt` returns a plain-text onboarding doc intended for both human operators and agents (llm.txt-style handoff), including optional inviter message and suggested network host candidates.
 - `GET /api/skills/index` lists available skill documents.
-- `GET /api/skills/papertape` returns the Papertape heartbeat skill markdown.
+- `GET /api/skills/chopsticks` returns the Chopsticks heartbeat skill markdown.
 
 ## OpenClaw Join Smoke Test
 
@@ -394,12 +394,12 @@ What it validates:
 Required permissions:
 
 - This script performs board-governed actions (create invite, approve join, wakeup another agent).
-- In authenticated mode, run with board auth via `PAPERTAPE_AUTH_HEADER` or `PAPERTAPE_COOKIE`.
+- In authenticated mode, run with board auth via `CHOPSTICKS_AUTH_HEADER` or `CHOPSTICKS_COOKIE`.
 
 Optional auth flags (for authenticated mode):
 
-- `PAPERTAPE_AUTH_HEADER` (for example `Bearer ...`)
-- `PAPERTAPE_COOKIE` (session cookie header value)
+- `CHOPSTICKS_AUTH_HEADER` (for example `Bearer ...`)
+- `CHOPSTICKS_COOKIE` (session cookie header value)
 
 ## OpenClaw Docker UI One-Command Script
 
@@ -422,11 +422,11 @@ Model behavior for this smoke script:
 
 State behavior for this smoke script:
 
-- defaults to isolated config dir `~/.openclaw-papertape-smoke`
+- defaults to isolated config dir `~/.openclaw-chopsticks-smoke`
 - resets smoke agent state each run by default (`OPENCLAW_RESET_STATE=1`) to avoid stale provider/auth drift
 
 Networking behavior for this smoke script:
 
-- auto-detects and prints a Papertape host URL reachable from inside OpenClaw Docker
-- default container-side host alias is `host.docker.internal` (override with `PAPERTAPE_HOST_FROM_CONTAINER` / `PAPERTAPE_HOST_PORT`)
-- if Papertape rejects container hostnames in authenticated/private mode, allow `host.docker.internal` via `pnpm papertape allowed-hostname host.docker.internal` and restart Papertape
+- auto-detects and prints a Chopsticks host URL reachable from inside OpenClaw Docker
+- default container-side host alias is `host.docker.internal` (override with `CHOPSTICKS_HOST_FROM_CONTAINER` / `CHOPSTICKS_HOST_PORT`)
+- if Chopsticks rejects container hostnames in authenticated/private mode, allow `host.docker.internal` via `pnpm chopsticks allowed-hostname host.docker.internal` and restart Chopsticks

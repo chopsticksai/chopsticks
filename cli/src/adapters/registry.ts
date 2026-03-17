@@ -1,12 +1,12 @@
-import type { CLIAdapterModule } from "@papertape/adapter-utils";
-import { printClaudeStreamEvent } from "@papertape/adapter-claude-local/cli";
-import { printCodeBuddyStreamEvent } from "@papertape/adapter-codebuddy-local/cli";
-import { printCodexStreamEvent } from "@papertape/adapter-codex-local/cli";
-import { printCursorStreamEvent } from "@papertape/adapter-cursor-local/cli";
-import { printGeminiStreamEvent } from "@papertape/adapter-gemini-local/cli";
-import { printOpenCodeStreamEvent } from "@papertape/adapter-opencode-local/cli";
-import { printPiStreamEvent } from "@papertape/adapter-pi-local/cli";
-import { printOpenClawGatewayStreamEvent } from "@papertape/adapter-openclaw-gateway/cli";
+import type { CLIAdapterModule } from "@chopsticks/adapter-utils";
+import { printClaudeStreamEvent } from "@chopsticks/adapter-claude-local/cli";
+import { printCodeBuddyStreamEvent } from "@chopsticks/adapter-codebuddy-local/cli";
+import { printCodexStreamEvent } from "@chopsticks/adapter-codex-local/cli";
+import { printCursorStreamEvent } from "@chopsticks/adapter-cursor-local/cli";
+import { printGeminiStreamEvent } from "@chopsticks/adapter-gemini-local/cli";
+import { printOpenCodeStreamEvent } from "@chopsticks/adapter-opencode-local/cli";
+import { printPiStreamEvent } from "@chopsticks/adapter-pi-local/cli";
+import { printOpenClawGatewayStreamEvent } from "@chopsticks/adapter-openclaw-gateway/cli";
 import { processCLIAdapter } from "./process/index.js";
 import { httpCLIAdapter } from "./http/index.js";
 

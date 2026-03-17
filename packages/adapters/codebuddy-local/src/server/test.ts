@@ -2,7 +2,7 @@ import type {
   AdapterEnvironmentCheck,
   AdapterEnvironmentTestContext,
   AdapterEnvironmentTestResult,
-} from "@papertape/adapter-utils";
+} from "@chopsticks/adapter-utils";
 import {
   asBoolean,
   asNumber,
@@ -13,7 +13,7 @@ import {
   ensurePathInEnv,
   parseObject,
   runChildProcess,
-} from "@papertape/adapter-utils/server-utils";
+} from "@chopsticks/adapter-utils/server-utils";
 import {
   DEFAULT_CODEBUDDY_LOCAL_MODEL,
   DEFAULT_CODEBUDDY_LOCAL_SKIP_PERMISSIONS,

@@ -1,13 +1,13 @@
 {
-  "name": "@papertape/plugin-kitchen-sink-example",
+  "name": "@chopsticks/plugin-kitchen-sink-example",
   "version": "0.1.0",
-  "description": "Reference plugin that demonstrates the full Papertape plugin surface area in one package",
+  "description": "Reference plugin that demonstrates the full Chopsticks plugin surface area in one package",
   "type": "module",
   "private": true,
   "exports": {
     ".": "./src/index.ts"
   },
-  "papertapePlugin": {
+  "chopsticksPlugin": {
     "manifest": "./dist/manifest.js",
     "worker": "./dist/worker.js",
     "ui": "./dist/ui/"
@@ -16,11 +16,11 @@
     "prebuild": "node ../../../../scripts/ensure-plugin-build-deps.mjs",
     "build": "tsc && node ./scripts/build-ui.mjs",
     "clean": "rm -rf dist",
-    "typecheck": "pnpm --filter @papertape/plugin-sdk build && tsc --noEmit"
+    "typecheck": "pnpm --filter @chopsticks/plugin-sdk build && tsc --noEmit"
   },
   "dependencies": {
-    "@papertape/plugin-sdk": "workspace:*",
-    "@papertape/shared": "workspace:*"
+    "@chopsticks/plugin-sdk": "workspace:*",
+    "@chopsticks/shared": "workspace:*"
   },
   "devDependencies": {
     "esbuild": "^0.27.3",

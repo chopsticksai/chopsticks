@@ -50,16 +50,16 @@ function pickReadableTextColor(background: string): string {
 }
 
 export function getWorktreeUiBranding(): WorktreeUiBranding | null {
-  if (readMetaContent("papertape-worktree-enabled") !== "true") return null;
+  if (readMetaContent("chopsticks-worktree-enabled") !== "true") return null;
 
-  const name = readMetaContent("papertape-worktree-name");
-  const color = normalizeHexColor(readMetaContent("papertape-worktree-color"));
+  const name = readMetaContent("chopsticks-worktree-name");
+  const color = normalizeHexColor(readMetaContent("chopsticks-worktree-color"));
   if (!name || !color) return null;
 
   return {
     enabled: true,
     name,
     color,
-    textColor: normalizeHexColor(readMetaContent("papertape-worktree-text-color")) ?? pickReadableTextColor(color),
+    textColor: normalizeHexColor(readMetaContent("chopsticks-worktree-text-color")) ?? pickReadableTextColor(color),
   };
 }

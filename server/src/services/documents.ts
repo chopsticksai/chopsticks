@@ -1,7 +1,7 @@
 import { and, asc, desc, eq } from "drizzle-orm";
-import type { Db } from "@papertape/db";
-import { documentRevisions, documents, issueDocuments, issues } from "@papertape/db";
-import { issueDocumentKeySchema } from "@papertape/shared";
+import type { Db } from "@chopsticks/db";
+import { documentRevisions, documents, issueDocuments, issues } from "@chopsticks/db";
+import { issueDocumentKeySchema } from "@chopsticks/shared";
 import { conflict, notFound, unprocessable } from "../errors.js";
 
 function normalizeDocumentKey(key: string) {

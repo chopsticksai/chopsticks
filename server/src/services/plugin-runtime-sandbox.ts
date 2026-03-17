@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, realpathSync } from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
-import type { PapertapePluginManifestV1 } from "@papertape/shared";
+import type { ChopsticksPluginManifestV1 } from "@chopsticks/shared";
 import type { PluginCapabilityValidator } from "./plugin-capability-validator.js";
 
 export class PluginSandboxError extends Error {
@@ -54,7 +54,7 @@ const DEFAULT_GLOBALS: Record<string, unknown> = {
 };
 
 export function createCapabilityScopedInvoker(
-  manifest: PapertapePluginManifestV1,
+  manifest: ChopsticksPluginManifestV1,
   validator: PluginCapabilityValidator,
 ): CapabilityScopedInvoker {
   return {
@@ -144,15 +144,15 @@ export async function loadPluginModuleInSandbox(
     // `(fn)(exports, module, ...)` in the script text, the timeout also covers
     // the actual module body execution — preventing infinite loops from hanging.
     const sandboxArgs = {
-      __papertape_exports: module.exports,
-      __papertape_module: module,
-      __papertape_require: requireInSandbox,
-      __papertape_filename: realPath,
-      __papertape_dirname: path.dirname(realPath),
+      __chopsticks_exports: module.exports,
+      __chopsticks_module: module,
+      __chopsticks_require: requireInSandbox,
+      __chopsticks_filename: realPath,
+      __chopsticks_dirname: path.dirname(realPath),
     };
     // Temporarily inject args into the context, run, then remove to avoid pollution.
     Object.assign(context, sandboxArgs);
-    const wrapped = `(function (exports, module, require, __filename, __dirname) {\n${code}\n})(__papertape_exports, __papertape_module, __papertape_require, __papertape_filename, __papertape_dirname)`;
+    const wrapped = `(function (exports, module, require, __filename, __dirname) {\n${code}\n})(__chopsticks_exports, __chopsticks_module, __chopsticks_require, __chopsticks_filename, __chopsticks_dirname)`;
     const script = new vm.Script(wrapped, { filename: realPath });
     try {
       script.runInContext(context, { timeout: timeoutMs });

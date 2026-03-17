@@ -3,49 +3,49 @@ import {
   execute as claudeExecute,
   testEnvironment as claudeTestEnvironment,
   sessionCodec as claudeSessionCodec,
-} from "@papertape/adapter-claude-local/server";
-import { agentConfigurationDoc as claudeAgentConfigurationDoc, models as claudeModels } from "@papertape/adapter-claude-local";
+} from "@chopsticks/adapter-claude-local/server";
+import { agentConfigurationDoc as claudeAgentConfigurationDoc, models as claudeModels } from "@chopsticks/adapter-claude-local";
 import {
   execute as codeBuddyExecute,
   testEnvironment as codeBuddyTestEnvironment,
   sessionCodec as codeBuddySessionCodec,
-} from "@papertape/adapter-codebuddy-local/server";
-import { agentConfigurationDoc as codeBuddyAgentConfigurationDoc, models as codeBuddyModels } from "@papertape/adapter-codebuddy-local";
+} from "@chopsticks/adapter-codebuddy-local/server";
+import { agentConfigurationDoc as codeBuddyAgentConfigurationDoc, models as codeBuddyModels } from "@chopsticks/adapter-codebuddy-local";
 import {
   execute as codexExecute,
   testEnvironment as codexTestEnvironment,
   sessionCodec as codexSessionCodec,
-} from "@papertape/adapter-codex-local/server";
-import { agentConfigurationDoc as codexAgentConfigurationDoc, models as codexModels } from "@papertape/adapter-codex-local";
+} from "@chopsticks/adapter-codex-local/server";
+import { agentConfigurationDoc as codexAgentConfigurationDoc, models as codexModels } from "@chopsticks/adapter-codex-local";
 import {
   execute as cursorExecute,
   testEnvironment as cursorTestEnvironment,
   sessionCodec as cursorSessionCodec,
-} from "@papertape/adapter-cursor-local/server";
-import { agentConfigurationDoc as cursorAgentConfigurationDoc, models as cursorModels } from "@papertape/adapter-cursor-local";
+} from "@chopsticks/adapter-cursor-local/server";
+import { agentConfigurationDoc as cursorAgentConfigurationDoc, models as cursorModels } from "@chopsticks/adapter-cursor-local";
 import {
   execute as geminiExecute,
   testEnvironment as geminiTestEnvironment,
   sessionCodec as geminiSessionCodec,
-} from "@papertape/adapter-gemini-local/server";
-import { agentConfigurationDoc as geminiAgentConfigurationDoc, models as geminiModels } from "@papertape/adapter-gemini-local";
+} from "@chopsticks/adapter-gemini-local/server";
+import { agentConfigurationDoc as geminiAgentConfigurationDoc, models as geminiModels } from "@chopsticks/adapter-gemini-local";
 import {
   execute as openCodeExecute,
   testEnvironment as openCodeTestEnvironment,
   sessionCodec as openCodeSessionCodec,
   listOpenCodeModels,
-} from "@papertape/adapter-opencode-local/server";
+} from "@chopsticks/adapter-opencode-local/server";
 import {
   agentConfigurationDoc as openCodeAgentConfigurationDoc,
-} from "@papertape/adapter-opencode-local";
+} from "@chopsticks/adapter-opencode-local";
 import {
   execute as openclawGatewayExecute,
   testEnvironment as openclawGatewayTestEnvironment,
-} from "@papertape/adapter-openclaw-gateway/server";
+} from "@chopsticks/adapter-openclaw-gateway/server";
 import {
   agentConfigurationDoc as openclawGatewayAgentConfigurationDoc,
   models as openclawGatewayModels,
-} from "@papertape/adapter-openclaw-gateway";
+} from "@chopsticks/adapter-openclaw-gateway";
 import { listCodexModels } from "./codex-models.js";
 import { listCursorModels } from "./cursor-models.js";
 import {
@@ -53,10 +53,10 @@ import {
   testEnvironment as piTestEnvironment,
   sessionCodec as piSessionCodec,
   listPiModels,
-} from "@papertape/adapter-pi-local/server";
+} from "@chopsticks/adapter-pi-local/server";
 import {
   agentConfigurationDoc as piAgentConfigurationDoc,
-} from "@papertape/adapter-pi-local";
+} from "@chopsticks/adapter-pi-local";
 import {
   execute as hermesExecute,
   testEnvironment as hermesTestEnvironment,

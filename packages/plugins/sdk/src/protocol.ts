@@ -2,7 +2,7 @@
  * JSON-RPC 2.0 message types and protocol helpers for the host ↔ worker IPC
  * channel.
  *
- * The Papertape plugin runtime uses JSON-RPC 2.0 over stdio to communicate
+ * The Chopsticks plugin runtime uses JSON-RPC 2.0 over stdio to communicate
  * between the host process and each plugin worker process. This module defines:
  *
  * - Core JSON-RPC 2.0 envelope types (request, response, notification, error)
@@ -16,7 +16,7 @@
  */
 
 import type {
-  PapertapePluginManifestV1,
+  ChopsticksPluginManifestV1,
   PluginLauncherBounds,
   PluginLauncherRenderContextSnapshot,
   PluginLauncherRenderEnvironment,
@@ -27,8 +27,8 @@ import type {
   IssueComment,
   Agent,
   Goal,
-} from "@papertape/shared";
-export type { PluginLauncherRenderContextSnapshot } from "@papertape/shared";
+} from "@chopsticks/shared";
+export type { PluginLauncherRenderContextSnapshot } from "@chopsticks/shared";
 
 import type {
   PluginEvent,
@@ -52,7 +52,7 @@ export const JSONRPC_VERSION = "2.0" as const;
 
 /**
  * A unique request identifier. JSON-RPC 2.0 allows strings or numbers;
- * we use strings (UUIDs or monotonic counters) for all Papertape messages.
+ * we use strings (UUIDs or monotonic counters) for all Chopsticks messages.
  */
 export type JsonRpcId = string | number;
 
@@ -169,7 +169,7 @@ export type JsonRpcErrorCode =
   (typeof JSONRPC_ERROR_CODES)[keyof typeof JSONRPC_ERROR_CODES];
 
 /**
- * Papertape plugin-specific error codes.
+ * Chopsticks plugin-specific error codes.
  *
  * These live in the JSON-RPC "server error" reserved range (-32000 to -32099)
  * as specified by JSON-RPC 2.0 for implementation-defined server errors.
@@ -205,14 +205,14 @@ export type PluginRpcErrorCode =
  */
 export interface InitializeParams {
   /** Full plugin manifest snapshot. */
-  manifest: PapertapePluginManifestV1;
+  manifest: ChopsticksPluginManifestV1;
   /** Resolved operator configuration (validated against `instanceConfigSchema`). */
   config: Record<string, unknown>;
   /** Instance-level metadata. */
   instanceInfo: {
-    /** UUID of this Papertape instance. */
+    /** UUID of this Chopsticks instance. */
     instanceId: string;
-    /** Semver version of the running Papertape host. */
+    /** Semver version of the running Chopsticks host. */
     hostVersion: string;
   };
   /** Host API version. */

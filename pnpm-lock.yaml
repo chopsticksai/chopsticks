@@ -32,40 +32,40 @@ importers:
       '@clack/prompts':
         specifier: ^0.10.0
         version: 0.10.1
-      '@papertape/adapter-claude-local':
+      '@chopsticks/adapter-claude-local':
         specifier: workspace:*
         version: link:../packages/adapters/claude-local
-      '@papertape/adapter-codebuddy-local':
+      '@chopsticks/adapter-codebuddy-local':
         specifier: workspace:*
         version: link:../packages/adapters/codebuddy-local
-      '@papertape/adapter-codex-local':
+      '@chopsticks/adapter-codex-local':
         specifier: workspace:*
         version: link:../packages/adapters/codex-local
-      '@papertape/adapter-cursor-local':
+      '@chopsticks/adapter-cursor-local':
         specifier: workspace:*
         version: link:../packages/adapters/cursor-local
-      '@papertape/adapter-gemini-local':
+      '@chopsticks/adapter-gemini-local':
         specifier: workspace:*
         version: link:../packages/adapters/gemini-local
-      '@papertape/adapter-openclaw-gateway':
+      '@chopsticks/adapter-openclaw-gateway':
         specifier: workspace:*
         version: link:../packages/adapters/openclaw-gateway
-      '@papertape/adapter-opencode-local':
+      '@chopsticks/adapter-opencode-local':
         specifier: workspace:*
         version: link:../packages/adapters/opencode-local
-      '@papertape/adapter-pi-local':
+      '@chopsticks/adapter-pi-local':
         specifier: workspace:*
         version: link:../packages/adapters/pi-local
-      '@papertape/adapter-utils':
+      '@chopsticks/adapter-utils':
         specifier: workspace:*
         version: link:../packages/adapter-utils
-      '@papertape/db':
+      '@chopsticks/db':
         specifier: workspace:*
         version: link:../packages/db
-      '@papertape/server':
+      '@chopsticks/server':
         specifier: workspace:*
         version: link:../server
-      '@papertape/shared':
+      '@chopsticks/shared':
         specifier: workspace:*
         version: link:../packages/shared
       commander:
@@ -105,7 +105,7 @@ importers:
 
   packages/adapters/claude-local:
     dependencies:
-      '@papertape/adapter-utils':
+      '@chopsticks/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -121,7 +121,7 @@ importers:
 
   packages/adapters/codebuddy-local:
     dependencies:
-      '@papertape/adapter-utils':
+      '@chopsticks/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -137,7 +137,7 @@ importers:
 
   packages/adapters/codex-local:
     dependencies:
-      '@papertape/adapter-utils':
+      '@chopsticks/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -153,7 +153,7 @@ importers:
 
   packages/adapters/cursor-local:
     dependencies:
-      '@papertape/adapter-utils':
+      '@chopsticks/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -169,7 +169,7 @@ importers:
 
   packages/adapters/gemini-local:
     dependencies:
-      '@papertape/adapter-utils':
+      '@chopsticks/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -185,7 +185,7 @@ importers:
 
   packages/adapters/openclaw-gateway:
     dependencies:
-      '@papertape/adapter-utils':
+      '@chopsticks/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -207,7 +207,7 @@ importers:
 
   packages/adapters/opencode-local:
     dependencies:
-      '@papertape/adapter-utils':
+      '@chopsticks/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -223,7 +223,7 @@ importers:
 
   packages/adapters/pi-local:
     dependencies:
-      '@papertape/adapter-utils':
+      '@chopsticks/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -239,7 +239,7 @@ importers:
 
   packages/db:
     dependencies:
-      '@papertape/shared':
+      '@chopsticks/shared':
         specifier: workspace:*
         version: link:../shared
       drizzle-orm:
@@ -265,9 +265,9 @@ importers:
         specifier: ^3.0.5
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.12.0)(jiti@2.6.1)(jsdom@28.1.0(@noble/hashes@2.0.1))(lightningcss@1.30.2)(tsx@4.21.0)
 
-  packages/plugins/create-papertape-plugin:
+  packages/plugins/create-chopsticks-plugin:
     dependencies:
-      '@papertape/plugin-sdk':
+      '@chopsticks/plugin-sdk':
         specifier: workspace:*
         version: link:../sdk
     devDependencies:
@@ -280,7 +280,7 @@ importers:
 
   packages/plugins/examples/plugin-authoring-smoke-example:
     dependencies:
-      '@papertape/plugin-sdk':
+      '@chopsticks/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
       react:
@@ -332,7 +332,7 @@ importers:
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.3
-      '@papertape/plugin-sdk':
+      '@chopsticks/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
       codemirror:
@@ -363,7 +363,7 @@ importers:
 
   packages/plugins/examples/plugin-hello-world-example:
     dependencies:
-      '@papertape/plugin-sdk':
+      '@chopsticks/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
     devDependencies:
@@ -388,10 +388,10 @@ importers:
 
   packages/plugins/examples/plugin-kitchen-sink-example:
     dependencies:
-      '@papertape/plugin-sdk':
+      '@chopsticks/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
-      '@papertape/shared':
+      '@chopsticks/shared':
         specifier: workspace:*
         version: link:../../../shared
     devDependencies:
@@ -419,7 +419,7 @@ importers:
 
   packages/plugins/sdk:
     dependencies:
-      '@papertape/shared':
+      '@chopsticks/shared':
         specifier: workspace:*
         version: link:../../shared
       react:
@@ -454,40 +454,40 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.888.0
         version: 3.994.0
-      '@papertape/adapter-claude-local':
+      '@chopsticks/adapter-claude-local':
         specifier: workspace:*
         version: link:../packages/adapters/claude-local
-      '@papertape/adapter-codebuddy-local':
+      '@chopsticks/adapter-codebuddy-local':
         specifier: workspace:*
         version: link:../packages/adapters/codebuddy-local
-      '@papertape/adapter-codex-local':
+      '@chopsticks/adapter-codex-local':
         specifier: workspace:*
         version: link:../packages/adapters/codex-local
-      '@papertape/adapter-cursor-local':
+      '@chopsticks/adapter-cursor-local':
         specifier: workspace:*
         version: link:../packages/adapters/cursor-local
-      '@papertape/adapter-gemini-local':
+      '@chopsticks/adapter-gemini-local':
         specifier: workspace:*
         version: link:../packages/adapters/gemini-local
-      '@papertape/adapter-openclaw-gateway':
+      '@chopsticks/adapter-openclaw-gateway':
         specifier: workspace:*
         version: link:../packages/adapters/openclaw-gateway
-      '@papertape/adapter-opencode-local':
+      '@chopsticks/adapter-opencode-local':
         specifier: workspace:*
         version: link:../packages/adapters/opencode-local
-      '@papertape/adapter-pi-local':
+      '@chopsticks/adapter-pi-local':
         specifier: workspace:*
         version: link:../packages/adapters/pi-local
-      '@papertape/adapter-utils':
+      '@chopsticks/adapter-utils':
         specifier: workspace:*
         version: link:../packages/adapter-utils
-      '@papertape/db':
+      '@chopsticks/db':
         specifier: workspace:*
         version: link:../packages/db
-      '@papertape/plugin-sdk':
+      '@chopsticks/plugin-sdk':
         specifier: workspace:*
         version: link:../packages/plugins/sdk
-      '@papertape/shared':
+      '@chopsticks/shared':
         specifier: workspace:*
         version: link:../packages/shared
       ajv:
@@ -593,34 +593,34 @@ importers:
       '@mdxeditor/editor':
         specifier: ^3.52.4
         version: 3.52.4(@codemirror/language@6.12.1)(@lezer/highlight@1.2.3)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(yjs@13.6.29)
-      '@papertape/adapter-claude-local':
+      '@chopsticks/adapter-claude-local':
         specifier: workspace:*
         version: link:../packages/adapters/claude-local
-      '@papertape/adapter-codebuddy-local':
+      '@chopsticks/adapter-codebuddy-local':
         specifier: workspace:*
         version: link:../packages/adapters/codebuddy-local
-      '@papertape/adapter-codex-local':
+      '@chopsticks/adapter-codex-local':
         specifier: workspace:*
         version: link:../packages/adapters/codex-local
-      '@papertape/adapter-cursor-local':
+      '@chopsticks/adapter-cursor-local':
         specifier: workspace:*
         version: link:../packages/adapters/cursor-local
-      '@papertape/adapter-gemini-local':
+      '@chopsticks/adapter-gemini-local':
         specifier: workspace:*
         version: link:../packages/adapters/gemini-local
-      '@papertape/adapter-openclaw-gateway':
+      '@chopsticks/adapter-openclaw-gateway':
         specifier: workspace:*
         version: link:../packages/adapters/openclaw-gateway
-      '@papertape/adapter-opencode-local':
+      '@chopsticks/adapter-opencode-local':
         specifier: workspace:*
         version: link:../packages/adapters/opencode-local
-      '@papertape/adapter-pi-local':
+      '@chopsticks/adapter-pi-local':
         specifier: workspace:*
         version: link:../packages/adapters/pi-local
-      '@papertape/adapter-utils':
+      '@chopsticks/adapter-utils':
         specifier: workspace:*
         version: link:../packages/adapter-utils
-      '@papertape/shared':
+      '@chopsticks/shared':
         specifier: workspace:*
         version: link:../packages/shared
       '@radix-ui/react-slot':

@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import type { DashboardSummary } from "@papertape/shared";
+import type { DashboardSummary } from "@chopsticks/shared";
 import {
   addCommonClientOptions,
   handleCommandError,

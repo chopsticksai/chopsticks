@@ -6,7 +6,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { PluginRecord } from "@papertape/shared";
+import type { PluginRecord } from "@chopsticks/shared";
 import { Link } from "@/lib/router";
 import { AlertTriangle, FlaskConical, Plus, Power, Puzzle, Settings, Trash } from "lucide-react";
 import { useCompany } from "@/context/CompanyContext";
@@ -48,7 +48,7 @@ function getPluginErrorSummary(plugin: PluginRecord, t: (text: string, values?: 
 /**
  * PluginManager page component.
  *
- * Provides a management UI for the Papertape plugin system:
+ * Provides a management UI for the Chopsticks plugin system:
  * - Lists all installed plugins with their status, version, and category badges.
  * - Allows installing new plugins by npm package name.
  * - Provides per-plugin actions: enable, disable, navigate to settings.
@@ -188,7 +188,7 @@ export function PluginManager() {
                 <Label htmlFor="packageName">{t("npm Package Name")}</Label>
                 <Input
                   id="packageName"
-                  placeholder="@papertape/plugin-example"
+                  placeholder="@chopsticks/plugin-example"
                   value={installPackage}
                   onChange={(e) => setInstallPackage(e.target.value)}
                 />

@@ -4,7 +4,7 @@ import path from "node:path";
 const DEFAULT_INSTANCE_ID = "default";
 const INSTANCE_ID_RE = /^[a-zA-Z0-9_-]+$/;
 const PATH_SEGMENT_RE = /^[a-zA-Z0-9_-]+$/;
-const DEFAULT_HOME_BASENAME = ".papertape";
+const DEFAULT_HOME_BASENAME = ".chopsticks";
 
 function expandHomePrefix(value: string): string {
   if (value === "~") return os.homedir();
@@ -12,46 +12,46 @@ function expandHomePrefix(value: string): string {
   return value;
 }
 
-export function resolvePapertapeHomeDir(): string {
-  const envHome = process.env.PAPERTAPE_HOME?.trim();
+export function resolveChopsticksHomeDir(): string {
+  const envHome = process.env.CHOPSTICKS_HOME?.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
   return path.resolve(os.homedir(), DEFAULT_HOME_BASENAME);
 }
 
-export function resolvePapertapeInstanceId(): string {
-  const raw = process.env.PAPERTAPE_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
+export function resolveChopsticksInstanceId(): string {
+  const raw = process.env.CHOPSTICKS_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
   if (!INSTANCE_ID_RE.test(raw)) {
-    throw new Error(`Invalid PAPERTAPE_INSTANCE_ID '${raw}'.`);
+    throw new Error(`Invalid CHOPSTICKS_INSTANCE_ID '${raw}'.`);
   }
   return raw;
 }
 
-export function resolvePapertapeInstanceRoot(): string {
-  return path.resolve(resolvePapertapeHomeDir(), "instances", resolvePapertapeInstanceId());
+export function resolveChopsticksInstanceRoot(): string {
+  return path.resolve(resolveChopsticksHomeDir(), "instances", resolveChopsticksInstanceId());
 }
 
 export function resolveDefaultConfigPath(): string {
-  return path.resolve(resolvePapertapeInstanceRoot(), "config.json");
+  return path.resolve(resolveChopsticksInstanceRoot(), "config.json");
 }
 
 export function resolveDefaultEmbeddedPostgresDir(): string {
-  return path.resolve(resolvePapertapeInstanceRoot(), "db");
+  return path.resolve(resolveChopsticksInstanceRoot(), "db");
 }
 
 export function resolveDefaultLogsDir(): string {
-  return path.resolve(resolvePapertapeInstanceRoot(), "logs");
+  return path.resolve(resolveChopsticksInstanceRoot(), "logs");
 }
 
 export function resolveDefaultSecretsKeyFilePath(): string {
-  return path.resolve(resolvePapertapeInstanceRoot(), "secrets", "master.key");
+  return path.resolve(resolveChopsticksInstanceRoot(), "secrets", "master.key");
 }
 
 export function resolveDefaultStorageDir(): string {
-  return path.resolve(resolvePapertapeInstanceRoot(), "data", "storage");
+  return path.resolve(resolveChopsticksInstanceRoot(), "data", "storage");
 }
 
 export function resolveDefaultBackupDir(): string {
-  return path.resolve(resolvePapertapeInstanceRoot(), "data", "backups");
+  return path.resolve(resolveChopsticksInstanceRoot(), "data", "backups");
 }
 
 export function resolveDefaultAgentWorkspaceDir(agentId: string): string {
@@ -59,7 +59,7 @@ export function resolveDefaultAgentWorkspaceDir(agentId: string): string {
   if (!PATH_SEGMENT_RE.test(trimmed)) {
     throw new Error(`Invalid agent id for workspace path '${agentId}'.`);
   }
-  return path.resolve(resolvePapertapeInstanceRoot(), "workspaces", trimmed);
+  return path.resolve(resolveChopsticksInstanceRoot(), "workspaces", trimmed);
 }
 
 export function resolveHomeAwarePath(value: string): string {
