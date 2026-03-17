@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { models as codeBuddyFallbackModels } from "@chopsticks/adapter-codebuddy-local";
 import { models as codexFallbackModels } from "@chopsticks/adapter-codex-local";
 import { models as cursorFallbackModels } from "@chopsticks/adapter-cursor-local";
+import { models as qwenFallbackModels } from "@chopsticks/adapter-qwen-local";
 import { resetOpenCodeModelsCacheForTests } from "@chopsticks/adapter-opencode-local/server";
 import { listAdapterModels } from "../adapters/index.js";
 import { resetCodexModelsCacheForTests } from "../adapters/codex-models.js";
@@ -34,6 +35,11 @@ describe("adapter model listing", () => {
   it("returns codebuddy fallback models", async () => {
     const models = await listAdapterModels("codebuddy_local");
     expect(models).toEqual(codeBuddyFallbackModels);
+  });
+
+  it("returns qwen fallback models", async () => {
+    const models = await listAdapterModels("qwen_local");
+    expect(models).toEqual(qwenFallbackModels);
   });
 
   it("loads codex models dynamically and merges fallback options", async () => {

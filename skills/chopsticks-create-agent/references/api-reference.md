@@ -34,10 +34,11 @@ Request body matches agent create shape:
   "icon": "crown",
   "reportsTo": "uuid-or-null",
   "capabilities": "Owns architecture and engineering execution",
-  "adapterType": "claude_local",
+  "adapterType": "qwen_local",
   "adapterConfig": {
     "cwd": "/absolute/path",
-    "model": "claude-sonnet-4-5-20250929",
+    "model": "auto",
+    "instructionsFilePath": "/absolute/path/to/AGENTS.md",
     "promptTemplate": "You are CTO..."
   },
   "runtimeConfig": {
@@ -70,6 +71,8 @@ Response:
 ```
 
 If company setting disables required approval, `approval` is `null` and the agent is created as `idle`.
+
+Supported local CLI adapter types include `claude_local`, `codebuddy_local`, `codex_local`, `gemini_local`, `qwen_local`, `opencode_local`, and `cursor`.
 
 ## Approval Lifecycle
 

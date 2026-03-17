@@ -54,6 +54,7 @@ const SESSIONED_LOCAL_ADAPTERS = new Set([
   "codex_local",
   "cursor",
   "gemini_local",
+  "qwen_local",
   "opencode_local",
   "pi_local",
 ]);
@@ -566,7 +567,14 @@ function resolveNextSessionState(input: {
 }) {
   const { codec, adapterResult, previousParams, previousDisplayId, previousLegacySessionId } = input;
 
-  if (adapterResult.clearSession) {
+  const explicitParams = adapterResult.sessionParams;
+  const hasExplicitParams = adapterResult.sessionParams !== undefined;
+  const hasExplicitSessionId = adapterResult.sessionId !== undefined;
+  const explicitSessionId = readNonEmptyString(adapterResult.sessionId);
+  const hasExplicitDisplay = adapterResult.sessionDisplayId !== undefined;
+  const explicitDisplayId = readNonEmptyString(adapterResult.sessionDisplayId);
+
+  if (adapterResult.clearSession && !hasExplicitParams && !hasExplicitSessionId && !hasExplicitDisplay) {
     return {
       params: null as Record<string, unknown> | null,
       displayId: null as string | null,
@@ -574,20 +582,20 @@ function resolveNextSessionState(input: {
     };
   }
 
-  const explicitParams = adapterResult.sessionParams;
-  const hasExplicitParams = adapterResult.sessionParams !== undefined;
-  const hasExplicitSessionId = adapterResult.sessionId !== undefined;
-  const explicitSessionId = readNonEmptyString(adapterResult.sessionId);
-  const hasExplicitDisplay = adapterResult.sessionDisplayId !== undefined;
-  const explicitDisplayId = readNonEmptyString(adapterResult.sessionDisplayId);
-  const shouldUsePrevious = !hasExplicitParams && !hasExplicitSessionId && !hasExplicitDisplay;
+  const shouldUsePrevious =
+    !adapterResult.clearSession &&
+    !hasExplicitParams &&
+    !hasExplicitSessionId &&
+    !hasExplicitDisplay;
 
   const candidateParams =
     hasExplicitParams
       ? explicitParams
       : hasExplicitSessionId
         ? (explicitSessionId ? { sessionId: explicitSessionId } : null)
-        : previousParams;
+        : adapterResult.clearSession
+          ? null
+          : previousParams;
 
   const serialized = normalizeSessionParams(codec.serialize(normalizeSessionParams(candidateParams) ?? null));
   const deserialized = normalizeSessionParams(codec.deserialize(serialized));

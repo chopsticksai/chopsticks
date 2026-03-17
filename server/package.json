@@ -42,6 +42,7 @@
     "@chopsticks/adapter-openclaw-gateway": "workspace:*",
     "@chopsticks/adapter-opencode-local": "workspace:*",
     "@chopsticks/adapter-pi-local": "workspace:*",
+    "@chopsticks/adapter-qwen-local": "workspace:*",
     "@chopsticks/adapter-utils": "workspace:*",
     "@chopsticks/db": "workspace:*",
     "@chopsticks/plugin-sdk": "workspace:*",

@@ -43,6 +43,7 @@ import {
 } from "@chopsticks/adapter-codex-local";
 import { DEFAULT_CURSOR_LOCAL_MODEL } from "@chopsticks/adapter-cursor-local";
 import { DEFAULT_GEMINI_LOCAL_MODEL } from "@chopsticks/adapter-gemini-local";
+import { DEFAULT_QWEN_LOCAL_MODEL } from "@chopsticks/adapter-qwen-local";
 import { ensureOpenCodeModelConfiguredAndAvailable } from "@chopsticks/adapter-opencode-local/server";
 
 export function agentRoutes(db: Db) {
@@ -51,6 +52,7 @@ export function agentRoutes(db: Db) {
     codebuddy_local: "instructionsFilePath",
     codex_local: "instructionsFilePath",
     gemini_local: "instructionsFilePath",
+    qwen_local: "instructionsFilePath",
     opencode_local: "instructionsFilePath",
     cursor: "instructionsFilePath",
   };
@@ -262,6 +264,10 @@ export function agentRoutes(db: Db) {
     }
     if (adapterType === "gemini_local" && !asNonEmptyString(next.model)) {
       next.model = DEFAULT_GEMINI_LOCAL_MODEL;
+      return ensureGatewayDeviceKey(adapterType, next);
+    }
+    if (adapterType === "qwen_local" && !asNonEmptyString(next.model)) {
+      next.model = DEFAULT_QWEN_LOCAL_MODEL;
       return ensureGatewayDeviceKey(adapterType, next);
     }
     // OpenCode requires explicit model selection — no default

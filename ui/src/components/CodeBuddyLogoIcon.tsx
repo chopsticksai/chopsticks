@@ -7,7 +7,7 @@ interface CodeBuddyLogoIconProps {
 export function CodeBuddyLogoIcon({ className }: CodeBuddyLogoIconProps) {
   return (
     <img
-      src="/brands/codebuddy-icon.svg"
+      src="/brands/codebuddy-logo.svg"
       alt="CodeBuddy"
       className={cn(className)}
     />
