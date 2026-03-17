@@ -1,103 +1,200 @@
-# UI 本地化 SPEC
-
-目标文档路径：`doc/spec/ui-localization.md`
+# UI Localization Spec
 
 ## Summary
-- 将本次需求整理为可复用的子系统规格文档，放在 `doc/spec/`，用于后续实现、测试和验收对齐。
-- 范围限定为 UI 本地化与中文支持：支持 `en-US` / `zh-CN`，产品名已从papercli全面改为 `Chopsticks`。
-- 语言切换入口放在两个位置：
-  - `ui/src/components/OnboardingWizard.tsx`
-  - `ui/src/components/Layout.tsx` 中深色/浅色切换按钮旁边
-- 设置页不提供语言切换入口。
-- 用户可见的 task description、prompt、snippet 也纳入本地化；其中 UI 文案和新增中文 README 中出现的 `https://github.com/paperclipai/paperclip` 替换为 `https://github.com/chopsticksai/chopsticks`。
 
-## Key Changes
-- 新增浏览器级 i18n 基础设施：
-  - locale 固定为 `en-US` / `zh-CN`
-  - locale 优先级：`localStorage` > `navigator.language` > `en-US`
-  - 存储 key 固定为 `chopsticks.locale`
-  - 切换时同步 `document.documentElement.lang`
-- 新增前端 i18n 能力：
-  - 文本翻译
-  - 状态/优先级标签翻译
-  - 货币、日期、时间、相对时间格式化
-- 全量切换用户可见 UI 文案：
-  - 导航、breadcrumb、页面标题、空态、按钮、标签、placeholder、tooltip、dialog、popover、aria/title
-  - 前端 fallback 错误文案
-  - 前端生成的长说明文本
-- Onboarding 行为：
-  - 保留独立语言切换入口
-  - 未编辑的默认 agent 名称、task 标题、task description 随语言切换
-  - 已编辑输入不被覆盖
-- 全局壳层行为：
-  - 语言按钮与深浅色按钮并列显示
-  - 桌面端和移动端都提供入口
-  - 切换语言立即影响全局 UI，不改变当前路由或上下文
-- Prompt 和链接迁移规则：
-  - `DEFAULT_TASK_DESCRIPTION` 提供英文版与中文版
-  - 其中 CEO persona 仓库地址改为 `https://github.com/cjc-x/companies/...`
-  - 其它用户可见 prompt/snippet 中若出现 `https://github.com/paperclipai/paperclip`，统一替换为 `https://github.com/chopsticksai/chopsticks`
-  - 不修改 `@chopsticks/*` 包名、import path、CLI/package metadata
-- 文档交付：
-  - 新增 `README.zh-CN.md`
-  - 内容对齐当前 `README.md`，使用 `Chopsticks` 品牌名
-  - 中文 README 中用户可见 GitHub 链接按本次规则迁移
+This document defines what it means for the Chopsticks UI to be localized, and
+what must be checked when an upstream merge introduces or changes UI.
 
-## Test Strategy
-- 遵循测试金字塔原则，但按 feature 风险选测试，不追求 unit 数量指标；优先覆盖 locale 逻辑、语言切换行为、持久化和关键 prompt 输出。
-- Unit：
-  - locale 归一化
-  - `localStorage` / `navigator.language` 优先级
-  - 翻译命中与英文回退
-  - 插值
-  - 货币/日期/时间/相对时间格式化
-  - prompt/snippet builder 输出
-  - GitHub URL 替换规则
-- Integration / render：
-  - `I18nProvider` 驱动组件重渲染
-  - Onboarding 切换语言后默认文案变化
-  - Layout 中语言按钮与 theme toggle 并列显示
-  - 点击全局语言按钮后导航、breadcrumb、title 同步变化
-  - 刷新后 locale 保持
-- E2E：
-  - 新增 1 条 Onboarding 中文场景
-  - 新增 1 条全局壳层切语言场景，验证按钮位置、文案变化和刷新后保持
-- 明确避免低价值测试：
-  - 不为每个翻译 key 单独写测试
-  - 不做大面积 snapshot
-  - 不写机械性的“某按钮存在某文案”测试
-- 质量门禁固定：
-  - `pnpm -r typecheck`
-  - `pnpm test:run`
-  - `pnpm build`
+Use this document to answer:
 
-## Acceptance Criteria
-- UI 支持 `en-US` 和 `zh-CN` 两种语言，默认回退为 `en-US`。
-- `OnboardingWizard.tsx` 中可以切换语言。
-- 全局应用壳层中可以切换语言，且按钮位于深浅色切换按钮旁边。
-- 设置页中不承载语言切换入口。
-- 桌面端和移动端壳层都能访问语言切换。
-- 切换语言后全局立即生效，刷新后保持不变。
-- `DEFAULT_TASK_DESCRIPTION` 和其它前端生成的用户可见 prompt/snippet 会随语言切换。
-- UI 用户可见文本中出现的 `https://github.com/paperclipai/paperclip` 已按本次范围迁移到 `https://github.com/chopsticksai/chopsticks`。
-- breadcrumb、document title、导航、空态、时间/金额格式会随 locale 改变。
-- 不引入 server/db/shared contract 变更。
-- 不修改 `@chopsticks/*` 包名或工程内部 import。
-- 自动化测试覆盖高价值的 unit / integration / e2e 场景。
-- 最终交付满足质量门禁：
-  - `pnpm -r typecheck`
-  - `pnpm test:run`
-  - `pnpm build`
+- which i18n system is authoritative
+- which UI surfaces count as localized
+- which merge-time checks are required
+- which pitfalls are easy to miss
 
-## Assumptions And Defaults
-- 本文档是 `doc/spec/` 下的 subsystem spec，文件名采用 `ui-localization.md`。
-- “设置页”不包含语言切换；语言入口改放到全局 shell 的 theme toggle 旁边。
-- 替换 `paperclipai/paperclip` GitHub 链接的范围仅限 UI 用户可见文案和新增 `README.zh-CN.md`。
-- 不修改 `README.md`、`doc/` 历史文档、release notes、脚本和 CLI 元数据中的旧链接。
-- 产品品牌名已全面改为 `Chopsticks`。
+Do not use this document as the merge procedure. For the execution flow, use
+[`doc/UPSTREAM-MERGE-RUNBOOK.md`](./UPSTREAM-MERGE-RUNBOOK.md).
 
-## 全局改名说明
+## Single Source Boundaries
 
-项目已全面从 Paperclip / paperclipai 改名为 **Chopsticks**。
+- This document defines UI-localized behavior and the merge intake checklist for
+  UI text.
+- [`doc/MERGE-RENAME-RULES.md`](./MERGE-RENAME-RULES.md) defines rename rules,
+  legacy-name exceptions, and lockfile policy.
+- [`AGENTS.md`](../AGENTS.md) and
+  [`doc/SPEC-implementation.md`](./SPEC-implementation.md) define product
+  invariants such as company-scoped boundaries. This document does not redefine
+  those invariants.
+- [`doc/UPSTREAM-MERGE-RUNBOOK.md`](./UPSTREAM-MERGE-RUNBOOK.md) defines the
+  recommended merge sequence and verification flow.
 
-完整的改名替换规则和 merge 冲突解决规范见 [`doc/MERGE-RENAME-RULES.md`](./MERGE-RENAME-RULES.md)。
+## Terminology
+
+- `UI-localized`: all user-visible front-end text is wired through the existing
+  i18n system and renders correctly in `en-US` and `zh-CN`.
+- `canonical label`: a stable label produced by upstream code or adapter data,
+  such as `Current session` or `5h limit`, that the UI should normalize and
+  translate rather than push back into server contracts.
+- `valueLabel`: a user-visible value string associated with a label, such as
+  `$12.34 remaining`.
+- `detail`: supporting copy associated with a label/value pair, such as a reset
+  message or provider note.
+
+## Stable Localization Requirements
+
+### Authoritative i18n System
+
+- Use the existing browser-level i18n system only. Do not introduce a second
+  localization mechanism.
+- Supported locales are fixed to `en-US` and `zh-CN`.
+- Locale resolution order is fixed to:
+  - `localStorage`
+  - `navigator.language`
+  - `en-US`
+- The storage key is fixed to `chopsticks.locale`.
+- Language changes must update `document.documentElement.lang`.
+
+### Required Language Entry Points
+
+- Keep a language switcher in `ui/src/components/OnboardingWizard.tsx`.
+- Keep a global language switcher in `ui/src/components/Layout.tsx` next to the
+  theme toggle.
+- Do not add a language switcher to settings pages.
+
+### What Must Be Localized
+
+Localization scope includes more than top-level headings. It includes:
+
+- navigation labels, breadcrumbs, page titles, tabs, section headings
+- buttons, menus, dialogs, popovers, tooltips, badges, helper text
+- empty states, error states, fallback copy, aria/title text
+- front-end generated prompt text, snippet text, and long explanatory text
+- formatted or normalized UI strings derived from upstream/adapters, including
+  `canonical label`, `valueLabel`, and `detail`
+
+### Contract Boundary Rules
+
+- Do not add new server/db/shared contracts just for localization.
+- Keep localized rendering in the front-end consumption layer.
+- If upstream returns stable labels or formatted fragments, normalize and
+  translate them in UI code or UI helpers instead of mutating the server wire
+  shape.
+
+### Link and Prompt Rules
+
+- `DEFAULT_TASK_DESCRIPTION` must exist in English and Chinese.
+- The CEO persona link in `DEFAULT_TASK_DESCRIPTION` must point to
+  `https://github.com/cjc-x/companies/...`.
+- User-visible current-product links that still point to
+  `https://github.com/paperclipai/paperclip` must be updated to
+  `https://github.com/chopsticksai/chopsticks`.
+
+## Merge Intake Checklist
+
+When upstream merge work changes UI, inspect all touched `ui/src/pages/*`,
+`ui/src/components/*`, `ui/src/lib/*`, and relevant `tests/e2e/*` files.
+
+For each touched UI area, check:
+
+- page titles, tabs, and section headings
+- buttons, menus, dialogs, and popover text
+- empty states, errors, fallback text, aria/title text
+- helper text, badges, counters, summary lines, and formatted labels
+- front-end generated prompt/snippet/description copy
+- any rendered `canonical label`, `valueLabel`, or `detail`
+
+For cost, budget, finance, and quota changes, additionally inspect:
+
+- overview cards and card descriptions
+- provider/biller/quota panels
+- budget incident and policy cards
+- company settings upload/remove/failure fallback text
+- project detail, agent detail, approval card, and approval payload copy
+
+When adding translation keys:
+
+- keep English source strings as keys
+- avoid duplicate keys
+- preserve English fallback behavior
+- prefer interpolation for variable strings, such as:
+  - `Resets {time}`
+  - `{amount} remaining`
+  - `{percent}% used`
+
+When upstream introduces structured labels plus free-form detail:
+
+- prefer a reusable UI helper for label/value/detail translation
+- avoid duplicating per-component `switch` logic
+- do not change the server contract solely to force translated strings
+
+## Common Pitfalls
+
+- The easiest misses are usually not page titles, but card descriptions,
+  secondary headings, empty states, incident text, and fallback messages.
+- Quota/subscription UI often needs all three layers localized:
+  - `canonical label`
+  - `valueLabel`
+  - `detail`
+  Translating only one of the three leaves partially English UI behind.
+- Structured strings like `Current session`, `5h limit`, `$12.34 remaining`,
+  and `Resets Mar 18 at 7:59am` are better handled with UI helpers than with
+  server contract changes.
+- If translated data structures are built at module top level, locale switches
+  will not recompute them. Build locale-dependent arrays/objects inside the
+  component or hook.
+- After merging upstream UI, do a dedicated scan for user-visible brand names
+  and GitHub links. Do not assume new upstream UI already matches Chopsticks
+  naming rules.
+
+## Test and Acceptance Requirements
+
+### High-Value Tests
+
+- locale normalization
+- `localStorage` / `navigator.language` precedence
+- translation hit and English fallback behavior
+- interpolation
+- date/time/currency/relative-time formatting
+- prompt/snippet builder output
+- GitHub URL replacement behavior
+- structured UI helper mapping for labels/valueLabel/detail
+- onboarding locale switching
+- layout-level locale switching next to the theme toggle
+- refresh persistence after a locale change
+
+### Low-Value Tests to Avoid
+
+- one test per translation key
+- broad snapshots
+- mechanical "button text exists" tests without behavior value
+
+### Required Quality Gates
+
+- `pnpm -r typecheck`
+- `pnpm test:run`
+- `pnpm build`
+
+### Acceptance Criteria
+
+- UI supports `en-US` and `zh-CN`, with `en-US` fallback.
+- Onboarding can switch locale.
+- The global shell can switch locale next to the theme toggle.
+- Settings pages do not host the language switcher.
+- Desktop and mobile shell both expose locale switching.
+- Locale changes apply immediately and persist across refresh.
+- `DEFAULT_TASK_DESCRIPTION` and other front-end generated prompt/snippet text
+  react to locale changes.
+- Upstream-merged UI text is localized in the same merge, not left as follow-up
+  debt.
+- Breadcrumbs, document title, navigation, empty states, and formatted
+  date/time/currency output react to locale changes.
+
+## References
+
+- Rename and lockfile policy:
+  [`doc/MERGE-RENAME-RULES.md`](./MERGE-RENAME-RULES.md)
+- Merge execution flow:
+  [`doc/UPSTREAM-MERGE-RUNBOOK.md`](./UPSTREAM-MERGE-RUNBOOK.md)
+- Product invariants:
+  [`AGENTS.md`](../AGENTS.md),
+  [`doc/SPEC-implementation.md`](./SPEC-implementation.md)
