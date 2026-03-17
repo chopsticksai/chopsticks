@@ -3,12 +3,12 @@ title: CLI Overview
 summary: CLI installation and setup
 ---
 
-The Papertape CLI handles instance setup, diagnostics, and control-plane operations.
+The Chopsticks CLI handles instance setup, diagnostics, and control-plane operations.
 
 ## Usage
 
 ```sh
-pnpm papertape --help
+pnpm chopsticks --help
 ```
 
 ## Global Options
@@ -17,7 +17,7 @@ All commands support:
 
 | Flag | Description |
 |------|-------------|
-| `--data-dir <path>` | Local Papertape data root (isolates from `~/.papertape`) |
+| `--data-dir <path>` | Local Chopsticks data root (isolates from `~/.chopsticks`) |
 | `--api-base <url>` | API base URL |
 | `--api-key <token>` | API authentication token |
 | `--context <path>` | Context file path |
@@ -29,7 +29,7 @@ Company-scoped commands also accept `--company-id <id>`.
 For clean local instances, pass `--data-dir` on the command you run:
 
 ```sh
-pnpm papertape run --data-dir ./tmp/papertape-dev
+pnpm chopsticks run --data-dir ./tmp/chopsticks-dev
 ```
 
 ## Context Profiles
@@ -38,26 +38,26 @@ Store defaults to avoid repeating flags:
 
 ```sh
 # Set defaults
-pnpm papertape context set --api-base http://localhost:3100 --company-id <id>
+pnpm chopsticks context set --api-base http://localhost:3100 --company-id <id>
 
 # View current context
-pnpm papertape context show
+pnpm chopsticks context show
 
 # List profiles
-pnpm papertape context list
+pnpm chopsticks context list
 
 # Switch profile
-pnpm papertape context use default
+pnpm chopsticks context use default
 ```
 
 To avoid storing secrets in context, use an env var:
 
 ```sh
-pnpm papertape context set --api-key-env-var-name PAPERTAPE_API_KEY
-export PAPERTAPE_API_KEY=...
+pnpm chopsticks context set --api-key-env-var-name CHOPSTICKS_API_KEY
+export CHOPSTICKS_API_KEY=...
 ```
 
-Context is stored at `~/.papertape/context.json`.
+Context is stored at `~/.chopsticks/context.json`.
 
 ## Command Categories
 

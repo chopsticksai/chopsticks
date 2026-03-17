@@ -1,4 +1,4 @@
-const STORAGE_KEY = "papertape:recent-assignees";
+const STORAGE_KEY = "chopsticks:recent-assignees";
 const MAX_RECENT = 10;
 
 export function getRecentAssigneeIds(): string[] {

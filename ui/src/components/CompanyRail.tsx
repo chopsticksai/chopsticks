@@ -29,10 +29,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Company } from "@papertape/shared";
+import type { Company } from "@chopsticks/shared";
 import { CompanyPatternIcon } from "./CompanyPatternIcon";
 
-const ORDER_STORAGE_KEY = "__KEEP_PAPERTAPE_COM__panyOrder";
+const ORDER_STORAGE_KEY = "__KEEP_CHOPSTICKS_COM__panyOrder";
 
 function getStoredOrder(): string[] {
   try {
@@ -123,6 +123,7 @@ function SortableCompanyItem({
             >
               <CompanyPatternIcon
                 companyName={company.name}
+                logoUrl={company.logoUrl}
                 brandColor={company.brandColor}
                 className={cn(
                   isSelected

@@ -13,5 +13,5 @@ export type {
   UsageSummary,
   AdapterAgent,
   AdapterRuntime,
-} from "@papertape/adapter-utils";
+} from "@chopsticks/adapter-utils";
 export { runningProcesses } from "./utils.js";

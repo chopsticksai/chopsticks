@@ -3,7 +3,7 @@ title: Companies
 summary: Company CRUD endpoints
 ---
 
-Manage companies within your Papertape instance.
+Manage companies within your Chopsticks instance.
 
 ## List Companies
 

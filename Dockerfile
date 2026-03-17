@@ -27,29 +27,29 @@ FROM base AS build
 WORKDIR /app
 COPY --from=deps /app /app
 COPY . .
-RUN pnpm --filter @papertape/ui build
-RUN pnpm --filter @papertape/server build
+RUN pnpm --filter @chopsticks/ui build
+RUN pnpm --filter @chopsticks/server build
 RUN test -f server/dist/index.js || (echo "ERROR: server build output missing" && exit 1)
 
 FROM base AS production
 WORKDIR /app
 COPY --chown=node:node --from=build /app /app
 RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/codex@latest opencode-ai \
-  && mkdir -p /papertape \
-  && chown node:node /papertape
+  && mkdir -p /chopsticks \
+  && chown node:node /chopsticks
 
 ENV NODE_ENV=production \
-  HOME=/papertape \
+  HOME=/chopsticks \
   HOST=0.0.0.0 \
   PORT=3100 \
   SERVE_UI=true \
-  PAPERTAPE_HOME=/papertape \
-  PAPERTAPE_INSTANCE_ID=default \
-  PAPERTAPE_CONFIG=/papertape/instances/default/config.json \
-  PAPERTAPE_DEPLOYMENT_MODE=authenticated \
-  PAPERTAPE_DEPLOYMENT_EXPOSURE=private
+  CHOPSTICKS_HOME=/chopsticks \
+  CHOPSTICKS_INSTANCE_ID=default \
+  CHOPSTICKS_CONFIG=/chopsticks/instances/default/config.json \
+  CHOPSTICKS_DEPLOYMENT_MODE=authenticated \
+  CHOPSTICKS_DEPLOYMENT_EXPOSURE=private
 
-VOLUME ["/papertape"]
+VOLUME ["/chopsticks"]
 EXPOSE 3100
 
 USER node

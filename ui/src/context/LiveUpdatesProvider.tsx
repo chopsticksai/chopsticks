@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
-import type { Agent, Issue, LiveEvent } from "@papertape/shared";
+import type { Agent, Issue, LiveEvent } from "@chopsticks/shared";
 import { authApi } from "../api/auth";
 import { useCompany } from "./CompanyContext";
 import { useI18n } from "./I18nContext";
@@ -436,6 +436,10 @@ function invalidateActivityQueries(
 
   if (entityType === "cost_event") {
     queryClient.invalidateQueries({ queryKey: queryKeys.costs(companyId) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.usageByProvider(companyId) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.usageWindowSpend(companyId) });
+    // usageQuotaWindows is intentionally excluded: quota windows come from external provider
+    // apis on a 5-minute poll and do not change in response to cost events logged by agents
     return;
   }
 

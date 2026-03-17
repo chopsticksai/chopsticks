@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { models as codeBuddyFallbackModels } from "@papertape/adapter-codebuddy-local";
-import { models as codexFallbackModels } from "@papertape/adapter-codex-local";
-import { models as cursorFallbackModels } from "@papertape/adapter-cursor-local";
-import { resetOpenCodeModelsCacheForTests } from "@papertape/adapter-opencode-local/server";
+import { models as codeBuddyFallbackModels } from "@chopsticks/adapter-codebuddy-local";
+import { models as codexFallbackModels } from "@chopsticks/adapter-codex-local";
+import { models as cursorFallbackModels } from "@chopsticks/adapter-cursor-local";
+import { resetOpenCodeModelsCacheForTests } from "@chopsticks/adapter-opencode-local/server";
 import { listAdapterModels } from "../adapters/index.js";
 import { resetCodexModelsCacheForTests } from "../adapters/codex-models.js";
 import { resetCursorModelsCacheForTests, setCursorModelsRunnerForTests } from "../adapters/cursor-models.js";
@@ -10,7 +10,7 @@ import { resetCursorModelsCacheForTests, setCursorModelsRunnerForTests } from ".
 describe("adapter model listing", () => {
   beforeEach(() => {
     delete process.env.OPENAI_API_KEY;
-    delete process.env.PAPERTAPE_OPENCODE_COMMAND;
+    delete process.env.CHOPSTICKS_OPENCODE_COMMAND;
     resetCodexModelsCacheForTests();
     resetCursorModelsCacheForTests();
     setCursorModelsRunnerForTests(null);
@@ -102,7 +102,7 @@ describe("adapter model listing", () => {
   });
 
   it("returns no opencode models when opencode command is unavailable", async () => {
-    process.env.PAPERTAPE_OPENCODE_COMMAND = "__papertape_missing_opencode_command__";
+    process.env.CHOPSTICKS_OPENCODE_COMMAND = "__chopsticks_missing_opencode_command__";
 
     const models = await listAdapterModels("opencode_local");
     expect(models).toEqual([]);

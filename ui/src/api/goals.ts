@@ -1,4 +1,4 @@
-import type { Goal } from "@papertape/shared";
+import type { Goal } from "@chopsticks/shared";
 import { api } from "./client";
 
 export const goalsApi = {

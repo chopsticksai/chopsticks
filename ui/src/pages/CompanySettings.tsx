@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Company } from "@papertape/shared";
+import type { Company } from "@chopsticks/shared";
 import { useCompany } from "../context/CompanyContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { useI18n } from "../context/I18nContext";
 import { companiesApi } from "../api/companies";
 import { accessApi } from "../api/access";
+import { assetsApi } from "../api/assets";
 import { queryKeys } from "../lib/queryKeys";
 import { useNavigate } from "@/lib/router";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,8 @@ export function CompanySettings() {
   const [companyName, setCompanyName] = useState("");
   const [description, setDescription] = useState("");
   const [brandColor, setBrandColor] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [logoUploadError, setLogoUploadError] = useState<string | null>(null);
 
   // Sync local state from selected company
   useEffect(() => {
@@ -44,6 +47,7 @@ export function CompanySettings() {
     setCompanyName(selectedCompany.name);
     setDescription(selectedCompany.description ?? "");
     setBrandColor(selectedCompany.brandColor ?? "");
+    setLogoUrl(selectedCompany.logoUrl ?? "");
   }, [selectedCompany]);
 
   const [inviteError, setInviteError] = useState<string | null>(null);
@@ -126,10 +130,46 @@ export function CompanySettings() {
     },
     onError: (err) => {
       setInviteError(
-        err instanceof Error ? err.message : "Failed to create invite"
+        err instanceof Error ? err.message : t("Failed to create invite")
       );
     }
   });
+
+  const syncLogoState = (nextLogoUrl: string | null) => {
+    setLogoUrl(nextLogoUrl ?? "");
+    void queryClient.invalidateQueries({ queryKey: queryKeys.companies.all });
+  };
+
+  const logoUploadMutation = useMutation({
+    mutationFn: (file: File) =>
+      assetsApi
+        .uploadCompanyLogo(selectedCompanyId!, file)
+        .then((asset) => companiesApi.update(selectedCompanyId!, { logoAssetId: asset.assetId })),
+    onSuccess: (company) => {
+      syncLogoState(company.logoUrl);
+      setLogoUploadError(null);
+    }
+  });
+
+  const clearLogoMutation = useMutation({
+    mutationFn: () => companiesApi.update(selectedCompanyId!, { logoAssetId: null }),
+    onSuccess: (company) => {
+      setLogoUploadError(null);
+      syncLogoState(company.logoUrl);
+    }
+  });
+
+  function handleLogoFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    event.currentTarget.value = "";
+    if (!file) return;
+    setLogoUploadError(null);
+    logoUploadMutation.mutate(file);
+  }
+
+  function handleClearLogo() {
+    clearLogoMutation.mutate();
+  }
 
   useEffect(() => {
     setInviteError(null);
@@ -227,11 +267,53 @@ export function CompanySettings() {
             <div className="shrink-0">
               <CompanyPatternIcon
                 companyName={companyName || selectedCompany.name}
+                logoUrl={logoUrl || null}
                 brandColor={brandColor || null}
                 className="rounded-[14px]"
               />
             </div>
-            <div className="flex-1 space-y-2">
+            <div className="flex-1 space-y-3">
+              <Field
+                label={t("Logo")}
+                hint={t("Upload a PNG, JPEG, WEBP, GIF, or SVG logo image.")}
+              >
+                <div className="space-y-2">
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                    onChange={handleLogoFileChange}
+                    className="w-full rounded-md border border-border bg-transparent px-2.5 py-1.5 text-sm outline-none file:mr-4 file:rounded-md file:border-0 file:bg-muted file:px-2.5 file:py-1 file:text-xs"
+                  />
+                  {logoUrl && (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handleClearLogo}
+                        disabled={clearLogoMutation.isPending}
+                      >
+                        {clearLogoMutation.isPending ? t("Removing...") : t("Remove logo")}
+                      </Button>
+                    </div>
+                  )}
+                  {(logoUploadMutation.isError || logoUploadError) && (
+                    <span className="text-xs text-destructive">
+                      {logoUploadError ??
+                        (logoUploadMutation.error instanceof Error
+                          ? logoUploadMutation.error.message
+                          : t("Logo upload failed"))}
+                    </span>
+                  )}
+                  {clearLogoMutation.isError && (
+                    <span className="text-xs text-destructive">
+                      {clearLogoMutation.error.message}
+                    </span>
+                  )}
+                  {logoUploadMutation.isPending && (
+                    <span className="text-xs text-muted-foreground">{t("Uploading logo...")}</span>
+                  )}
+                </div>
+              </Field>
               <Field
                 label={t("Brand color")}
                 hint={t("Sets the hue for the company icon. Leave empty for auto-generated color.")}
@@ -444,35 +526,35 @@ function buildAgentSnippet(input: AgentSnippetInput) {
 
   const connectivityBlock =
     candidateUrls.length === 0
-      ? `No candidate URLs are available. Ask your user to configure a reachable hostname in Papertape, then retry.
+      ? `No candidate URLs are available. Ask your user to configure a reachable hostname in Chopsticks, then retry.
 Suggested steps:
-- choose a hostname that resolves to the Papertape host from your runtime
-- run: pnpm papertape allowed-hostname <host>
-- restart Papertape
+- choose a hostname that resolves to the Chopsticks host from your runtime
+- run: pnpm chopsticks allowed-hostname <host>
+- restart Chopsticks
 - verify with: curl -fsS http://<host>:3100/api/health
 - regenerate this invite snippet`
-      : `If none are reachable, ask your user to add a reachable hostname in Papertape, restart, and retry.
+      : `If none are reachable, ask your user to add a reachable hostname in Chopsticks, restart, and retry.
 Suggested command:
-- pnpm papertape allowed-hostname <host>
+- pnpm chopsticks allowed-hostname <host>
 Then verify with: curl -fsS <base-url>/api/health`;
 
   const resolutionLine = resolutionTestUrl
-    ? `\nYou MUST test Papertape-to-gateway reachability, call: ${resolutionTestUrl}?url=<urlencoded-gateway-url> (using the hostname that worked above). Do not assume your 172.x is necessarily reachable from Papertape. Test it. `
+    ? `\nYou MUST test Chopsticks-to-gateway reachability, call: ${resolutionTestUrl}?url=<urlencoded-gateway-url> (using the hostname that worked above). Do not assume your 172.x is necessarily reachable from Chopsticks. Test it. `
     : "";
 
-  return `You're invited to join a Papertape organization.
+  return `You're invited to join a Chopsticks organization.
 
 The URLs you should try are:
 ${candidateList}
 
 Connectivity guidance:
-If you are running on a different machine than Papertape, Papertape must be reachable at one of the hostnames used above.
+If you are running on a different machine than Chopsticks, Chopsticks must be reachable at one of the hostnames used above.
 Verify the hostname works from your runtime with: GET <base-url>/api/health
 
 ${connectivityBlock}
 
 For your "agentName", just use your own agent name (OpenClaw or whatever your name is) and send it directly.
-You also need to send a gateway URL that Papertape can access. Check your config and include that URL.${resolutionLine}
+You also need to send a gateway URL that Chopsticks can access. Check your config and include that URL.${resolutionLine}
 
 ---
 
@@ -482,14 +564,14 @@ When you submit the join request, use:
 - \`agentDefaultsPayload.url\` as your \`ws://\` or \`wss://\` gateway URL
 - \`agentDefaultsPayload.headers["x-openclaw-token"]\` with your gateway token
 - (legacy accepted) \`agentDefaultsPayload.headers["x-openclaw-auth"]\`
-- Keep device auth enabled (recommended). If \`devicePrivateKeyPem\` is omitted, Papertape will generate and persist one during join so pairing approvals remain stable.
+- Keep device auth enabled (recommended). If \`devicePrivateKeyPem\` is omitted, Chopsticks will generate and persist one during join so pairing approvals remain stable.
 - Only use \`disableDeviceAuth=true\` for special environments where pairing cannot be completed.
 
 Do NOT use \`/v1/responses\` or \`/hooks/*\` in this join flow.
 
-Before you do anything, please respond to your user that you understand the instructions and you're going to work on them. Then do the step above in another session called "papertape-onboarding" and then tell your user when you're done. Update your user in intermediate steps along the way so they know what's going on.
+Before you do anything, please respond to your user that you understand the instructions and you're going to work on them. Then do the step above in another session called "chopsticks-onboarding" and then tell your user when you're done. Update your user in intermediate steps along the way so they know what's going on.
 
-Then after you've connected to Papertape (exchanged keys etc.) you MUST review and follow the onboarding instructions in onboarding.txt they give you.
+Then after you've connected to Chopsticks (exchanged keys etc.) you MUST review and follow the onboarding instructions in onboarding.txt they give you.
 
 `;
 }

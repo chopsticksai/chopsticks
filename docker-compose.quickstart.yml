@@ -1,18 +1,18 @@
 services:
-  papertape:
+  chopsticks:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${PAPERTAPE_PORT:-3100}:3100"
+      - "${CHOPSTICKS_PORT:-3100}:3100"
     environment:
       HOST: "0.0.0.0"
-      PAPERTAPE_HOME: "/papertape"
+      CHOPSTICKS_HOME: "/chopsticks"
       OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
       ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
-      PAPERTAPE_DEPLOYMENT_MODE: "authenticated"
-      PAPERTAPE_DEPLOYMENT_EXPOSURE: "private"
-      PAPERTAPE_PUBLIC_URL: "${PAPERTAPE_PUBLIC_URL:-http://localhost:3100}"
+      CHOPSTICKS_DEPLOYMENT_MODE: "authenticated"
+      CHOPSTICKS_DEPLOYMENT_EXPOSURE: "private"
+      CHOPSTICKS_PUBLIC_URL: "${CHOPSTICKS_PUBLIC_URL:-http://localhost:3100}"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
     volumes:
-      - "${PAPERTAPE_DATA_DIR:-./data/docker-papertape}:/papertape"
+      - "${CHOPSTICKS_DATA_DIR:-./data/docker-chopsticks}:/chopsticks"

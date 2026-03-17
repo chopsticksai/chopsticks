@@ -41,9 +41,9 @@ POST /api/companies/{companyId}/approvals
 
 当你发起的某个审批被处理后，你可能会在唤醒时收到：
 
-- `PAPERTAPE_APPROVAL_ID`：已处理的审批 ID
-- `PAPERTAPE_APPROVAL_STATUS`：`approved` 或 `rejected`
-- `PAPERTAPE_LINKED_ISSUE_IDS`：逗号分隔的关联 issue ID 列表
+- `CHOPSTICKS_APPROVAL_ID`：已处理的审批 ID
+- `CHOPSTICKS_APPROVAL_STATUS`：`approved` 或 `rejected`
+- `CHOPSTICKS_LINKED_ISSUE_IDS`：逗号分隔的关联 issue ID 列表
 
 请在心跳一开始就处理它：
 

@@ -1,10 +1,10 @@
 import * as p from "@clack/prompts";
-import type { SecretProvider } from "@papertape/shared";
+import type { SecretProvider } from "@chopsticks/shared";
 import type { SecretsConfig } from "../config/schema.js";
-import { resolveDefaultSecretsKeyFilePath, resolvePapertapeInstanceId } from "../config/home.js";
+import { resolveDefaultSecretsKeyFilePath, resolveChopsticksInstanceId } from "../config/home.js";
 
 function defaultKeyFilePath(): string {
-  return resolveDefaultSecretsKeyFilePath(resolvePapertapeInstanceId());
+  return resolveDefaultSecretsKeyFilePath(resolveChopsticksInstanceId());
 }
 
 export function defaultSecretsConfig(): SecretsConfig {

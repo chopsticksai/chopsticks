@@ -8,12 +8,12 @@ export const agentConfigurationDoc = `# openclaw_gateway agent configuration
 Adapter: openclaw_gateway
 
 Use when:
-- You want Papertape to invoke OpenClaw over the Gateway WebSocket protocol.
+- You want Chopsticks to invoke OpenClaw over the Gateway WebSocket protocol.
 - You want native gateway auth/connect semantics instead of HTTP /v1/responses or /hooks/*.
 
 Don't use when:
 - You only expose OpenClaw HTTP endpoints.
-- Your deployment does not permit outbound WebSocket access from the Papertape server.
+- Your deployment does not permit outbound WebSocket access from the Chopsticks server.
 
 Core fields:
 - url (string, required): OpenClaw gateway WebSocket URL (ws:// or wss://)
@@ -31,21 +31,21 @@ Gateway connect identity fields:
 
 Request behavior fields:
 - payloadTemplate (object, optional): additional fields merged into gateway agent params
-- workspaceRuntime (object, optional): desired runtime service intents; Papertape forwards these in a standardized papertape.workspaceRuntime block for remote execution environments
+- workspaceRuntime (object, optional): desired runtime service intents; Chopsticks forwards these in a standardized chopsticks.workspaceRuntime block for remote execution environments
 - timeoutSec (number, optional): adapter timeout in seconds (default 120)
 - waitTimeoutMs (number, optional): agent.wait timeout override (default timeoutSec * 1000)
 - autoPairOnFirstConnect (boolean, optional): on first "pairing required", attempt device.pair.list/device.pair.approve via shared auth, then retry once (default true)
-- papertapeApiUrl (string, optional): absolute Papertape base URL advertised in wake text
+- chopsticksApiUrl (string, optional): absolute Chopsticks base URL advertised in wake text
 
 Session routing fields:
 - sessionKeyStrategy (string, optional): issue (default), fixed, or run
-- sessionKey (string, optional): fixed session key when strategy=fixed (default papertape)
+- sessionKey (string, optional): fixed session key when strategy=fixed (default chopsticks)
 
 Standard outbound payload additions:
-- papertape (object): standardized Papertape context added to every gateway agent request
-- papertape.workspace (object, optional): resolved execution workspace for this run
-- papertape.workspaces (array, optional): additional workspace hints Papertape exposed to the run
-- papertape.workspaceRuntime (object, optional): normalized runtime service intent config for the workspace
+- chopsticks (object): standardized Chopsticks context added to every gateway agent request
+- chopsticks.workspace (object, optional): resolved execution workspace for this run
+- chopsticks.workspaces (array, optional): additional workspace hints Chopsticks exposed to the run
+- chopsticks.workspaceRuntime (object, optional): normalized runtime service intent config for the workspace
 
 Standard result metadata supported:
 - meta.runtimeServices (array, optional): normalized adapter-managed runtime service reports

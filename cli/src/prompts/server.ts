@@ -118,7 +118,7 @@ export async function promptServer(opts?: {
     const urlInput = await p.text({
       message: "Public base URL",
       defaultValue: currentAuth?.publicBaseUrl ?? "",
-      placeholder: "https://papertape.example.com",
+      placeholder: "https://chopsticks.example.com",
       validate: (val) => {
         const candidate = val.trim();
         if (!candidate) return "Public base URL is required for public exposure";

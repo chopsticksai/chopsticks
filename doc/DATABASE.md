@@ -1,6 +1,6 @@
 # Database
 
-Papertape uses PostgreSQL via [Drizzle ORM](https://orm.drizzle.team/). There are three ways to run the database, from simplest to most production-ready.
+Chopsticks uses PostgreSQL via [Drizzle ORM](https://orm.drizzle.team/). There are three ways to run the database, from simplest to most production-ready.
 
 ## 1. Embedded PostgreSQL — zero config
 
@@ -12,12 +12,12 @@ pnpm dev
 
 That's it. On first start the server:
 
-1. Creates a `~/.papertape/instances/default/db/` directory for storage
-2. Ensures the `papertape` database exists
+1. Creates a `~/.chopsticks/instances/default/db/` directory for storage
+2. Ensures the `chopsticks` database exists
 3. Runs migrations automatically for empty databases
 4. Starts serving requests
 
-Data persists across restarts in `~/.papertape/instances/default/db/`. To reset local dev data, delete that directory.
+Data persists across restarts in `~/.chopsticks/instances/default/db/`. To reset local dev data, delete that directory.
 
 If you need to apply pending migrations manually, run:
 
@@ -25,11 +25,11 @@ If you need to apply pending migrations manually, run:
 pnpm db:migrate
 ```
 
-When `DATABASE_URL` is unset, this command targets the current embedded PostgreSQL instance for your active Papertape config/instance.
+When `DATABASE_URL` is unset, this command targets the current embedded PostgreSQL instance for your active Chopsticks config/instance.
 
 This mode is ideal for local development and one-command installs.
 
-Docker note: the Docker quickstart image also uses embedded PostgreSQL by default. Persist `/papertape` to keep DB state across container restarts (see `doc/DOCKER.md`).
+Docker note: the Docker quickstart image also uses embedded PostgreSQL by default. Persist `/chopsticks` to keep DB state across container restarts (see `doc/DOCKER.md`).
 
 ## 2. Local PostgreSQL (Docker)
 
@@ -44,13 +44,13 @@ This starts PostgreSQL 17 on `localhost:5432`. Then set the connection string:
 ```sh
 cp .env.example .env
 # .env already contains:
-# DATABASE_URL=postgres://papertape:papertape@localhost:5432/papertape
+# DATABASE_URL=postgres://chopsticks:chopsticks@localhost:5432/chopsticks
 ```
 
 Run migrations (once the migration generation issue is fixed) or use `drizzle-kit push`:
 
 ```sh
-DATABASE_URL=postgres://papertape:papertape@localhost:5432/papertape \
+DATABASE_URL=postgres://chopsticks:chopsticks@localhost:5432/chopsticks \
   npx drizzle-kit push
 ```
 
@@ -125,7 +125,7 @@ The database mode is controlled by `DATABASE_URL`:
 
 | `DATABASE_URL` | Mode |
 |---|---|
-| Not set | Embedded PostgreSQL (`~/.papertape/instances/default/db/`) |
+| Not set | Embedded PostgreSQL (`~/.chopsticks/instances/default/db/`) |
 | `postgres://...localhost...` | Local Docker PostgreSQL |
 | `postgres://...supabase.com...` | Hosted Supabase |
 
@@ -133,7 +133,7 @@ Your Drizzle schema (`packages/db/src/schema/`) stays the same regardless of mod
 
 ## Secret storage
 
-Papertape stores secret metadata and versions in:
+Chopsticks stores secret metadata and versions in:
 
 - `company_secrets`
 - `company_secret_versions`
@@ -141,24 +141,24 @@ Papertape stores secret metadata and versions in:
 For local/default installs, the active provider is `local_encrypted`:
 
 - Secret material is encrypted at rest with a local master key.
-- Default key file: `~/.papertape/instances/default/secrets/master.key` (auto-created if missing).
-- CLI config location: `~/.papertape/instances/default/config.json` under `secrets.localEncrypted.keyFilePath`.
+- Default key file: `~/.chopsticks/instances/default/secrets/master.key` (auto-created if missing).
+- CLI config location: `~/.chopsticks/instances/default/config.json` under `secrets.localEncrypted.keyFilePath`.
 
 Optional overrides:
 
-- `PAPERTAPE_SECRETS_MASTER_KEY` (32-byte key as base64, hex, or raw 32-char string)
-- `PAPERTAPE_SECRETS_MASTER_KEY_FILE` (custom key file path)
+- `CHOPSTICKS_SECRETS_MASTER_KEY` (32-byte key as base64, hex, or raw 32-char string)
+- `CHOPSTICKS_SECRETS_MASTER_KEY_FILE` (custom key file path)
 
 Strict mode to block new inline sensitive env values:
 
 ```sh
-PAPERTAPE_SECRETS_STRICT_MODE=true
+CHOPSTICKS_SECRETS_STRICT_MODE=true
 ```
 
 You can set strict mode and provider defaults via:
 
 ```sh
-pnpm papertape configure --section secrets
+pnpm chopsticks configure --section secrets
 ```
 
 Inline secret migration command:

@@ -4,7 +4,7 @@ Guidance for human and AI contributors working in this repository.
 
 ## 1. Purpose
 
-Papertape is a control plane for AI-agent companies.
+Chopsticks is a control plane for AI-agent companies.
 The current implementation target is V1 and is defined in `doc/SPEC-implementation.md`.
 
 ## 2. Read This First
@@ -19,6 +19,12 @@ Before making changes, read in this order:
 
 `doc/SPEC.md` is long-horizon product context.
 `doc/SPEC-implementation.md` is the concrete V1 build contract.
+
+For upstream merge work, also read:
+
+1. `doc/UPSTREAM-MERGE-RUNBOOK.md`
+2. `doc/MERGE-RENAME-RULES.md`
+3. `doc/UI-LOCALIZATION.md`
 
 ## 3. Repo Map
 

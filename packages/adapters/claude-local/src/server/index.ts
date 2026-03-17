@@ -6,7 +6,19 @@ export {
   isClaudeMaxTurnsResult,
   isClaudeUnknownSessionError,
 } from "./parse.js";
-import type { AdapterSessionCodec } from "@papertape/adapter-utils";
+import type { AdapterSessionCodec } from "@chopsticks/adapter-utils";
+export {
+  getQuotaWindows,
+  readClaudeAuthStatus,
+  readClaudeToken,
+  fetchClaudeQuota,
+  fetchClaudeCliQuota,
+  captureClaudeCliUsageText,
+  parseClaudeCliUsageText,
+  toPercent,
+  fetchWithTimeout,
+  claudeConfigDir,
+} from "./quota.js";
 
 function readNonEmptyString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;

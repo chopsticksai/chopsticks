@@ -3,14 +3,14 @@ title: Storage
 summary: Local disk vs S3-compatible storage
 ---
 
-Papertape stores uploaded files (issue attachments, images) using a configurable storage provider.
+Chopsticks stores uploaded files (issue attachments, images) using a configurable storage provider.
 
 ## Local Disk (Default)
 
 Files are stored at:
 
 ```
-~/.papertape/instances/default/data/storage
+~/.chopsticks/instances/default/data/storage
 ```
 
 No configuration required. Suitable for local development and single-machine deployments.
@@ -22,7 +22,7 @@ For production or multi-node deployments, use S3-compatible object storage (AWS 
 Configure via CLI:
 
 ```sh
-pnpm papertape configure --section storage
+pnpm chopsticks configure --section storage
 ```
 
 ## Configuration
@@ -35,5 +35,5 @@ pnpm papertape configure --section storage
 Storage configuration is stored in the instance config file:
 
 ```
-~/.papertape/instances/default/config.json
+~/.chopsticks/instances/default/config.json
 ```

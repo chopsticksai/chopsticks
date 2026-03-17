@@ -1,21 +1,21 @@
 ---
 title: ClipHub Plan
-summary: Marketplace concept for Papertape team blueprints, skills, and governance bundles
+summary: Marketplace concept for Chopsticks team blueprints, skills, and governance bundles
 ---
 
-# ClipHub: Marketplace for Papertape Team Configurations
+# ClipHub: Marketplace for Chopsticks Team Configurations
 
-> The "app store" for whole-company AI teams — pre-built Papertape configurations, agent blueprints, skills, and governance templates that ship real work from day one.
+> The "app store" for whole-company AI teams — pre-built Chopsticks configurations, agent blueprints, skills, and governance templates that ship real work from day one.
 
 ## 1. Vision & Positioning
 
-**ClipHub** sells **entire team configurations** — org charts, agent roles, inter-agent workflows, governance rules, and project templates — for Papertape-managed companies.
+**ClipHub** sells **entire team configurations** — org charts, agent roles, inter-agent workflows, governance rules, and project templates — for Chopsticks-managed companies.
 
 | Dimension | ClipHub |
 |---|---|
 | Unit of sale | Team blueprint (multi-agent org) |
 | Buyer | Founder / team lead spinning up an AI company |
-| Install target | Papertape company (agents, projects, governance) |
+| Install target | Chopsticks company (agents, projects, governance) |
 | Value prop | "Skip org design — get a shipping team in minutes" |
 | Price range | $0–$499 per blueprint (+ individual add-ons) |
 
@@ -25,7 +25,7 @@ summary: Marketplace concept for Papertape team blueprints, skills, and governan
 
 ### 2.1 Team Blueprints (primary product)
 
-A complete Papertape company configuration:
+A complete Chopsticks company configuration:
 
 - **Org chart**: Agents with roles, titles, reporting chains, capabilities
 - **Agent configs**: Adapter type, model, prompt templates, instructions paths
@@ -41,7 +41,7 @@ A complete Papertape company configuration:
 
 ### 2.2 Agent Blueprints (individual agents within a team context)
 
-Single-agent configurations designed to plug into a Papertape org:
+Single-agent configurations designed to plug into a Chopsticks org:
 
 - Role definition, prompt template, adapter config
 - Reporting chain expectations (who they report to)
@@ -55,11 +55,11 @@ Single-agent configurations designed to plug into a Papertape org:
 
 ### 2.3 Skills (modular capabilities)
 
-Portable skill files that any Papertape agent can use:
+Portable skill files that any Chopsticks agent can use:
 
 - Markdown skill files with instructions
 - Tool configurations and shell scripts
-- Compatible with Papertape's skill loading system
+- Compatible with Chopsticks's skill loading system
 
 **Examples:**
 - "Git PR Workflow" — standardized PR creation and review (Free)
@@ -116,7 +116,7 @@ interface Listing {
   // Compatibility
   compatibleAdapters: string[];    // ['claude_local', 'codex_local', ...]
   requiredModels: string[];        // ['claude-opus-4-6', 'claude-sonnet-4-6']
-  papertapeVersionMin: string;     // Minimum Papertape version
+  chopsticksVersionMin: string;     // Minimum Chopsticks version
 
   // Social proof
   installCount: number;
@@ -221,7 +221,7 @@ interface Purchase {
   id: string;
   listingId: string;
   buyerUserId: string;
-  buyerCompanyId: string | null;    // Target Papertape company
+  buyerCompanyId: string | null;    // Target Chopsticks company
   pricePaidCents: number;
   paymentIntentId: string | null;   // Stripe
   installedAt: string | null;       // When deployed to company
@@ -289,7 +289,7 @@ interface Review {
 | `PATCH` | `/api/listings/:id` | Update listing |
 | `DELETE` | `/api/listings/:id` | Archive listing |
 | `POST` | `/api/listings/:id/purchase` | Purchase listing (Stripe checkout) |
-| `POST` | `/api/listings/:id/install` | Install to Papertape company |
+| `POST` | `/api/listings/:id/install` | Install to Chopsticks company |
 | `GET` | `/api/listings/:id/reviews` | Get reviews |
 | `POST` | `/api/listings/:id/reviews` | Submit review |
 | `GET` | `/api/creators/:slug` | Creator profile |
@@ -309,14 +309,14 @@ Homepage → Browse marketplace → Filter by type/category
   → Click listing → Read details, reviews, preview org chart
   → Click "Buy" → Stripe checkout (or free install)
   → Post-purchase: "Install to Company" button
-  → Select target Papertape company (or create new)
-  → ClipHub API calls Papertape API to:
+  → Select target Chopsticks company (or create new)
+  → ClipHub API calls Chopsticks API to:
       1. Create agents with configs from blueprint
       2. Set up reporting chains
       3. Create projects with workspace configs
       4. Apply governance rules
       5. Deploy skill files to agent instruction paths
-  → Redirect to Papertape dashboard with new team running
+  → Redirect to Chopsticks dashboard with new team running
 ```
 
 ### 5.2 Creator: Build → Publish → Earn
@@ -334,11 +334,11 @@ Sign up as creator → Connect Stripe
   → Track installs, revenue, reviews on creator dashboard
 ```
 
-### 5.3 Creator: Export from Papertape → Publish
+### 5.3 Creator: Export from Chopsticks → Publish
 
 ```
-Running Papertape company → "Export as Blueprint" (CLI or UI)
-  → Papertape exports:
+Running Chopsticks company → "Export as Blueprint" (CLI or UI)
+  → Chopsticks exports:
       - Agent configs (sanitized — no secrets)
       - Org chart / reporting chains
       - Governance rules
@@ -354,7 +354,7 @@ Running Papertape company → "Export as Blueprint" (CLI or UI)
 
 ### 6.1 Visual Language
 
-- **Color palette**: Dark ink primary, warm sand backgrounds, accent color for CTAs (Papertape brand blue/purple)
+- **Color palette**: Dark ink primary, warm sand backgrounds, accent color for CTAs (Chopsticks brand blue/purple)
 - **Typography**: Clean sans-serif, strong hierarchy, monospace for technical details
 - **Cards**: Rounded corners, subtle shadows, clear pricing badges
 - **Org chart visuals**: Interactive tree/graph showing agent relationships in team blueprints
@@ -365,7 +365,7 @@ Running Papertape company → "Export as Blueprint" (CLI or UI)
 |---|---|
 | Product card | Org chart mini-preview + agent count badge |
 | Detail page | Interactive org chart + per-agent breakdown |
-| Install flow | One-click deploy to Papertape company |
+| Install flow | One-click deploy to Chopsticks company |
 | Social proof | "X companies running this blueprint" |
 | Preview | Live demo sandbox (stretch goal) |
 
@@ -412,7 +412,7 @@ When a buyer clicks "Install to Company":
 ```
 POST /api/listings/:id/install
 {
-  "targetCompanyId": "uuid",         // Existing Papertape company
+  "targetCompanyId": "uuid",         // Existing Chopsticks company
   "overrides": {                      // Optional customization
     "agentModel": "claude-sonnet-4-6", // Override default model
     "budgetScale": 0.5,               // Scale budgets
@@ -426,7 +426,7 @@ The install handler:
 1. Validates buyer owns the purchase
 2. Validates target company access
 3. For each agent in blueprint:
-   - `POST /api/companies/:id/agents` (if `papertape-create-agent` supports it, or via approval flow)
+   - `POST /api/companies/:id/agents` (if `chopsticks-create-agent` supports it, or via approval flow)
    - Sets adapter config, prompt template, instructions path
 4. Sets reporting chains
 5. Creates projects and workspaces
@@ -458,20 +458,20 @@ The install handler:
 
 ### 9.1 Stack
 
-- **Frontend**: Next.js (React), Tailwind CSS, same UI framework as Papertape
-- **Backend**: Node.js API (or extend Papertape server)
-- **Database**: Postgres (can share Papertape's DB or separate)
+- **Frontend**: Next.js (React), Tailwind CSS, same UI framework as Chopsticks
+- **Backend**: Node.js API (or extend Chopsticks server)
+- **Database**: Postgres (can share Chopsticks's DB or separate)
 - **Payments**: Stripe Connect (marketplace mode)
 - **Storage**: S3/R2 for listing bundles and images
-- **Auth**: Shared with Papertape auth (or OAuth2)
+- **Auth**: Shared with Chopsticks auth (or OAuth2)
 
-### 9.2 Integration with Papertape
+### 9.2 Integration with Chopsticks
 
 ClipHub can be:
-- **Option A**: A separate app that calls Papertape's API to install blueprints
-- **Option B**: A built-in section of the Papertape UI (`/marketplace` route)
+- **Option A**: A separate app that calls Chopsticks's API to install blueprints
+- **Option B**: A built-in section of the Chopsticks UI (`/marketplace` route)
 
-Option B is simpler for MVP — adds routes to the existing Papertape UI and API.
+Option B is simpler for MVP — adds routes to the existing Chopsticks UI and API.
 
 ### 9.3 Bundle Format
 
@@ -511,14 +511,14 @@ blueprint/
 - [ ] Listing detail page with org chart visualization
 - [ ] Creator registration and listing creation wizard
 - [ ] Free installs only (no payments yet)
-- [ ] Install flow: blueprint → Papertape company
+- [ ] Install flow: blueprint → Chopsticks company
 
 ### Phase 2: Payments & Social
 - [ ] Stripe Connect integration
 - [ ] Purchase flow
 - [ ] Review system
 - [ ] Creator analytics dashboard
-- [ ] "Export from Papertape" CLI command
+- [ ] "Export from Chopsticks" CLI command
 
 ### Phase 3: Growth
 - [ ] Search with relevance ranking

@@ -1,4 +1,4 @@
-const CACHE_NAME = "papertape-v2";
+const CACHE_NAME = "chopsticks-v2";
 
 self.addEventListener("install", () => {
   self.skipWaiting();

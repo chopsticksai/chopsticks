@@ -1,4 +1,4 @@
-import type { Company } from "@papertape/shared";
+import type { Company } from "@chopsticks/shared";
 
 const BOARD_ROUTE_ROOTS = new Set([
   "dashboard",
@@ -11,6 +11,7 @@ const BOARD_ROUTE_ROOTS = new Set([
   "goals",
   "approvals",
   "costs",
+  "usage",
   "activity",
   "inbox",
   "design-guide",

@@ -7,8 +7,7 @@ drizzle/meta/
 coverage/
 .DS_Store
 data/
-.papertape/
-.papertape/
+.chopsticks/
 .pnpm-store/
 tmp-*
 cli/tmp/
@@ -37,10 +36,9 @@ tmp/
 
 # Editor / tool temp files
 *.tmp
-.vscode/
 .claude/settings.local.json
-.papertape-local/
-.papertape-local/
+.chopsticks-local/
+/.agents/
 
 # Doc maintenance cursor
 .doc-review-cursor
@@ -48,3 +46,4 @@ tmp/
 # Playwright
 tests/e2e/test-results/
 tests/e2e/playwright-report/
+.superset/

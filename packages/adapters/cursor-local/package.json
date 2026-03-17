@@ -1,5 +1,5 @@
 {
-  "name": "@papertape/adapter-cursor-local",
+  "name": "@chopsticks/adapter-cursor-local",
   "version": "0.3.1",
   "type": "module",
   "exports": {
@@ -41,7 +41,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@papertape/adapter-utils": "workspace:*",
+    "@chopsticks/adapter-utils": "workspace:*",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {

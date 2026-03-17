@@ -38,9 +38,9 @@ import path from "node:path";
 import { createInterface, type Interface as ReadlineInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 
-import type { PapertapePluginManifestV1 } from "@papertape/shared";
+import type { ChopsticksPluginManifestV1 } from "@chopsticks/shared";
 
-import type { PapertapePlugin } from "./define-plugin.js";
+import type { ChopsticksPlugin } from "./define-plugin.js";
 import type {
   PluginHealthDiagnostics,
   PluginConfigValidationResult,
@@ -105,7 +105,7 @@ export interface WorkerRpcHostOptions {
    *
    * The worker entrypoint should import its plugin and pass it here.
    */
-  plugin: PapertapePlugin;
+  plugin: ChopsticksPlugin;
 
   /**
    * Input stream to read JSON-RPC messages from.
@@ -193,7 +193,7 @@ export interface RunWorkerOptions {
  * ```
  */
 export function runWorker(
-  plugin: PapertapePlugin,
+  plugin: ChopsticksPlugin,
   moduleUrl: string,
   options?: RunWorkerOptions,
 ): WorkerRpcHost | void {
@@ -225,7 +225,7 @@ export function runWorker(
  * ```ts
  * // worker-bootstrap.ts
  * import plugin from "./worker.js";
- * import { startWorkerRpcHost } from "@papertape/plugin-sdk";
+ * import { startWorkerRpcHost } from "@chopsticks/plugin-sdk";
  *
  * startWorkerRpcHost({ plugin });
  * ```
@@ -248,7 +248,7 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
 
   let running = true;
   let initialized = false;
-  let manifest: PapertapePluginManifestV1 | null = null;
+  let manifest: ChopsticksPluginManifestV1 | null = null;
   let currentConfig: Record<string, unknown> = {};
 
   // Plugin handler registrations (populated during setup())
@@ -258,7 +258,7 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
   const dataHandlers = new Map<string, (params: Record<string, unknown>) => Promise<unknown>>();
   const actionHandlers = new Map<string, (params: Record<string, unknown>) => Promise<unknown>>();
   const toolHandlers = new Map<string, {
-    declaration: Pick<import("@papertape/shared").PluginToolDeclaration, "displayName" | "description" | "parametersSchema">;
+    declaration: Pick<import("@chopsticks/shared").PluginToolDeclaration, "displayName" | "description" | "parametersSchema">;
     fn: (params: unknown, runCtx: ToolRunContext) => Promise<ToolResult>;
   }>();
 
@@ -612,6 +612,32 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
         async createComment(issueId: string, body: string, companyId: string) {
           return callHost("issues.createComment", { issueId, body, companyId });
         },
+
+        documents: {
+          async list(issueId: string, companyId: string) {
+            return callHost("issues.documents.list", { issueId, companyId });
+          },
+
+          async get(issueId: string, key: string, companyId: string) {
+            return callHost("issues.documents.get", { issueId, key, companyId });
+          },
+
+          async upsert(input) {
+            return callHost("issues.documents.upsert", {
+              issueId: input.issueId,
+              key: input.key,
+              body: input.body,
+              companyId: input.companyId,
+              title: input.title,
+              format: input.format,
+              changeSummary: input.changeSummary,
+            });
+          },
+
+          async delete(issueId: string, key: string, companyId: string) {
+            return callHost("issues.documents.delete", { issueId, key, companyId });
+          },
+        },
       },
 
       agents: {
@@ -753,7 +779,7 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
       tools: {
         register(
           name: string,
-          declaration: Pick<import("@papertape/shared").PluginToolDeclaration, "displayName" | "description" | "parametersSchema">,
+          declaration: Pick<import("@chopsticks/shared").PluginToolDeclaration, "displayName" | "description" | "parametersSchema">,
           fn: (params: unknown, runCtx: ToolRunContext) => Promise<ToolResult>,
         ): void {
           toolHandlers.set(name, { declaration, fn });

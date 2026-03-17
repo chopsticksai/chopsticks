@@ -1,7 +1,6 @@
 .git
 .github
-.papertape
-.papertape
+.chopsticks
 .pnpm-store
 node_modules
 **/node_modules

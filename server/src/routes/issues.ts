@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import multer from "multer";
-import type { Db } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
 import {
   addIssueCommentSchema,
   createIssueAttachmentMetadataSchema,
@@ -11,7 +11,7 @@ import {
   issueDocumentKeySchema,
   upsertIssueDocumentSchema,
   updateIssueSchema,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import type { StorageService } from "../storage/types.js";
 import { validate } from "../middleware/validate.js";
 import {
@@ -920,6 +920,19 @@ export function issueRoutes(db: Db, storage: StorageService) {
       return;
     }
     assertCompanyAccess(req, issue.companyId);
+
+    if (issue.projectId) {
+      const project = await projectsSvc.getById(issue.projectId);
+      if (project?.pausedAt) {
+        res.status(409).json({
+          error:
+            project.pauseReason === "budget"
+              ? "Project is paused because its budget hard-stop was reached"
+              : "Project is paused",
+        });
+        return;
+      }
+    }
 
     if (req.actor.type === "agent" && req.actor.agentId !== req.body.agentId) {
       res.status(403).json({ error: "Agent can only checkout as itself" });

@@ -7,7 +7,7 @@ import type {
   IssueDocument,
   IssueLabel,
   UpsertIssueDocument,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import { api } from "./client";
 
 export const issuesApi = {

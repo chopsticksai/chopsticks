@@ -1,4 +1,4 @@
-import type { Project, ProjectWorkspace } from "@papertape/shared";
+import type { Project, ProjectWorkspace } from "@chopsticks/shared";
 import { api } from "./client";
 
 function withCompanyScope(path: string, companyId?: string) {

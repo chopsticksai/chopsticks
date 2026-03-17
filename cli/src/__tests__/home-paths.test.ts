@@ -5,8 +5,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   describeLocalInstancePaths,
   expandHomePrefix,
-  resolvePapertapeHomeDir,
-  resolvePapertapeInstanceId,
+  resolveChopsticksHomeDir,
+  resolveChopsticksInstanceId,
 } from "../config/home.js";
 
 const ORIGINAL_ENV = { ...process.env };
@@ -17,28 +17,28 @@ describe("home path resolution", () => {
     vi.restoreAllMocks();
   });
 
-  it("defaults to ~/.papertape and default instance", () => {
-    delete process.env.PAPERTAPE_HOME;
-    delete process.env.PAPERTAPE_INSTANCE_ID;
-    const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), "papertape-home-"));
+  it("defaults to ~/.chopsticks and default instance", () => {
+    delete process.env.CHOPSTICKS_HOME;
+    delete process.env.CHOPSTICKS_INSTANCE_ID;
+    const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-home-"));
     vi.spyOn(os, "homedir").mockReturnValue(fakeHome);
 
     const paths = describeLocalInstancePaths();
-    expect(paths.homeDir).toBe(path.resolve(fakeHome, ".papertape"));
+    expect(paths.homeDir).toBe(path.resolve(fakeHome, ".chopsticks"));
     expect(paths.instanceId).toBe("default");
-    expect(paths.configPath).toBe(path.resolve(fakeHome, ".papertape", "instances", "default", "config.json"));
+    expect(paths.configPath).toBe(path.resolve(fakeHome, ".chopsticks", "instances", "default", "config.json"));
   });
 
-  it("supports PAPERTAPE_HOME and explicit instance ids", () => {
-    process.env.PAPERTAPE_HOME = "~/papertape-home";
+  it("supports CHOPSTICKS_HOME and explicit instance ids", () => {
+    process.env.CHOPSTICKS_HOME = "~/chopsticks-home";
 
-    const home = resolvePapertapeHomeDir();
-    expect(home).toBe(path.resolve(os.homedir(), "papertape-home"));
-    expect(resolvePapertapeInstanceId("dev_1")).toBe("dev_1");
+    const home = resolveChopsticksHomeDir();
+    expect(home).toBe(path.resolve(os.homedir(), "chopsticks-home"));
+    expect(resolveChopsticksInstanceId("dev_1")).toBe("dev_1");
   });
 
   it("rejects invalid instance ids", () => {
-    expect(() => resolvePapertapeInstanceId("bad/id")).toThrow(/Invalid instance id/);
+    expect(() => resolveChopsticksInstanceId("bad/id")).toThrow(/Invalid instance id/);
   });
 
   it("expands ~ prefixes", () => {

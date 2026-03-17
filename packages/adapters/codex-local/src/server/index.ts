@@ -1,7 +1,18 @@
 export { execute, ensureCodexSkillsInjected } from "./execute.js";
 export { testEnvironment } from "./test.js";
 export { parseCodexJsonl, isCodexUnknownSessionError } from "./parse.js";
-import type { AdapterSessionCodec } from "@papertape/adapter-utils";
+import type { AdapterSessionCodec } from "@chopsticks/adapter-utils";
+export {
+  getQuotaWindows,
+  readCodexAuthInfo,
+  readCodexToken,
+  fetchCodexQuota,
+  fetchCodexRpcQuota,
+  mapCodexRpcQuota,
+  secondsToWindowLabel,
+  fetchWithTimeout,
+  codexHomeDir,
+} from "./quota.js";
 
 function readNonEmptyString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;

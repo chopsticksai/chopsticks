@@ -1,6 +1,6 @@
-# @papertape/plugin-kitchen-sink-example
+# @chopsticks/plugin-kitchen-sink-example
 
-Kitchen Sink is the first-party reference plugin that demonstrates nearly the full currently implemented Papertape plugin surface in one package.
+Kitchen Sink is the first-party reference plugin that demonstrates nearly the full currently implemented Chopsticks plugin surface in one package.
 
 It is intentionally broad:
 
@@ -20,14 +20,14 @@ This plugin is for local development, contributor onboarding, and runtime regres
 ## Install
 
 ```sh
-pnpm --filter @papertape/plugin-kitchen-sink-example build
-pnpm papertape plugin install ./packages/plugins/examples/plugin-kitchen-sink-example
+pnpm --filter @chopsticks/plugin-kitchen-sink-example build
+pnpm chopsticks plugin install ./packages/plugins/examples/plugin-kitchen-sink-example
 ```
 
-Or install it from the Papertape plugin manager as a bundled example once this repo is built.
+Or install it from the Chopsticks plugin manager as a bundled example once this repo is built.
 
 ## Notes
 
 - Local workspace and process demos are trusted-only and default to safe, curated commands.
 - The plugin settings page lets you toggle optional demo surfaces and local runtime behavior.
-- Some SDK-defined host surfaces still depend on the Papertape host wiring them visibly; this package aims to exercise the currently mounted ones and make the rest obvious.
+- Some SDK-defined host surfaces still depend on the Chopsticks host wiring them visibly; this package aims to exercise the currently mounted ones and make the rest obvious.

@@ -1,5 +1,5 @@
 {
-  "name": "@papertape/adapter-codex-local",
+  "name": "@chopsticks/adapter-codex-local",
   "version": "0.3.1",
   "type": "module",
   "exports": {
@@ -38,10 +38,11 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "probe:quota": "pnpm exec tsx src/cli/quota-probe.ts --json"
   },
   "dependencies": {
-    "@papertape/adapter-utils": "workspace:*",
+    "@chopsticks/adapter-utils": "workspace:*",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {

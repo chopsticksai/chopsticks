@@ -11,7 +11,7 @@ export interface LocaleOption {
 
 type InterpolationValues = Record<string, string | number>;
 
-const LOCALE_STORAGE_KEY = "papertape.locale";
+const LOCALE_STORAGE_KEY = "chopsticks.locale";
 const DEFAULT_LOCALE: AppLocale = "en-US";
 
 const translations: Record<AppLocale, Record<string, string>> = {
@@ -20,10 +20,10 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Loading...": "加载中...",
     "Failed to load app state": "加载应用状态失败",
     "Instance setup required": "需要先完成实例初始化",
-    "No instance admin exists yet. A bootstrap invite is already active. Check your Papertape startup logs for the first admin invite URL, or run this command to rotate it:":
-      "当前还没有实例管理员。系统已经存在一个初始化邀请。请在 Papertape 启动日志中查看首个管理员邀请链接，或运行下面的命令重新生成：",
-    "No instance admin exists yet. Run this command in your Papertape environment to generate the first admin invite URL:":
-      "当前还没有实例管理员。请在 Papertape 环境中运行以下命令，生成首个管理员邀请链接：",
+    "No instance admin exists yet. A bootstrap invite is already active. Check your Chopsticks startup logs for the first admin invite URL, or run this command to rotate it:":
+      "当前还没有实例管理员。系统已经存在一个初始化邀请。请在 Chopsticks 启动日志中查看首个管理员邀请链接，或运行下面的命令重新生成：",
+    "No instance admin exists yet. Run this command in your Chopsticks environment to generate the first admin invite URL:":
+      "当前还没有实例管理员。请在 Chopsticks 环境中运行以下命令，生成首个管理员邀请链接：",
     "Create your first company": "创建你的第一家公司",
     "Create another company": "再创建一家公司",
     "Get started by creating a company.": "先创建一家公司开始使用。",
@@ -137,14 +137,14 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Full error output": "完整错误输出",
     "No stored error message.": "没有保存的错误信息。",
     "Hello World Widget (Example)": "Hello World 小组件（示例）",
-    "Reference UI plugin that adds a simple Hello World widget to the Papertape dashboard.":
-      "参考 UI 插件，会在 Papertape 仪表盘中添加一个简单的 Hello World 小组件。",
+    "Reference UI plugin that adds a simple Hello World widget to the Chopsticks dashboard.":
+      "参考 UI 插件，会在 Chopsticks 仪表盘中添加一个简单的 Hello World 小组件。",
     "File Browser (Example)": "文件浏览器（示例）",
     "Example plugin that adds a Files link in project navigation plus a project detail file browser.":
       "示例插件，会在项目导航中添加 Files 链接，并在项目详情页提供文件浏览器。",
     "Kitchen Sink (Example)": "功能全集（示例）",
-    "Reference plugin that demonstrates the current Papertape plugin API surface, bridge flows, UI extension surfaces, jobs, webhooks, tools, streams, and trusted local workspace/process demos.":
-      "参考插件，用于演示当前 Papertape 插件 API 能力、bridge 流程、UI 扩展面、任务、webhook、工具、流式能力以及本地可信工作区/进程示例。",
+    "Reference plugin that demonstrates the current Chopsticks plugin API surface, bridge flows, UI extension surfaces, jobs, webhooks, tools, streams, and trusted local workspace/process demos.":
+      "参考插件，用于演示当前 Chopsticks 插件 API 能力、bridge 流程、UI 扩展面、任务、webhook、工具、流式能力以及本地可信工作区/进程示例。",
     "Select a company to view this page.": "请选择一家公司以查看此页面。",
     "Multiple plugins declare the route {route}. Use the plugin-id route until the conflict is resolved.":
       "有多个插件声明了路由 {route}。在冲突解决前，请使用带 plugin-id 的路由。",
@@ -162,8 +162,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Must have at least {count} items": "至少需要 {count} 项",
     "Must have at most {count} items": "最多允许 {count} 项",
     "Select an option": "请选择一项",
-    "This secret is stored securely via the Papertape secret provider.":
-      "该密钥会通过 Papertape 密钥提供器安全存储。",
+    "This secret is stored securely via the Chopsticks secret provider.":
+      "该密钥会通过 Chopsticks 密钥提供器安全存储。",
     "Hide secret": "隐藏密钥",
     "Show secret": "显示密钥",
     "Add item": "添加项目",
@@ -251,8 +251,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Failed to archive": "归档失败",
     "No company selected. Select a company from the switcher above.":
       "尚未选择公司。请从上方切换器中选择一家公司。",
-    "Welcome to Papertape. Set up your first company and agent to get started.":
-      "欢迎使用 Papertape。先创建第一家公司和代理即可开始。",
+    "Welcome to Chopsticks. Set up your first company and agent to get started.":
+      "欢迎使用 Chopsticks。先创建第一家公司和代理即可开始。",
     "Get Started": "开始使用",
     "Create or select a company to view the dashboard.": "创建或选择一家公司以查看仪表盘。",
     "You have no agents.": "你还没有任何代理。",
@@ -309,8 +309,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "No pending approvals.": "暂无待处理审批。",
     "No approvals yet.": "暂无审批。",
     "Authentication failed": "认证失败",
-    "Sign in to Papertape": "登录 Papertape",
-    "Create your Papertape account": "创建你的 Papertape 账户",
+    "Sign in to Chopsticks": "登录 Chopsticks",
+    "Create your Chopsticks account": "创建你的 Chopsticks 账户",
     "Use your email and password to access this instance.": "使用邮箱和密码访问当前实例。",
     "Create an account for this instance. Email confirmation is not required in v1.": "为当前实例创建账户。V1 版本不需要邮件确认。",
     "Name": "姓名",
@@ -599,6 +599,211 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "No cost events yet.": "还没有成本事件。",
     "No project-attributed run costs yet.": "还没有归属到项目的运行成本。",
     "Unattributed": "未归属",
+    "All providers": "所有提供方",
+    "All billers": "所有计费方",
+    "Open": "开放",
+    "Inference spend": "推理花费",
+    "{tokens} tokens across request-scoped events": "请求级事件共消耗 {tokens} tokens",
+    "Finance net": "财务净额",
+    "Finance events": "财务事件",
+    "{amount} estimated in range": "范围内预估 {amount}",
+    "No monthly cap configured": "未配置月度上限",
+    "{agents} agents paused · {projects} projects paused": "{agents} 个代理暂停 · {projects} 个项目暂停",
+    "{spent} of {budget}": "{spent} / {budget}",
+    "Select a start and end date to load data.": "请选择开始和结束日期以加载数据。",
+    "Accounting model": "记账模型",
+    "Chopsticks now separates request-level inference usage from account-level finance events.":
+      "Chopsticks 现在将请求级推理用量与账户级财务事件分开记录。",
+    "That keeps provider reporting honest when the biller is OpenRouter, Cloudflare, Bedrock, or another intermediary.":
+      "当计费方是 OpenRouter、Cloudflare、Bedrock 或其他中间层时，这能让提供方报表保持准确。",
+    "Inference ledger": "推理账本",
+    "Request-scoped inference spend for the selected period.": "所选时间范围内按请求归属的推理花费。",
+    "Request-scoped usage and billed runs from cost_events.": "来自 cost_events 的按请求归属用量与计费运行记录。",
+    "Budget {amount}": "预算 {amount}",
+    "usage": "使用量",
+    "{percent}% of monthly budget consumed in this range.": "此范围内已消耗月度预算的 {percent}%。",
+    "By agent": "按代理",
+    "What each agent consumed in the selected period.": "查看每个代理在所选时间范围内的消耗。",
+    "in {input} · out {output}": "输入 {input} · 输出 {output}",
+    "{api} api · {subscription} subscription": "{api} 次 API · {subscription} 次订阅",
+    "{tokens} tok": "{tokens} tok",
+    "By project": "按项目",
+    "Run costs attributed through project-linked issues.": "通过关联项目任务归属的运行成本。",
+    "No finance events yet. Add account-level charges once biller invoices or credits land.":
+      "还没有财务事件。等计费方发票或积分入账后，可在这里看到账户级费用。",
+    "Budget control plane": "预算控制台",
+    "Hard-stop spend limits for agents and projects. Provider subscription quota stays separate and appears under Providers.":
+      "为代理和项目设置硬性停机预算限制。提供方订阅配额保持独立，并显示在“Providers”下。",
+    "Active incidents": "活跃事件",
+    "Open soft or hard threshold crossings": "当前打开的软阈值或硬阈值越线事件",
+    "Budget override approvals awaiting board action": "等待董事会处理的预算覆盖审批",
+    "Paused agents": "已暂停代理",
+    "Agent heartbeats blocked by budget": "因预算限制而被阻止的代理心跳",
+    "Paused projects": "已暂停项目",
+    "Project execution blocked by budget": "因预算限制而被阻止的项目执行",
+    "Resolve hard stops here by raising the budget or explicitly keeping the scope paused.":
+      "在这里通过提高预算或明确保持该范围暂停来处理硬停机事件。",
+    "Company budgets": "公司预算",
+    "Agent budgets": "代理预算",
+    "Project budgets": "项目预算",
+    "Company-wide monthly policy.": "适用于整个公司的月度预算策略。",
+    "Recurring monthly spend policies for individual agents.": "针对单个代理的循环月度花费策略。",
+    "Lifetime spend policies for execution-bound projects.": "针对执行型项目的生命周期花费策略。",
+    "No budget policies yet. Set agent and project budgets from their detail pages, or use the existing company monthly budget control.":
+      "还没有预算策略。可以在代理和项目详情页设置预算，或使用现有的公司月度预算控制。",
+    "No cost events in this period.": "该时间范围内没有成本事件。",
+    "No billable events in this period.": "该时间范围内没有可计费事件。",
+    "By biller": "按计费方",
+    "Account-level financial events grouped by who charged or credited them.":
+      "按发起收费或记账积分的主体分组显示账户级财务事件。",
+    "No finance events yet.": "还没有财务事件。",
+    "Finance ledger": "财务账本",
+    "Account-level charges that do not map to a single inference request.": "不映射到单次推理请求的账户级费用。",
+    "Account-level charges that are not one prompt-response pair.": "不属于单次提示-响应对的账户级费用。",
+    "Debits": "支出",
+    "Credits": "贷项",
+    "Net": "净额",
+    "Estimated": "预估",
+    "{count} total events in range": "范围内共 {count} 个事件",
+    "Refunds, offsets, and credit returns": "退款、抵扣和积分返还",
+    "Debit minus credit for the selected period": "所选时间范围内的支出减收入",
+    "Estimated debits that are not yet invoice-authoritative": "尚未以正式发票确权的预估支出",
+    "Period spend": "周期花费",
+    "{percent}% of allocation": "占分配额度的 {percent}%",
+    "1 provider": "1 个提供方",
+    "{count} providers": "{count} 个提供方",
+    "1 model": "1 个模型",
+    "{count} models": "{count} 个模型",
+    "{count} metered runs": "{count} 次按量运行",
+    "0 metered runs": "0 次按量运行",
+    "{count} subscription runs": "{count} 次订阅运行",
+    "0 subscription runs": "0 次订阅运行",
+    "{amount} this week": "本周 {amount}",
+    "Billing types": "计费类型",
+    "Upstream providers": "上游提供方",
+    "Financial event mix": "财务事件构成",
+    "Account-level charges grouped by event kind.": "按事件类型分组的账户级费用。",
+    "No finance events in this period.": "该时间范围内没有财务事件。",
+    "{eventCount} events · {billerCount} billers": "{eventCount} 个事件 · {billerCount} 个计费方",
+    "{amount} debits": "{amount} 支出",
+    "Recent financial events": "最近财务事件",
+    "Top-ups, fees, credits, commitments, and other non-request charges.":
+      "充值、费用、积分、承诺消费和其他非请求级收费。",
+    "tokens + billed dollars": "token 与已计费美元",
+    "provider, biller, model": "提供方、计费方、模型",
+    "subscription and overage aware": "支持订阅与超额计费",
+    "top-ups, refunds, fees": "充值、退款、手续费",
+    "Bedrock provisioned or training charges": "Bedrock 预留容量或训练费用",
+    "credit expiries and adjustments": "积分过期与调整",
+    "Live quotas": "实时配额",
+    "Provider or biller windows that can stop traffic in real time.":
+      "提供方或计费方可实时阻断流量的窗口。",
+    "provider quota windows": "提供方配额窗口",
+    "biller credit systems": "计费方额度系统",
+    "errors surfaced directly": "错误会直接暴露",
+    "->": "->",
+    "invoice {id}": "发票 {id}",
+    "region {region}": "区域 {region}",
+    "tier {tier}": "层级 {tier}",
+    "estimated": "预估",
+    "{eventCount} events across {kindCount} kinds": "{eventCount} 个事件，覆盖 {kindCount} 类",
+    "net": "净额",
+    "debits": "支出",
+    "credits": "收入",
+    "Metered API": "按量 API",
+    "Subscription": "订阅",
+    "Subscription overage": "订阅超额",
+    "Anthropic OAuth": "Anthropic OAuth",
+    "Claude CLI": "Claude CLI",
+    "Codex app server": "Codex 应用服务",
+    "ChatGPT WHAM": "ChatGPT WHAM",
+    "Inference charge": "推理费用",
+    "Platform fee": "平台费用",
+    "Credit purchase": "积分购买",
+    "Credit refund": "积分退款",
+    "Credit expiry": "积分过期",
+    "BYOK fee": "BYOK 费用",
+    "Gateway overhead": "网关开销",
+    "Log storage": "日志存储",
+    "Logpush": "日志推送",
+    "Provisioned capacity": "预留容量",
+    "Training": "训练",
+    "Custom model import": "自定义模型导入",
+    "Custom model storage": "自定义模型存储",
+    "Manual adjustment": "手动调整",
+    "Credit": "入账",
+    "Debit": "支出",
+    "{input} in · {output} out": "输入 {input} · 输出 {output}",
+    "This week": "本周",
+    "~{amount} / wk": "~{amount} / 周",
+    "Rolling windows": "滚动窗口",
+    "runs": "次运行",
+    "sub": "订阅",
+    "api": "API",
+    "total": "总量",
+    "{percent}% of token usage via subscription": "其中 {percent}% 的 token 使用来自订阅",
+    "{percent}% of provider tokens": "占该提供方 token 的 {percent}%",
+    "{percent}% of provider cost": "占该提供方成本的 {percent}%",
+    "Subscription quota": "订阅配额",
+    "{percent}% used": "已使用 {percent}%",
+    "resets {date}": "重置于 {date}",
+    "Resets {time}": "{time} 重置",
+    "Anthropic subscription": "Anthropic 订阅",
+    "Live Claude quota windows.": "实时 Claude 配额窗口。",
+    "Codex subscription": "Codex 订阅",
+    "Live Codex quota windows.": "实时 Codex 配额窗口。",
+    "Account windows": "账户窗口",
+    "Model windows": "模型窗口",
+    "Current session": "当前会话",
+    "Current week (all models)": "本周（全部模型）",
+    "Current week (Sonnet only)": "本周（仅 Sonnet）",
+    "Current week (Opus only)": "本周（仅 Opus）",
+    "Extra usage": "额外用量",
+    "Extra usage not enabled": "未启用额外用量",
+    "Extra usage not enabled • /extra-usage to enable": "未启用额外用量 • 使用 /extra-usage 启用",
+    "5h limit": "5 小时上限",
+    "Weekly limit": "每周上限",
+    "Not enabled": "未启用",
+    "{amount} remaining": "剩余 {amount}",
+    "N/A": "不适用",
+    "Paused by budget": "因预算暂停",
+    "{scopeType} hard stop": "{scopeType} 硬停机",
+    "Spending reached {observed} against a limit of {limit}.": "花费已达到 {observed}，超过上限 {limit}。",
+    "Project execution is paused. New work in this project will not start until you resolve the budget incident.":
+      "项目执行已暂停。在你处理预算事件之前，该项目不会启动新工作。",
+    "This scope is paused. New heartbeats will not start until you resolve the budget incident.":
+      "该范围已暂停。在你处理预算事件之前，不会启动新的心跳。",
+    "New budget (USD)": "新预算（USD）",
+    "Applying...": "应用中...",
+    "Raise budget & resume": "提高预算并恢复",
+    "The new budget must exceed current observed spend.": "新预算必须高于当前已观察到的花费。",
+    "Keep paused": "保持暂停",
+    "Lifetime budget": "生命周期预算",
+    "Monthly UTC budget": "UTC 月度预算",
+    "Observed": "已观察到",
+    "{percent}% of limit": "达到上限的 {percent}%",
+    "No cap configured": "未配置上限",
+    "Soft alert at {percent}%": "在 {percent}% 时软提醒",
+    "pause": "暂停",
+    "Remaining": "剩余",
+    "Execution is paused for this project until the budget is raised or the incident is dismissed.":
+      "该项目执行已暂停，直到预算提高或该事件被忽略。",
+    "Heartbeats are paused for this scope until the budget is raised or the incident is dismissed.":
+      "该范围的心跳已暂停，直到预算提高或该事件被忽略。",
+    "Budget (USD)": "预算（USD）",
+    "Update budget": "更新预算",
+    "Set budget": "设置预算",
+    "Warning": "警告",
+    "Hard stop": "硬停机",
+    "Healthy": "健康",
+    "Enter a valid non-negative dollar amount.": "请输入有效的非负美元金额。",
+    "Logo": "Logo",
+    "Upload a PNG, JPEG, WEBP, GIF, or SVG logo image.": "上传 PNG、JPEG、WEBP、GIF 或 SVG 格式的 Logo 图片。",
+    "Removing...": "移除中...",
+    "Remove logo": "移除 Logo",
+    "Logo upload failed": "Logo 上传失败",
+    "Uploading logo...": "正在上传 Logo...",
+    "Failed to create invite": "创建邀请失败",
     "Select a company to view the org chart.": "选择一家公司以查看组织图。",
     "Fit to screen": "适应屏幕",
     "Zoom in": "放大",
@@ -748,12 +953,12 @@ const translations: Record<AppLocale, Record<string, string>> = {
       "你的请求正在等待管理员批准。在批准前你无法访问。",
     "Request ID:": "请求 ID：",
     "One-time claim secret (save now)": "一次性认领密钥（请立即保存）",
-    "Papertape skill bootstrap": "Papertape 技能初始化",
+    "Chopsticks skill bootstrap": "Chopsticks 技能初始化",
     "Install to {path}": "安装到 {path}",
     "Agent-readable onboarding text": "供代理读取的入门文本",
     "Connectivity diagnostics": "连接诊断",
-    "Bootstrap your Papertape instance": "初始化你的 Papertape 实例",
-    "Join this Papertape company": "加入这家 Papertape 公司",
+    "Bootstrap your Chopsticks instance": "初始化你的 Chopsticks 实例",
+    "Join this Chopsticks company": "加入这家 Chopsticks 公司",
     "Invite expires {date}.": "邀请将在 {date} 过期。",
     "Join as {type}": "以 {type} 身份加入",
     "Adapter type": "适配器类型",
@@ -881,8 +1086,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Finished 2m ago": "2 分钟前完成",
     "UX Lab": "体验实验室",
     "Run Transcript Fixtures": "运行转录示例",
-    "Built from a real Papertape development run, then sanitized so no secrets, local paths, or environment details survive into the fixture.":
-      "基于一次真实的 Papertape 开发运行构建，并经过清洗处理，确保示例中不包含任何密钥、本地路径或环境细节。",
+    "Built from a real Chopsticks development run, then sanitized so no secrets, local paths, or environment details survive into the fixture.":
+      "基于一次真实的 Chopsticks 开发运行构建，并经过清洗处理，确保示例中不包含任何密钥、本地路径或环境细节。",
     "Source run {id}": "来源运行 {id}",
     "Controls": "控件",
     "Show settled state": "显示稳定状态",
@@ -948,8 +1153,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "API key created - copy it now, it will not be shown again.":
       "API 密钥已创建，请立即复制，之后将不再显示。",
     "API Keys": "API 密钥",
-    "API keys allow this agent to authenticate calls to the Papertape server.":
-      "API 密钥允许该代理向 Papertape 服务器发起已认证的请求。",
+    "API keys allow this agent to authenticate calls to the Chopsticks server.":
+      "API 密钥允许该代理向 Chopsticks 服务器发起已认证的请求。",
     "Args (comma-separated)": "参数（逗号分隔）",
     "Assign Task": "分配任务",
     "assistant": "助手",
@@ -1144,8 +1349,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Workspaces help": "工作区帮助",
     "Worktree parent dir": "Worktree 父目录",
     "Design Guide": "设计指南",
-    "Every component, style, and pattern used across Papertape.":
-      "Papertape 中使用的每个组件、样式和模式。",
+    "Every component, style, and pattern used across Chopsticks.":
+      "Chopsticks 中使用的每个组件、样式和模式。",
     "This page should be updated when new UI primitives or app-level patterns ship.":
       "当新的 UI 原语或应用级模式上线时，应同步更新此页面。",
     "Component Coverage": "组件覆盖",
@@ -1296,7 +1501,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Heartbeat run #{count}: completed successfully": "心跳运行 #{count}：已成功完成",
     "Type a command or search...": "输入命令或搜索...",
     "Open command palette": "打开命令面板",
-    "Papertape App": "Papertape 应用",
+    "Chopsticks App": "Chopsticks 应用",
     "Issue List": "任务列表",
     "Card Title": "卡片标题",
     "Card description with supporting text.": "卡片说明文字。",
@@ -1384,8 +1589,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
       "描述该代理可以做什么。会显示在组织图中，并用于任务路由。",
     "How this agent runs: local CLI (Claude/CodeBuddy/Codex/Gemini/OpenCode/Cursor), OpenClaw Gateway, spawned process, or generic HTTP webhook.":
       "该代理的运行方式：本地 CLI（Claude/CodeBuddy/Codex/Gemini/OpenCode/Cursor）、OpenClaw 网关、派生进程或通用 HTTP Webhook。",
-    "Default working directory fallback for local adapters. Use an absolute path on the machine running Papertape.":
-      "本地适配器的默认工作目录回退值。请填写运行 Papertape 的机器上的绝对路径。",
+    "Default working directory fallback for local adapters. Use an absolute path on the machine running Chopsticks.":
+      "本地适配器的默认工作目录回退值。请填写运行 Chopsticks 的机器上的绝对路径。",
     "The prompt sent to the agent on each heartbeat. Supports {{ agent.id }}, {{ agent.name }}, {{ agent.role }} variables.":
       "每次心跳发送给代理的提示词。支持 {{ agent.id }}、{{ agent.name }}、{{ agent.role }} 变量。",
     "Override the default model used by the adapter.": "覆盖适配器默认使用的模型。",
@@ -1398,8 +1603,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Run Codex without sandbox restrictions. Required for filesystem/network access.":
       "运行 Codex 时不受沙箱限制。访问文件系统或网络时需要开启。",
     "Enable Codex web search capability during runs.": "在运行期间启用 Codex 的网页搜索能力。",
-    "How Papertape should realize an execution workspace for this agent. Keep project_primary for normal cwd execution, or use git_worktree for issue-scoped isolated checkouts.":
-      "指定 Papertape 应如何为该代理准备执行工作区。普通 cwd 执行请保持 project_primary，需要按任务隔离检出时使用 git_worktree。",
+    "How Chopsticks should realize an execution workspace for this agent. Keep project_primary for normal cwd execution, or use git_worktree for issue-scoped isolated checkouts.":
+      "指定 Chopsticks 应如何为该代理准备执行工作区。普通 cwd 执行请保持 project_primary，需要按任务隔离检出时使用 git_worktree。",
     "Base git ref used when creating a worktree branch. Leave blank to use the resolved workspace ref or HEAD.":
       "创建 worktree 分支时使用的基础 git ref。留空则使用解析后的工作区 ref 或 HEAD。",
     "Template for naming derived branches. Supports {{issue.identifier}}, {{issue.title}}, {{agent.name}}, {{project.id}}, {{workspace.repoRef}}, and {{slug}}.":
@@ -1419,8 +1624,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
       "注入到适配器进程中的环境变量。可使用明文值或密钥引用。",
     "Optional prompt prepended on the first run to bootstrap the agent's environment or habits.":
       "可选的首次运行前置提示词，用于初始化代理的环境或工作习惯。",
-    "Optional JSON merged into remote adapter request payloads before Papertape adds its standard wake and workspace fields.":
-      "可选 JSON，会在 Papertape 添加标准唤醒和工作区字段之前，先合并进远程适配器的请求负载中。",
+    "Optional JSON merged into remote adapter request payloads before Chopsticks adds its standard wake and workspace fields.":
+      "可选 JSON，会在 Chopsticks 添加标准唤醒和工作区字段之前，先合并进远程适配器的请求负载中。",
     "The URL that receives POST requests when the agent is invoked.":
       "代理被调用时接收 POST 请求的 URL。",
     "Run this agent automatically on a timer. Useful for periodic tasks like checking for new work.":
@@ -1460,7 +1665,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Run Policy": "运行策略",
     "Run heartbeat every": "每隔",
     "sec": "秒",
-    "Papertape API URL override": "Papertape API URL 覆盖",
+    "Chopsticks API URL override": "Chopsticks API URL 覆盖",
     "Session strategy": "会话策略",
     "Session key": "会话键",
     "Gateway auth token (x-openclaw-token)": "网关认证令牌（x-openclaw-token）",
@@ -1470,8 +1675,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Fixed": "固定",
     "Per issue": "按任务",
     "Per run": "按运行",
-    "Always enabled for gateway agents. Papertape persists a device key during onboarding so pairing approvals remain stable across runs.":
-      "网关代理始终启用。Papertape 会在引导阶段持久化一个设备密钥，以便配对审批在多次运行之间保持稳定。",
+    "Always enabled for gateway agents. Chopsticks persists a device key during onboarding so pairing approvals remain stable across runs.":
+      "网关代理始终启用。Chopsticks 会在引导阶段持久化一个设备密钥，以便配对审批在多次运行之间保持稳定。",
     "Runtime services JSON": "运行时服务 JSON",
     "Payload template JSON": "负载模板 JSON",
     "Enable Chrome": "启用 Chrome",
@@ -1503,8 +1708,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "value": "值",
     "Store value as secret and replace with reference": "将值存为密钥并替换为引用",
     "Seal": "封存",
-    "PAPERTAPE_* variables are injected automatically at runtime.":
-      "PAPERTAPE_* 变量会在运行时自动注入。",
+    "CHOPSTICKS_* variables are injected automatically at runtime.":
+      "CHOPSTICKS_* 变量会在运行时自动注入。",
     "Select model": "选择模型",
     "OK": "确定",
     "e.g. VP of Engineering": "例如：工程副总裁",
@@ -1524,7 +1729,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "https://github.com/org/repo": "https://github.com/org/repo",
     "ws://127.0.0.1:18789": "ws://127.0.0.1:18789",
     "origin/main": "origin/main",
-    ".papertape/worktrees": ".papertape/worktrees",
+    ".chopsticks/worktrees": ".chopsticks/worktrees",
     "{{issue.identifier}}-{{slug}}": "{{issue.identifier}}-{{slug}}",
     "bash ./scripts/provision-worktree.sh": "bash ./scripts/provision-worktree.sh",
     "bash ./scripts/teardown-worktree.sh": "bash ./scripts/teardown-worktree.sh",
@@ -1539,8 +1744,8 @@ And after you've finished that, hire yourself a Founding Engineer agent`]:
 请确保你有一个 agents/ceo 文件夹，然后下载这个 AGENTS.md，以及同级的 HEARTBEAT.md、SOUL.md 和 TOOLS.md，并把这个 AGENTS.md 设为你的代理说明文件路径。
 
 完成之后，再为自己招聘一名 Founding Engineer 代理。`,
-    "Papertape works best if you create a new folder for your agents to keep their memories and stay organized. Create a new folder and put the path here.":
-      "如果你为代理单独创建一个新文件夹来保存记忆并保持有序，Papertape 的效果会更好。请创建一个新文件夹，并把路径填在这里。",
+    "Chopsticks works best if you create a new folder for your agents to keep their memories and stay organized. Create a new folder and put the path here.":
+      "如果你为代理单独创建一个新文件夹来保存记忆并保持有序，Chopsticks 的效果会更好。请创建一个新文件夹，并把路径填在这里。",
   },
 };
 

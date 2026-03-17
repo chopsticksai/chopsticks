@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Company } from "@papertape/shared";
+import type { Company } from "@chopsticks/shared";
 import { companiesApi } from "../api/companies";
 import { ApiError } from "../api/client";
 import { queryKeys } from "../lib/queryKeys";
@@ -31,7 +31,7 @@ interface CompanyContextValue {
   }) => Promise<Company>;
 }
 
-const STORAGE_KEY = "papertape.selectedCompanyId";
+const STORAGE_KEY = "chopsticks.selectedCompanyId";
 
 const CompanyContext = createContext<CompanyContextValue | null>(null);
 
@@ -85,7 +85,11 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
   }, [queryClient]);
 
   const createMutation = useMutation({
-    mutationFn: (data: { name: string; description?: string | null; budgetMonthlyCents?: number }) =>
+    mutationFn: (data: {
+      name: string;
+      description?: string | null;
+      budgetMonthlyCents?: number;
+    }) =>
       companiesApi.create(data),
     onSuccess: (company) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.companies.all });
@@ -94,7 +98,11 @@ export function CompanyProvider({ children }: { children: ReactNode }) {
   });
 
   const createCompany = useCallback(
-    async (data: { name: string; description?: string | null; budgetMonthlyCents?: number }) => {
+    async (data: {
+      name: string;
+      description?: string | null;
+      budgetMonthlyCents?: number;
+    }) => {
       return createMutation.mutateAsync(data);
     },
     [createMutation],

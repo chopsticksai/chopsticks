@@ -2,8 +2,8 @@ import type {
   AdapterEnvironmentCheck,
   AdapterEnvironmentTestContext,
   AdapterEnvironmentTestResult,
-} from "@papertape/adapter-utils";
-import { asString, parseObject } from "@papertape/adapter-utils/server-utils";
+} from "@chopsticks/adapter-utils";
+import { asString, parseObject } from "@chopsticks/adapter-utils/server-utils";
 import { randomUUID } from "node:crypto";
 import { WebSocket } from "ws";
 
@@ -149,7 +149,7 @@ async function probeGateway(input: {
               maxProtocol: 3,
               client: {
                 id: "gateway-client",
-                version: "papertape-probe",
+                version: "chopsticks-probe",
                 platform: process.platform,
                 mode: "probe",
               },
@@ -296,7 +296,7 @@ export async function testEnvironment(
           code: "openclaw_gateway_probe_failed",
           level: "warn",
           message: "Gateway probe failed.",
-          hint: "Verify network reachability and gateway URL from the Papertape server host.",
+          hint: "Verify network reachability and gateway URL from the Chopsticks server host.",
         });
       }
     } catch (err) {

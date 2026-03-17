@@ -26,14 +26,14 @@ import {
   projectWorkspaces,
   runDatabaseBackup,
   runDatabaseRestore,
-} from "@papertape/db";
+} from "@chopsticks/db";
 import type { Command } from "commander";
-import { ensureAgentJwtSecret, loadPapertapeEnvFile, mergePapertapeEnvEntries, readPapertapeEnvEntries, resolvePapertapeEnvFile } from "../config/env.js";
+import { ensureAgentJwtSecret, loadChopsticksEnvFile, mergeChopsticksEnvEntries, readChopsticksEnvEntries, resolveChopsticksEnvFile } from "../config/env.js";
 import { publicCliCommand } from "../config/branding.js";
-import { expandHomePrefix, resolvePapertapeHomeDir } from "../config/home.js";
-import type { PapertapeConfig } from "../config/schema.js";
+import { expandHomePrefix, resolveChopsticksHomeDir } from "../config/home.js";
+import type { ChopsticksConfig } from "../config/schema.js";
 import { readConfig, resolveConfigPath, writeConfig } from "../config/store.js";
-import { printPapertapeCliBanner } from "../utils/banner.js";
+import { printChopsticksCliBanner } from "../utils/banner.js";
 import { resolveRuntimeLikePath } from "../utils/path-resolver.js";
 import {
   buildWorktreeConfig,
@@ -122,14 +122,14 @@ function nonEmpty(value: string | null | undefined): string | null {
 }
 
 function isCurrentSourceConfigPath(sourceConfigPath: string): boolean {
-  const currentConfigPath = process.env.PAPERTAPE_CONFIG;
+  const currentConfigPath = process.env.CHOPSTICKS_CONFIG;
   if (!currentConfigPath || currentConfigPath.trim().length === 0) {
     return false;
   }
   return path.resolve(currentConfigPath) === path.resolve(sourceConfigPath);
 }
 
-const WORKTREE_NAME_PREFIX = "papertape-";
+const WORKTREE_NAME_PREFIX = "chopsticks-";
 
 function resolveWorktreeMakeName(name: string): string {
   const value = nonEmpty(name);
@@ -148,11 +148,11 @@ function resolveWorktreeMakeName(name: string): string {
 }
 
 function resolveWorktreeHome(explicit?: string): string {
-  return explicit ?? process.env.PAPERTAPE_WORKTREES_DIR ?? DEFAULT_WORKTREE_HOME;
+  return explicit ?? process.env.CHOPSTICKS_WORKTREES_DIR ?? DEFAULT_WORKTREE_HOME;
 }
 
 function resolveWorktreeStartPoint(explicit?: string): string | undefined {
-  return explicit ?? nonEmpty(process.env.PAPERTAPE_WORKTREE_START_POINT) ?? undefined;
+  return explicit ?? nonEmpty(process.env.CHOPSTICKS_WORKTREE_START_POINT) ?? undefined;
 }
 
 export function resolveWorktreeMakeTargetPath(name: string): string {
@@ -433,12 +433,12 @@ function resolveSourceConfigPath(opts: WorktreeInitOptions): string {
   if (opts.fromConfig) return path.resolve(opts.fromConfig);
   const sourceHome = opts.fromDataDir
     ? path.resolve(expandHomePrefix(opts.fromDataDir))
-    : resolvePapertapeHomeDir();
+    : resolveChopsticksHomeDir();
   const sourceInstanceId = sanitizeWorktreeInstanceId(opts.fromInstance ?? "default");
   return path.resolve(sourceHome, "instances", sourceInstanceId, "config.json");
 }
 
-function resolveSourceConnectionString(config: PapertapeConfig, envEntries: Record<string, string>, portOverride?: number): string {
+function resolveSourceConnectionString(config: ChopsticksConfig, envEntries: Record<string, string>, portOverride?: number): string {
   if (config.database.mode === "postgres") {
     const connectionString = nonEmpty(envEntries.DATABASE_URL) ?? nonEmpty(config.database.connectionString);
     if (!connectionString) {
@@ -450,12 +450,12 @@ function resolveSourceConnectionString(config: PapertapeConfig, envEntries: Reco
   }
 
   const port = portOverride ?? config.database.embeddedPostgresPort;
-  return `postgres://papertape:papertape@127.0.0.1:${port}/papertape`;
+  return `postgres://chopsticks:chopsticks@127.0.0.1:${port}/chopsticks`;
 }
 
 export function copySeededSecretsKey(input: {
   sourceConfigPath: string;
-  sourceConfig: PapertapeConfig;
+  sourceConfig: ChopsticksConfig;
   sourceEnvEntries: Record<string, string>;
   targetKeyFilePath: string;
 }): void {
@@ -467,8 +467,8 @@ export function copySeededSecretsKey(input: {
 
   const allowProcessEnvFallback = isCurrentSourceConfigPath(input.sourceConfigPath);
   const sourceInlineMasterKey =
-    nonEmpty(input.sourceEnvEntries.PAPERTAPE_SECRETS_MASTER_KEY) ??
-    (allowProcessEnvFallback ? nonEmpty(process.env.PAPERTAPE_SECRETS_MASTER_KEY) : null);
+    nonEmpty(input.sourceEnvEntries.CHOPSTICKS_SECRETS_MASTER_KEY) ??
+    (allowProcessEnvFallback ? nonEmpty(process.env.CHOPSTICKS_SECRETS_MASTER_KEY) : null);
   if (sourceInlineMasterKey) {
     writeFileSync(input.targetKeyFilePath, sourceInlineMasterKey, {
       encoding: "utf8",
@@ -483,8 +483,8 @@ export function copySeededSecretsKey(input: {
   }
 
   const sourceKeyFileOverride =
-    nonEmpty(input.sourceEnvEntries.PAPERTAPE_SECRETS_MASTER_KEY_FILE) ??
-    (allowProcessEnvFallback ? nonEmpty(process.env.PAPERTAPE_SECRETS_MASTER_KEY_FILE) : null);
+    nonEmpty(input.sourceEnvEntries.CHOPSTICKS_SECRETS_MASTER_KEY_FILE) ??
+    (allowProcessEnvFallback ? nonEmpty(process.env.CHOPSTICKS_SECRETS_MASTER_KEY_FILE) : null);
   const sourceConfiguredKeyPath = sourceKeyFileOverride ?? input.sourceConfig.secrets.localEncrypted.keyFilePath;
   const sourceKeyFilePath = resolveRuntimeLikePath(sourceConfiguredKeyPath, input.sourceConfigPath);
 
@@ -527,8 +527,8 @@ async function ensureEmbeddedPostgres(dataDir: string, preferredPort: number): P
   const port = await findAvailablePort(preferredPort);
   const instance = new EmbeddedPostgres({
     databaseDir: dataDir,
-    user: "papertape",
-    password: "papertape",
+    user: "chopsticks",
+    password: "chopsticks",
     port,
     persistent: true,
     initdbFlags: ["--encoding=UTF8", "--locale=C"],
@@ -555,15 +555,15 @@ async function ensureEmbeddedPostgres(dataDir: string, preferredPort: number): P
 
 async function seedWorktreeDatabase(input: {
   sourceConfigPath: string;
-  sourceConfig: PapertapeConfig;
-  targetConfig: PapertapeConfig;
+  sourceConfig: ChopsticksConfig;
+  targetConfig: ChopsticksConfig;
   targetPaths: WorktreeLocalPaths;
   instanceId: string;
   seedMode: WorktreeSeedMode;
 }): Promise<SeedWorktreeDatabaseResult> {
   const seedPlan = resolveWorktreeSeedPlan(input.seedMode);
-  const sourceEnvFile = resolvePapertapeEnvFile(input.sourceConfigPath);
-  const sourceEnvEntries = readPapertapeEnvEntries(sourceEnvFile);
+  const sourceEnvFile = resolveChopsticksEnvFile(input.sourceConfigPath);
+  const sourceEnvEntries = readChopsticksEnvEntries(sourceEnvFile);
   copySeededSecretsKey({
     sourceConfigPath: input.sourceConfigPath,
     sourceConfig: input.sourceConfig,
@@ -600,9 +600,9 @@ async function seedWorktreeDatabase(input: {
       input.targetConfig.database.embeddedPostgresPort,
     );
 
-    const adminConnectionString = `postgres://papertape:papertape@127.0.0.1:${targetHandle.port}/postgres`;
-    await ensurePostgresDatabase(adminConnectionString, "papertape");
-    const targetConnectionString = `postgres://papertape:papertape@127.0.0.1:${targetHandle.port}/papertape`;
+    const adminConnectionString = `postgres://chopsticks:chopsticks@127.0.0.1:${targetHandle.port}/postgres`;
+    await ensurePostgresDatabase(adminConnectionString, "chopsticks");
+    const targetConnectionString = `postgres://chopsticks:chopsticks@127.0.0.1:${targetHandle.port}/chopsticks`;
     await runDatabaseRestore({
       connectionString: targetConnectionString,
       backupFile: backup.backupFile,
@@ -669,19 +669,19 @@ async function runWorktreeInit(opts: WorktreeInitOptions): Promise<void> {
   });
 
   writeConfig(targetConfig, paths.configPath);
-  const sourceEnvEntries = readPapertapeEnvEntries(resolvePapertapeEnvFile(sourceConfigPath));
+  const sourceEnvEntries = readChopsticksEnvEntries(resolveChopsticksEnvFile(sourceConfigPath));
   const existingAgentJwtSecret =
-    nonEmpty(sourceEnvEntries.PAPERTAPE_AGENT_JWT_SECRET) ??
-    nonEmpty(process.env.PAPERTAPE_AGENT_JWT_SECRET);
-  mergePapertapeEnvEntries(
+    nonEmpty(sourceEnvEntries.CHOPSTICKS_AGENT_JWT_SECRET) ??
+    nonEmpty(process.env.CHOPSTICKS_AGENT_JWT_SECRET);
+  mergeChopsticksEnvEntries(
     {
       ...buildWorktreeEnvEntries(paths),
-      ...(existingAgentJwtSecret ? { PAPERTAPE_AGENT_JWT_SECRET: existingAgentJwtSecret } : {}),
+      ...(existingAgentJwtSecret ? { CHOPSTICKS_AGENT_JWT_SECRET: existingAgentJwtSecret } : {}),
     },
     paths.envPath,
   );
   ensureAgentJwtSecret(paths.configPath);
-  loadPapertapeEnvFile(paths.configPath);
+  loadChopsticksEnvFile(paths.configPath);
   const copiedGitHooks = copyGitHooksToWorktreeGitDir(cwd);
 
   let seedSummary: string | null = null;
@@ -733,19 +733,19 @@ async function runWorktreeInit(opts: WorktreeInitOptions): Promise<void> {
   }
   p.outro(
     pc.green(
-      `Worktree ready. Run Papertape inside this repo and the CLI/server will use ${paths.instanceId} automatically.`,
+      `Worktree ready. Run Chopsticks inside this repo and the CLI/server will use ${paths.instanceId} automatically.`,
     ),
   );
 }
 
 export async function worktreeInitCommand(opts: WorktreeInitOptions): Promise<void> {
-  printPapertapeCliBanner();
+  printChopsticksCliBanner();
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("worktree init")} `)));
   await runWorktreeInit(opts);
 }
 
 export async function worktreeMakeCommand(nameArg: string, opts: WorktreeMakeOptions): Promise<void> {
-  printPapertapeCliBanner();
+  printChopsticksCliBanner();
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("worktree:make")} `)));
 
   const name = resolveWorktreeMakeName(nameArg);
@@ -909,7 +909,7 @@ function worktreePathHasUncommittedChanges(worktreePath: string): boolean {
 }
 
 export async function worktreeCleanupCommand(nameArg: string, opts: WorktreeCleanupOptions): Promise<void> {
-  printPapertapeCliBanner();
+  printChopsticksCliBanner();
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("worktree:cleanup")} `)));
 
   const name = resolveWorktreeMakeName(nameArg);
@@ -1046,13 +1046,13 @@ export async function worktreeCleanupCommand(nameArg: string, opts: WorktreeClea
 
 export async function worktreeEnvCommand(opts: WorktreeEnvOptions): Promise<void> {
   const configPath = resolveConfigPath(opts.config);
-  const envPath = resolvePapertapeEnvFile(configPath);
-  const envEntries = readPapertapeEnvEntries(envPath);
+  const envPath = resolveChopsticksEnvFile(configPath);
+  const envEntries = readChopsticksEnvEntries(envPath);
   const out = {
-    PAPERTAPE_CONFIG: configPath,
-    ...(envEntries.PAPERTAPE_HOME ? { PAPERTAPE_HOME: envEntries.PAPERTAPE_HOME } : {}),
-    ...(envEntries.PAPERTAPE_INSTANCE_ID ? { PAPERTAPE_INSTANCE_ID: envEntries.PAPERTAPE_INSTANCE_ID } : {}),
-    ...(envEntries.PAPERTAPE_CONTEXT ? { PAPERTAPE_CONTEXT: envEntries.PAPERTAPE_CONTEXT } : {}),
+    CHOPSTICKS_CONFIG: configPath,
+    ...(envEntries.CHOPSTICKS_HOME ? { CHOPSTICKS_HOME: envEntries.CHOPSTICKS_HOME } : {}),
+    ...(envEntries.CHOPSTICKS_INSTANCE_ID ? { CHOPSTICKS_INSTANCE_ID: envEntries.CHOPSTICKS_INSTANCE_ID } : {}),
+    ...(envEntries.CHOPSTICKS_CONTEXT ? { CHOPSTICKS_CONTEXT: envEntries.CHOPSTICKS_CONTEXT } : {}),
     ...envEntries,
   };
 
@@ -1065,17 +1065,17 @@ export async function worktreeEnvCommand(opts: WorktreeEnvOptions): Promise<void
 }
 
 export function registerWorktreeCommands(program: Command): void {
-  const worktree = program.command("worktree").description("Worktree-local Papertape instance helpers");
+  const worktree = program.command("worktree").description("Worktree-local Chopsticks instance helpers");
 
   program
     .command("worktree:make")
-    .description("Create ~/NAME as a git worktree, then initialize an isolated Papertape instance inside it")
-    .argument("<name>", "Worktree name — auto-prefixed with papertape- if needed (created at ~/papertape-NAME)")
-    .option("--start-point <ref>", "Remote ref to base the new branch on (env: PAPERTAPE_WORKTREE_START_POINT)")
+    .description("Create ~/NAME as a git worktree, then initialize an isolated Chopsticks instance inside it")
+    .argument("<name>", "Worktree name — auto-prefixed with chopsticks- if needed (created at ~/chopsticks-NAME)")
+    .option("--start-point <ref>", "Remote ref to base the new branch on (env: CHOPSTICKS_WORKTREE_START_POINT)")
     .option("--instance <id>", "Explicit isolated instance id")
-    .option("--home <path>", `Home root for worktree instances (env: PAPERTAPE_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
+    .option("--home <path>", `Home root for worktree instances (env: CHOPSTICKS_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
     .option("--from-config <path>", "Source config.json to seed from")
-    .option("--from-data-dir <path>", "Source PAPERTAPE_HOME used when deriving the source config")
+    .option("--from-data-dir <path>", "Source CHOPSTICKS_HOME used when deriving the source config")
     .option("--from-instance <id>", "Source instance id when deriving the source config", "default")
     .option("--server-port <port>", "Preferred server port", (value) => Number(value))
     .option("--db-port <port>", "Preferred embedded Postgres port", (value) => Number(value))
@@ -1089,9 +1089,9 @@ export function registerWorktreeCommands(program: Command): void {
     .description("Create repo-local config/env and an isolated instance for this worktree")
     .option("--name <name>", "Display name used to derive the instance id")
     .option("--instance <id>", "Explicit isolated instance id")
-    .option("--home <path>", `Home root for worktree instances (env: PAPERTAPE_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
+    .option("--home <path>", `Home root for worktree instances (env: CHOPSTICKS_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
     .option("--from-config <path>", "Source config.json to seed from")
-    .option("--from-data-dir <path>", "Source PAPERTAPE_HOME used when deriving the source config")
+    .option("--from-data-dir <path>", "Source CHOPSTICKS_HOME used when deriving the source config")
     .option("--from-instance <id>", "Source instance id when deriving the source config", "default")
     .option("--server-port <port>", "Preferred server port", (value) => Number(value))
     .option("--db-port <port>", "Preferred embedded Postgres port", (value) => Number(value))
@@ -1102,7 +1102,7 @@ export function registerWorktreeCommands(program: Command): void {
 
   worktree
     .command("env")
-    .description("Print shell exports for the current worktree-local Papertape instance")
+    .description("Print shell exports for the current worktree-local Chopsticks instance")
     .option("-c, --config <path>", "Path to config file")
     .option("--json", "Print JSON instead of shell exports")
     .action(worktreeEnvCommand);
@@ -1110,9 +1110,9 @@ export function registerWorktreeCommands(program: Command): void {
   program
     .command("worktree:cleanup")
     .description("Safely remove a worktree, its branch, and its isolated instance data")
-    .argument("<name>", "Worktree name — auto-prefixed with papertape- if needed")
+    .argument("<name>", "Worktree name — auto-prefixed with chopsticks- if needed")
     .option("--instance <id>", "Explicit instance id (if different from the worktree name)")
-    .option("--home <path>", `Home root for worktree instances (env: PAPERTAPE_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
+    .option("--home <path>", `Home root for worktree instances (env: CHOPSTICKS_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
     .option("--force", "Bypass safety checks (uncommitted changes, unique commits)", false)
     .action(worktreeCleanupCommand);
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Company } from "@papertape/shared";
+import type { Company } from "@chopsticks/shared";
 import { assertDeleteConfirmation, resolveCompanyForDeletion } from "../commands/client/company.js";
 
 function makeCompany(overrides: Partial<Company>): Company {
@@ -8,12 +8,16 @@ function makeCompany(overrides: Partial<Company>): Company {
     name: "Alpha",
     description: null,
     status: "active",
+    pauseReason: null,
+    pausedAt: null,
     issuePrefix: "ALP",
     issueCounter: 1,
     budgetMonthlyCents: 0,
     spentMonthlyCents: 0,
     requireBoardApprovalForNewAgents: false,
     brandColor: null,
+    logoAssetId: null,
+    logoUrl: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
@@ -29,7 +33,7 @@ describe("resolveCompanyForDeletion", () => {
     }),
     makeCompany({
       id: "22222222-2222-2222-2222-222222222222",
-      name: "Papertape",
+      name: "Chopsticks",
       issuePrefix: "PAP",
     }),
   ];

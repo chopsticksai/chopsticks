@@ -1,4 +1,4 @@
-import type { Approval, ApprovalComment, Issue } from "@papertape/shared";
+import type { Approval, ApprovalComment, Issue } from "@chopsticks/shared";
 import { api } from "./client";
 
 export const approvalsApi = {

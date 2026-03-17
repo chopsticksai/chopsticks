@@ -1,8 +1,8 @@
 /**
- * Core types for the Papertape plugin worker-side SDK.
+ * Core types for the Chopsticks plugin worker-side SDK.
  *
  * These types define the stable public API surface that plugin workers import
- * from `@papertape/plugin-sdk`.  The host provides a concrete implementation
+ * from `@chopsticks/plugin-sdk`.  The host provides a concrete implementation
  * of `PluginContext` to the plugin at initialisation time.
  *
  * @see PLUGIN_SPEC.md §14 — SDK Surface
@@ -10,7 +10,7 @@
  */
 
 import type {
-  PapertapePluginManifestV1,
+  ChopsticksPluginManifestV1,
   PluginStateScopeKind,
   PluginEventType,
   PluginToolDeclaration,
@@ -19,16 +19,18 @@ import type {
   Project,
   Issue,
   IssueComment,
+  IssueDocument,
+  IssueDocumentSummary,
   Agent,
   Goal,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 
 // ---------------------------------------------------------------------------
-// Re-exports from @papertape/shared (plugin authors import from one place)
+// Re-exports from @chopsticks/shared (plugin authors import from one place)
 // ---------------------------------------------------------------------------
 
 export type {
-  PapertapePluginManifestV1,
+  ChopsticksPluginManifestV1,
   PluginJobDeclaration,
   PluginWebhookDeclaration,
   PluginToolDeclaration,
@@ -61,9 +63,11 @@ export type {
   Project,
   Issue,
   IssueComment,
+  IssueDocument,
+  IssueDocumentSummary,
   Agent,
   Goal,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 
 // ---------------------------------------------------------------------------
 // Scope key — identifies where plugin state is stored
@@ -81,7 +85,7 @@ export type {
  * @see PLUGIN_SPEC.md §21.3 `plugin_state`
  */
 export interface ScopeKey {
-  /** What kind of Papertape object this state is scoped to. */
+  /** What kind of Chopsticks object this state is scoped to. */
   scopeKind: PluginStateScopeKind;
   /** UUID or text identifier for the scoped object. Omit for `instance` scope. */
   scopeId?: string;
@@ -213,7 +217,7 @@ export interface PluginEntityUpsert {
   scopeId?: string;
   /** External identifier in the remote system (e.g. Linear issue ID). */
   externalId?: string;
-  /** Human-readable title for display in the Papertape UI. */
+  /** Human-readable title for display in the Chopsticks UI. */
   title?: string;
   /** Optional status string. */
   status?: string;
@@ -319,7 +323,7 @@ export interface PluginConfigClient {
 }
 
 /**
- * `ctx.events` — subscribe to and emit Papertape domain events.
+ * `ctx.events` — subscribe to and emit Chopsticks domain events.
  *
  * Requires `events.subscribe` capability for `on()`.
  * Requires `events.emit` capability for `emit()`.
@@ -328,7 +332,7 @@ export interface PluginConfigClient {
  */
 export interface PluginEventsClient {
   /**
-   * Subscribe to a core Papertape domain event or a plugin-namespaced event.
+   * Subscribe to a core Chopsticks domain event or a plugin-namespaced event.
    *
    * @param name - Event type, e.g. `"issue.created"` or `"plugin.@acme/linear.sync-done"`
    * @param fn - Async event handler
@@ -431,7 +435,7 @@ export interface PluginHttpClient {
  * Requires `secrets.read-ref` capability.
  *
  * Plugins store secret *references* in their config (e.g. a secret name).
- * This client resolves the reference through the Papertape secret provider
+ * This client resolves the reference through the Chopsticks secret provider
  * system and returns the resolved value at execution time.
  *
  * @see PLUGIN_SPEC.md §22 — Secrets
@@ -441,7 +445,7 @@ export interface PluginSecretsClient {
    * Resolve a secret reference to its current value.
    *
    * The reference is a string identifier pointing to a secret configured
-   * in the Papertape secret provider (e.g. `"MY_API_KEY"`).
+   * in the Chopsticks secret provider (e.g. `"MY_API_KEY"`).
    *
    * Secret values are resolved at call time and must never be cached or
    * written to logs, config, or other persistent storage.
@@ -775,6 +779,73 @@ export interface PluginCompaniesClient {
 }
 
 /**
+ * `ctx.issues.documents` — read and write issue documents.
+ *
+ * Requires:
+ * - `issue.documents.read` for `list` and `get`
+ * - `issue.documents.write` for `upsert` and `delete`
+ *
+ * @see PLUGIN_SPEC.md §14 — SDK Surface
+ */
+export interface PluginIssueDocumentsClient {
+  /**
+   * List all documents attached to an issue.
+   *
+   * Returns summary metadata (id, key, title, format, timestamps) without
+   * the full document body. Use `get()` to fetch a specific document's body.
+   *
+   * Requires the `issue.documents.read` capability.
+   */
+  list(issueId: string, companyId: string): Promise<IssueDocumentSummary[]>;
+
+  /**
+   * Get a single document by key, including its full body content.
+   *
+   * Returns `null` if no document exists with the given key.
+   *
+   * Requires the `issue.documents.read` capability.
+   *
+   * @param issueId - UUID of the issue
+   * @param key - Document key (e.g. `"plan"`, `"design-spec"`)
+   * @param companyId - UUID of the company
+   */
+  get(issueId: string, key: string, companyId: string): Promise<IssueDocument | null>;
+
+  /**
+   * Create or update a document on an issue.
+   *
+   * If a document with the given key already exists, it is updated and a new
+   * revision is created. If it does not exist, it is created.
+   *
+   * Requires the `issue.documents.write` capability.
+   *
+   * @param input - Document data including issueId, key, body, and optional title/format/changeSummary
+   */
+  upsert(input: {
+    issueId: string;
+    key: string;
+    body: string;
+    companyId: string;
+    title?: string;
+    format?: string;
+    changeSummary?: string;
+  }): Promise<IssueDocument>;
+
+  /**
+   * Delete a document and all its revisions.
+   *
+   * No-ops silently if the document does not exist (idempotent).
+   *
+   * Requires the `issue.documents.write` capability.
+   *
+   * @param issueId - UUID of the issue
+   * @param key - Document key to delete
+   * @param companyId - UUID of the company
+   */
+  delete(issueId: string, key: string, companyId: string): Promise<void>;
+}
+
+/**
  * `ctx.issues` — read and mutate issues plus comments.
  *
  * Requires:
@@ -783,6 +854,8 @@ export interface PluginCompaniesClient {
  * - `issues.update` for update
  * - `issue.comments.read` for `listComments`
  * - `issue.comments.create` for `createComment`
+ * - `issue.documents.read` for `documents.list` and `documents.get`
+ * - `issue.documents.write` for `documents.upsert` and `documents.delete`
  */
 export interface PluginIssuesClient {
   list(input: {
@@ -814,6 +887,8 @@ export interface PluginIssuesClient {
   ): Promise<Issue>;
   listComments(issueId: string, companyId: string): Promise<IssueComment[]>;
   createComment(issueId: string, body: string, companyId: string): Promise<IssueComment>;
+  /** Read and write issue documents. Requires `issue.documents.read` / `issue.documents.write`. */
+  documents: PluginIssueDocumentsClient;
 }
 
 /**
@@ -964,7 +1039,7 @@ export interface PluginGoalsClient {
  * ctx.streams.close("chat");
  * ```
  *
- * @see usePluginStream in `@papertape/plugin-sdk/ui`
+ * @see usePluginStream in `@chopsticks/plugin-sdk/ui`
  */
 export interface PluginStreamsClient {
   /**
@@ -1001,7 +1076,7 @@ export interface PluginStreamsClient {
  *
  * @example
  * ```ts
- * import { definePlugin } from "@papertape/plugin-sdk";
+ * import { definePlugin } from "@chopsticks/plugin-sdk";
  *
  * export default definePlugin({
  *   async setup(ctx) {
@@ -1021,7 +1096,7 @@ export interface PluginStreamsClient {
  */
 export interface PluginContext {
   /** The plugin's manifest as validated at install time. */
-  manifest: PapertapePluginManifestV1;
+  manifest: ChopsticksPluginManifestV1;
 
   /** Read resolved operator configuration. */
   config: PluginConfigClient;
@@ -1056,7 +1131,7 @@ export interface PluginContext {
   /** Read company metadata. Requires `companies.read`. */
   companies: PluginCompaniesClient;
 
-  /** Read and write issues/comments. Requires issue capabilities. */
+  /** Read and write issues, comments, and documents. Requires issue capabilities. */
   issues: PluginIssuesClient;
 
   /** Read and manage agents. Requires `agents.read` for reads; `agents.pause` / `agents.resume` / `agents.invoke` for write ops. */

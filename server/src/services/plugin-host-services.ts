@@ -1,5 +1,5 @@
-import type { Db } from "@papertape/db";
-import { pluginLogs, agentTaskSessions as agentTaskSessionsTable } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
+import { pluginLogs, agentTaskSessions as agentTaskSessionsTable } from "@chopsticks/db";
 import { eq, and, like, desc } from "drizzle-orm";
 import type {
   HostServices,
@@ -10,12 +10,13 @@ import type {
   Goal,
   PluginWorkspace,
   IssueComment,
-} from "@papertape/plugin-sdk";
+} from "@chopsticks/plugin-sdk";
 import { companyService } from "./companies.js";
 import { agentService } from "./agents.js";
 import { projectService } from "./projects.js";
 import { issueService } from "./issues.js";
 import { goalService } from "./goals.js";
+import { documentService } from "./documents.js";
 import { heartbeatService } from "./heartbeat.js";
 import { subscribeCompanyLiveEvents } from "./live-events.js";
 import { randomUUID } from "node:crypto";
@@ -423,7 +424,7 @@ if (_logFlushInterval.unref) _logFlushInterval.unref();
  * buildHostServices — creates a concrete implementation of the `HostServices`
  * interface for a specific plugin.
  *
- * This implementation delegates to the core Papertape domain services,
+ * This implementation delegates to the core Chopsticks domain services,
  * providing the bridge between the plugin worker's SDK and the host platform.
  *
  * @param db - Database connection instance.
@@ -450,6 +451,7 @@ export function buildHostServices(
   const heartbeat = heartbeatService(db);
   const projects = projectService(db);
   const issues = issueService(db);
+  const documents = documentService(db);
   const goals = goalService(db);
   const activity = activityService(db);
   const costs = costService(db);
@@ -557,7 +559,7 @@ export function buildHostServices(
         await scopedBus.emit(params.name, params.companyId, params.payload);
       },
       async subscribe(params: { eventPattern: string; filter?: Record<string, unknown> | null }) {
-        const handler = async (event: import("@papertape/plugin-sdk").PluginEvent) => {
+        const handler = async (event: import("@chopsticks/plugin-sdk").PluginEvent) => {
           if (notifyWorker) {
             notifyWorker("onEvent", { event });
           }
@@ -793,6 +795,43 @@ export function buildHostServices(
           params.body,
           {},
         )) as IssueComment;
+      },
+    },
+
+    issueDocuments: {
+      async list(params) {
+        const companyId = ensureCompanyId(params.companyId);
+        await ensurePluginAvailableForCompany(companyId);
+        requireInCompany("Issue", await issues.getById(params.issueId), companyId);
+        const rows = await documents.listIssueDocuments(params.issueId);
+        return rows as any;
+      },
+      async get(params) {
+        const companyId = ensureCompanyId(params.companyId);
+        await ensurePluginAvailableForCompany(companyId);
+        requireInCompany("Issue", await issues.getById(params.issueId), companyId);
+        const doc = await documents.getIssueDocumentByKey(params.issueId, params.key);
+        return (doc ?? null) as any;
+      },
+      async upsert(params) {
+        const companyId = ensureCompanyId(params.companyId);
+        await ensurePluginAvailableForCompany(companyId);
+        requireInCompany("Issue", await issues.getById(params.issueId), companyId);
+        const result = await documents.upsertIssueDocument({
+          issueId: params.issueId,
+          key: params.key,
+          body: params.body,
+          title: params.title ?? null,
+          format: params.format ?? "markdown",
+          changeSummary: params.changeSummary ?? null,
+        });
+        return result.document as any;
+      },
+      async delete(params) {
+        const companyId = ensureCompanyId(params.companyId);
+        await ensurePluginAvailableForCompany(companyId);
+        requireInCompany("Issue", await issues.getById(params.issueId), companyId);
+        await documents.deleteIssueDocument(params.issueId, params.key);
       },
     },
 

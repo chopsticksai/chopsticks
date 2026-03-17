@@ -26,14 +26,14 @@ function parseNumber(value: string | undefined, fallback: number) {
 }
 
 function jwtConfig() {
-  const secret = process.env.PAPERTAPE_AGENT_JWT_SECRET;
+  const secret = process.env.CHOPSTICKS_AGENT_JWT_SECRET;
   if (!secret) return null;
 
   return {
     secret,
-    ttlSeconds: parseNumber(process.env.PAPERTAPE_AGENT_JWT_TTL_SECONDS, 60 * 60 * 48),
-    issuer: process.env.PAPERTAPE_AGENT_JWT_ISSUER ?? "papertape",
-    audience: process.env.PAPERTAPE_AGENT_JWT_AUDIENCE ?? "papertape-api",
+    ttlSeconds: parseNumber(process.env.CHOPSTICKS_AGENT_JWT_TTL_SECONDS, 60 * 60 * 48),
+    issuer: process.env.CHOPSTICKS_AGENT_JWT_ISSUER ?? "chopsticks",
+    audience: process.env.CHOPSTICKS_AGENT_JWT_AUDIENCE ?? "chopsticks-api",
   };
 }
 

@@ -1,11 +1,11 @@
 import { and, eq, isNull } from "drizzle-orm";
-import type { Db } from "@papertape/db";
-import { plugins, pluginState } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
+import { plugins, pluginState } from "@chopsticks/db";
 import type {
   PluginStateScopeKind,
   SetPluginState,
   ListPluginState,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import { notFound } from "../errors.js";
 
 // ---------------------------------------------------------------------------

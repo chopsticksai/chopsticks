@@ -7,8 +7,8 @@ import type {
   HeartbeatRun,
   Approval,
   AgentConfigRevision,
-} from "@papertape/shared";
-import { isUuidLike, normalizeAgentUrlKey } from "@papertape/shared";
+} from "@chopsticks/shared";
+import { isUuidLike, normalizeAgentUrlKey } from "@chopsticks/shared";
 import { ApiError, api } from "./client";
 
 export interface AgentKey {

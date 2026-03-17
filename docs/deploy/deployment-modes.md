@@ -3,7 +3,7 @@ title: 部署模式
 summary: local_trusted 与 authenticated（private/public）
 ---
 
-Papertape 支持两种运行模式，对应不同的安全配置。
+Chopsticks 支持两种运行模式，对应不同的安全配置。
 
 ## `local_trusted`
 
@@ -16,7 +16,7 @@ Papertape 支持两种运行模式，对应不同的安全配置。
 
 ```sh
 # Set during onboard
-pnpm papertape onboard
+pnpm chopsticks onboard
 # Choose "local_trusted"
 ```
 
@@ -33,14 +33,14 @@ pnpm papertape onboard
 - **Host 信任**：要求启用私有主机信任策略
 
 ```sh
-pnpm papertape onboard
+pnpm chopsticks onboard
 # Choose "authenticated" -> "private"
 ```
 
 允许自定义 Tailscale 主机名：
 
 ```sh
-pnpm papertape allowed-hostname my-machine
+pnpm chopsticks allowed-hostname my-machine
 ```
 
 ### `authenticated` + `public`
@@ -52,13 +52,13 @@ pnpm papertape allowed-hostname my-machine
 - **安全**：`doctor` 中的部署检查更严格
 
 ```sh
-pnpm papertape onboard
+pnpm chopsticks onboard
 # Choose "authenticated" -> "public"
 ```
 
 ## 董事会认领流程
 
-从 `local_trusted` 迁移到 `authenticated` 时，Papertape 会在启动时输出一个一次性的认领 URL：
+从 `local_trusted` 迁移到 `authenticated` 时，Chopsticks 会在启动时输出一个一次性的认领 URL：
 
 ```
 /board-claim/<token>?code=<code>
@@ -75,11 +75,11 @@ pnpm papertape onboard
 更新部署模式：
 
 ```sh
-pnpm papertape configure --section server
+pnpm chopsticks configure --section server
 ```
 
 也可以通过环境变量在运行时覆盖：
 
 ```sh
-PAPERTAPE_DEPLOYMENT_MODE=authenticated pnpm papertape run
+CHOPSTICKS_DEPLOYMENT_MODE=authenticated pnpm chopsticks run
 ```

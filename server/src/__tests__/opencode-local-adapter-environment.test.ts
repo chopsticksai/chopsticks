@@ -2,13 +2,37 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { testEnvironment } from "@papertape/adapter-opencode-local/server";
+import { testEnvironment } from "@chopsticks/adapter-opencode-local/server";
+
+async function writeFakeOpencodeCommand(basePath: string): Promise<string> {
+  const script = `
+process.stderr.write('ProviderModelNotFoundError: ProviderModelNotFoundError\\n');
+process.stderr.write('data: { providerID: "openai", modelID: "gpt-5.3-codex", suggestions: [] }\\n');
+process.exit(1);
+`;
+
+  if (process.platform === "win32") {
+    const scriptPath = `${basePath}.js`;
+    const commandPath = `${basePath}.cmd`;
+    await fs.writeFile(scriptPath, script, "utf8");
+    await fs.writeFile(
+      commandPath,
+      `@echo off\r\n"${process.execPath}" "${scriptPath}" %*\r\n`,
+      "utf8",
+    );
+    return commandPath;
+  }
+
+  await fs.writeFile(basePath, `#!/usr/bin/env node\n${script}`, "utf8");
+  await fs.chmod(basePath, 0o755);
+  return basePath;
+}
 
 describe("opencode_local environment diagnostics", () => {
   it("reports a missing working directory as an error when cwd is absolute", async () => {
     const cwd = path.join(
       os.tmpdir(),
-      `papertape-opencode-local-cwd-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      `chopsticks-opencode-local-cwd-${Date.now()}-${Math.random().toString(16).slice(2)}`,
       "workspace",
     );
 
@@ -29,7 +53,7 @@ describe("opencode_local environment diagnostics", () => {
   });
 
   it("treats an empty OPENAI_API_KEY override as missing", async () => {
-    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "papertape-opencode-env-empty-key-"));
+    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-opencode-env-empty-key-"));
     const originalOpenAiKey = process.env.OPENAI_API_KEY;
     process.env.OPENAI_API_KEY = "sk-host-value";
 
@@ -60,21 +84,11 @@ describe("opencode_local environment diagnostics", () => {
   });
 
   it("classifies ProviderModelNotFoundError probe output as model-unavailable warning", async () => {
-    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "papertape-opencode-env-probe-cwd-"));
-    const binDir = await fs.mkdtemp(path.join(os.tmpdir(), "papertape-opencode-env-probe-bin-"));
-    const fakeOpencode = path.join(binDir, "opencode");
-    const script = [
-      "#!/bin/sh",
-      "echo 'ProviderModelNotFoundError: ProviderModelNotFoundError' 1>&2",
-      "echo 'data: { providerID: \"openai\", modelID: \"gpt-5.3-codex\", suggestions: [] }' 1>&2",
-      "exit 1",
-      "",
-    ].join("\n");
+    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-opencode-env-probe-cwd-"));
+    const binDir = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-opencode-env-probe-bin-"));
+    const fakeOpencode = await writeFakeOpencodeCommand(path.join(binDir, "opencode"));
 
     try {
-      await fs.writeFile(fakeOpencode, script, "utf8");
-      await fs.chmod(fakeOpencode, 0o755);
-
       const result = await testEnvironment({
         companyId: "company-1",
         adapterType: "opencode_local",

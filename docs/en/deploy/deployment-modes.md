@@ -3,7 +3,7 @@ title: Deployment Modes
 summary: local_trusted vs authenticated (private/public)
 ---
 
-Papertape supports two runtime modes with different security profiles.
+Chopsticks supports two runtime modes with different security profiles.
 
 ## `local_trusted`
 
@@ -16,7 +16,7 @@ The default mode. Optimized for single-operator local use.
 
 ```sh
 # Set during onboard
-pnpm papertape onboard
+pnpm chopsticks onboard
 # Choose "local_trusted"
 ```
 
@@ -33,14 +33,14 @@ For private network access (Tailscale, VPN, LAN).
 - **Host trust**: private-host trust policy required
 
 ```sh
-pnpm papertape onboard
+pnpm chopsticks onboard
 # Choose "authenticated" -> "private"
 ```
 
 Allow custom Tailscale hostnames:
 
 ```sh
-pnpm papertape allowed-hostname my-machine
+pnpm chopsticks allowed-hostname my-machine
 ```
 
 ### `authenticated` + `public`
@@ -52,13 +52,13 @@ For internet-facing deployment.
 - **Security**: stricter deployment checks in doctor
 
 ```sh
-pnpm papertape onboard
+pnpm chopsticks onboard
 # Choose "authenticated" -> "public"
 ```
 
 ## Board Claim Flow
 
-When migrating from `local_trusted` to `authenticated`, Papertape emits a one-time claim URL at startup:
+When migrating from `local_trusted` to `authenticated`, Chopsticks emits a one-time claim URL at startup:
 
 ```
 /board-claim/<token>?code=<code>
@@ -75,11 +75,11 @@ A signed-in user visits this URL to claim board ownership. This:
 Update the deployment mode:
 
 ```sh
-pnpm papertape configure --section server
+pnpm chopsticks configure --section server
 ```
 
 Runtime override via environment variable:
 
 ```sh
-PAPERTAPE_DEPLOYMENT_MODE=authenticated pnpm papertape run
+CHOPSTICKS_DEPLOYMENT_MODE=authenticated pnpm chopsticks run
 ```

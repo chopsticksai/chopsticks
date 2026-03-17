@@ -22,12 +22,12 @@
  * @see PLUGIN_SPEC.md §13.10 — `executeTool`
  */
 
-import type { Db } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
 import type {
-  PapertapePluginManifestV1,
+  ChopsticksPluginManifestV1,
   PluginRecord,
-} from "@papertape/shared";
-import type { ToolRunContext, ToolResult } from "@papertape/plugin-sdk";
+} from "@chopsticks/shared";
+import type { ToolRunContext, ToolResult } from "@chopsticks/plugin-sdk";
 import type { PluginWorkerManager } from "./plugin-worker-manager.js";
 import type { PluginLifecycleManager } from "./plugin-lifecycle.js";
 import {
@@ -155,7 +155,7 @@ export interface PluginToolDispatcher {
    */
   registerPluginTools(
     pluginId: string,
-    manifest: PapertapePluginManifestV1,
+    manifest: ChopsticksPluginManifestV1,
   ): void;
 
   /**
@@ -428,7 +428,7 @@ export function createPluginToolDispatcher(
 
     registerPluginTools(
       pluginId: string,
-      manifest: PapertapePluginManifestV1,
+      manifest: ChopsticksPluginManifestV1,
     ): void {
       registry.registerPlugin(pluginId, manifest);
     },

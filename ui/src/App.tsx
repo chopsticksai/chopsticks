@@ -49,11 +49,11 @@ function BootstrapPendingPage({ hasActiveInvite = false }: { hasActiveInvite?: b
         <h1 className="text-xl font-semibold">{t("Instance setup required")}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {hasActiveInvite
-            ? t("No instance admin exists yet. A bootstrap invite is already active. Check your Papertape startup logs for the first admin invite URL, or run this command to rotate it:")
-            : t("No instance admin exists yet. Run this command in your Papertape environment to generate the first admin invite URL:")}
+            ? t("No instance admin exists yet. A bootstrap invite is already active. Check your Chopsticks startup logs for the first admin invite URL, or run this command to rotate it:")
+            : t("No instance admin exists yet. Run this command in your Chopsticks environment to generate the first admin invite URL:")}
         </p>
         <pre className="mt-4 overflow-x-auto rounded-md border border-border bg-muted/30 p-3 text-xs">
-          {`pnpm papertape auth bootstrap-ceo`}
+          {`pnpm chopsticks auth bootstrap-ceo`}
         </pre>
       </div>
     </div>
@@ -137,6 +137,7 @@ function boardRoutes() {
       <Route path="projects/:projectId/issues" element={<ProjectDetail />} />
       <Route path="projects/:projectId/issues/:filter" element={<ProjectDetail />} />
       <Route path="projects/:projectId/configuration" element={<ProjectDetail />} />
+      <Route path="projects/:projectId/budget" element={<ProjectDetail />} />
       <Route path="issues" element={<Issues />} />
       <Route path="issues/all" element={<Navigate to="/issues" replace />} />
       <Route path="issues/active" element={<Navigate to="/issues" replace />} />

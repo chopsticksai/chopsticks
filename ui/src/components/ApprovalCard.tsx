@@ -6,7 +6,7 @@ import { typeLabel, typeIcon, defaultTypeIcon, ApprovalPayloadRenderer } from ".
 import { timeAgo } from "../lib/timeAgo";
 import { useI18n } from "../context/I18nContext";
 import { getStatusLabel } from "../lib/i18n";
-import type { Approval, Agent } from "@papertape/shared";
+import type { Approval, Agent } from "@chopsticks/shared";
 
 function statusIcon(status: string) {
   if (status === "approved") return <CheckCircle2 className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />;
@@ -36,6 +36,9 @@ export function ApprovalCard({
   const { t } = useI18n();
   const Icon = typeIcon[approval.type] ?? defaultTypeIcon;
   const label = t(typeLabel[approval.type] ?? approval.type);
+  const showResolutionButtons =
+    approval.type !== "budget_override_required" &&
+    (approval.status === "pending" || approval.status === "revision_requested");
 
   return (
     <div className="border border-border rounded-lg p-4 space-y-0">
@@ -70,7 +73,7 @@ export function ApprovalCard({
       )}
 
       {/* Actions */}
-      {(approval.status === "pending" || approval.status === "revision_requested") && (
+      {showResolutionButtons && (
         <div className="flex gap-2 mt-4 pt-3 border-t border-border">
           <Button
             size="sm"

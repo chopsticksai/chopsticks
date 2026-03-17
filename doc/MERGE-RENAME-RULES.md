@@ -1,104 +1,163 @@
-# Merge 改名冲突解决规范
+# Merge Rename Rules
 
-## 背景
+## Summary
 
-本仓库是上游 `paperclipai/paperclip` 的私有 fork，已全面改名为 **Papertape**。
+This document is the normative rule set for merging upstream `paperclipai/paperclip`
+changes into this Chopsticks fork.
 
-| 角色 | 仓库地址 |
-|---|---|
-| 上游（upstream） | `https://github.com/paperclipai/paperclip` |
-| 私仓（origin） | `https://github.com/papertapeai/papertape` |
+Use this document to answer:
 
-从 `upstream/master` 拉取更新并 merge 到本地时，上游代码中仍然使用 `paperclipai` / `Paperclip` 等旧名称，与本仓库已完成的改名产生冲突。本文档定义解决这类冲突的唯一权威规则。
+- which remote/repo role is which
+- which names must be rewritten
+- which exceptions are allowed
+- which post-merge conditions must be true
 
-> [!CAUTION]
-> **解决冲突时必须以本文档为准。** 任何 LLM 或自动化工具在合并代码时，遇到新旧名称冲突，一律按本文档规则将上游名称替换为对应的新名称。
+Do not use this document as a step-by-step execution guide. For the operational
+flow, use [`doc/UPSTREAM-MERGE-RUNBOOK.md`](./UPSTREAM-MERGE-RUNBOOK.md).
 
----
+## Single Source Boundaries
 
-## 字符串替换规则
+- This document defines rename and merge output rules.
+- [`doc/UI-LOCALIZATION.md`](./UI-LOCALIZATION.md) defines what "UI-localized"
+  means and how merged UI must be localized.
+- [`AGENTS.md`](../AGENTS.md) and
+  [`doc/SPEC-implementation.md`](./SPEC-implementation.md) define product and
+  implementation invariants such as company-scoped boundaries.
+- [`doc/UPSTREAM-MERGE-RUNBOOK.md`](./UPSTREAM-MERGE-RUNBOOK.md) defines the
+  recommended execution sequence and command checklist.
 
-按以下表格执行**全局、无例外**的替换：
+## Terminology
 
-| 上游原名 | 本仓库新名 | 典型出现位置 |
-|---|---|---|
-| `paperclipai` | `papertape` | npm scope、import path、GitHub org/URL、CLI 命令名、CSS 类名、URL slug |
-| `Paperclipai` | `Papertape` | 类名、组件名、品牌展示（Pascal/Title case） |
-| `PAPERCLIPAI` | `PAPERTAPE` | 环境变量、常量定义（全大写） |
-| `papercli` | `papertape` | 旧缩写小写残留（CLI 名等） |
-| `Papercli` | `Papertape` | 旧缩写首字母大写残留 |
-| `PAPERCLI` | `PAPERTAPE` | 旧缩写全大写残留 |
-| `Paperclip`（独立品牌名） | `Papertape` | 文档标题、UI 文案、README、注释中的产品名 |
-| `paperclip`（独立小写） | `papertape` | CLI 二进制名、文档正文小写引用、配置文件值 |
+- `upstream`: the semantic role for the canonical Paperclip repo. In this
+  checkout the default remote name is `origin`.
+- `private fork`: the semantic role for the Chopsticks repo. In this checkout
+  the default remote name is `private`.
+- `base branch`: the private-fork branch used as the PR comparison target. By
+  default this is `private/master`.
+- `company-scoped`: an existing repository invariant that every business record
+  belongs to exactly one company and company boundaries are enforced in
+  routes/services. The source of truth is [`AGENTS.md`](../AGENTS.md) and
+  [`doc/SPEC-implementation.md`](./SPEC-implementation.md).
+- `UI-localized`: user-visible UI text is integrated with the existing front-end
+  i18n system as defined in [`doc/UI-LOCALIZATION.md`](./UI-LOCALIZATION.md).
 
 > [!IMPORTANT]
-> 替换时注意大小写精确匹配。从上到下逐条检查，优先匹配更长的模式（如 `paperclipai` 优先于 `paperclip`）。
+> If your local remote names differ, follow the semantic role rather than the
+> literal remote name.
 
----
+## Conflict Resolution Priorities
 
-## 冲突解决行为指令
+When the same area contains both upstream logic changes and local rename/UI
+customizations, resolve in this order:
 
-当 merge 产生冲突或上游引入新代码时，遵守以下规则：
+1. Keep upstream behavior changes, bug fixes, and contract alignment.
+2. Keep Chopsticks naming, branding, package scopes, and user-visible links.
+3. Keep existing repository invariants, especially company-scoped boundaries,
+   audit/approval semantics, budget hard-stop behavior, and UI-localized
+   behavior.
+4. Keep or update tests so the merged behavior is covered.
 
-### 1. 代码文件（`.ts` / `.tsx` / `.js` / `.mjs` / `.css` 等）
+## Rename Mapping
 
-- 上游新增或修改的文件中出现任何上述旧名称 → **全部替换为新名称**
-- `@paperclipai/*` 包 scope → 替换为 `@papertape/*`
-- import 路径中的 `@paperclipai/` → 替换为 `@papertape/`
-- 冲突双方都修改了同一位置：以**本仓库的新名称**为准，同时保留上游的逻辑变更
+Apply the following replacements when upstream code introduces legacy names:
 
-### 2. `package.json` 文件
+| Upstream token | Chopsticks token | Typical locations |
+|---|---|---|
+| `paperclipai` | `chopsticks` | npm scope, import path, GitHub org/URL, CLI name, URL slug |
+| `Paperclipai` | `Chopsticks` | class names, components, title-cased branding |
+| `PAPERCLIPAI` | `CHOPSTICKS` | env vars, constants |
+| `papercli` | `chopsticks` | legacy short names |
+| `Papercli` | `Chopsticks` | legacy short names |
+| `PAPERCLI` | `CHOPSTICKS` | legacy short names |
+| `Paperclip` | `Chopsticks` | user-visible brand text |
+| `paperclip` | `chopsticks` | lowercase product references, config values, CLI names |
 
-- `"name"` 字段：以本仓库为准（已改为 `papertape` 或 `@papertape/*`）
-- `"repository"` 字段：使用 `https://github.com/papertapeai/papertape`
-- 依赖名中的 `@paperclipai/*` → 替换为 `@papertape/*`
-- 版本号冲突：取上游较新的版本号
+> [!IMPORTANT]
+> Match case exactly and prefer longer matches before shorter matches. For
+> example, replace `paperclipai` before considering `paperclip`.
 
-### 3. 文档文件（`.md`）
+## File Type Rules
 
-- 用户可见的品牌名 `Paperclip` → `Papertape`
-- GitHub 链接 `github.com/paperclipai/paperclip` → `github.com/papertapeai/papertape`
-- GitHub 链接 `github.com/paperclipai/` → `github.com/papertapeai/`
-- 文档中引用的 CLI 命令名遵循替换表
+### Code Files
 
-### 4. 配置文件（`drizzle.config.ts`、`.env` 模板等）
+- Replace legacy naming in source files, including package scopes, import
+  paths, env var names, CLI-facing strings, RPC/app identity fields, and
+  user-visible brand text.
+- If upstream adds new logic in a conflicting block, keep the upstream logic and
+  re-apply Chopsticks naming on top.
+- Rename obligations include user-visible error messages, helper text, brand
+  labels, and product links. Do not stop at import-path fixes.
 
-- 环境变量名中的 `PAPERCLIP` / `PAPERCLIPAI` → 替换为 `PAPERTAPE`
-- 配置值中的旧名称 → 按替换表替换
+### `package.json`
 
-### 5. 不替换的例外
+- Keep `"name"` aligned to `chopsticks` or `@chopsticks/*`.
+- Keep `"repository"` aligned to
+  `https://github.com/chopsticksai/chopsticks`.
+- Replace dependency scopes from `@paperclipai/*` to `@chopsticks/*`.
+- When versions conflict, prefer the newer upstream version unless the private
+  fork has an explicit release constraint.
 
-以下情况**保留上游原名，不做替换**：
+### Markdown / Docs
 
-- "Forked from paperclip" 等标注 fork 来源的信息（README、GitHub 描述等）
-- 上游 commit hash、commit message 引用（只读历史）
-- 上游 CHANGELOG / release notes 中对旧版本的历史引用
-- 第三方依赖名称（如 npm 包名不属于本项目的）
-- 注释中明确标注 "upstream reference" 的原文引用
+- Replace user-visible `Paperclip` branding with `Chopsticks`.
+- Replace `github.com/paperclipai/paperclip` with
+  `github.com/chopsticksai/chopsticks` in user-visible current-product links.
+- Replace `github.com/paperclipai/` with `github.com/chopsticksai/` when it is
+  referring to the current product rather than historical upstream context.
+- If the merged docs add UI-visible copy or prompt text, they must also satisfy
+  [`doc/UI-LOCALIZATION.md`](./UI-LOCALIZATION.md).
 
----
+### Config / Templates
 
-## 合并后验证
+- Replace `PAPERCLIP` / `PAPERCLIPAI` env var names with `CHOPSTICKS`.
+- Replace legacy config values using the mapping table above.
 
-每次从上游 merge 后，必须通过以下检查：
+### Lockfiles and CI-Managed Files
 
-```sh
-# 确认无旧名称残留（排除本文档自身和 git 历史）
-git diff --name-only HEAD | xargs grep -l -i "paperclipai\|papercli" -- 2>/dev/null
+- `pnpm-lock.yaml` is CI-managed for normal pull requests and must not remain in
+  a feature PR diff.
+- If a merge changes `pnpm-lock.yaml`, restore it to the base branch version
+  before pushing the PR, unless the branch exists specifically to refresh the
+  lockfile.
+- Preserve the correct manifest/source changes first, then remove the lockfile
+  diff to satisfy CI policy.
 
-# 质量门禁
-pnpm -r typecheck
-pnpm test:run
-pnpm build
-```
+## Allowed Exceptions
 
-如果 grep 发现残留的旧名称，按替换表修正后再提交。
+The following may keep the upstream name unchanged:
 
----
+- explicit fork-source statements such as `Forked from paperclip`
+- historical commit hashes or commit message references
+- upstream changelog or release-note history references
+- third-party dependency names outside the Chopsticks namespace
+- comments explicitly marked as `upstream reference`
+- inert, non-user-visible test fixtures or temp directory names, as long as the
+  legacy token does not leak into product UI, public contracts, or assertion
+  meaning
 
-## 本地化相关补充
+> [!IMPORTANT]
+> Exceptions must be justified as historical reference or inert test data, not
+> as a convenience escape hatch.
 
-UI 本地化的详细 spec 见 [`doc/ui-localization.md`](./ui-localization.md)，其中涉及：
-- `localStorage` key 使用 `papertape.locale`
-- `DEFAULT_TASK_DESCRIPTION` 的 CEO persona 仓库地址使用 `github.com/cjc-x/companies/...`
-- UI 用户可见链接中 `github.com/paperclipai/paperclip` → `github.com/papertapeai/papertape`
+## Required Post-Merge Conditions
+
+After an upstream merge is considered done, all of the following must be true:
+
+- merged behavior keeps the upstream logic changes
+- merged code and docs keep Chopsticks naming
+- merged UI is UI-localized according to
+  [`doc/UI-LOCALIZATION.md`](./UI-LOCALIZATION.md)
+- the PR diff against the base branch does not include `pnpm-lock.yaml`, unless
+  this is a dedicated lockfile-refresh branch
+- rename audit is clean except for allowed exceptions
+- quality gates pass:
+  - `pnpm -r typecheck`
+  - `pnpm test:run`
+  - `pnpm build`
+
+## References
+
+- Execution flow: [`doc/UPSTREAM-MERGE-RUNBOOK.md`](./UPSTREAM-MERGE-RUNBOOK.md)
+- UI localization rules: [`doc/UI-LOCALIZATION.md`](./UI-LOCALIZATION.md)
+- Company-scoped/product invariants: [`AGENTS.md`](../AGENTS.md),
+  [`doc/SPEC-implementation.md`](./SPEC-implementation.md)

@@ -1,38 +1,62 @@
-# Create TradingAgents Company in Papertape
+# TradingAgents Smoke Harness
 
-The goal is to create a new Papertape company named **TradingAgents** and configure a team of agents according to the TauricResearch TradingAgents framework.
+`create_trading_agents.mjs` is a local smoke harness for quickly bootstrapping a TradingAgents company and observing whether the first manager run, plus optional downstream delegation, behaves as expected.
 
-## Proposed Changes
+## What the script now does
 
-We will use the Papertape REST API (running at `http://127.0.0.1:3100`) to create the company and hire the agents.
+1. Checks `GET /api/health`.
+2. Creates a new company named `TradingAgents`.
+3. Runs `codebuddy_local` adapter environment checks through the Chopsticks API.
+4. Creates the 9-agent TradingAgents org via direct board bootstrap at `POST /api/companies/:companyId/agents`.
+5. Verifies agent count, adapter type, and reporting structure.
+6. Creates a research issue assigned to the portfolio manager.
+7. Waits for the automatic wakeup caused by issue assignment.
+8. Falls back to a manual `POST /api/agents/:id/wakeup` only if no automatic run appears in the observation window.
+9. Polls the portfolio-manager heartbeat run until it reaches a terminal state.
+10. Optionally observes descendant issues and downstream heartbeat runs when `CHOPSTICKS_OBSERVE_DESCENDANTS=true`.
+11. Summarizes:
+   - company id / dashboard URL
+   - adapter environment status
+   - heartbeat status
+   - issue comment count
+   - child issue count
+   - downstream issue/run counts and warnings
+   - dashboard summary
 
-### 1. Create Company
-- **Company Name**: TradingAgents
-- **Issue Prefix**: TA
+## Why this version is more reliable
 
-### 2. Create Agents (using `codebuddy_local` adapter)
+- Uses the real REST API throughout instead of shelling out to the CLI for the final wakeup step.
+- Removes the old approval step that did not apply to direct board-created agents.
+- Uses self-validation with explicit assertions instead of only printing best-effort logs.
+- Adds a shared instructions file at `tests/trading_agents/shared-agent-instructions.md` so `codebuddy_local` agents get consistent Chopsticks-specific execution guidance.
+- Uses role-aware adapter prompts so managers delegate while individual contributors leave one bounded findings comment.
+- Uses `PATCH /issues/:id` with `comment` for the final visible update, which avoids self-wakeup loops seen with `POST /issues/:id/comments` in `local_trusted`.
+- Narrows each heartbeat to one auditable step, which keeps the smoke run stable and helps avoid rate-limit or max-turn failures.
+- Observes the actual control-plane behavior we care about: issue assignment -> wakeup -> run -> visible artifacts -> optional downstream propagation.
 
-We will create the following agents and configure their reporting structure, capabilities, and relevant tools (MCP servers and skills):
+## Environment knobs
 
-| Agent Name (Role) | Title | Icon | Reports To | Capabilities / Focus | Skills / MCP Tools Configured |
-|-------------------|-------|------|------------|----------------------|-------------------------------|
-| **Portfolio Manager** (`portfolio_manager`) | 投资组合经理 (CEO) | crown | *(None)* | 最终决策，审批交易提案，管理整体投资组合 | `papertape` (公司协作)<br>`para-memory-files` (记忆) |
-| **Risk Manager** (`risk_manager`) | 风险管理团队 | shield | Portfolio Manager | 评估市场波动性、流动性，持续监控风险 | `papertape`<br>`ssh-mcp` (连接风控系统) |
-| **Trader** (`trader`) | 交易员代理 | zap | Portfolio Manager | 整合报告，决定交易时机和规模，执行交易 | `papertape`<br>`para-memory-files` (记录信息) |
-| **Long Researcher** (`long_researcher`) | 多头研究员 | telescope | Portfolio Manager | 评估分析师见解，寻找做多机会 | `papertape`<br>`para-memory-files` |
-| **Short Researcher** (`short_researcher`) | 空头研究员 | microscope | Portfolio Manager | 寻找做空机会，进行批判性辩论 | `papertape`<br>`para-memory-files` |
-| **Fundamental Analyst** (`fundamental_analyst`) | 基本面分析师 | file-code | Long/Short Researcher | 评估公司财务、业绩指标、内在价值 | `sugarforever/01coder-agent-skills@china-stock-analysis`<br>`nicepkg/ai-workflow@a-share-analysis` |
-| **Sentiment Analyst** (`sentiment_analyst`) | 情绪分析师 | heart | Long/Short Researcher | 社交媒体情绪分析 | `omer-metin/skills-for-antigravity@sentiment-analysis-trading` |
-| **News Analyst** (`news_analyst`) | 新闻分析师 | globe | Long/Short Researcher | 监测全球新闻和宏观经济 | `nanmicoder/newscrawler@china-news-crawler`<br>`skills.volces.com@a-share-daily-report` |
-| **Technical Analyst** (`technical_analyst`) | 技术分析师 | radar | Long/Short Researcher | MACD、RSI等技术指标分析 | `ssh-mcp` (连接量化服务器) |
+- `CHOPSTICKS_API_BASE`
+- `CHOPSTICKS_COMPANY_NAME`
+- `CHOPSTICKS_TRADING_MODEL`
+- `CHOPSTICKS_POLL_INTERVAL_MS`
+- `CHOPSTICKS_AUTO_WAKE_WAIT_MS`
+- `CHOPSTICKS_HEARTBEAT_TIMEOUT_MS`
+- `CHOPSTICKS_MAX_TURNS_PER_RUN`
+- `CHOPSTICKS_UI_BASE`
+- `CHOPSTICKS_HEARTBEAT_RUN_LIST_LIMIT`
+- `CHOPSTICKS_OBSERVE_DESCENDANTS=true`
+- `CHOPSTICKS_DESCENDANT_TIMEOUT_MS`
+- `CHOPSTICKS_DESCENDANT_SETTLE_MS`
+- `CHOPSTICKS_SKIP_RUN=true`
 
-*Note: All agents will use the `codebuddy_local` adapter type.*
+## Expected outcome
 
-## Verification Plan
+For a healthy local setup with authenticated `codebuddy`, the smoke run should:
 
-### Automated Tests
-- Script a validation check using `curl -sS http://127.0.0.1:3100/api/companies/{companyId}/agents` to ensure all 9 agents are created with the correct `codebuddy_local` adapter and reporting lines.
-
-### Manual Verification
-- Output the Papertape Dashboard UI link for the TradingAgents company.
-- The user can log in to the Board UI and confirm the reporting hierarchy matches the plan.
+- create the full org successfully
+- create one top-level research issue
+- observe at least one heartbeat run for the portfolio manager
+- ideally finish that run with `succeeded`
+- leave visible collaboration evidence in Chopsticks, ideally comments and/or delegated child issues
+- when descendant observation is enabled, show whether child issues also triggered downstream heartbeat runs

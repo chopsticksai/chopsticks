@@ -1,13 +1,13 @@
 {
-  "name": "papertape",
+  "name": "chopsticks",
   "version": "0.3.1",
-  "description": "Papertape CLI — orchestrate AI agent teams to run a business",
+  "description": "Chopsticks CLI — orchestrate AI agent teams to run a business",
   "type": "module",
   "bin": {
-    "papertape": "./dist/index.js"
+    "chopsticks": "./dist/index.js"
   },
   "keywords": [
-    "papertape",
+    "chopsticks",
     "ai",
     "agents",
     "orchestration",
@@ -16,10 +16,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/papertapeai/papertape.git",
+    "url": "https://github.com/chopsticksai/chopsticks.git",
     "directory": "cli"
   },
-  "homepage": "https://github.com/papertapeai/papertape",
+  "homepage": "https://github.com/chopsticksai/chopsticks",
   "files": [
     "dist"
   ],
@@ -34,18 +34,18 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.10.0",
-    "@papertape/adapter-claude-local": "workspace:*",
-    "@papertape/adapter-codebuddy-local": "workspace:*",
-    "@papertape/adapter-codex-local": "workspace:*",
-    "@papertape/adapter-cursor-local": "workspace:*",
-    "@papertape/adapter-gemini-local": "workspace:*",
-    "@papertape/adapter-opencode-local": "workspace:*",
-    "@papertape/adapter-pi-local": "workspace:*",
-    "@papertape/adapter-openclaw-gateway": "workspace:*",
-    "@papertape/adapter-utils": "workspace:*",
-    "@papertape/db": "workspace:*",
-    "@papertape/server": "workspace:*",
-    "@papertape/shared": "workspace:*",
+    "@chopsticks/adapter-claude-local": "workspace:*",
+    "@chopsticks/adapter-codebuddy-local": "workspace:*",
+    "@chopsticks/adapter-codex-local": "workspace:*",
+    "@chopsticks/adapter-cursor-local": "workspace:*",
+    "@chopsticks/adapter-gemini-local": "workspace:*",
+    "@chopsticks/adapter-opencode-local": "workspace:*",
+    "@chopsticks/adapter-pi-local": "workspace:*",
+    "@chopsticks/adapter-openclaw-gateway": "workspace:*",
+    "@chopsticks/adapter-utils": "workspace:*",
+    "@chopsticks/db": "workspace:*",
+    "@chopsticks/server": "workspace:*",
+    "@chopsticks/shared": "workspace:*",
     "drizzle-orm": "0.38.4",
     "dotenv": "^17.0.1",
     "commander": "^13.1.0",

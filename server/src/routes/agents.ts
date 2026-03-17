@@ -1,8 +1,8 @@
 import { Router, type Request } from "express";
 import { generateKeyPairSync, randomUUID } from "node:crypto";
 import path from "node:path";
-import type { Db } from "@papertape/db";
-import { agents as agentsTable, companies, heartbeatRuns } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
+import { agents as agentsTable, companies, heartbeatRuns } from "@chopsticks/db";
 import { and, desc, eq, inArray, not, sql } from "drizzle-orm";
 import {
   createAgentKeySchema,
@@ -17,12 +17,13 @@ import {
   updateAgentInstructionsPathSchema,
   wakeAgentSchema,
   updateAgentSchema,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import { validate } from "../middleware/validate.js";
 import {
   agentService,
   accessService,
   approvalService,
+  budgetService,
   heartbeatService,
   issueApprovalService,
   issueService,
@@ -34,15 +35,15 @@ import { assertBoard, assertCompanyAccess, getActorInfo } from "./authz.js";
 import { findServerAdapter, listAdapterModels } from "../adapters/index.js";
 import { redactEventPayload } from "../redaction.js";
 import { redactCurrentUserValue } from "../log-redaction.js";
-import { runClaudeLogin } from "@papertape/adapter-claude-local/server";
-import { DEFAULT_CODEBUDDY_LOCAL_MODEL } from "@papertape/adapter-codebuddy-local";
+import { runClaudeLogin } from "@chopsticks/adapter-claude-local/server";
+import { DEFAULT_CODEBUDDY_LOCAL_MODEL } from "@chopsticks/adapter-codebuddy-local";
 import {
   DEFAULT_CODEX_LOCAL_BYPASS_APPROVALS_AND_SANDBOX,
   DEFAULT_CODEX_LOCAL_MODEL,
-} from "@papertape/adapter-codex-local";
-import { DEFAULT_CURSOR_LOCAL_MODEL } from "@papertape/adapter-cursor-local";
-import { DEFAULT_GEMINI_LOCAL_MODEL } from "@papertape/adapter-gemini-local";
-import { ensureOpenCodeModelConfiguredAndAvailable } from "@papertape/adapter-opencode-local/server";
+} from "@chopsticks/adapter-codex-local";
+import { DEFAULT_CURSOR_LOCAL_MODEL } from "@chopsticks/adapter-cursor-local";
+import { DEFAULT_GEMINI_LOCAL_MODEL } from "@chopsticks/adapter-gemini-local";
+import { ensureOpenCodeModelConfiguredAndAvailable } from "@chopsticks/adapter-opencode-local/server";
 
 export function agentRoutes(db: Db) {
   const DEFAULT_INSTRUCTIONS_PATH_KEYS: Record<string, string> = {
@@ -59,10 +60,11 @@ export function agentRoutes(db: Db) {
   const svc = agentService(db);
   const access = accessService(db);
   const approvalsSvc = approvalService(db);
+  const budgets = budgetService(db);
   const heartbeat = heartbeatService(db);
   const issueApprovalsSvc = issueApprovalService(db);
   const secretsSvc = secretService(db);
-  const strictSecretsMode = process.env.PAPERTAPE_SECRETS_STRICT_MODE === "true";
+  const strictSecretsMode = process.env.CHOPSTICKS_SECRETS_STRICT_MODE === "true";
 
   function canCreateAgents(agent: { role: string; permissions: Record<string, unknown> | null | undefined }) {
     if (!agent.permissions || typeof agent.permissions !== "object") return false;
@@ -946,6 +948,19 @@ export function agentRoutes(db: Db) {
       entityId: agent.id,
       details: { name: agent.name, role: agent.role },
     });
+
+    if (agent.budgetMonthlyCents > 0) {
+      await budgets.upsertPolicy(
+        companyId,
+        {
+          scopeType: "agent",
+          scopeId: agent.id,
+          amount: agent.budgetMonthlyCents,
+          windowKind: "calendar_month_utc",
+        },
+        actor.actorType === "user" ? actor.actorId : null,
+      );
+    }
 
     res.status(201).json(agent);
   });

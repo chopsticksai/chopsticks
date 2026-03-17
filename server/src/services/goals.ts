@@ -1,6 +1,6 @@
 import { and, asc, eq, isNull } from "drizzle-orm";
-import type { Db } from "@papertape/db";
-import { goals } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
+import { goals } from "@chopsticks/db";
 
 type GoalReader = Pick<Db, "select">;
 

@@ -1,4 +1,4 @@
-import type { PapertapePluginManifestV1 } from "@papertape/plugin-sdk";
+import type { ChopsticksPluginManifestV1 } from "@chopsticks/plugin-sdk";
 import {
   DEFAULT_CONFIG,
   EXPORT_NAMES,
@@ -11,13 +11,13 @@ import {
   WEBHOOK_KEYS,
 } from "./constants.js";
 
-const manifest: PapertapePluginManifestV1 = {
+const manifest: ChopsticksPluginManifestV1 = {
   id: PLUGIN_ID,
   apiVersion: 1,
   version: PLUGIN_VERSION,
   displayName: "Kitchen Sink (Example)",
-  description: "Reference plugin that demonstrates the current Papertape plugin API surface, UI surfaces, bridge actions, events, jobs, webhooks, tools, local workspace access, and runtime diagnostics in one place.",
-  author: "Papertape",
+  description: "Reference plugin that demonstrates the current Chopsticks plugin API surface, UI surfaces, bridge actions, events, jobs, webhooks, tools, local workspace access, and runtime diagnostics in one place.",
+  author: "Chopsticks",
   categories: ["ui", "automation", "workspace", "connector"],
   capabilities: [
     "companies.read",
@@ -158,7 +158,7 @@ const manifest: PapertapePluginManifestV1 = {
     {
       name: TOOL_NAMES.companySummary,
       displayName: "Kitchen Sink Company Summary",
-      description: "Summarizes the current company using the Papertape domain APIs.",
+      description: "Summarizes the current company using the Chopsticks domain APIs.",
       parametersSchema: {
         type: "object",
         properties: {},

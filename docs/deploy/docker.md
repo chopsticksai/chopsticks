@@ -3,7 +3,7 @@ title: Docker
 summary: Docker Compose 快速启动
 ---
 
-无需在本机安装 Node 或 pnpm，也能通过 Docker 运行 Papertape。
+无需在本机安装 Node 或 pnpm，也能通过 Docker 运行 Chopsticks。
 
 ## Compose 快速启动（推荐）
 
@@ -16,30 +16,30 @@ Open [http://localhost:3100](http://localhost:3100).
 默认值：
 
 - 主机端口：`3100`
-- 数据目录：`./data/docker-papertape`
+- 数据目录：`./data/docker-chopsticks`
 
 通过环境变量覆盖：
 
 ```sh
-PAPERTAPE_PORT=3200 PAPERTAPE_DATA_DIR=./data/pc \
+CHOPSTICKS_PORT=3200 CHOPSTICKS_DATA_DIR=./data/pc \
   docker compose -f docker-compose.quickstart.yml up --build
 ```
 
 ## 手动 Docker 构建
 
 ```sh
-docker build -t papertape-local .
-docker run --name papertape \
+docker build -t chopsticks-local .
+docker run --name chopsticks \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e PAPERTAPE_HOME=/papertape \
-  -v "$(pwd)/data/docker-papertape:/papertape" \
-  papertape-local
+  -e CHOPSTICKS_HOME=/chopsticks \
+  -v "$(pwd)/data/docker-chopsticks:/chopsticks" \
+  chopsticks-local
 ```
 
 ## 数据持久化
 
-所有数据都会持久化到绑定挂载目录（`./data/docker-papertape`）：
+所有数据都会持久化到绑定挂载目录（`./data/docker-chopsticks`）：
 
 - 内嵌 PostgreSQL 数据
 - 上传资产
@@ -56,14 +56,14 @@ Docker 镜像已经预装：
 如果希望在容器内使用本地适配器运行，请传入对应 API key：
 
 ```sh
-docker run --name papertape \
+docker run --name chopsticks \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e PAPERTAPE_HOME=/papertape \
+  -e CHOPSTICKS_HOME=/chopsticks \
   -e OPENAI_API_KEY=sk-... \
   -e ANTHROPIC_API_KEY=sk-... \
-  -v "$(pwd)/data/docker-papertape:/papertape" \
-  papertape-local
+  -v "$(pwd)/data/docker-chopsticks:/chopsticks" \
+  chopsticks-local
 ```
 
 即使不传 API key，应用本身也能正常运行；只是适配器环境检查会提示缺少前置条件。

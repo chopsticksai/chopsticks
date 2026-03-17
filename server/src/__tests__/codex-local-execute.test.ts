@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { execute } from "@papertape/adapter-codex-local/server";
+import { execute } from "@chopsticks/adapter-codex-local/server";
 
 async function writeFakeCodexCommand(root: string, baseName: string): Promise<string> {
   const scriptPath = path.join(root, `${baseName}.cjs`);
@@ -13,13 +13,13 @@ async function writeFakeCodexCommand(root: string, baseName: string): Promise<st
   const script = `#!/usr/bin/env node
 const fs = require("node:fs");
 
-const capturePath = process.env.PAPERTAPE_TEST_CAPTURE_PATH;
+const capturePath = process.env.CHOPSTICKS_TEST_CAPTURE_PATH;
 const payload = {
   argv: process.argv.slice(2),
   prompt: fs.readFileSync(0, "utf8"),
   codexHome: process.env.CODEX_HOME || null,
-  papertapeEnvKeys: Object.keys(process.env)
-    .filter((key) => key.startsWith("PAPERTAPE_"))
+  chopsticksEnvKeys: Object.keys(process.env)
+    .filter((key) => key.startsWith("CHOPSTICKS_"))
     .sort(),
 };
 if (capturePath) {
@@ -44,16 +44,16 @@ type CapturePayload = {
   argv: string[];
   prompt: string;
   codexHome: string | null;
-  papertapeEnvKeys: string[];
+  chopsticksEnvKeys: string[];
 };
 
 describe("codex execute", () => {
   it("preserves the configured CODEX_HOME while injecting shared auth, config, and skills", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "papertape-codex-execute-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-codex-execute-"));
     const workspace = path.join(root, "workspace");
     const capturePath = path.join(root, "capture.json");
     const sharedCodexHome = path.join(root, "shared-codex-home");
-    const papertapeHome = path.join(root, "papertape-home");
+    const chopsticksHome = path.join(root, "chopsticks-home");
     await fs.mkdir(workspace, { recursive: true });
     await fs.mkdir(sharedCodexHome, { recursive: true });
     await fs.writeFile(path.join(sharedCodexHome, "auth.json"), '{"token":"shared"}\n', "utf8");
@@ -61,14 +61,14 @@ describe("codex execute", () => {
     const commandPath = await writeFakeCodexCommand(root, "codex");
 
     const previousHome = process.env.HOME;
-    const previousPapertapeHome = process.env.PAPERTAPE_HOME;
-    const previousPapertapeInstanceId = process.env.PAPERTAPE_INSTANCE_ID;
-    const previousPapertapeInWorktree = process.env.PAPERTAPE_IN_WORKTREE;
+    const previousChopsticksHome = process.env.CHOPSTICKS_HOME;
+    const previousChopsticksInstanceId = process.env.CHOPSTICKS_INSTANCE_ID;
+    const previousChopsticksInWorktree = process.env.CHOPSTICKS_IN_WORKTREE;
     const previousCodexHome = process.env.CODEX_HOME;
     process.env.HOME = root;
-    process.env.PAPERTAPE_HOME = papertapeHome;
-    process.env.PAPERTAPE_INSTANCE_ID = "worktree-1";
-    process.env.PAPERTAPE_IN_WORKTREE = "true";
+    process.env.CHOPSTICKS_HOME = chopsticksHome;
+    process.env.CHOPSTICKS_INSTANCE_ID = "worktree-1";
+    process.env.CHOPSTICKS_IN_WORKTREE = "true";
     process.env.CODEX_HOME = sharedCodexHome;
 
     try {
@@ -91,9 +91,9 @@ describe("codex execute", () => {
           command: commandPath,
           cwd: workspace,
           env: {
-            PAPERTAPE_TEST_CAPTURE_PATH: capturePath,
+            CHOPSTICKS_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the papertape heartbeat.",
+          promptTemplate: "Follow the chopsticks heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -106,20 +106,20 @@ describe("codex execute", () => {
       const capture = JSON.parse(await fs.readFile(capturePath, "utf8")) as CapturePayload;
       expect(capture.codexHome).toBe(sharedCodexHome);
       expect(capture.argv).toEqual(expect.arrayContaining(["exec", "--json", "-"]));
-      expect(capture.prompt).toContain("Follow the papertape heartbeat.");
-      expect(capture.papertapeEnvKeys).toEqual(
+      expect(capture.prompt).toContain("Follow the chopsticks heartbeat.");
+      expect(capture.chopsticksEnvKeys).toEqual(
         expect.arrayContaining([
-          "PAPERTAPE_AGENT_ID",
-          "PAPERTAPE_API_KEY",
-          "PAPERTAPE_API_URL",
-          "PAPERTAPE_COMPANY_ID",
-          "PAPERTAPE_RUN_ID",
+          "CHOPSTICKS_AGENT_ID",
+          "CHOPSTICKS_API_KEY",
+          "CHOPSTICKS_API_URL",
+          "CHOPSTICKS_COMPANY_ID",
+          "CHOPSTICKS_RUN_ID",
         ]),
       );
 
       const sharedAuth = path.join(sharedCodexHome, "auth.json");
       const sharedConfig = path.join(sharedCodexHome, "config.toml");
-      const sharedSkill = path.join(sharedCodexHome, "skills", "papertape");
+      const sharedSkill = path.join(sharedCodexHome, "skills", "chopsticks");
 
       expect((await fs.lstat(sharedAuth)).isFile()).toBe(true);
       expect(await fs.readFile(sharedConfig, "utf8")).toBe('model = "codex-mini-latest"\n');
@@ -127,12 +127,12 @@ describe("codex execute", () => {
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
-      if (previousPapertapeHome === undefined) delete process.env.PAPERTAPE_HOME;
-      else process.env.PAPERTAPE_HOME = previousPapertapeHome;
-      if (previousPapertapeInstanceId === undefined) delete process.env.PAPERTAPE_INSTANCE_ID;
-      else process.env.PAPERTAPE_INSTANCE_ID = previousPapertapeInstanceId;
-      if (previousPapertapeInWorktree === undefined) delete process.env.PAPERTAPE_IN_WORKTREE;
-      else process.env.PAPERTAPE_IN_WORKTREE = previousPapertapeInWorktree;
+      if (previousChopsticksHome === undefined) delete process.env.CHOPSTICKS_HOME;
+      else process.env.CHOPSTICKS_HOME = previousChopsticksHome;
+      if (previousChopsticksInstanceId === undefined) delete process.env.CHOPSTICKS_INSTANCE_ID;
+      else process.env.CHOPSTICKS_INSTANCE_ID = previousChopsticksInstanceId;
+      if (previousChopsticksInWorktree === undefined) delete process.env.CHOPSTICKS_IN_WORKTREE;
+      else process.env.CHOPSTICKS_IN_WORKTREE = previousChopsticksInWorktree;
       if (previousCodexHome === undefined) delete process.env.CODEX_HOME;
       else process.env.CODEX_HOME = previousCodexHome;
       await fs.rm(root, { recursive: true, force: true });
@@ -140,26 +140,26 @@ describe("codex execute", () => {
   });
 
   it("respects an explicit CODEX_HOME config override even in worktree mode", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "papertape-codex-execute-explicit-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-codex-execute-explicit-"));
     const workspace = path.join(root, "workspace");
     const capturePath = path.join(root, "capture.json");
     const sharedCodexHome = path.join(root, "shared-codex-home");
     const explicitCodexHome = path.join(root, "explicit-codex-home");
-    const papertapeHome = path.join(root, "papertape-home");
+    const chopsticksHome = path.join(root, "chopsticks-home");
     await fs.mkdir(workspace, { recursive: true });
     await fs.mkdir(sharedCodexHome, { recursive: true });
     await fs.writeFile(path.join(sharedCodexHome, "auth.json"), '{"token":"shared"}\n', "utf8");
     const commandPath = await writeFakeCodexCommand(root, "codex");
 
     const previousHome = process.env.HOME;
-    const previousPapertapeHome = process.env.PAPERTAPE_HOME;
-    const previousPapertapeInstanceId = process.env.PAPERTAPE_INSTANCE_ID;
-    const previousPapertapeInWorktree = process.env.PAPERTAPE_IN_WORKTREE;
+    const previousChopsticksHome = process.env.CHOPSTICKS_HOME;
+    const previousChopsticksInstanceId = process.env.CHOPSTICKS_INSTANCE_ID;
+    const previousChopsticksInWorktree = process.env.CHOPSTICKS_IN_WORKTREE;
     const previousCodexHome = process.env.CODEX_HOME;
     process.env.HOME = root;
-    process.env.PAPERTAPE_HOME = papertapeHome;
-    process.env.PAPERTAPE_INSTANCE_ID = "worktree-1";
-    process.env.PAPERTAPE_IN_WORKTREE = "true";
+    process.env.CHOPSTICKS_HOME = chopsticksHome;
+    process.env.CHOPSTICKS_INSTANCE_ID = "worktree-1";
+    process.env.CHOPSTICKS_IN_WORKTREE = "true";
     process.env.CODEX_HOME = sharedCodexHome;
 
     try {
@@ -182,10 +182,10 @@ describe("codex execute", () => {
           command: commandPath,
           cwd: workspace,
           env: {
-            PAPERTAPE_TEST_CAPTURE_PATH: capturePath,
+            CHOPSTICKS_TEST_CAPTURE_PATH: capturePath,
             CODEX_HOME: explicitCodexHome,
           },
-          promptTemplate: "Follow the papertape heartbeat.",
+          promptTemplate: "Follow the chopsticks heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -197,16 +197,16 @@ describe("codex execute", () => {
 
       const capture = JSON.parse(await fs.readFile(capturePath, "utf8")) as CapturePayload;
       expect(capture.codexHome).toBe(explicitCodexHome);
-      await expect(fs.lstat(path.join(papertapeHome, "instances", "worktree-1", "codex-home"))).rejects.toThrow();
+      await expect(fs.lstat(path.join(chopsticksHome, "instances", "worktree-1", "codex-home"))).rejects.toThrow();
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
-      if (previousPapertapeHome === undefined) delete process.env.PAPERTAPE_HOME;
-      else process.env.PAPERTAPE_HOME = previousPapertapeHome;
-      if (previousPapertapeInstanceId === undefined) delete process.env.PAPERTAPE_INSTANCE_ID;
-      else process.env.PAPERTAPE_INSTANCE_ID = previousPapertapeInstanceId;
-      if (previousPapertapeInWorktree === undefined) delete process.env.PAPERTAPE_IN_WORKTREE;
-      else process.env.PAPERTAPE_IN_WORKTREE = previousPapertapeInWorktree;
+      if (previousChopsticksHome === undefined) delete process.env.CHOPSTICKS_HOME;
+      else process.env.CHOPSTICKS_HOME = previousChopsticksHome;
+      if (previousChopsticksInstanceId === undefined) delete process.env.CHOPSTICKS_INSTANCE_ID;
+      else process.env.CHOPSTICKS_INSTANCE_ID = previousChopsticksInstanceId;
+      if (previousChopsticksInWorktree === undefined) delete process.env.CHOPSTICKS_IN_WORKTREE;
+      else process.env.CHOPSTICKS_IN_WORKTREE = previousChopsticksInWorktree;
       if (previousCodexHome === undefined) delete process.env.CODEX_HOME;
       else process.env.CODEX_HOME = previousCodexHome;
       await fs.rm(root, { recursive: true, force: true });

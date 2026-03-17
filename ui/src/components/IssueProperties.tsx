@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "@/lib/router";
-import type { Issue } from "@papertape/shared";
+import type { Issue } from "@chopsticks/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { agentsApi } from "../api/agents";
 import { authApi } from "../api/auth";
@@ -134,8 +134,12 @@ export function IssueProperties({ issue, onUpdate, inline }: IssuePropertiesProp
     queryFn: () => projectsApi.list(companyId!),
     enabled: !!companyId,
   });
+  const activeProjects = useMemo(
+    () => (projects ?? []).filter((p) => !p.archivedAt || p.id === issue.projectId),
+    [projects, issue.projectId],
+  );
   const { orderedProjects } = useProjectOrder({
-    projects: projects ?? [],
+    projects: activeProjects,
     companyId,
     userId: currentUserId,
   });

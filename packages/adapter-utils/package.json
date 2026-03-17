@@ -1,5 +1,5 @@
 {
-  "name": "@papertape/adapter-utils",
+  "name": "@chopsticks/adapter-utils",
   "version": "0.3.1",
   "type": "module",
   "exports": {

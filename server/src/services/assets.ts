@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import type { Db } from "@papertape/db";
-import { assets } from "@papertape/db";
+import type { Db } from "@chopsticks/db";
+import { assets } from "@chopsticks/db";
 
 export function assetService(db: Db) {
   return {

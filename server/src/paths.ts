@@ -2,16 +2,16 @@ import fs from "node:fs";
 import path from "node:path";
 import { resolveDefaultConfigPath } from "./home-paths.js";
 
-const PAPERTAPE_CONFIG_BASENAME = "config.json";
-const PAPERTAPE_ENV_FILENAME = ".env";
-const REPO_CONFIG_DIRNAME = ".papertape";
+const CHOPSTICKS_CONFIG_BASENAME = "config.json";
+const CHOPSTICKS_ENV_FILENAME = ".env";
+const REPO_CONFIG_DIRNAME = ".chopsticks";
 
 function findConfigFileFromAncestors(startDir: string): string | null {
   const absoluteStartDir = path.resolve(startDir);
   let currentDir = absoluteStartDir;
 
   while (true) {
-    const candidate = path.resolve(currentDir, REPO_CONFIG_DIRNAME, PAPERTAPE_CONFIG_BASENAME);
+    const candidate = path.resolve(currentDir, REPO_CONFIG_DIRNAME, CHOPSTICKS_CONFIG_BASENAME);
     if (fs.existsSync(candidate)) {
       return candidate;
     }
@@ -24,12 +24,12 @@ function findConfigFileFromAncestors(startDir: string): string | null {
   return null;
 }
 
-export function resolvePapertapeConfigPath(overridePath?: string): string {
+export function resolveChopsticksConfigPath(overridePath?: string): string {
   if (overridePath) return path.resolve(overridePath);
-  if (process.env.PAPERTAPE_CONFIG) return path.resolve(process.env.PAPERTAPE_CONFIG);
+  if (process.env.CHOPSTICKS_CONFIG) return path.resolve(process.env.CHOPSTICKS_CONFIG);
   return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath();
 }
 
-export function resolvePapertapeEnvPath(overrideConfigPath?: string): string {
-  return path.resolve(path.dirname(resolvePapertapeConfigPath(overrideConfigPath)), PAPERTAPE_ENV_FILENAME);
+export function resolveChopsticksEnvPath(overrideConfigPath?: string): string {
+  return path.resolve(path.dirname(resolveChopsticksConfigPath(overrideConfigPath)), CHOPSTICKS_ENV_FILENAME);
 }

@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { testEnvironment } from "@papertape/adapter-gemini-local/server";
+import { testEnvironment } from "@chopsticks/adapter-gemini-local/server";
 
 async function writeFakeGeminiCommand(binDir: string, argsCapturePath: string): Promise<string> {
-  const commandPath = path.join(binDir, "gemini");
-  const script = `#!/usr/bin/env node
+  const basePath = path.join(binDir, "gemini");
+  const script = `
 const fs = require("node:fs");
-const outPath = process.env.PAPERTAPE_TEST_ARGS_PATH;
+const outPath = process.env.CHOPSTICKS_TEST_ARGS_PATH;
 if (outPath) {
   fs.writeFileSync(outPath, JSON.stringify(process.argv.slice(2)), "utf8");
 }
@@ -22,16 +22,28 @@ console.log(JSON.stringify({
   result: "hello",
 }));
 `;
-  await fs.writeFile(commandPath, script, "utf8");
-  await fs.chmod(commandPath, 0o755);
-  return commandPath;
+  if (process.platform === "win32") {
+    const scriptPath = `${basePath}.js`;
+    const commandPath = `${basePath}.cmd`;
+    await fs.writeFile(scriptPath, script, "utf8");
+    await fs.writeFile(
+      commandPath,
+      `@echo off\r\n"${process.execPath}" "${scriptPath}" %*\r\n`,
+      "utf8",
+    );
+    return commandPath;
+  }
+
+  await fs.writeFile(basePath, `#!/usr/bin/env node\n${script}`, "utf8");
+  await fs.chmod(basePath, 0o755);
+  return basePath;
 }
 
 describe("gemini_local environment diagnostics", () => {
   it("creates a missing working directory when cwd is absolute", async () => {
     const cwd = path.join(
       os.tmpdir(),
-      `papertape-gemini-local-cwd-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      `chopsticks-gemini-local-cwd-${Date.now()}-${Math.random().toString(16).slice(2)}`,
       "workspace",
     );
 
@@ -56,7 +68,7 @@ describe("gemini_local environment diagnostics", () => {
   it("passes model and yolo flags to the hello probe", async () => {
     const root = path.join(
       os.tmpdir(),
-      `papertape-gemini-local-probe-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      `chopsticks-gemini-local-probe-${Date.now()}-${Math.random().toString(16).slice(2)}`,
     );
     const binDir = path.join(root, "bin");
     const cwd = path.join(root, "workspace");
@@ -74,7 +86,7 @@ describe("gemini_local environment diagnostics", () => {
         yolo: true,
         env: {
           GEMINI_API_KEY: "test-key",
-          PAPERTAPE_TEST_ARGS_PATH: argsCapturePath,
+          CHOPSTICKS_TEST_ARGS_PATH: argsCapturePath,
           PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
         },
       },

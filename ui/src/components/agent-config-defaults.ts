@@ -1,4 +1,4 @@
-import type { CreateConfigValues } from "@papertape/adapter-utils";
+import type { CreateConfigValues } from "@chopsticks/adapter-utils";
 
 export const defaultCreateValues: CreateConfigValues = {
   adapterType: "claude_local",

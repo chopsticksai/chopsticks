@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { resolvePapertapeConfigPath } from "../paths.ts";
+import { resolveChopsticksConfigPath } from "../paths.ts";
 
 const ORIGINAL_CWD = process.cwd();
 const ORIGINAL_ENV = { ...process.env };
@@ -18,15 +18,15 @@ afterEach(() => {
   }
 });
 
-describe("resolvePapertapeConfigPath", () => {
-  it("prefers repo-local .papertape config files", () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "papertape-server-paths-"));
+describe("resolveChopsticksConfigPath", () => {
+  it("prefers repo-local .chopsticks config files", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-server-paths-"));
     const projectDir = path.join(tempDir, "repo");
-    fs.mkdirSync(path.join(projectDir, ".papertape"), { recursive: true });
-    fs.writeFileSync(path.join(projectDir, ".papertape", "config.json"), "{}\n");
-    delete process.env.PAPERTAPE_CONFIG;
+    fs.mkdirSync(path.join(projectDir, ".chopsticks"), { recursive: true });
+    fs.writeFileSync(path.join(projectDir, ".chopsticks", "config.json"), "{}\n");
+    delete process.env.CHOPSTICKS_CONFIG;
     process.chdir(projectDir);
 
-    expect(resolvePapertapeConfigPath()).toBe(path.join(projectDir, ".papertape", "config.json"));
+    expect(resolveChopsticksConfigPath()).toBe(path.join(projectDir, ".chopsticks", "config.json"));
   });
 });

@@ -6,7 +6,7 @@ import {
   updateIssueSchema,
   type Issue,
   type IssueComment,
-} from "@papertape/shared";
+} from "@chopsticks/shared";
 import {
   addCommonClientOptions,
   formatInlineRecord,
