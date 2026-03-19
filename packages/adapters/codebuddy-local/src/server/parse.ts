@@ -16,6 +16,12 @@ function asRecord(value: unknown): Record<string, unknown> | null {
 
 function asErrorText(value: unknown): string {
   if (typeof value === "string") return value;
+  if (Array.isArray(value)) {
+    const messages = value
+      .map((entry) => asErrorText(entry).trim())
+      .filter(Boolean);
+    return messages.join("; ");
+  }
   const rec = parseObject(value);
   const message =
     asString(rec.message, "") ||
@@ -23,11 +29,26 @@ function asErrorText(value: unknown): string {
     asString(rec.code, "") ||
     asString(rec.detail, "");
   if (message) return message;
+  const nestedErrors = Array.isArray(rec.errors)
+    ? rec.errors
+      .map((entry) => asErrorText(entry).trim())
+      .filter(Boolean)
+    : [];
+  if (nestedErrors.length > 0) return nestedErrors.join("; ");
   try {
-    return JSON.stringify(rec);
+    const stringified = JSON.stringify(rec);
+    return stringified === "{}" ? "" : stringified;
   } catch {
     return "";
   }
+}
+
+function pickErrorText(...values: unknown[]): string {
+  for (const value of values) {
+    const text = asErrorText(value).trim();
+    if (text) return text;
+  }
+  return "";
 }
 
 function collectAssistantText(message: unknown): string[] {
@@ -135,14 +156,14 @@ export function parseCodeBuddyJsonl(stdout: string) {
         messages.push(resultText);
       }
       if (isError) {
-        const resultError = asErrorText(event.error ?? event.message ?? event.result).trim();
+        const resultError = pickErrorText(event.error, event.message, event.result, event.errors);
         if (resultError) errorMessage = resultError;
       }
       continue;
     }
 
     if (type === "error") {
-      const message = asErrorText(event.message ?? event.error ?? event.detail).trim();
+      const message = pickErrorText(event.message, event.error, event.detail, event.errors);
       if (message) errorMessage = message;
       continue;
     }
@@ -150,7 +171,7 @@ export function parseCodeBuddyJsonl(stdout: string) {
     if (type === "system") {
       const subtype = asString(event.subtype, "").trim().toLowerCase();
       if (subtype === "error") {
-        const message = asErrorText(event.message ?? event.error ?? event.detail).trim();
+        const message = pickErrorText(event.message, event.error, event.detail, event.errors);
         if (message) errorMessage = message;
       }
       continue;

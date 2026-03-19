@@ -58,4 +58,23 @@ describe("codebuddy adapter", () => {
       ),
     ).toBe(false);
   });
+
+  it("extracts result errors from CodeBuddy error arrays", () => {
+    const parsed = parseCodeBuddyJsonl([
+      "{\"type\":\"system\",\"subtype\":\"init\",\"session_id\":\"session-123\",\"model\":\"glm-5.0\"}",
+      "{\"type\":\"result\",\"subtype\":\"error_during_execution\",\"is_error\":true,\"result\":{},\"errors\":[\"aborted\"],\"usage\":{\"input_tokens\":10,\"output_tokens\":1},\"total_cost_usd\":0}",
+    ].join("\n"));
+
+    expect(parsed).toEqual({
+      sessionId: "session-123",
+      summary: "",
+      usage: {
+        inputTokens: 10,
+        cachedInputTokens: 0,
+        outputTokens: 1,
+      },
+      costUsd: null,
+      errorMessage: "aborted",
+    });
+  });
 });
