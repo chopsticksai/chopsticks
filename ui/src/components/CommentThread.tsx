@@ -2,7 +2,7 @@ import { memo, useEffect, useMemo, useRef, useState, type ChangeEvent } from "re
 import { Link, useLocation } from "react-router-dom";
 import type { IssueComment, Agent } from "@abacus/shared";
 import { Button } from "@/components/ui/button";
-import { Check, Copy, BrainCircuit } from "lucide-react";
+import { Check, Copy, SlidersVertical } from "lucide-react";
 import { Identity } from "./Identity";
 import { InlineEntitySelector, type InlineEntityOption } from "./InlineEntitySelector";
 import { MarkdownBody } from "./MarkdownBody";
@@ -436,7 +436,7 @@ export function CommentThread({
                 disabled={attaching}
                 title={t("Attach image")}
               >
-                <BrainCircuit className="h-4 w-4" />
+                <SlidersVertical className="h-4 w-4" />
               </Button>
             </div>
           )}
