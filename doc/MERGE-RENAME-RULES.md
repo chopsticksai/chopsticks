@@ -28,7 +28,8 @@ flow, use [`doc/UPSTREAM-MERGE-RUNBOOK.md`](./UPSTREAM-MERGE-RUNBOOK.md).
 
 ## Terminology
 
-- `upstream`: the semantic role for the canonical abacus repo. In this
+- `upstream`: the semantic role for the canonical `paperclipai/paperclip`
+  repo. In this
   checkout the default remote name is `origin`.
 - `private fork`: the semantic role for the Abacus repo. In this checkout
   the default remote name is `private`.
@@ -93,7 +94,8 @@ Apply the following replacements when upstream code introduces legacy names:
 - Keep `"name"` aligned to `abacus` or `@abacus/*`.
 - Keep `"repository"` aligned to
   `https://github.com/abacus-lab/abacus`.
-- Replace dependency scopes from `@paperclipai/*` to `@abacus-lab/*`.
+- Replace dependency scopes from `@paperclipai/*` to `@abacus/*` for packages
+  owned by this fork.
 - When versions conflict, prefer the newer upstream version unless the private
   fork has an explicit release constraint.
 
@@ -121,6 +123,10 @@ Apply the following replacements when upstream code introduces legacy names:
   lockfile.
 - Preserve the correct manifest/source changes first, then remove the lockfile
   diff to satisfy CI policy.
+- If a lockfile or third-party package metadata still contains
+  `@paperclipai/*`, first verify whether it is the real published dependency
+  name of an external package. Do not rename third-party dependency names just
+  to satisfy branding.
 
 ## Allowed Exceptions
 
@@ -130,6 +136,8 @@ The following may keep the upstream name unchanged:
 - historical commit hashes or commit message references
 - upstream changelog or release-note history references
 - third-party dependency names outside the Abacus namespace
+- lockfile entries or package-manager metadata that reflect real third-party
+  published package names, including transitive `@paperclipai/*` dependencies
 - comments explicitly marked as `upstream reference`
 - inert, non-user-visible test fixtures or temp directory names, as long as the
   legacy token does not leak into product UI, public contracts, or assertion

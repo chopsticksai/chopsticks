@@ -86,13 +86,19 @@ Localization scope includes more than top-level headings. It includes:
 - The CEO persona link in `DEFAULT_TASK_DESCRIPTION` must point to
   `https://github.com/abacus-lab/companies/...`.
 - User-visible current-product links that still point to
-  `https://github.com/abacus-lab/abacus` must be updated to
+  `https://github.com/paperclipai/paperclip` must be updated to
   `https://github.com/abacus-lab/abacus`.
 
 ## Merge Intake Checklist
 
 When upstream merge work changes UI, inspect all touched `ui/src/pages/*`,
 `ui/src/components/*`, `ui/src/lib/*`, and relevant `tests/e2e/*` files.
+
+Default audit scope for upstream merge work:
+
+- prioritize product UI and management UI
+- exclude `DesignGuide`, `RunTranscriptUxLab`, example plugin UI, and
+  demo/sample pages unless the current merge actually touches them
 
 For each touched UI area, check:
 
@@ -126,6 +132,8 @@ When upstream introduces structured labels plus free-form detail:
 - prefer a reusable UI helper for label/value/detail translation
 - avoid duplicating per-component `switch` logic
 - do not change the server contract solely to force translated strings
+- build locale-sensitive option arrays and label maps inside a component or a
+  locale-aware helper, not in module top-level constants
 
 ## Common Pitfalls
 
@@ -140,8 +148,10 @@ When upstream introduces structured labels plus free-form detail:
   and `Resets Mar 18 at 7:59am` are better handled with UI helpers than with
   server contract changes.
 - If translated data structures are built at module top level, locale switches
-  will not recompute them. Build locale-dependent arrays/objects inside the
-  component or hook.
+  will not recompute them. Common high-risk examples include navigation items,
+  filter options, workspace options, adapter config enums, summary builders,
+  and status-label maps. Build them inside the component, hook, or a
+  locale-aware helper.
 - After merging upstream UI, do a dedicated scan for user-visible brand names
   and GitHub links. Do not assume new upstream UI already matches Abacus
   naming rules.
@@ -158,9 +168,14 @@ When upstream introduces structured labels plus free-form detail:
 - prompt/snippet builder output
 - GitHub URL replacement behavior
 - structured UI helper mapping for labels/valueLabel/detail
+- locale-sensitive arrays or label maps recompute after a locale change
 - onboarding locale switching
 - layout-level locale switching next to the theme toggle
 - refresh persistence after a locale change
+
+If a merge rewrites a module-top-level English array/object into a localized
+builder, add at least one targeted test that proves the labels recompute after
+switching locale.
 
 ### Low-Value Tests to Avoid
 

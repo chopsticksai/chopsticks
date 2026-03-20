@@ -39,7 +39,8 @@ This document is procedural. For normative rules, see:
 
 ```sh
 git remote -v
-git fetch origin private
+git fetch origin --prune
+git fetch private --prune
 ```
 
 ### 2. Create a Safety Branch
@@ -53,14 +54,26 @@ git branch codex/<topic>-safety-YYYYMMDD
 
 ### 3. Align Ancestry With the Private Fork
 
-- If the current branch is missing recent `private/master` ancestry, merge
-  `private/master` first.
+- After creating the working branch, check how `HEAD` compares with
+  `private/master`.
+- If `private/master` is ahead of `HEAD`, merge `private/master` first.
+- Do this even when you expect the merged tree to stay equivalent. History
+  alignment still matters for the PR and later triage.
 - If the resulting tree is equivalent, keep the history alignment and do not
   invent content changes.
 
 ```sh
+git rev-list --left-right --count private/master...HEAD
 git merge private/master
 ```
+
+Interpretation:
+
+- left count: commits reachable only from `private/master`
+- right count: commits reachable only from `HEAD`
+
+If the left count is non-zero, `private/master` is ahead and must be merged
+before `origin/master`.
 
 ### 4. Merge Upstream With a Real Merge Commit
 
@@ -124,7 +137,44 @@ If the output is non-empty, restore the lockfile to the base branch:
 git restore --source=private/master --staged --worktree pnpm-lock.yaml
 ```
 
-### 9. Run Quality Gates
+### 9. Run Clean Linux Verification When Dependency Plumbing Changed
+
+Do not rely only on the current working tree when the merge touches dependency
+or workspace wiring, especially:
+
+- `package.json`
+- package `exports`
+- `pnpm-workspace.yaml`
+- `.npmrc`
+- plugin SDK or other workspace manifests
+
+These changes can pass locally while still failing in a clean Linux checkout
+because local `dist` output, Windows-specific state, or cached installs hide
+the real problem.
+
+In those cases, re-run the install and validation flow in a clean Linux
+environment such as a one-off clone, Docker, or GitHub Actions-like runner:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm -r typecheck
+```
+
+Add `pnpm test:run` when the touched area includes package resolution,
+plugin loading, or embedded runtime dependencies.
+
+### 10. CI Triage Tips
+
+If local quality gates pass but GitHub CI fails, first suspect clean-checkout
+or Linux-environment issues before changing business logic.
+
+High-signal examples from recent upstream merge work:
+
+- package `exports` that only point to `dist`
+- `pnpm-workspace.yaml` `allowBuilds` missing Linux platform dependencies such
+  as `@embedded-postgres/linux-x64`
+
+### 11. Run Quality Gates
 
 ```sh
 pnpm -r typecheck
@@ -134,7 +184,7 @@ pnpm build
 
 If any gate cannot be run, record exactly what was skipped and why.
 
-### 10. Commit and PR Readiness Check
+### 12. Commit and PR Readiness Check
 
 Before pushing:
 
@@ -142,6 +192,7 @@ Before pushing:
 - rename audit is clean except for allowed exceptions
 - UI audit is complete
 - lockfile audit is clean
+- clean Linux verification is complete when dependency plumbing changed
 - quality gates passed
 
 Recommended final checks:
