@@ -19,14 +19,14 @@ afterEach(() => {
 });
 
 describe("resolveConfigPath", () => {
-  it("prefers repo-local .chopsticks config files", () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-config-store-"));
+  it("prefers repo-local .abacus config files", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-config-store-"));
     const projectDir = path.join(tempDir, "repo");
-    fs.mkdirSync(path.join(projectDir, ".chopsticks"), { recursive: true });
-    fs.writeFileSync(path.join(projectDir, ".chopsticks", "config.json"), "{}\n");
-    delete process.env.CHOPSTICKS_CONFIG;
+    fs.mkdirSync(path.join(projectDir, ".abacus"), { recursive: true });
+    fs.writeFileSync(path.join(projectDir, ".abacus", "config.json"), "{}\n");
+    delete process.env.ABACUS_CONFIG;
     process.chdir(projectDir);
 
-    expect(resolveConfigPath()).toBe(path.join(projectDir, ".chopsticks", "config.json"));
+    expect(resolveConfigPath()).toBe(path.join(projectDir, ".abacus", "config.json"));
   });
 });

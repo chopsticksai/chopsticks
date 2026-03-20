@@ -1,15 +1,15 @@
 import path from "node:path";
 import * as p from "@clack/prompts";
 import pc from "picocolors";
-import { formatDatabaseBackupResult, runDatabaseBackup } from "@chopsticks/db";
+import { formatDatabaseBackupResult, runDatabaseBackup } from "@abacus/db";
 import {
   expandHomePrefix,
   resolveDefaultBackupDir,
-  resolveChopsticksInstanceId,
+  resolveAbacusInstanceId,
 } from "../config/home.js";
 import { publicCliCommand } from "../config/branding.js";
 import { readConfig, resolveConfigPath } from "../config/store.js";
-import { printChopsticksCliBanner } from "../utils/banner.js";
+import { printAbacusCliBanner } from "../utils/banner.js";
 
 type DbBackupOptions = {
   config?: string;
@@ -30,7 +30,7 @@ function resolveConnectionString(configPath?: string): { value: string; source: 
 
   const port = config?.database.embeddedPostgresPort ?? 54329;
   return {
-    value: `postgres://chopsticks:chopsticks@127.0.0.1:${port}/chopsticks`,
+    value: `postgres://abacus:abacus@127.0.0.1:${port}/abacus`,
     source: `embedded-postgres@${port}`,
   };
 }
@@ -48,20 +48,20 @@ function resolveBackupDir(raw: string): string {
 }
 
 export async function dbBackupCommand(opts: DbBackupOptions): Promise<void> {
-  printChopsticksCliBanner();
+  printAbacusCliBanner();
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("db:backup")} `)));
 
   const configPath = resolveConfigPath(opts.config);
   const config = readConfig(opts.config);
   const connection = resolveConnectionString(opts.config);
-  const defaultDir = resolveDefaultBackupDir(resolveChopsticksInstanceId());
+  const defaultDir = resolveDefaultBackupDir(resolveAbacusInstanceId());
   const configuredDir = opts.dir?.trim() || config?.database.backup.dir || defaultDir;
   const backupDir = resolveBackupDir(configuredDir);
   const retentionDays = normalizeRetentionDays(
     opts.retentionDays,
     config?.database.backup.retentionDays ?? 30,
   );
-  const filenamePrefix = opts.filenamePrefix?.trim() || "chopsticks";
+  const filenamePrefix = opts.filenamePrefix?.trim() || "abacus";
 
   p.log.message(pc.dim(`Config: ${configPath}`));
   p.log.message(pc.dim(`Connection source: ${connection.source}`));

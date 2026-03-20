@@ -1,9 +1,9 @@
 import * as p from "@clack/prompts";
 import type { LoggingConfig } from "../config/schema.js";
-import { resolveDefaultLogsDir, resolveChopsticksInstanceId } from "../config/home.js";
+import { resolveDefaultLogsDir, resolveAbacusInstanceId } from "../config/home.js";
 
 export async function promptLogging(): Promise<LoggingConfig> {
-  const defaultLogDir = resolveDefaultLogsDir(resolveChopsticksInstanceId());
+  const defaultLogDir = resolveDefaultLogsDir(resolveAbacusInstanceId());
   const mode = await p.select({
     message: "Logging mode",
     options: [

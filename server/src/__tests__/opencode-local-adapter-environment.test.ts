@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { testEnvironment } from "@chopsticks/adapter-opencode-local/server";
+import { testEnvironment } from "@abacus/adapter-opencode-local/server";
 
 async function writeFakeOpencodeCommand(basePath: string): Promise<string> {
   const script = `
@@ -32,7 +32,7 @@ describe("opencode_local environment diagnostics", () => {
   it("reports a missing working directory as an error when cwd is absolute", async () => {
     const cwd = path.join(
       os.tmpdir(),
-      `chopsticks-opencode-local-cwd-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      `abacus-opencode-local-cwd-${Date.now()}-${Math.random().toString(16).slice(2)}`,
       "workspace",
     );
 
@@ -53,7 +53,7 @@ describe("opencode_local environment diagnostics", () => {
   });
 
   it("treats an empty OPENAI_API_KEY override as missing", async () => {
-    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-opencode-env-empty-key-"));
+    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-opencode-env-empty-key-"));
     const originalOpenAiKey = process.env.OPENAI_API_KEY;
     process.env.OPENAI_API_KEY = "sk-host-value";
 
@@ -84,8 +84,8 @@ describe("opencode_local environment diagnostics", () => {
   });
 
   it("classifies ProviderModelNotFoundError probe output as model-unavailable warning", async () => {
-    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-opencode-env-probe-cwd-"));
-    const binDir = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-opencode-env-probe-bin-"));
+    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-opencode-env-probe-cwd-"));
+    const binDir = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-opencode-env-probe-bin-"));
     const fakeOpencode = await writeFakeOpencodeCommand(path.join(binDir, "opencode"));
 
     try {

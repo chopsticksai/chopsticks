@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import type { IssueComment, Agent } from "@chopsticks/shared";
+import type { IssueComment, Agent } from "@abacus/shared";
 import { Button } from "@/components/ui/button";
 import { Check, Copy, BrainCircuit } from "lucide-react";
 import { Identity } from "./Identity";

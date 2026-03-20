@@ -7,12 +7,12 @@ import {
 
 describe("pi models", () => {
   afterEach(() => {
-    delete process.env.CHOPSTICKS_PI_COMMAND;
+    delete process.env.ABACUS_PI_COMMAND;
     resetPiModelsCacheForTests();
   });
 
   it("returns an empty list when discovery command is unavailable", async () => {
-    process.env.CHOPSTICKS_PI_COMMAND = "__chopsticks_missing_pi_command__";
+    process.env.ABACUS_PI_COMMAND = "__abacus_missing_pi_command__";
     await expect(listPiModels()).resolves.toEqual([]);
   });
 
@@ -23,7 +23,7 @@ describe("pi models", () => {
   });
 
   it("rejects when discovery cannot run for configured model", async () => {
-    process.env.CHOPSTICKS_PI_COMMAND = "__chopsticks_missing_pi_command__";
+    process.env.ABACUS_PI_COMMAND = "__abacus_missing_pi_command__";
     await expect(
       ensurePiModelConfiguredAndAvailable({
         model: "xai/grok-4",

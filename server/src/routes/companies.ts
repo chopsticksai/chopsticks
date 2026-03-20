@@ -1,12 +1,12 @@
 import { Router } from "express";
-import type { Db } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
 import {
   companyPortabilityExportSchema,
   companyPortabilityImportSchema,
   companyPortabilityPreviewSchema,
   createCompanySchema,
   updateCompanySchema,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 import { forbidden } from "../errors.js";
 import { validate } from "../middleware/validate.js";
 import {

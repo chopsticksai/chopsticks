@@ -1,4 +1,4 @@
-import type { DashboardSummary } from "@chopsticks/shared";
+import type { DashboardSummary } from "@abacus/shared";
 import { api } from "./client";
 
 export const dashboardApi = {

@@ -1,10 +1,10 @@
 import fs from "node:fs";
-import type { ChopsticksConfig } from "../config/schema.js";
+import type { AbacusConfig } from "../config/schema.js";
 import { publicCliCommand } from "../config/branding.js";
 import type { CheckResult } from "./index.js";
 import { resolveRuntimeLikePath } from "./path-resolver.js";
 
-export async function databaseCheck(config: ChopsticksConfig, configPath?: string): Promise<CheckResult> {
+export async function databaseCheck(config: AbacusConfig, configPath?: string): Promise<CheckResult> {
   if (config.database.mode === "postgres") {
     if (!config.database.connectionString) {
       return {
@@ -17,7 +17,7 @@ export async function databaseCheck(config: ChopsticksConfig, configPath?: strin
     }
 
     try {
-      const { createDb } = await import("@chopsticks/db");
+      const { createDb } = await import("@abacus/db");
       const db = createDb(config.database.connectionString);
       await db.execute("SELECT 1");
       return {

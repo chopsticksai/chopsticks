@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { sessionCodec as claudeSessionCodec } from "@chopsticks/adapter-claude-local/server";
-import { sessionCodec as codexSessionCodec, isCodexUnknownSessionError } from "@chopsticks/adapter-codex-local/server";
+import { sessionCodec as claudeSessionCodec } from "@abacus/adapter-claude-local/server";
+import { sessionCodec as codexSessionCodec, isCodexUnknownSessionError } from "@abacus/adapter-codex-local/server";
 import {
   sessionCodec as cursorSessionCodec,
   isCursorUnknownSessionError,
-} from "@chopsticks/adapter-cursor-local/server";
+} from "@abacus/adapter-cursor-local/server";
 import {
   sessionCodec as geminiSessionCodec,
   isGeminiUnknownSessionError,
-} from "@chopsticks/adapter-gemini-local/server";
+} from "@abacus/adapter-gemini-local/server";
 import {
   sessionCodec as opencodeSessionCodec,
   isOpenCodeUnknownSessionError,
-} from "@chopsticks/adapter-opencode-local/server";
+} from "@abacus/adapter-opencode-local/server";
 
 describe("adapter session codecs", () => {
   it("normalizes claude session params with cwd", () => {

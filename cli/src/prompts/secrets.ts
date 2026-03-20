@@ -1,10 +1,10 @@
 import * as p from "@clack/prompts";
-import type { SecretProvider } from "@chopsticks/shared";
+import type { SecretProvider } from "@abacus/shared";
 import type { SecretsConfig } from "../config/schema.js";
-import { resolveDefaultSecretsKeyFilePath, resolveChopsticksInstanceId } from "../config/home.js";
+import { resolveDefaultSecretsKeyFilePath, resolveAbacusInstanceId } from "../config/home.js";
 
 function defaultKeyFilePath(): string {
-  return resolveDefaultSecretsKeyFilePath(resolveChopsticksInstanceId());
+  return resolveDefaultSecretsKeyFilePath(resolveAbacusInstanceId());
 }
 
 export function defaultSecretsConfig(): SecretsConfig {

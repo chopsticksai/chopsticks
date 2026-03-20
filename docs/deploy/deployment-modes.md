@@ -3,7 +3,7 @@ title: 部署模式
 summary: local_trusted 与 authenticated（private/public）
 ---
 
-Chopsticks 支持两种运行模式，对应不同的安全配置。
+Abacus 支持两种运行模式，对应不同的安全配置。
 
 ## `local_trusted`
 
@@ -16,7 +16,7 @@ Chopsticks 支持两种运行模式，对应不同的安全配置。
 
 ```sh
 # Set during onboard
-pnpm chopsticks onboard
+pnpm abacus onboard
 # Choose "local_trusted"
 ```
 
@@ -33,14 +33,14 @@ pnpm chopsticks onboard
 - **Host 信任**：要求启用私有主机信任策略
 
 ```sh
-pnpm chopsticks onboard
+pnpm abacus onboard
 # Choose "authenticated" -> "private"
 ```
 
 允许自定义 Tailscale 主机名：
 
 ```sh
-pnpm chopsticks allowed-hostname my-machine
+pnpm abacus allowed-hostname my-machine
 ```
 
 ### `authenticated` + `public`
@@ -52,13 +52,13 @@ pnpm chopsticks allowed-hostname my-machine
 - **安全**：`doctor` 中的部署检查更严格
 
 ```sh
-pnpm chopsticks onboard
+pnpm abacus onboard
 # Choose "authenticated" -> "public"
 ```
 
 ## 董事会认领流程
 
-从 `local_trusted` 迁移到 `authenticated` 时，Chopsticks 会在启动时输出一个一次性的认领 URL：
+从 `local_trusted` 迁移到 `authenticated` 时，Abacus 会在启动时输出一个一次性的认领 URL：
 
 ```
 /board-claim/<token>?code=<code>
@@ -75,11 +75,11 @@ pnpm chopsticks onboard
 更新部署模式：
 
 ```sh
-pnpm chopsticks configure --section server
+pnpm abacus configure --section server
 ```
 
 也可以通过环境变量在运行时覆盖：
 
 ```sh
-CHOPSTICKS_DEPLOYMENT_MODE=authenticated pnpm chopsticks run
+ABACUS_DEPLOYMENT_MODE=authenticated pnpm abacus run
 ```

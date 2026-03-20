@@ -3,7 +3,7 @@ title: Docker
 summary: Docker Compose 快速启动
 ---
 
-无需在本机安装 Node 或 pnpm，也能通过 Docker 运行 Chopsticks。
+无需在本机安装 Node 或 pnpm，也能通过 Docker 运行 Abacus。
 
 ## Compose 快速启动（推荐）
 
@@ -16,30 +16,30 @@ Open [http://localhost:3100](http://localhost:3100).
 默认值：
 
 - 主机端口：`3100`
-- 数据目录：`./data/docker-chopsticks`
+- 数据目录：`./data/docker-abacus`
 
 通过环境变量覆盖：
 
 ```sh
-CHOPSTICKS_PORT=3200 CHOPSTICKS_DATA_DIR=./data/pc \
+ABACUS_PORT=3200 ABACUS_DATA_DIR=./data/pc \
   docker compose -f docker-compose.quickstart.yml up --build
 ```
 
 ## 手动 Docker 构建
 
 ```sh
-docker build -t chopsticks-local .
-docker run --name chopsticks \
+docker build -t abacus-local .
+docker run --name abacus \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e CHOPSTICKS_HOME=/chopsticks \
-  -v "$(pwd)/data/docker-chopsticks:/chopsticks" \
-  chopsticks-local
+  -e ABACUS_HOME=/abacus \
+  -v "$(pwd)/data/docker-abacus:/abacus" \
+  abacus-local
 ```
 
 ## 数据持久化
 
-所有数据都会持久化到绑定挂载目录（`./data/docker-chopsticks`）：
+所有数据都会持久化到绑定挂载目录（`./data/docker-abacus`）：
 
 - 内嵌 PostgreSQL 数据
 - 上传资产
@@ -56,14 +56,14 @@ Docker 镜像已经预装：
 如果希望在容器内使用本地适配器运行，请传入对应 API key：
 
 ```sh
-docker run --name chopsticks \
+docker run --name abacus \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e CHOPSTICKS_HOME=/chopsticks \
+  -e ABACUS_HOME=/abacus \
   -e OPENAI_API_KEY=sk-... \
   -e ANTHROPIC_API_KEY=sk-... \
-  -v "$(pwd)/data/docker-chopsticks:/chopsticks" \
-  chopsticks-local
+  -v "$(pwd)/data/docker-abacus:/abacus" \
+  abacus-local
 ```
 
 即使不传 API key，应用本身也能正常运行；只是适配器环境检查会提示缺少前置条件。

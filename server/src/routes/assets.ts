@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import multer from "multer";
-import type { Db } from "@chopsticks/db";
-import { createAssetImageMetadataSchema } from "@chopsticks/shared";
+import type { Db } from "@abacus/db";
+import { createAssetImageMetadataSchema } from "@abacus/shared";
 import createDOMPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import type { StorageService } from "../storage/types.js";

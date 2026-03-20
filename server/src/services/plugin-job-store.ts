@@ -31,14 +31,14 @@
  */
 
 import { and, desc, eq } from "drizzle-orm";
-import type { Db } from "@chopsticks/db";
-import { plugins, pluginJobs, pluginJobRuns } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
+import { plugins, pluginJobs, pluginJobRuns } from "@abacus/db";
 import type {
   PluginJobDeclaration,
   PluginJobRunStatus,
   PluginJobRunTrigger,
   PluginJobRecord,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 import { notFound } from "../errors.js";
 
 /**

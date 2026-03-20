@@ -1,23 +1,23 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AGENT_ADAPTER_TYPES } from "@chopsticks/shared";
+import { AGENT_ADAPTER_TYPES } from "@abacus/shared";
 import type {
   Agent,
   AdapterEnvironmentTestResult,
   CompanySecret,
   EnvBinding,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 import type { AdapterModel } from "../api/agents";
 import { agentsApi } from "../api/agents";
 import { secretsApi } from "../api/secrets";
 import { assetsApi } from "../api/assets";
-import { DEFAULT_CODEBUDDY_LOCAL_MODEL } from "@chopsticks/adapter-codebuddy-local";
+import { DEFAULT_CODEBUDDY_LOCAL_MODEL } from "@abacus/adapter-codebuddy-local";
 import {
   DEFAULT_CODEX_LOCAL_BYPASS_APPROVALS_AND_SANDBOX,
   DEFAULT_CODEX_LOCAL_MODEL,
-} from "@chopsticks/adapter-codex-local";
-import { DEFAULT_CURSOR_LOCAL_MODEL } from "@chopsticks/adapter-cursor-local";
-import { DEFAULT_GEMINI_LOCAL_MODEL } from "@chopsticks/adapter-gemini-local";
+} from "@abacus/adapter-codex-local";
+import { DEFAULT_CURSOR_LOCAL_MODEL } from "@abacus/adapter-cursor-local";
+import { DEFAULT_GEMINI_LOCAL_MODEL } from "@abacus/adapter-gemini-local";
 import {
   Popover,
   PopoverContent,
@@ -51,10 +51,10 @@ import { OpenCodeLogoIcon } from "./OpenCodeLogoIcon";
 
 /* ---- Create mode values ---- */
 
-// Canonical type lives in @chopsticks/adapter-utils; re-exported here
+// Canonical type lives in @abacus/adapter-utils; re-exported here
 // so existing imports from this file keep working.
-export type { CreateConfigValues } from "@chopsticks/adapter-utils";
-import type { CreateConfigValues } from "@chopsticks/adapter-utils";
+export type { CreateConfigValues } from "@abacus/adapter-utils";
+import type { CreateConfigValues } from "@abacus/adapter-utils";
 
 /* ---- Props ---- */
 
@@ -1284,7 +1284,7 @@ function EnvVarEditor({
       })}
       {sealError && <p className="text-[11px] text-destructive">{sealError}</p>}
       <p className="text-[11px] text-muted-foreground/60">
-        CHOPSTICKS_* variables are injected automatically at runtime.
+        ABACUS_* variables are injected automatically at runtime.
       </p>
     </div>
   );

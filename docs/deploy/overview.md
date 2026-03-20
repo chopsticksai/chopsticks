@@ -3,7 +3,7 @@ title: 部署概览
 summary: 快速了解部署模式
 ---
 
-Chopsticks 支持三种部署配置，覆盖从零摩擦本地开发到面向公网的生产环境。
+Abacus 支持三种部署配置，覆盖从零摩擦本地开发到面向公网的生产环境。
 
 ## 部署模式
 
@@ -38,18 +38,18 @@ Chopsticks 支持三种部署配置，覆盖从零摩擦本地开发到面向公
 
 ## 如何选择模式
 
-- **只是想试试 Chopsticks？** 用 `local_trusted`（默认）
+- **只是想试试 Abacus？** 用 `local_trusted`（默认）
 - **要在私有网络里和团队共享？** 用 `authenticated` + `private`
 - **要部署到云上？** 用 `authenticated` + `public`
 
 在 onboarding 阶段设置模式：
 
 ```sh
-pnpm chopsticks onboard
+pnpm abacus onboard
 ```
 
 或者稍后再改：
 
 ```sh
-pnpm chopsticks configure --section server
+pnpm abacus configure --section server
 ```

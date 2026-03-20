@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { testEnvironment } from "@chopsticks/adapter-gemini-local/server";
+import { testEnvironment } from "@abacus/adapter-gemini-local/server";
 
 async function writeFakeGeminiCommand(binDir: string, argsCapturePath: string): Promise<string> {
   const basePath = path.join(binDir, "gemini");
   const script = `
 const fs = require("node:fs");
-const outPath = process.env.CHOPSTICKS_TEST_ARGS_PATH;
+const outPath = process.env.ABACUS_TEST_ARGS_PATH;
 if (outPath) {
   fs.writeFileSync(outPath, JSON.stringify(process.argv.slice(2)), "utf8");
 }
@@ -43,7 +43,7 @@ describe("gemini_local environment diagnostics", () => {
   it("creates a missing working directory when cwd is absolute", async () => {
     const cwd = path.join(
       os.tmpdir(),
-      `chopsticks-gemini-local-cwd-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      `abacus-gemini-local-cwd-${Date.now()}-${Math.random().toString(16).slice(2)}`,
       "workspace",
     );
 
@@ -68,7 +68,7 @@ describe("gemini_local environment diagnostics", () => {
   it("passes model and yolo flags to the hello probe", async () => {
     const root = path.join(
       os.tmpdir(),
-      `chopsticks-gemini-local-probe-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      `abacus-gemini-local-probe-${Date.now()}-${Math.random().toString(16).slice(2)}`,
     );
     const binDir = path.join(root, "bin");
     const cwd = path.join(root, "workspace");
@@ -86,7 +86,7 @@ describe("gemini_local environment diagnostics", () => {
         yolo: true,
         env: {
           GEMINI_API_KEY: "test-key",
-          CHOPSTICKS_TEST_ARGS_PATH: argsCapturePath,
+          ABACUS_TEST_ARGS_PATH: argsCapturePath,
           PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
         },
       },

@@ -28,7 +28,7 @@ export type MigrationConnection = {
 };
 
 function buildEmbeddedPostgresConnectionString(port: number, databaseName: string): string {
-  return `postgres://${encodeURIComponent("chopsticks")}:${encodeURIComponent("chopsticks")}@127.0.0.1:${port}/${databaseName}`;
+  return `postgres://${encodeURIComponent("abacus")}:${encodeURIComponent("abacus")}@127.0.0.1:${port}/${databaseName}`;
 }
 
 async function ensureEmbeddedPostgresAppConnectionString(
@@ -121,7 +121,7 @@ async function ensureEmbeddedPostgresConnection(
   const pgVersionFile = path.resolve(dataDir, "PG_VERSION");
   const runningPid = readRunningPostmasterPid(postmasterPidFile);
   const runningPort = readPidFilePort(postmasterPidFile);
-  const preferredAdminConnectionString = `postgres://paperclip:paperclip@127.0.0.1:${preferredPort}/postgres`;
+  const preferredAdminConnectionString = `postgres://abacus:abacus@127.0.0.1:${preferredPort}/postgres`;
 
   if (!runningPid && existsSync(pgVersionFile)) {
     try {
@@ -132,12 +132,12 @@ async function ensureEmbeddedPostgresConnection(
       if (!matchesDataDir) {
         throw new Error("reachable postgres does not use the expected embedded data directory");
       }
-      await ensurePostgresDatabase(preferredAdminConnectionString, "paperclip");
+      await ensurePostgresDatabase(preferredAdminConnectionString, "abacus");
       process.emitWarning(
         `Adopting an existing PostgreSQL instance on port ${preferredPort} for embedded data dir ${dataDir} because postmaster.pid is missing.`,
       );
       return {
-        connectionString: `postgres://paperclip:paperclip@127.0.0.1:${preferredPort}/paperclip`,
+        connectionString: `postgres://abacus:abacus@127.0.0.1:${preferredPort}/abacus`,
         source: `embedded-postgres@${preferredPort}`,
         stop: async () => {},
       };
@@ -150,7 +150,7 @@ async function ensureEmbeddedPostgresConnection(
     const port = runningPort ?? preferredPort;
     const appConnectionString = await ensureEmbeddedPostgresAppConnectionString(
       port,
-      "chopsticks",
+      "abacus",
     );
     return {
       connectionString: appConnectionString,
@@ -161,8 +161,8 @@ async function ensureEmbeddedPostgresConnection(
 
   const instance = new EmbeddedPostgres({
     databaseDir: dataDir,
-    user: "chopsticks",
-    password: "chopsticks",
+    user: "abacus",
+    password: "abacus",
     port: selectedPort,
     persistent: true,
     initdbFlags: ["--encoding=UTF8", "--locale=C"],
@@ -191,7 +191,7 @@ async function ensureEmbeddedPostgresConnection(
 
   const appConnectionString = await ensureEmbeddedPostgresAppConnectionString(
     selectedPort,
-    "chopsticks",
+    "abacus",
   );
 
   return {

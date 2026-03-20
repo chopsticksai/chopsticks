@@ -350,7 +350,7 @@ const outputDir = path.resolve(
 const homeDir = path.resolve(outputDir, "home");
 const baseUrl = `http://127.0.0.1:${appPort}`;
 const packagedAppPath = path.resolve(
-  options.app ?? path.resolve(desktopPackageDir, "release", "win-unpacked", "Chopsticks.exe"),
+  options.app ?? path.resolve(desktopPackageDir, "release", "win-unpacked", "Abacus.exe"),
 );
 const mainScript = path.resolve(desktopPackageDir, "dist", "main.js");
 const agentBrowser = resolveAgentBrowserInvocation();
@@ -370,7 +370,7 @@ try {
 
   if (mode === "dev") {
     console.log("[desktop-smoke] Building desktop shell...");
-    runPnpm(["--dir", repoRoot, "--filter", "@chopsticks/desktop-electron", "build"], {
+    runPnpm(["--dir", repoRoot, "--filter", "@abacus/desktop-electron", "build"], {
       cwd: repoRoot,
     });
 
@@ -378,8 +378,8 @@ try {
       cwd: desktopPackageDir,
       env: {
         ...process.env,
-        CHOPSTICKS_DESKTOP_DEV: "true",
-        CHOPSTICKS_HOME: homeDir,
+        ABACUS_DESKTOP_DEV: "true",
+        ABACUS_HOME: homeDir,
         PORT: String(appPort),
       },
       stdio: ["ignore", "pipe", "pipe"],
@@ -394,7 +394,7 @@ try {
       cwd: path.dirname(packagedAppPath),
       env: {
         ...process.env,
-        CHOPSTICKS_HOME: homeDir,
+        ABACUS_HOME: homeDir,
         PORT: String(appPort),
       },
       stdio: ["ignore", "pipe", "pipe"],
@@ -408,7 +408,7 @@ try {
   console.log("[desktop-smoke] Waiting for Electron remote debugging...");
   await waitForPort(cdpPort, 60_000);
 
-  console.log("[desktop-smoke] Waiting for Chopsticks server...");
+  console.log("[desktop-smoke] Waiting for Abacus server...");
   await waitForHealth(baseUrl, 90_000);
   await waitForBrowserUrl(agentBrowser, cdpPort, baseUrl, 45_000);
 
@@ -436,12 +436,12 @@ try {
     killProcessTree(child.pid);
   }
 
-  if (process.env.CHOPSTICKS_DESKTOP_SMOKE_KEEP_OUTPUT !== "true" && process.env.CI !== "true") {
-    // Keep output by default in CI; local runs can opt in via CHOPSTICKS_DESKTOP_SMOKE_KEEP_OUTPUT=true.
+  if (process.env.ABACUS_DESKTOP_SMOKE_KEEP_OUTPUT !== "true" && process.env.CI !== "true") {
+    // Keep output by default in CI; local runs can opt in via ABACUS_DESKTOP_SMOKE_KEEP_OUTPUT=true.
     // Otherwise leave artifacts in place for inspection.
   }
 
-  if (process.env.CHOPSTICKS_DESKTOP_SMOKE_CLEAN_HOME === "true") {
+  if (process.env.ABACUS_DESKTOP_SMOKE_CLEAN_HOME === "true") {
     rmSync(homeDir, { recursive: true, force: true });
   }
 }

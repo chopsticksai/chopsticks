@@ -1,12 +1,12 @@
 import { Router } from "express";
-import type { Db } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
 import {
   SECRET_PROVIDERS,
   type SecretProvider,
   createSecretSchema,
   rotateSecretSchema,
   updateSecretSchema,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 import { validate } from "../middleware/validate.js";
 import { assertBoard, assertCompanyAccess } from "./authz.js";
 import { logActivity, secretService } from "../services/index.js";
@@ -14,7 +14,7 @@ import { logActivity, secretService } from "../services/index.js";
 export function secretRoutes(db: Db) {
   const router = Router();
   const svc = secretService(db);
-  const configuredDefaultProvider = process.env.CHOPSTICKS_SECRETS_PROVIDER;
+  const configuredDefaultProvider = process.env.ABACUS_SECRETS_PROVIDER;
   const defaultProvider = (
     configuredDefaultProvider && SECRET_PROVIDERS.includes(configuredDefaultProvider as SecretProvider)
       ? configuredDefaultProvider

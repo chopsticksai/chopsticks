@@ -1,5 +1,5 @@
 import { Router } from "express";
-import type { Db } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
 import { dashboardService } from "../services/dashboard.js";
 import { assertCompanyAccess } from "./authz.js";
 

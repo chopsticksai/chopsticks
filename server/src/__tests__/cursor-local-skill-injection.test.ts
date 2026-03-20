@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { ensureCursorSkillsInjected } from "@chopsticks/adapter-cursor-local/server";
+import { ensureCursorSkillsInjected } from "@abacus/adapter-cursor-local/server";
 
 async function makeTempDir(prefix: string): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), prefix));
@@ -20,14 +20,14 @@ describe("cursor local adapter skill injection", () => {
     cleanupDirs.clear();
   });
 
-  it("links missing Chopsticks skills into Cursor skills home", async () => {
-    const skillsDir = await makeTempDir("chopsticks-cursor-skills-src-");
-    const skillsHome = await makeTempDir("chopsticks-cursor-skills-home-");
+  it("links missing Abacus skills into Cursor skills home", async () => {
+    const skillsDir = await makeTempDir("abacus-cursor-skills-src-");
+    const skillsHome = await makeTempDir("abacus-cursor-skills-home-");
     cleanupDirs.add(skillsDir);
     cleanupDirs.add(skillsHome);
 
-    await createSkillDir(skillsDir, "chopsticks");
-    await createSkillDir(skillsDir, "chopsticks-create-agent");
+    await createSkillDir(skillsDir, "abacus");
+    await createSkillDir(skillsDir, "abacus-create-agent");
     await fs.writeFile(path.join(skillsDir, "README.txt"), "ignore", "utf8");
 
     const logs: string[] = [];
@@ -38,28 +38,28 @@ describe("cursor local adapter skill injection", () => {
       { skillsDir, skillsHome },
     );
 
-    const injectedA = path.join(skillsHome, "chopsticks");
-    const injectedB = path.join(skillsHome, "chopsticks-create-agent");
+    const injectedA = path.join(skillsHome, "abacus");
+    const injectedB = path.join(skillsHome, "abacus-create-agent");
     expect((await fs.lstat(injectedA)).isSymbolicLink()).toBe(true);
     expect((await fs.lstat(injectedB)).isSymbolicLink()).toBe(true);
-    expect(await fs.realpath(injectedA)).toBe(await fs.realpath(path.join(skillsDir, "chopsticks")));
+    expect(await fs.realpath(injectedA)).toBe(await fs.realpath(path.join(skillsDir, "abacus")));
     expect(await fs.realpath(injectedB)).toBe(
-      await fs.realpath(path.join(skillsDir, "chopsticks-create-agent")),
+      await fs.realpath(path.join(skillsDir, "abacus-create-agent")),
     );
-    expect(logs.some((line) => line.includes('Injected Cursor skill "chopsticks"'))).toBe(true);
-    expect(logs.some((line) => line.includes('Injected Cursor skill "chopsticks-create-agent"'))).toBe(true);
+    expect(logs.some((line) => line.includes('Injected Cursor skill "abacus"'))).toBe(true);
+    expect(logs.some((line) => line.includes('Injected Cursor skill "abacus-create-agent"'))).toBe(true);
   });
 
   it("preserves existing targets and only links missing skills", async () => {
-    const skillsDir = await makeTempDir("chopsticks-cursor-preserve-src-");
-    const skillsHome = await makeTempDir("chopsticks-cursor-preserve-home-");
+    const skillsDir = await makeTempDir("abacus-cursor-preserve-src-");
+    const skillsHome = await makeTempDir("abacus-cursor-preserve-home-");
     cleanupDirs.add(skillsDir);
     cleanupDirs.add(skillsHome);
 
-    await createSkillDir(skillsDir, "chopsticks");
-    await createSkillDir(skillsDir, "chopsticks-create-agent");
+    await createSkillDir(skillsDir, "abacus");
+    await createSkillDir(skillsDir, "abacus-create-agent");
 
-    const existingTarget = path.join(skillsHome, "chopsticks");
+    const existingTarget = path.join(skillsHome, "abacus");
     await fs.mkdir(existingTarget, { recursive: true });
     await fs.writeFile(path.join(existingTarget, "keep.txt"), "keep", "utf8");
 
@@ -67,12 +67,12 @@ describe("cursor local adapter skill injection", () => {
 
     expect((await fs.lstat(existingTarget)).isDirectory()).toBe(true);
     expect(await fs.readFile(path.join(existingTarget, "keep.txt"), "utf8")).toBe("keep");
-    expect((await fs.lstat(path.join(skillsHome, "chopsticks-create-agent"))).isSymbolicLink()).toBe(true);
+    expect((await fs.lstat(path.join(skillsHome, "abacus-create-agent"))).isSymbolicLink()).toBe(true);
   });
 
   it("logs per-skill link failures and continues without throwing", async () => {
-    const skillsDir = await makeTempDir("chopsticks-cursor-fail-src-");
-    const skillsHome = await makeTempDir("chopsticks-cursor-fail-home-");
+    const skillsDir = await makeTempDir("abacus-cursor-fail-src-");
+    const skillsHome = await makeTempDir("abacus-cursor-fail-home-");
     cleanupDirs.add(skillsDir);
     cleanupDirs.add(skillsHome);
 

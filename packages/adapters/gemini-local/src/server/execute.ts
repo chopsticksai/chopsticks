@@ -3,13 +3,13 @@ import type { Dirent } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AdapterExecutionContext, AdapterExecutionResult } from "@chopsticks/adapter-utils";
+import type { AdapterExecutionContext, AdapterExecutionResult } from "@abacus/adapter-utils";
 import {
   asBoolean,
   asNumber,
   asString,
   asStringArray,
-  buildChopsticksEnv,
+  buildAbacusEnv,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
   ensurePathInEnv,
@@ -17,7 +17,7 @@ import {
   redactEnvForLogs,
   renderTemplate,
   runChildProcess,
-} from "@chopsticks/adapter-utils/server-utils";
+} from "@abacus/adapter-utils/server-utils";
 import { DEFAULT_GEMINI_LOCAL_MODEL } from "../index.js";
 import {
   describeGeminiFailure,
@@ -29,7 +29,7 @@ import {
 import { firstNonEmptyLine } from "./utils.js";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
-const CHOPSTICKS_SKILLS_CANDIDATES = [
+const ABACUS_SKILLS_CANDIDATES = [
   path.resolve(__moduleDir, "../../skills"),
   path.resolve(__moduleDir, "../../../../../skills"),
 ];
@@ -45,14 +45,14 @@ function resolveGeminiBillingType(env: Record<string, string>): "api" | "subscri
     : "subscription";
 }
 
-function renderChopsticksEnvNote(env: Record<string, string>): string {
-  const chopsticksKeys = Object.keys(env)
-    .filter((key) => key.startsWith("CHOPSTICKS_"))
+function renderAbacusEnvNote(env: Record<string, string>): string {
+  const abacusKeys = Object.keys(env)
+    .filter((key) => key.startsWith("ABACUS_"))
     .sort();
-  if (chopsticksKeys.length === 0) return "";
+  if (abacusKeys.length === 0) return "";
   return [
-    "Chopsticks runtime note:",
-    `The following CHOPSTICKS_* environment variables are available in this run: ${chopsticksKeys.join(", ")}`,
+    "Abacus runtime note:",
+    `The following ABACUS_* environment variables are available in this run: ${abacusKeys.join(", ")}`,
     "Do not assume these variables are missing without checking your shell environment.",
     "",
     "",
@@ -60,21 +60,21 @@ function renderChopsticksEnvNote(env: Record<string, string>): string {
 }
 
 function renderApiAccessNote(env: Record<string, string>): string {
-  if (!hasNonEmptyEnvValue(env, "CHOPSTICKS_API_URL") || !hasNonEmptyEnvValue(env, "CHOPSTICKS_API_KEY")) return "";
+  if (!hasNonEmptyEnvValue(env, "ABACUS_API_URL") || !hasNonEmptyEnvValue(env, "ABACUS_API_KEY")) return "";
   return [
-    "Chopsticks API access note:",
-    "Use run_shell_command with curl to make Chopsticks API requests.",
+    "Abacus API access note:",
+    "Use run_shell_command with curl to make Abacus API requests.",
     "GET example:",
-    `  run_shell_command({ command: "curl -s -H \\"Authorization: Bearer $CHOPSTICKS_API_KEY\\" \\"$CHOPSTICKS_API_URL/api/agents/me\\"" })`,
+    `  run_shell_command({ command: "curl -s -H \\"Authorization: Bearer $ABACUS_API_KEY\\" \\"$ABACUS_API_URL/api/agents/me\\"" })`,
     "POST/PATCH example:",
-    `  run_shell_command({ command: "curl -s -X POST -H \\"Authorization: Bearer $CHOPSTICKS_API_KEY\\" -H 'Content-Type: application/json' -H \\"X-Chopsticks-Run-Id: $CHOPSTICKS_RUN_ID\\" -d '{...}' \\"$CHOPSTICKS_API_URL/api/issues/{id}/checkout\\"" })`,
+    `  run_shell_command({ command: "curl -s -X POST -H \\"Authorization: Bearer $ABACUS_API_KEY\\" -H 'Content-Type: application/json' -H \\"X-Abacus-Run-Id: $ABACUS_RUN_ID\\" -d '{...}' \\"$ABACUS_API_URL/api/issues/{id}/checkout\\"" })`,
     "",
     "",
   ].join("\n");
 }
 
-async function resolveChopsticksSkillsDir(): Promise<string | null> {
-  for (const candidate of CHOPSTICKS_SKILLS_CANDIDATES) {
+async function resolveAbacusSkillsDir(): Promise<string | null> {
+  for (const candidate of ABACUS_SKILLS_CANDIDATES) {
     const isDir = await fs.stat(candidate).then((s) => s.isDirectory()).catch(() => false);
     if (isDir) return candidate;
   }
@@ -86,14 +86,14 @@ function geminiSkillsHome(): string {
 }
 
 /**
- * Inject Chopsticks skills directly into `~/.gemini/skills/` via symlinks.
+ * Inject Abacus skills directly into `~/.gemini/skills/` via symlinks.
  * This avoids needing GEMINI_CLI_HOME overrides, so the CLI naturally finds
  * both its auth credentials and the injected skills in the real home directory.
  */
 async function ensureGeminiSkillsInjected(
   onLog: AdapterExecutionContext["onLog"],
 ): Promise<void> {
-  const skillsDir = await resolveChopsticksSkillsDir();
+  const skillsDir = await resolveAbacusSkillsDir();
   if (!skillsDir) return;
 
   const skillsHome = geminiSkillsHome();
@@ -102,7 +102,7 @@ async function ensureGeminiSkillsInjected(
   } catch (err) {
     await onLog(
       "stderr",
-      `[chopsticks] Failed to prepare Gemini skills directory ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
+      `[abacus] Failed to prepare Gemini skills directory ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
     );
     return;
   }
@@ -113,7 +113,7 @@ async function ensureGeminiSkillsInjected(
   } catch (err) {
     await onLog(
       "stderr",
-      `[chopsticks] Failed to read Chopsticks skills from ${skillsDir}: ${err instanceof Error ? err.message : String(err)}\n`,
+      `[abacus] Failed to read Abacus skills from ${skillsDir}: ${err instanceof Error ? err.message : String(err)}\n`,
     );
     return;
   }
@@ -127,11 +127,11 @@ async function ensureGeminiSkillsInjected(
 
     try {
       await fs.symlink(source, target);
-      await onLog("stderr", `[chopsticks] Linked Gemini skill: ${entry.name}\n`);
+      await onLog("stderr", `[abacus] Linked Gemini skill: ${entry.name}\n`);
     } catch (err) {
       await onLog(
         "stderr",
-        `[chopsticks] Failed to link Gemini skill "${entry.name}": ${err instanceof Error ? err.message : String(err)}\n`,
+        `[abacus] Failed to link Gemini skill "${entry.name}": ${err instanceof Error ? err.message : String(err)}\n`,
       );
     }
   }
@@ -142,21 +142,21 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Chopsticks work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your Abacus work.",
   );
   const command = asString(config.command, "gemini");
   const model = asString(config.model, DEFAULT_GEMINI_LOCAL_MODEL).trim();
   const sandbox = asBoolean(config.sandbox, false);
 
-  const workspaceContext = parseObject(context.chopsticksWorkspace);
+  const workspaceContext = parseObject(context.abacusWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceId = asString(workspaceContext.workspaceId, "");
   const workspaceRepoUrl = asString(workspaceContext.repoUrl, "");
   const workspaceRepoRef = asString(workspaceContext.repoRef, "");
   const agentHome = asString(workspaceContext.agentHome, "");
-  const workspaceHints = Array.isArray(context.chopsticksWorkspaces)
-    ? context.chopsticksWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.abacusWorkspaces)
+    ? context.abacusWorkspaces.filter(
       (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
     )
     : [];
@@ -169,9 +169,9 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const envConfig = parseObject(config.env);
   const hasExplicitApiKey =
-    typeof envConfig.CHOPSTICKS_API_KEY === "string" && envConfig.CHOPSTICKS_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildChopsticksEnv(agent) };
-  env.CHOPSTICKS_RUN_ID = runId;
+    typeof envConfig.ABACUS_API_KEY === "string" && envConfig.ABACUS_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildAbacusEnv(agent) };
+  env.ABACUS_RUN_ID = runId;
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
     (typeof context.issueId === "string" && context.issueId.trim().length > 0 && context.issueId.trim()) ||
@@ -195,25 +195,25 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const linkedIssueIds = Array.isArray(context.issueIds)
     ? context.issueIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     : [];
-  if (wakeTaskId) env.CHOPSTICKS_TASK_ID = wakeTaskId;
-  if (wakeReason) env.CHOPSTICKS_WAKE_REASON = wakeReason;
-  if (wakeCommentId) env.CHOPSTICKS_WAKE_COMMENT_ID = wakeCommentId;
-  if (approvalId) env.CHOPSTICKS_APPROVAL_ID = approvalId;
-  if (approvalStatus) env.CHOPSTICKS_APPROVAL_STATUS = approvalStatus;
-  if (linkedIssueIds.length > 0) env.CHOPSTICKS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
-  if (effectiveWorkspaceCwd) env.CHOPSTICKS_WORKSPACE_CWD = effectiveWorkspaceCwd;
-  if (workspaceSource) env.CHOPSTICKS_WORKSPACE_SOURCE = workspaceSource;
-  if (workspaceId) env.CHOPSTICKS_WORKSPACE_ID = workspaceId;
-  if (workspaceRepoUrl) env.CHOPSTICKS_WORKSPACE_REPO_URL = workspaceRepoUrl;
-  if (workspaceRepoRef) env.CHOPSTICKS_WORKSPACE_REPO_REF = workspaceRepoRef;
+  if (wakeTaskId) env.ABACUS_TASK_ID = wakeTaskId;
+  if (wakeReason) env.ABACUS_WAKE_REASON = wakeReason;
+  if (wakeCommentId) env.ABACUS_WAKE_COMMENT_ID = wakeCommentId;
+  if (approvalId) env.ABACUS_APPROVAL_ID = approvalId;
+  if (approvalStatus) env.ABACUS_APPROVAL_STATUS = approvalStatus;
+  if (linkedIssueIds.length > 0) env.ABACUS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+  if (effectiveWorkspaceCwd) env.ABACUS_WORKSPACE_CWD = effectiveWorkspaceCwd;
+  if (workspaceSource) env.ABACUS_WORKSPACE_SOURCE = workspaceSource;
+  if (workspaceId) env.ABACUS_WORKSPACE_ID = workspaceId;
+  if (workspaceRepoUrl) env.ABACUS_WORKSPACE_REPO_URL = workspaceRepoUrl;
+  if (workspaceRepoRef) env.ABACUS_WORKSPACE_REPO_REF = workspaceRepoRef;
   if (agentHome) env.AGENT_HOME = agentHome;
-  if (workspaceHints.length > 0) env.CHOPSTICKS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+  if (workspaceHints.length > 0) env.ABACUS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
 
   for (const [key, value] of Object.entries(envConfig)) {
     if (typeof value === "string") env[key] = value;
   }
   if (!hasExplicitApiKey && authToken) {
-    env.CHOPSTICKS_API_KEY = authToken;
+    env.ABACUS_API_KEY = authToken;
   }
   const effectiveEnv = Object.fromEntries(
     Object.entries({ ...process.env, ...env }).filter(
@@ -242,7 +242,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   if (runtimeSessionId && !canResumeSession) {
     await onLog(
       "stderr",
-      `[chopsticks] Gemini session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[abacus] Gemini session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
 
@@ -258,13 +258,13 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
         `Resolve any relative file references from ${instructionsDir}.\n\n`;
       await onLog(
         "stderr",
-        `[chopsticks] Loaded agent instructions file: ${instructionsFilePath}\n`,
+        `[abacus] Loaded agent instructions file: ${instructionsFilePath}\n`,
       );
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
       await onLog(
         "stderr",
-        `[chopsticks] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
+        `[abacus] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
       );
     }
   }
@@ -294,9 +294,9 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     run: { id: runId, source: "on_demand" },
     context,
   });
-  const chopsticksEnvNote = renderChopsticksEnvNote(env);
+  const abacusEnvNote = renderAbacusEnvNote(env);
   const apiAccessNote = renderApiAccessNote(env);
-  const prompt = `${instructionsPrefix}${chopsticksEnvNote}${apiAccessNote}${renderedPrompt}`;
+  const prompt = `${instructionsPrefix}${abacusEnvNote}${apiAccessNote}${renderedPrompt}`;
 
   const buildArgs = (resumeSessionId: string | null) => {
     const args = ["--output-format", "stream-json"];
@@ -434,7 +434,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stderr",
-      `[chopsticks] Gemini resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
+      `[abacus] Gemini resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
     );
     const retry = await runAttempt(null);
     return toResult(retry, true, true);

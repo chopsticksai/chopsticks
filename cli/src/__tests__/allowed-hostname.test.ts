@@ -2,16 +2,16 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import type { ChopsticksConfig } from "../config/schema.js";
+import type { AbacusConfig } from "../config/schema.js";
 import { addAllowedHostname } from "../commands/allowed-hostname.js";
 
 function createTempConfigPath() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-allowed-hostname-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-allowed-hostname-"));
   return path.join(dir, "config.json");
 }
 
 function writeBaseConfig(configPath: string) {
-  const base: ChopsticksConfig = {
+  const base: AbacusConfig = {
     $meta: {
       version: 1,
       updatedAt: new Date("2026-01-01T00:00:00.000Z").toISOString(),
@@ -19,18 +19,18 @@ function writeBaseConfig(configPath: string) {
     },
     database: {
       mode: "embedded-postgres",
-      embeddedPostgresDataDir: "/tmp/chopsticks-db",
+      embeddedPostgresDataDir: "/tmp/abacus-db",
       embeddedPostgresPort: 54329,
       backup: {
         enabled: true,
         intervalMinutes: 60,
         retentionDays: 30,
-        dir: "/tmp/chopsticks-backups",
+        dir: "/tmp/abacus-backups",
       },
     },
     logging: {
       mode: "file",
-      logDir: "/tmp/chopsticks-logs",
+      logDir: "/tmp/abacus-logs",
     },
     server: {
       deploymentMode: "authenticated",
@@ -46,9 +46,9 @@ function writeBaseConfig(configPath: string) {
     },
     storage: {
       provider: "local_disk",
-      localDisk: { baseDir: "/tmp/chopsticks-storage" },
+      localDisk: { baseDir: "/tmp/abacus-storage" },
       s3: {
-        bucket: "chopsticks",
+        bucket: "abacus",
         region: "us-east-1",
         prefix: "",
         forcePathStyle: false,
@@ -57,7 +57,7 @@ function writeBaseConfig(configPath: string) {
     secrets: {
       provider: "local_encrypted",
       strictMode: false,
-      localEncrypted: { keyFilePath: "/tmp/chopsticks-secrets/master.key" },
+      localEncrypted: { keyFilePath: "/tmp/abacus-secrets/master.key" },
     },
   };
   fs.writeFileSync(configPath, JSON.stringify(base, null, 2));
@@ -71,7 +71,7 @@ describe("allowed-hostname command", () => {
     await addAllowedHostname("https://Dotta-MacBook-Pro:3100", { config: configPath });
     await addAllowedHostname("dotta-macbook-pro", { config: configPath });
 
-    const raw = JSON.parse(fs.readFileSync(configPath, "utf-8")) as ChopsticksConfig;
+    const raw = JSON.parse(fs.readFileSync(configPath, "utf-8")) as AbacusConfig;
     expect(raw.server.allowedHostnames).toEqual(["dotta-macbook-pro"]);
   });
 });

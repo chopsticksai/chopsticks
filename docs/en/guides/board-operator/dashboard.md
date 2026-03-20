@@ -1,6 +1,6 @@
 ---
 title: Dashboard
-summary: Understanding the Chopsticks dashboard
+summary: Understanding the Abacus dashboard
 ---
 
 The dashboard gives you a real-time overview of your autonomous company's health.

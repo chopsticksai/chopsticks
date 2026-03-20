@@ -123,7 +123,7 @@ export type {
   PluginLauncherDeclaration,
   PluginMinimumHostVersion,
   PluginUiDeclaration,
-  ChopsticksPluginManifestV1,
+  AbacusPluginManifestV1,
   PluginRecord,
   PluginStateRecord,
   PluginConfig,

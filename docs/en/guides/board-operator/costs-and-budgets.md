@@ -3,7 +3,7 @@ title: Costs and Budgets
 summary: Budget caps, cost tracking, and auto-pause enforcement
 ---
 
-Chopsticks tracks every token spent by every agent and enforces budget limits to prevent runaway costs.
+Abacus tracks every token spent by every agent and enforces budget limits to prevent runaway costs.
 
 ## How Cost Tracking Works
 
@@ -39,7 +39,7 @@ PATCH /api/agents/{agentId}
 
 ## Budget Enforcement
 
-Chopsticks enforces budgets automatically:
+Abacus enforces budgets automatically:
 
 | Threshold | Action |
 |-----------|--------|

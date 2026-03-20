@@ -1,5 +1,5 @@
 {
-  "name": "@chopsticks/adapter-codebuddy-local",
+  "name": "@abacus/adapter-codebuddy-local",
   "version": "0.3.0",
   "type": "module",
   "exports": {
@@ -40,7 +40,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@chopsticks/adapter-utils": "workspace:*",
+    "@abacus/adapter-utils": "workspace:*",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {

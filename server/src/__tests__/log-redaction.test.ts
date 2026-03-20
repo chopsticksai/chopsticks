@@ -7,11 +7,11 @@ import {
 
 describe("log redaction", () => {
   it("redacts the active username inside home-directory paths", () => {
-    const userName = "chopsticksuser";
+    const userName = "abacususer";
     const input = [
-      `cwd=/Users/${userName}/chopsticks`,
+      `cwd=/Users/${userName}/abacus`,
       `home=/home/${userName}/workspace`,
-      `win=C:\\Users\\${userName}\\chopsticks`,
+      `win=C:\\Users\\${userName}\\abacus`,
     ].join("\n");
 
     const result = redactCurrentUserText(input, {
@@ -19,16 +19,16 @@ describe("log redaction", () => {
       homeDirs: [`/Users/${userName}`, `/home/${userName}`, `C:\\Users\\${userName}`],
     });
 
-    expect(result).toContain(`cwd=/Users/${CURRENT_USER_REDACTION_TOKEN}/chopsticks`);
+    expect(result).toContain(`cwd=/Users/${CURRENT_USER_REDACTION_TOKEN}/abacus`);
     expect(result).toContain(`home=/home/${CURRENT_USER_REDACTION_TOKEN}/workspace`);
-    expect(result).toContain(`win=C:\\Users\\${CURRENT_USER_REDACTION_TOKEN}\\chopsticks`);
+    expect(result).toContain(`win=C:\\Users\\${CURRENT_USER_REDACTION_TOKEN}\\abacus`);
     expect(result).not.toContain(userName);
   });
 
   it("redacts standalone username mentions without mangling larger tokens", () => {
-    const userName = "chopsticksuser";
+    const userName = "abacususer";
     const result = redactCurrentUserText(
-      `user ${userName} said ${userName}/project should stay but achopsticksuserz should not change`,
+      `user ${userName} said ${userName}/project should stay but aabacususerz should not change`,
       {
         userNames: [userName],
         homeDirs: [],
@@ -36,15 +36,15 @@ describe("log redaction", () => {
     );
 
     expect(result).toBe(
-      `user ${CURRENT_USER_REDACTION_TOKEN} said ${CURRENT_USER_REDACTION_TOKEN}/project should stay but achopsticksuserz should not change`,
+      `user ${CURRENT_USER_REDACTION_TOKEN} said ${CURRENT_USER_REDACTION_TOKEN}/project should stay but aabacususerz should not change`,
     );
   });
 
   it("recursively redacts nested event payloads", () => {
-    const userName = "chopsticksuser";
+    const userName = "abacususer";
     const result = redactCurrentUserValue({
-      cwd: `/Users/${userName}/chopsticks`,
-      prompt: `open /Users/${userName}/chopsticks/ui`,
+      cwd: `/Users/${userName}/abacus`,
+      prompt: `open /Users/${userName}/abacus/ui`,
       nested: {
         author: userName,
       },
@@ -55,8 +55,8 @@ describe("log redaction", () => {
     });
 
     expect(result).toEqual({
-      cwd: `/Users/${CURRENT_USER_REDACTION_TOKEN}/chopsticks`,
-      prompt: `open /Users/${CURRENT_USER_REDACTION_TOKEN}/chopsticks/ui`,
+      cwd: `/Users/${CURRENT_USER_REDACTION_TOKEN}/abacus`,
+      prompt: `open /Users/${CURRENT_USER_REDACTION_TOKEN}/abacus/ui`,
       nested: {
         author: CURRENT_USER_REDACTION_TOKEN,
       },

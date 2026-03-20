@@ -1,5 +1,5 @@
 import { and, asc, desc, eq, inArray, isNull, or, sql } from "drizzle-orm";
-import type { Db } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
 import {
   agents,
   assets,
@@ -18,8 +18,8 @@ import {
   labels,
   projectWorkspaces,
   projects,
-} from "@chopsticks/db";
-import { extractProjectMentionIds } from "@chopsticks/shared";
+} from "@abacus/db";
+import { extractProjectMentionIds } from "@abacus/shared";
 import { conflict, notFound, unprocessable } from "../errors.js";
 import {
   defaultIssueExecutionWorkspaceSettingsForProject,

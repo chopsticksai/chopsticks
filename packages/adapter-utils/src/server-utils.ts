@@ -32,12 +32,12 @@ export const runningProcesses = new Map<string, RunningProcess>();
 export const MAX_CAPTURE_BYTES = 4 * 1024 * 1024;
 export const MAX_EXCERPT_BYTES = 32 * 1024;
 const SENSITIVE_ENV_KEY = /(key|token|secret|password|passwd|authorization|cookie)/i;
-const CHOPSTICKS_SKILL_ROOT_RELATIVE_CANDIDATES = [
+const ABACUS_SKILL_ROOT_RELATIVE_CANDIDATES = [
   "../../skills",
   "../../../../../skills",
 ];
 
-export interface ChopsticksSkillEntry {
+export interface AbacusSkillEntry {
   name: string;
   source: string;
 }
@@ -130,7 +130,7 @@ export function redactEnvForLogs(env: Record<string, string>): Record<string, st
   return redacted;
 }
 
-export function buildChopsticksEnv(agent: { id: string; companyId: string }): Record<string, string> {
+export function buildAbacusEnv(agent: { id: string; companyId: string }): Record<string, string> {
   const resolveHostForUrl = (rawHost: string): string => {
     const host = rawHost.trim();
     if (!host || host === "0.0.0.0" || host === "::") return "localhost";
@@ -138,15 +138,15 @@ export function buildChopsticksEnv(agent: { id: string; companyId: string }): Re
     return host;
   };
   const vars: Record<string, string> = {
-    CHOPSTICKS_AGENT_ID: agent.id,
-    CHOPSTICKS_COMPANY_ID: agent.companyId,
+    ABACUS_AGENT_ID: agent.id,
+    ABACUS_COMPANY_ID: agent.companyId,
   };
   const runtimeHost = resolveHostForUrl(
-    process.env.CHOPSTICKS_LISTEN_HOST ?? process.env.HOST ?? "localhost",
+    process.env.ABACUS_LISTEN_HOST ?? process.env.HOST ?? "localhost",
   );
-  const runtimePort = process.env.CHOPSTICKS_LISTEN_PORT ?? process.env.PORT ?? "3100";
-  const apiUrl = process.env.CHOPSTICKS_API_URL ?? `http://${runtimeHost}:${runtimePort}`;
-  vars.CHOPSTICKS_API_URL = apiUrl;
+  const runtimePort = process.env.ABACUS_LISTEN_PORT ?? process.env.PORT ?? "3100";
+  const apiUrl = process.env.ABACUS_API_URL ?? `http://${runtimeHost}:${runtimePort}`;
+  vars.ABACUS_API_URL = apiUrl;
   return vars;
 }
 
@@ -272,12 +272,12 @@ export async function ensureAbsoluteDirectory(
   }
 }
 
-export async function resolveChopsticksSkillsDir(
+export async function resolveAbacusSkillsDir(
   moduleDir: string,
   additionalCandidates: string[] = [],
 ): Promise<string | null> {
   const candidates = [
-    ...CHOPSTICKS_SKILL_ROOT_RELATIVE_CANDIDATES.map((relativePath) => path.resolve(moduleDir, relativePath)),
+    ...ABACUS_SKILL_ROOT_RELATIVE_CANDIDATES.map((relativePath) => path.resolve(moduleDir, relativePath)),
     ...additionalCandidates.map((candidate) => path.resolve(candidate)),
   ];
   const seenRoots = new Set<string>();
@@ -292,11 +292,11 @@ export async function resolveChopsticksSkillsDir(
   return null;
 }
 
-export async function listChopsticksSkillEntries(
+export async function listAbacusSkillEntries(
   moduleDir: string,
   additionalCandidates: string[] = [],
-): Promise<ChopsticksSkillEntry[]> {
-  const root = await resolveChopsticksSkillsDir(moduleDir, additionalCandidates);
+): Promise<AbacusSkillEntry[]> {
+  const root = await resolveAbacusSkillsDir(moduleDir, additionalCandidates);
   if (!root) return [];
 
   try {
@@ -312,14 +312,14 @@ export async function listChopsticksSkillEntries(
   }
 }
 
-export async function readChopsticksSkillMarkdown(
+export async function readAbacusSkillMarkdown(
   moduleDir: string,
   skillName: string,
 ): Promise<string | null> {
   const normalized = skillName.trim().toLowerCase();
   if (!normalized) return null;
 
-  const entries = await listChopsticksSkillEntries(moduleDir);
+  const entries = await listAbacusSkillEntries(moduleDir);
   const match = entries.find((entry) => entry.name === normalized);
   if (!match) return null;
 
@@ -330,7 +330,7 @@ export async function readChopsticksSkillMarkdown(
   }
 }
 
-export async function ensureChopsticksSkillSymlink(
+export async function ensureAbacusSkillSymlink(
   source: string,
   target: string,
   linkSkill: (source: string, target: string) => Promise<void> = (linkSource, linkTarget) =>
@@ -433,8 +433,8 @@ export async function runChildProcess(
 
     // Strip Claude Code nesting-guard env vars so spawned `claude` processes
     // don't refuse to start with "cannot be launched inside another session".
-    // These vars leak in when the Chopsticks server itself is started from
-    // within a Claude Code session (e.g. `npx chopsticks run` in a terminal
+    // These vars leak in when the Abacus server itself is started from
+    // within a Claude Code session (e.g. `npx abacus run` in a terminal
     // owned by Claude Code) or when cron inherits a contaminated shell env.
     const CLAUDE_CODE_NESTING_VARS = [
       "CLAUDECODE",

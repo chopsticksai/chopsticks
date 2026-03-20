@@ -2,11 +2,11 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: chopsticks
-      POSTGRES_PASSWORD: chopsticks
-      POSTGRES_DB: chopsticks
+      POSTGRES_USER: abacus
+      POSTGRES_PASSWORD: abacus
+      POSTGRES_DB: abacus
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U chopsticks -d chopsticks"]
+      test: ["CMD-SHELL", "pg_isready -U abacus -d abacus"]
       interval: 2s
       timeout: 5s
       retries: 30
@@ -20,19 +20,19 @@ services:
     ports:
       - "3100:3100"
     environment:
-      DATABASE_URL: postgres://chopsticks:chopsticks@db:5432/chopsticks
+      DATABASE_URL: postgres://abacus:abacus@db:5432/abacus
       PORT: "3100"
       SERVE_UI: "true"
-      CHOPSTICKS_DEPLOYMENT_MODE: "authenticated"
-      CHOPSTICKS_DEPLOYMENT_EXPOSURE: "private"
-      CHOPSTICKS_PUBLIC_URL: "${CHOPSTICKS_PUBLIC_URL:-http://localhost:3100}"
+      ABACUS_DEPLOYMENT_MODE: "authenticated"
+      ABACUS_DEPLOYMENT_EXPOSURE: "private"
+      ABACUS_PUBLIC_URL: "${ABACUS_PUBLIC_URL:-http://localhost:3100}"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
     volumes:
-      - chopsticks-data:/chopsticks
+      - abacus-data:/abacus
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
   pgdata:
-  chopsticks-data:
+  abacus-data:

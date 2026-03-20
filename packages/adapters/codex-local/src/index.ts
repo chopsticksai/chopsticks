@@ -40,7 +40,7 @@ Operational fields:
 
 Notes:
 - Prompts are piped via stdin (Codex receives "-" prompt argument).
-- Chopsticks auto-injects local skills into Codex personal skills dir ("$CODEX_HOME/skills" or "~/.codex/skills") when missing, so Codex can discover "$chopsticks" and related skills.
+- Abacus auto-injects local skills into Codex personal skills dir ("$CODEX_HOME/skills" or "~/.codex/skills") when missing, so Codex can discover "$abacus" and related skills.
 - Some model/tool combinations reject certain effort levels (for example minimal with web search enabled).
-- When Chopsticks realizes a workspace/runtime for a run, it injects CHOPSTICKS_WORKSPACE_* and CHOPSTICKS_RUNTIME_* env vars for agent-side tooling.
+- When Abacus realizes a workspace/runtime for a run, it injects ABACUS_WORKSPACE_* and ABACUS_RUNTIME_* env vars for agent-side tooling.
 `;

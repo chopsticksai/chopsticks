@@ -6,7 +6,7 @@ import {
   resubmitApprovalSchema,
   type Approval,
   type ApprovalComment,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 import {
   addCommonClientOptions,
   formatInlineRecord,

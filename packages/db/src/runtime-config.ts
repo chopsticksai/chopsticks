@@ -6,8 +6,8 @@ const DEFAULT_INSTANCE_ID = "default";
 const CONFIG_BASENAME = "config.json";
 const ENV_BASENAME = ".env";
 const INSTANCE_ID_RE = /^[a-zA-Z0-9_-]+$/;
-const DEFAULT_HOME_BASENAME = ".chopsticks";
-const REPO_CONFIG_DIRNAME = ".chopsticks";
+const DEFAULT_HOME_BASENAME = ".abacus";
+const REPO_CONFIG_DIRNAME = ".abacus";
 
 type PartialConfig = {
   database?: {
@@ -22,7 +22,7 @@ export type ResolvedDatabaseTarget =
   | {
     mode: "postgres";
     connectionString: string;
-    source: "DATABASE_URL" | "chopsticks-env" | "config.database.connectionString";
+    source: "DATABASE_URL" | "abacus-env" | "config.database.connectionString";
     configPath: string;
     envPath: string;
   }
@@ -41,31 +41,31 @@ function expandHomePrefix(value: string): string {
   return value;
 }
 
-function resolveChopsticksHomeDir(): string {
-  const envHome = process.env.CHOPSTICKS_HOME?.trim();
+function resolveAbacusHomeDir(): string {
+  const envHome = process.env.ABACUS_HOME?.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
   return path.resolve(os.homedir(), DEFAULT_HOME_BASENAME);
 }
 
-function resolveChopsticksInstanceId(): string {
-  const raw = process.env.CHOPSTICKS_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
+function resolveAbacusInstanceId(): string {
+  const raw = process.env.ABACUS_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
   if (!INSTANCE_ID_RE.test(raw)) {
-    throw new Error(`Invalid CHOPSTICKS_INSTANCE_ID '${raw}'.`);
+    throw new Error(`Invalid ABACUS_INSTANCE_ID '${raw}'.`);
   }
   return raw;
 }
 
 function resolveDefaultConfigPath(): string {
   return path.resolve(
-    resolveChopsticksHomeDir(),
+    resolveAbacusHomeDir(),
     "instances",
-    resolveChopsticksInstanceId(),
+    resolveAbacusInstanceId(),
     CONFIG_BASENAME,
   );
 }
 
 function resolveDefaultEmbeddedPostgresDir(): string {
-  return path.resolve(resolveChopsticksHomeDir(), "instances", resolveChopsticksInstanceId(), "db");
+  return path.resolve(resolveAbacusHomeDir(), "instances", resolveAbacusInstanceId(), "db");
 }
 
 function resolveHomeAwarePath(value: string): string {
@@ -85,14 +85,14 @@ function findConfigFileFromAncestors(startDir: string): string | null {
   }
 }
 
-function resolveChopsticksConfigPath(): string {
-  if (process.env.CHOPSTICKS_CONFIG?.trim()) {
-    return path.resolve(process.env.CHOPSTICKS_CONFIG.trim());
+function resolveAbacusConfigPath(): string {
+  if (process.env.ABACUS_CONFIG?.trim()) {
+    return path.resolve(process.env.ABACUS_CONFIG.trim());
   }
   return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath();
 }
 
-function resolveChopsticksEnvPath(configPath: string): string {
+function resolveAbacusEnvPath(configPath: string): string {
   return path.resolve(path.dirname(configPath), ENV_BASENAME);
 }
 
@@ -188,8 +188,8 @@ function readConfig(configPath: string): PartialConfig | null {
 }
 
 export function resolveDatabaseTarget(): ResolvedDatabaseTarget {
-  const configPath = resolveChopsticksConfigPath();
-  const envPath = resolveChopsticksEnvPath(configPath);
+  const configPath = resolveAbacusConfigPath();
+  const envPath = resolveAbacusEnvPath(configPath);
   const envEntries = readEnvEntries(envPath);
 
   const envUrl = process.env.DATABASE_URL?.trim();
@@ -208,7 +208,7 @@ export function resolveDatabaseTarget(): ResolvedDatabaseTarget {
     return {
       mode: "postgres",
       connectionString: fileEnvUrl,
-      source: "chopsticks-env",
+      source: "abacus-env",
       configPath,
       envPath,
     };

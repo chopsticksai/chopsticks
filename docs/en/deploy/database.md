@@ -3,7 +3,7 @@ title: Database
 summary: Embedded PGlite vs Docker Postgres vs hosted
 ---
 
-Chopsticks uses PostgreSQL via Drizzle ORM. There are three ways to run the database.
+Abacus uses PostgreSQL via Drizzle ORM. There are three ways to run the database.
 
 ## 1. Embedded PostgreSQL (Default)
 
@@ -15,12 +15,12 @@ pnpm dev
 
 On first start, the server:
 
-1. Creates `~/.chopsticks/instances/default/db/` for storage
-2. Ensures the `chopsticks` database exists
+1. Creates `~/.abacus/instances/default/db/` for storage
+2. Ensures the `abacus` database exists
 3. Runs migrations automatically
 4. Starts serving requests
 
-Data persists across restarts. To reset: `rm -rf ~/.chopsticks/instances/default/db`.
+Data persists across restarts. To reset: `rm -rf ~/.abacus/instances/default/db`.
 
 The Docker quickstart also uses embedded PostgreSQL by default.
 
@@ -36,13 +36,13 @@ This starts PostgreSQL 17 on `localhost:5432`. Set the connection string:
 
 ```sh
 cp .env.example .env
-# DATABASE_URL=postgres://chopsticks:chopsticks@localhost:5432/chopsticks
+# DATABASE_URL=postgres://abacus:abacus@localhost:5432/abacus
 ```
 
 Push the schema:
 
 ```sh
-DATABASE_URL=postgres://chopsticks:chopsticks@localhost:5432/chopsticks \
+DATABASE_URL=postgres://abacus:abacus@localhost:5432/abacus \
   npx drizzle-kit push
 ```
 

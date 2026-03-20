@@ -2,8 +2,8 @@ import type {
   AdapterExecutionContext,
   AdapterExecutionResult,
   AdapterRuntimeServiceReport,
-} from "@chopsticks/adapter-utils";
-import { asNumber, asString, buildChopsticksEnv, parseObject } from "@chopsticks/adapter-utils/server-utils";
+} from "@abacus/adapter-utils";
+import { asNumber, asString, buildAbacusEnv, parseObject } from "@abacus/adapter-utils/server-utils";
 import crypto, { randomUUID } from "node:crypto";
 import { WebSocket } from "ws";
 
@@ -82,7 +82,7 @@ const PROTOCOL_VERSION = 3;
 const DEFAULT_SCOPES = ["operator.admin"];
 const DEFAULT_CLIENT_ID = "gateway-client";
 const DEFAULT_CLIENT_MODE = "backend";
-const DEFAULT_CLIENT_VERSION = "chopsticks";
+const DEFAULT_CLIENT_VERSION = "abacus";
 const DEFAULT_ROLE = "operator";
 
 const SENSITIVE_LOG_KEY_PATTERN =
@@ -132,9 +132,9 @@ function resolveSessionKey(input: {
   runId: string;
   issueId: string | null;
 }): string {
-  const fallback = input.configuredSessionKey ?? "chopsticks";
-  if (input.strategy === "run") return `chopsticks:run:${input.runId}`;
-  if (input.strategy === "issue" && input.issueId) return `chopsticks:issue:${input.issueId}`;
+  const fallback = input.configuredSessionKey ?? "abacus";
+  if (input.strategy === "run") return `abacus:run:${input.runId}`;
+  if (input.strategy === "issue" && input.issueId) return `abacus:issue:${input.issueId}`;
   return fallback;
 }
 
@@ -301,7 +301,7 @@ function buildWakePayload(ctx: AdapterExecutionContext): WakePayload {
   };
 }
 
-function resolveChopsticksApiUrlOverride(value: unknown): string | null {
+function resolveAbacusApiUrlOverride(value: unknown): string | null {
   const raw = nonEmpty(value);
   if (!raw) return null;
   try {
@@ -313,63 +313,63 @@ function resolveChopsticksApiUrlOverride(value: unknown): string | null {
   }
 }
 
-function buildChopsticksEnvForWake(ctx: AdapterExecutionContext, wakePayload: WakePayload): Record<string, string> {
-  const chopsticksApiUrlOverride = resolveChopsticksApiUrlOverride(ctx.config.chopsticksApiUrl);
-  const chopsticksEnv: Record<string, string> = {
-    ...buildChopsticksEnv(ctx.agent),
-    CHOPSTICKS_RUN_ID: ctx.runId,
+function buildAbacusEnvForWake(ctx: AdapterExecutionContext, wakePayload: WakePayload): Record<string, string> {
+  const abacusApiUrlOverride = resolveAbacusApiUrlOverride(ctx.config.abacusApiUrl);
+  const abacusEnv: Record<string, string> = {
+    ...buildAbacusEnv(ctx.agent),
+    ABACUS_RUN_ID: ctx.runId,
   };
 
-  if (chopsticksApiUrlOverride) {
-    chopsticksEnv.CHOPSTICKS_API_URL = chopsticksApiUrlOverride;
+  if (abacusApiUrlOverride) {
+    abacusEnv.ABACUS_API_URL = abacusApiUrlOverride;
   }
-  if (wakePayload.taskId) chopsticksEnv.CHOPSTICKS_TASK_ID = wakePayload.taskId;
-  if (wakePayload.wakeReason) chopsticksEnv.CHOPSTICKS_WAKE_REASON = wakePayload.wakeReason;
-  if (wakePayload.wakeCommentId) chopsticksEnv.CHOPSTICKS_WAKE_COMMENT_ID = wakePayload.wakeCommentId;
-  if (wakePayload.approvalId) chopsticksEnv.CHOPSTICKS_APPROVAL_ID = wakePayload.approvalId;
-  if (wakePayload.approvalStatus) chopsticksEnv.CHOPSTICKS_APPROVAL_STATUS = wakePayload.approvalStatus;
+  if (wakePayload.taskId) abacusEnv.ABACUS_TASK_ID = wakePayload.taskId;
+  if (wakePayload.wakeReason) abacusEnv.ABACUS_WAKE_REASON = wakePayload.wakeReason;
+  if (wakePayload.wakeCommentId) abacusEnv.ABACUS_WAKE_COMMENT_ID = wakePayload.wakeCommentId;
+  if (wakePayload.approvalId) abacusEnv.ABACUS_APPROVAL_ID = wakePayload.approvalId;
+  if (wakePayload.approvalStatus) abacusEnv.ABACUS_APPROVAL_STATUS = wakePayload.approvalStatus;
   if (wakePayload.issueIds.length > 0) {
-    chopsticksEnv.CHOPSTICKS_LINKED_ISSUE_IDS = wakePayload.issueIds.join(",");
+    abacusEnv.ABACUS_LINKED_ISSUE_IDS = wakePayload.issueIds.join(",");
   }
 
-  return chopsticksEnv;
+  return abacusEnv;
 }
 
-function buildWakeText(payload: WakePayload, chopsticksEnv: Record<string, string>): string {
-  const claimedApiKeyPath = "~/.openclaw/workspace/chopsticks-claimed-api-key.json";
+function buildWakeText(payload: WakePayload, abacusEnv: Record<string, string>): string {
+  const claimedApiKeyPath = "~/.openclaw/workspace/abacus-claimed-api-key.json";
   const orderedKeys = [
-    "CHOPSTICKS_RUN_ID",
-    "CHOPSTICKS_AGENT_ID",
-    "CHOPSTICKS_COMPANY_ID",
-    "CHOPSTICKS_API_URL",
-    "CHOPSTICKS_TASK_ID",
-    "CHOPSTICKS_WAKE_REASON",
-    "CHOPSTICKS_WAKE_COMMENT_ID",
-    "CHOPSTICKS_APPROVAL_ID",
-    "CHOPSTICKS_APPROVAL_STATUS",
-    "CHOPSTICKS_LINKED_ISSUE_IDS",
+    "ABACUS_RUN_ID",
+    "ABACUS_AGENT_ID",
+    "ABACUS_COMPANY_ID",
+    "ABACUS_API_URL",
+    "ABACUS_TASK_ID",
+    "ABACUS_WAKE_REASON",
+    "ABACUS_WAKE_COMMENT_ID",
+    "ABACUS_APPROVAL_ID",
+    "ABACUS_APPROVAL_STATUS",
+    "ABACUS_LINKED_ISSUE_IDS",
   ];
 
   const envLines: string[] = [];
   for (const key of orderedKeys) {
-    const value = chopsticksEnv[key];
+    const value = abacusEnv[key];
     if (!value) continue;
     envLines.push(`${key}=${value}`);
   }
 
   const issueIdHint = payload.taskId ?? payload.issueId ?? "";
-  const apiBaseHint = chopsticksEnv.CHOPSTICKS_API_URL ?? "<set CHOPSTICKS_API_URL>";
+  const apiBaseHint = abacusEnv.ABACUS_API_URL ?? "<set ABACUS_API_URL>";
 
   const lines = [
-    "Chopsticks wake event for a cloud adapter.",
+    "Abacus wake event for a cloud adapter.",
     "",
     "Run this procedure now. Do not guess undocumented endpoints and do not ask for additional heartbeat docs.",
     "",
     "Set these values in your run context:",
     ...envLines,
-    `CHOPSTICKS_API_KEY=<token from ${claimedApiKeyPath}>`,
+    `ABACUS_API_KEY=<token from ${claimedApiKeyPath}>`,
     "",
-    `Load CHOPSTICKS_API_KEY from ${claimedApiKeyPath} (the token you saved after claim-api-key).`,
+    `Load ABACUS_API_KEY from ${claimedApiKeyPath} (the token you saved after claim-api-key).`,
     "",
     `api_base=${apiBaseHint}`,
     `task_id=${payload.taskId ?? ""}`,
@@ -381,23 +381,23 @@ function buildWakeText(payload: WakePayload, chopsticksEnv: Record<string, strin
     `linked_issue_ids=${payload.issueIds.join(",")}`,
     "",
     "HTTP rules:",
-    "- Use Authorization: Bearer $CHOPSTICKS_API_KEY on every API call.",
-    "- Use X-Chopsticks-Run-Id: $CHOPSTICKS_RUN_ID on every mutating API call.",
+    "- Use Authorization: Bearer $ABACUS_API_KEY on every API call.",
+    "- Use X-Abacus-Run-Id: $ABACUS_RUN_ID on every mutating API call.",
     "- Use only /api endpoints listed below.",
     "- Do NOT call guessed endpoints like /api/cloud-adapter/*, /api/cloud-adapters/*, /api/adapters/cloud/*, or /api/heartbeat.",
     "",
     "Workflow:",
     "1) GET /api/agents/me",
-    `2) Determine issueId: CHOPSTICKS_TASK_ID if present, otherwise issue_id (${issueIdHint}).`,
+    `2) Determine issueId: ABACUS_TASK_ID if present, otherwise issue_id (${issueIdHint}).`,
     "3) If issueId exists:",
-    "   - POST /api/issues/{issueId}/checkout with {\"agentId\":\"$CHOPSTICKS_AGENT_ID\",\"expectedStatuses\":[\"todo\",\"backlog\",\"blocked\"]}",
+    "   - POST /api/issues/{issueId}/checkout with {\"agentId\":\"$ABACUS_AGENT_ID\",\"expectedStatuses\":[\"todo\",\"backlog\",\"blocked\"]}",
     "   - GET /api/issues/{issueId}",
     "   - GET /api/issues/{issueId}/comments",
     "   - Execute the issue instructions exactly.",
     "   - If instructions require a comment, POST /api/issues/{issueId}/comments with {\"body\":\"...\"}.",
     "   - PATCH /api/issues/{issueId} with {\"status\":\"done\",\"comment\":\"what changed and why\"}.",
     "4) If issueId does not exist:",
-    "   - GET /api/companies/$CHOPSTICKS_COMPANY_ID/issues?assigneeAgentId=$CHOPSTICKS_AGENT_ID&status=todo,in_progress,blocked",
+    "   - GET /api/companies/$ABACUS_COMPANY_ID/issues?assigneeAgentId=$ABACUS_AGENT_ID&status=todo,in_progress,blocked",
     "   - Pick in_progress first, then todo, then blocked, then execute step 3.",
     "",
     "Useful endpoints for issue work:",
@@ -415,25 +415,25 @@ function appendWakeText(baseText: string, wakeText: string): string {
   return trimmedBase.length > 0 ? `${trimmedBase}\n\n${wakeText}` : wakeText;
 }
 
-function buildStandardChopsticksPayload(
+function buildStandardAbacusPayload(
   ctx: AdapterExecutionContext,
   wakePayload: WakePayload,
-  chopsticksEnv: Record<string, string>,
+  abacusEnv: Record<string, string>,
   payloadTemplate: Record<string, unknown>,
 ): Record<string, unknown> {
-  const templateChopsticks = parseObject(payloadTemplate.chopsticks);
-  const workspace = asRecord(ctx.context.chopsticksWorkspace);
-  const workspaces = Array.isArray(ctx.context.chopsticksWorkspaces)
-    ? ctx.context.chopsticksWorkspaces.filter((entry): entry is Record<string, unknown> => Boolean(asRecord(entry)))
+  const templateAbacus = parseObject(payloadTemplate.abacus);
+  const workspace = asRecord(ctx.context.abacusWorkspace);
+  const workspaces = Array.isArray(ctx.context.abacusWorkspaces)
+    ? ctx.context.abacusWorkspaces.filter((entry): entry is Record<string, unknown> => Boolean(asRecord(entry)))
     : [];
   const configuredWorkspaceRuntime = parseObject(ctx.config.workspaceRuntime);
-  const runtimeServiceIntents = Array.isArray(ctx.context.chopsticksRuntimeServiceIntents)
-    ? ctx.context.chopsticksRuntimeServiceIntents.filter(
+  const runtimeServiceIntents = Array.isArray(ctx.context.abacusRuntimeServiceIntents)
+    ? ctx.context.abacusRuntimeServiceIntents.filter(
       (entry): entry is Record<string, unknown> => Boolean(asRecord(entry)),
     )
     : [];
 
-  const standardChopsticks: Record<string, unknown> = {
+  const standardAbacus: Record<string, unknown> = {
     runId: ctx.runId,
     companyId: ctx.agent.companyId,
     agentId: ctx.agent.id,
@@ -445,25 +445,25 @@ function buildStandardChopsticksPayload(
     wakeCommentId: wakePayload.wakeCommentId,
     approvalId: wakePayload.approvalId,
     approvalStatus: wakePayload.approvalStatus,
-    apiUrl: chopsticksEnv.CHOPSTICKS_API_URL ?? null,
+    apiUrl: abacusEnv.ABACUS_API_URL ?? null,
   };
 
   if (workspace) {
-    standardChopsticks.workspace = workspace;
+    standardAbacus.workspace = workspace;
   }
   if (workspaces.length > 0) {
-    standardChopsticks.workspaces = workspaces;
+    standardAbacus.workspaces = workspaces;
   }
   if (runtimeServiceIntents.length > 0 || Object.keys(configuredWorkspaceRuntime).length > 0) {
-    standardChopsticks.workspaceRuntime = {
+    standardAbacus.workspaceRuntime = {
       ...configuredWorkspaceRuntime,
       ...(runtimeServiceIntents.length > 0 ? { services: runtimeServiceIntents } : {}),
     };
   }
 
   return {
-    ...templateChopsticks,
-    ...standardChopsticks,
+    ...templateAbacus,
+    ...standardAbacus,
   };
 }
 
@@ -713,7 +713,7 @@ class GatewayWsClient {
 
   close() {
     if (!this.ws) return;
-    this.ws.close(1000, "chopsticks-complete");
+    this.ws.close(1000, "abacus-complete");
     this.ws = null;
   }
 
@@ -1052,8 +1052,8 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const disableDeviceAuth = parseBoolean(ctx.config.disableDeviceAuth, false);
 
   const wakePayload = buildWakePayload(ctx);
-  const chopsticksEnv = buildChopsticksEnvForWake(ctx, wakePayload);
-  const wakeText = buildWakeText(wakePayload, chopsticksEnv);
+  const abacusEnv = buildAbacusEnvForWake(ctx, wakePayload);
+  const wakeText = buildWakeText(wakePayload, abacusEnv);
 
   const sessionKeyStrategy = normalizeSessionKeyStrategy(ctx.config.sessionKeyStrategy);
   const configuredSessionKey = nonEmpty(ctx.config.sessionKey);
@@ -1066,7 +1066,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const templateMessage = nonEmpty(payloadTemplate.message) ?? nonEmpty(payloadTemplate.text);
   const message = templateMessage ? appendWakeText(templateMessage, wakeText) : wakeText;
-  const chopsticksPayload = buildStandardChopsticksPayload(ctx, wakePayload, chopsticksEnv, payloadTemplate);
+  const abacusPayload = buildStandardAbacusPayload(ctx, wakePayload, abacusEnv, payloadTemplate);
 
   const agentParams: Record<string, unknown> = {
     ...payloadTemplate,

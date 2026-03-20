@@ -6,16 +6,16 @@ type PluginBridgeRegistry = {
 };
 
 type GlobalBridge = typeof globalThis & {
-  __chopsticksPluginBridge__?: PluginBridgeRegistry;
+  __abacusPluginBridge__?: PluginBridgeRegistry;
 };
 
 function getBridgeRegistry(): PluginBridgeRegistry | undefined {
-  return (globalThis as GlobalBridge).__chopsticksPluginBridge__;
+  return (globalThis as GlobalBridge).__abacusPluginBridge__;
 }
 
 function missingBridgeValueError(name: string): Error {
   return new Error(
-    `Chopsticks plugin UI runtime is not initialized for "${name}". ` +
+    `Abacus plugin UI runtime is not initialized for "${name}". ` +
       'Ensure the host loaded the plugin bridge before rendering this UI module.',
   );
 }
@@ -47,5 +47,5 @@ export function renderSdkUiComponent<TProps>(
     return component(props);
   }
 
-  throw new Error(`Chopsticks plugin UI component "${name}" is not callable`);
+  throw new Error(`Abacus plugin UI component "${name}" is not callable`);
 }

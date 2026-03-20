@@ -5,32 +5,32 @@ summary: Onboard, run, doctor, and configure
 
 Instance setup and diagnostics commands.
 
-## `chopsticks run`
+## `abacus run`
 
 One-command bootstrap and start:
 
 ```sh
-pnpm chopsticks run
+pnpm abacus run
 ```
 
 Does:
 
 1. Auto-onboards if config is missing
-2. Runs `chopsticks doctor` with repair enabled
+2. Runs `abacus doctor` with repair enabled
 3. Starts the server when checks pass
 
 Choose a specific instance:
 
 ```sh
-pnpm chopsticks run --instance dev
+pnpm abacus run --instance dev
 ```
 
-## `chopsticks onboard`
+## `abacus onboard`
 
 Interactive first-time setup:
 
 ```sh
-pnpm chopsticks onboard
+pnpm abacus onboard
 ```
 
 First prompt:
@@ -41,22 +41,22 @@ First prompt:
 Start immediately after onboarding:
 
 ```sh
-pnpm chopsticks onboard --run
+pnpm abacus onboard --run
 ```
 
 Non-interactive defaults + immediate start (opens browser on server listen):
 
 ```sh
-pnpm chopsticks onboard --yes
+pnpm abacus onboard --yes
 ```
 
-## `chopsticks doctor`
+## `abacus doctor`
 
 Health checks with optional auto-repair:
 
 ```sh
-pnpm chopsticks doctor
-pnpm chopsticks doctor --repair
+pnpm abacus doctor
+pnpm abacus doctor --repair
 ```
 
 Validates:
@@ -67,51 +67,51 @@ Validates:
 - Storage configuration
 - Missing key files
 
-## `chopsticks configure`
+## `abacus configure`
 
 Update configuration sections:
 
 ```sh
-pnpm chopsticks configure --section server
-pnpm chopsticks configure --section secrets
-pnpm chopsticks configure --section storage
+pnpm abacus configure --section server
+pnpm abacus configure --section secrets
+pnpm abacus configure --section storage
 ```
 
-## `chopsticks env`
+## `abacus env`
 
 Show resolved environment configuration:
 
 ```sh
-pnpm chopsticks env
+pnpm abacus env
 ```
 
-## `chopsticks allowed-hostname`
+## `abacus allowed-hostname`
 
 Allow a private hostname for authenticated/private mode:
 
 ```sh
-pnpm chopsticks allowed-hostname my-tailscale-host
+pnpm abacus allowed-hostname my-tailscale-host
 ```
 
 ## Local Storage Paths
 
 | Data | Default Path |
 |------|-------------|
-| Config | `~/.chopsticks/instances/default/config.json` |
-| Database | `~/.chopsticks/instances/default/db` |
-| Logs | `~/.chopsticks/instances/default/logs` |
-| Storage | `~/.chopsticks/instances/default/data/storage` |
-| Secrets key | `~/.chopsticks/instances/default/secrets/master.key` |
+| Config | `~/.abacus/instances/default/config.json` |
+| Database | `~/.abacus/instances/default/db` |
+| Logs | `~/.abacus/instances/default/logs` |
+| Storage | `~/.abacus/instances/default/data/storage` |
+| Secrets key | `~/.abacus/instances/default/secrets/master.key` |
 
 Override with:
 
 ```sh
-CHOPSTICKS_HOME=/custom/home CHOPSTICKS_INSTANCE_ID=dev pnpm chopsticks run
+ABACUS_HOME=/custom/home ABACUS_INSTANCE_ID=dev pnpm abacus run
 ```
 
 Or pass `--data-dir` directly on any command:
 
 ```sh
-pnpm chopsticks run --data-dir ./tmp/chopsticks-dev
-pnpm chopsticks doctor --data-dir ./tmp/chopsticks-dev
+pnpm abacus run --data-dir ./tmp/abacus-dev
+pnpm abacus doctor --data-dir ./tmp/abacus-dev
 ```

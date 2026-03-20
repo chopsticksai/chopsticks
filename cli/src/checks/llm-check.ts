@@ -1,8 +1,8 @@
-import type { ChopsticksConfig } from "../config/schema.js";
+import type { AbacusConfig } from "../config/schema.js";
 import { publicCliCommand } from "../config/branding.js";
 import type { CheckResult } from "./index.js";
 
-export async function llmCheck(config: ChopsticksConfig): Promise<CheckResult> {
+export async function llmCheck(config: AbacusConfig): Promise<CheckResult> {
   if (!config.llm) {
     return {
       name: "LLM provider",

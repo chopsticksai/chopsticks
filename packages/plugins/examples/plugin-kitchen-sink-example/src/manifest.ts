@@ -1,4 +1,4 @@
-import type { ChopsticksPluginManifestV1 } from "@chopsticks/plugin-sdk";
+import type { AbacusPluginManifestV1 } from "@abacus/plugin-sdk";
 import {
   DEFAULT_CONFIG,
   EXPORT_NAMES,
@@ -11,13 +11,13 @@ import {
   WEBHOOK_KEYS,
 } from "./constants.js";
 
-const manifest: ChopsticksPluginManifestV1 = {
+const manifest: AbacusPluginManifestV1 = {
   id: PLUGIN_ID,
   apiVersion: 1,
   version: PLUGIN_VERSION,
   displayName: "Kitchen Sink (Example)",
-  description: "Reference plugin that demonstrates the current Chopsticks plugin API surface, UI surfaces, bridge actions, events, jobs, webhooks, tools, local workspace access, and runtime diagnostics in one place.",
-  author: "Chopsticks",
+  description: "Reference plugin that demonstrates the current Abacus plugin API surface, UI surfaces, bridge actions, events, jobs, webhooks, tools, local workspace access, and runtime diagnostics in one place.",
+  author: "Abacus",
   categories: ["ui", "automation", "workspace", "connector"],
   capabilities: [
     "companies.read",
@@ -158,7 +158,7 @@ const manifest: ChopsticksPluginManifestV1 = {
     {
       name: TOOL_NAMES.companySummary,
       displayName: "Kitchen Sink Company Summary",
-      description: "Summarizes the current company using the Chopsticks domain APIs.",
+      description: "Summarizes the current company using the Abacus domain APIs.",
       parametersSchema: {
         type: "object",
         properties: {},

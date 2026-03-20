@@ -1,11 +1,11 @@
 ---
 title: Tailscale 私网访问
-summary: 以适合 Tailscale 的主机绑定方式运行 Chopsticks，并从其他设备访问
+summary: 以适合 Tailscale 的主机绑定方式运行 Abacus，并从其他设备访问
 ---
 
-如果你想通过 Tailscale（或私有 LAN / VPN）访问 Chopsticks，而不是只在 `localhost` 上使用，就适合看这一页。
+如果你想通过 Tailscale（或私有 LAN / VPN）访问 Abacus，而不是只在 `localhost` 上使用，就适合看这一页。
 
-## 1. 以私网认证模式启动 Chopsticks
+## 1. 以私网认证模式启动 Abacus
 
 ```sh
 pnpm dev --tailscale-auth
@@ -13,9 +13,9 @@ pnpm dev --tailscale-auth
 
 这个命令会配置：
 
-- `CHOPSTICKS_DEPLOYMENT_MODE=authenticated`
-- `CHOPSTICKS_DEPLOYMENT_EXPOSURE=private`
-- `CHOPSTICKS_AUTH_BASE_URL_MODE=auto`
+- `ABACUS_DEPLOYMENT_MODE=authenticated`
+- `ABACUS_DEPLOYMENT_EXPOSURE=private`
+- `ABACUS_AUTH_BASE_URL_MODE=auto`
 - `HOST=0.0.0.0`（绑定所有网卡接口）
 
 等价参数：
@@ -26,7 +26,7 @@ pnpm dev --authenticated-private
 
 ## 2. 找到你可访问的 Tailscale 地址
 
-在运行 Chopsticks 的机器上执行：
+在运行 Abacus 的机器上执行：
 
 ```sh
 tailscale ip -4
@@ -34,9 +34,9 @@ tailscale ip -4
 
 你也可以使用 Tailscale 的 MagicDNS 主机名，例如 `my-macbook.tailnet.ts.net`。
 
-## 3. 从另一台设备打开 Chopsticks
+## 3. 从另一台设备打开 Abacus
 
-把 Tailscale IP 或 MagicDNS 主机名与 Chopsticks 端口组合使用：
+把 Tailscale IP 或 MagicDNS 主机名与 Abacus 端口组合使用：
 
 ```txt
 http://<tailscale-host-or-ip>:3100
@@ -50,10 +50,10 @@ http://my-macbook.tailnet.ts.net:3100
 
 ## 4. 按需允许自定义私有主机名
 
-如果你使用自定义私有主机名访问 Chopsticks，请把它加入 allowlist：
+如果你使用自定义私有主机名访问 Abacus，请把它加入 allowlist：
 
 ```sh
-pnpm chopsticks allowed-hostname my-macbook.tailnet.ts.net
+pnpm abacus allowed-hostname my-macbook.tailnet.ts.net
 ```
 
 ## 5. 验证服务可达
@@ -72,6 +72,6 @@ curl http://<tailscale-host-or-ip>:3100/api/health
 
 ## 排障
 
-- 私有主机名下出现登录或重定向错误：用 `chopsticks allowed-hostname` 把它加入允许列表。
+- 私有主机名下出现登录或重定向错误：用 `abacus allowed-hostname` 把它加入允许列表。
 - 应用只能在 `localhost` 访问：确认你是用 `--tailscale-auth` 启动的，或者在 private 模式下显式设置了 `HOST=0.0.0.0`。
 - 本机能访问但远端不行：确认两台设备都在同一个 Tailscale 网络中，并且端口 `3100` 可达。

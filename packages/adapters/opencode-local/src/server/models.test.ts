@@ -7,12 +7,12 @@ import {
 
 describe("openCode models", () => {
   afterEach(() => {
-    delete process.env.CHOPSTICKS_OPENCODE_COMMAND;
+    delete process.env.ABACUS_OPENCODE_COMMAND;
     resetOpenCodeModelsCacheForTests();
   });
 
   it("returns an empty list when discovery command is unavailable", async () => {
-    process.env.CHOPSTICKS_OPENCODE_COMMAND = "__chopsticks_missing_opencode_command__";
+    process.env.ABACUS_OPENCODE_COMMAND = "__abacus_missing_opencode_command__";
     await expect(listOpenCodeModels()).resolves.toEqual([]);
   });
 
@@ -23,7 +23,7 @@ describe("openCode models", () => {
   });
 
   it("rejects when discovery cannot run for configured model", async () => {
-    process.env.CHOPSTICKS_OPENCODE_COMMAND = "__chopsticks_missing_opencode_command__";
+    process.env.ABACUS_OPENCODE_COMMAND = "__abacus_missing_opencode_command__";
     await expect(
       ensureOpenCodeModelConfiguredAndAvailable({
         model: "openai/gpt-5",

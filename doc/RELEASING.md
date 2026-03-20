@@ -1,6 +1,6 @@
-# Releasing Chopsticks
+# Releasing Abacus
 
-Maintainer runbook for shipping Chopsticks across npm, GitHub, and the website-facing changelog surface.
+Maintainer runbook for shipping Abacus across npm, GitHub, and the website-facing changelog surface.
 
 The release model is now commit-driven:
 
@@ -11,7 +11,7 @@ The release model is now commit-driven:
 
 ## Versioning Model
 
-Chopsticks uses calendar versions that still fit semver syntax:
+Abacus uses calendar versions that still fit semver syntax:
 
 - stable: `YYYY.MDD.P`
 - canary: `YYYY.MDD.P-canary.N`
@@ -35,7 +35,7 @@ Important constraints:
 Every stable release has four separate surfaces:
 
 1. **Verification** - the exact git SHA passes typecheck, tests, and build
-2. **npm** - `chopsticks` and public workspace packages are published
+2. **npm** - `abacus` and public workspace packages are published
 3. **GitHub** - the stable release gets a git tag and GitHub Release
 4. **Website / announcements** - the stable changelog is published externally and announced
 
@@ -68,16 +68,16 @@ It:
 Users install canaries with:
 
 ```bash
-npx chopsticks@canary onboard
+npx abacus@canary onboard
 # or
-npx chopsticks@canary onboard --data-dir "$(mktemp -d /tmp/chopsticks-canary.XXXXXX)"
+npx abacus@canary onboard --data-dir "$(mktemp -d /tmp/abacus-canary.XXXXXX)"
 ```
 
 ### Stable
 
 Use [`.github/workflows/release.yml`](../.github/workflows/release.yml) from the Actions tab with the manual `workflow_dispatch` inputs.
 
-[Run the action here](https://github.com/chopsticksai/chopsticks/actions/workflows/release.yml)
+[Run the action here](https://github.com/abacus-lab/abacus/actions/workflows/release.yml)
 
 Inputs:
 
@@ -146,7 +146,7 @@ Recommended local generation flow:
 
 ```bash
 VERSION="$(./scripts/release.sh stable --date 2026-03-18 --print-version)"
-claude --print --output-format stream-json --verbose --dangerously-skip-permissions --model claude-opus-4-6 "Use the release-changelog skill to draft or update releases/v${VERSION}.md for Chopsticks. Read doc/RELEASING.md and .agents/skills/release-changelog/SKILL.md, then generate the stable changelog for v${VERSION} from commits since the last stable tag. Do not create a canary changelog."
+claude --print --output-format stream-json --verbose --dangerously-skip-permissions --model claude-opus-4-6 "Use the release-changelog skill to draft or update releases/v${VERSION}.md for Abacus. Read doc/RELEASING.md and .agents/skills/release-changelog/SKILL.md, then generate the stable changelog for v${VERSION} from commits since the last stable tag. Do not create a canary changelog."
 ```
 
 The repo intentionally does not run this through GitHub Actions because:
@@ -160,32 +160,32 @@ The repo intentionally does not run this through GitHub Actions because:
 For a canary:
 
 ```bash
-CHOPSTICKS_VERSION=canary ./scripts/docker-onboard-smoke.sh
+ABACUS_VERSION=canary ./scripts/docker-onboard-smoke.sh
 ```
 
 For the current stable:
 
 ```bash
-CHOPSTICKS_VERSION=latest ./scripts/docker-onboard-smoke.sh
+ABACUS_VERSION=latest ./scripts/docker-onboard-smoke.sh
 ```
 
 Useful isolated variants:
 
 ```bash
-HOST_PORT=3232 DATA_DIR=./data/release-smoke-canary CHOPSTICKS_VERSION=canary ./scripts/docker-onboard-smoke.sh
-HOST_PORT=3233 DATA_DIR=./data/release-smoke-stable CHOPSTICKS_VERSION=latest ./scripts/docker-onboard-smoke.sh
+HOST_PORT=3232 DATA_DIR=./data/release-smoke-canary ABACUS_VERSION=canary ./scripts/docker-onboard-smoke.sh
+HOST_PORT=3233 DATA_DIR=./data/release-smoke-stable ABACUS_VERSION=latest ./scripts/docker-onboard-smoke.sh
 ```
 
 Automated browser smoke is also available:
 
 ```bash
-gh workflow run release-smoke.yml -f chopsticks_version=canary
-gh workflow run release-smoke.yml -f chopsticks_version=latest
+gh workflow run release-smoke.yml -f abacus_version=canary
+gh workflow run release-smoke.yml -f abacus_version=latest
 ```
 
 Minimum checks:
 
-- `npx chopsticks@canary onboard` installs
+- `npx abacus@canary onboard` installs
 - onboarding completes without crashes
 - authenticated login works with the smoke credentials
 - the browser lands in onboarding on a fresh instance

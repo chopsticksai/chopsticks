@@ -2,16 +2,16 @@ import fs from "node:fs";
 import path from "node:path";
 import { resolveDefaultConfigPath } from "./home-paths.js";
 
-const CHOPSTICKS_CONFIG_BASENAME = "config.json";
-const CHOPSTICKS_ENV_FILENAME = ".env";
-const REPO_CONFIG_DIRNAME = ".chopsticks";
+const ABACUS_CONFIG_BASENAME = "config.json";
+const ABACUS_ENV_FILENAME = ".env";
+const REPO_CONFIG_DIRNAME = ".abacus";
 
 function findConfigFileFromAncestors(startDir: string): string | null {
   const absoluteStartDir = path.resolve(startDir);
   let currentDir = absoluteStartDir;
 
   while (true) {
-    const candidate = path.resolve(currentDir, REPO_CONFIG_DIRNAME, CHOPSTICKS_CONFIG_BASENAME);
+    const candidate = path.resolve(currentDir, REPO_CONFIG_DIRNAME, ABACUS_CONFIG_BASENAME);
     if (fs.existsSync(candidate)) {
       return candidate;
     }
@@ -24,12 +24,12 @@ function findConfigFileFromAncestors(startDir: string): string | null {
   return null;
 }
 
-export function resolveChopsticksConfigPath(overridePath?: string): string {
+export function resolveAbacusConfigPath(overridePath?: string): string {
   if (overridePath) return path.resolve(overridePath);
-  if (process.env.CHOPSTICKS_CONFIG) return path.resolve(process.env.CHOPSTICKS_CONFIG);
+  if (process.env.ABACUS_CONFIG) return path.resolve(process.env.ABACUS_CONFIG);
   return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath();
 }
 
-export function resolveChopsticksEnvPath(overrideConfigPath?: string): string {
-  return path.resolve(path.dirname(resolveChopsticksConfigPath(overrideConfigPath)), CHOPSTICKS_ENV_FILENAME);
+export function resolveAbacusEnvPath(overrideConfigPath?: string): string {
+  return path.resolve(path.dirname(resolveAbacusConfigPath(overrideConfigPath)), ABACUS_ENV_FILENAME);
 }

@@ -7,7 +7,7 @@ drizzle/meta/
 coverage/
 .DS_Store
 data/
-.chopsticks/
+.abacus/
 .pnpm-store/
 tmp-*
 cli/tmp/
@@ -37,7 +37,7 @@ tmp/
 # Editor / tool temp files
 *.tmp
 .claude/settings.local.json
-.chopsticks-local/
+.abacus-local/
 /.agents/
 
 # Doc maintenance cursor

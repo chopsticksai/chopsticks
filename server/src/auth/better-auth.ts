@@ -3,13 +3,13 @@ import type { IncomingHttpHeaders } from "node:http";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { toNodeHandler } from "better-auth/node";
-import type { Db } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
 import {
   authAccounts,
   authSessions,
   authUsers,
   authVerifications,
-} from "@chopsticks/db";
+} from "@abacus/db";
 import type { Config } from "../config.js";
 
 export type BetterAuthSessionUser = {
@@ -67,10 +67,10 @@ export function deriveAuthTrustedOrigins(config: Config): string[] {
 
 export function createBetterAuthInstance(db: Db, config: Config, trustedOrigins?: string[]): BetterAuthInstance {
   const baseUrl = config.authBaseUrlMode === "explicit" ? config.authPublicBaseUrl : undefined;
-  const secret = process.env.BETTER_AUTH_SECRET ?? process.env.CHOPSTICKS_AGENT_JWT_SECRET ?? "chopsticks-dev-secret";
+  const secret = process.env.BETTER_AUTH_SECRET ?? process.env.ABACUS_AGENT_JWT_SECRET ?? "abacus-dev-secret";
   const effectiveTrustedOrigins = trustedOrigins ?? deriveAuthTrustedOrigins(config);
 
-  const publicUrl = process.env.CHOPSTICKS_PUBLIC_URL ?? baseUrl;
+  const publicUrl = process.env.ABACUS_PUBLIC_URL ?? baseUrl;
   const isHttpOnly = publicUrl ? publicUrl.startsWith("http://") : false;
 
   const authConfig = {

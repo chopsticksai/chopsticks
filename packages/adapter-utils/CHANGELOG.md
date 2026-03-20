@@ -1,4 +1,4 @@
-# @papertape/adapter-utils
+# @abacus/adapter-utils
 
 ## 0.3.1
 

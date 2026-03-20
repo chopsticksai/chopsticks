@@ -51,7 +51,7 @@ export const agentConfigurationDoc = `# cursor agent configuration
 Adapter: cursor
 
 Use when:
-- You want Chopsticks to run Cursor Agent CLI locally as the agent runtime
+- You want Abacus to run Cursor Agent CLI locally as the agent runtime
 - You want Cursor chat session resume across heartbeats via --resume
 - You want structured stream output in run logs via --output-format stream-json
 
@@ -78,6 +78,6 @@ Notes:
 - Runs are executed with: agent -p --output-format stream-json ...
 - Prompts are piped to Cursor via stdin.
 - Sessions are resumed with --resume when stored session cwd matches current cwd.
-- Chopsticks auto-injects local skills into "~/.cursor/skills" when missing, so Cursor can discover "$chopsticks" and related skills on local runs.
-- Chopsticks auto-adds --yolo unless one of --trust/--yolo/-f is already present in extraArgs.
+- Abacus auto-injects local skills into "~/.cursor/skills" when missing, so Cursor can discover "$abacus" and related skills on local runs.
+- Abacus auto-adds --yolo unless one of --trust/--yolo/-f is already present in extraArgs.
 `;

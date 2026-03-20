@@ -1,4 +1,4 @@
-import type { HeartbeatRun } from "@chopsticks/shared";
+import type { HeartbeatRun } from "@abacus/shared";
 import { formatDateValue, getPriorityLabel, getStatusLabel, translateText } from "../lib/i18n";
 
 /* ---- Utilities ---- */

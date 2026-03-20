@@ -34,7 +34,7 @@ const tsxLoaderImport = pathToFileURL(
   path.resolve(desktopAppRoot, "node_modules", "tsx", "dist", "loader.mjs"),
 ).href;
 const desktopMode: DesktopMode =
-  process.env.CHOPSTICKS_DESKTOP_DEV === "true" ? "development" : "packaged";
+  process.env.ABACUS_DESKTOP_DEV === "true" ? "development" : "packaged";
 const startupTimeoutMs = 60_000;
 
 let mainWindow: BrowserWindow | null = null;
@@ -122,7 +122,7 @@ function createHtmlDataUrl(title: string, body: string, buttonLabel?: string): s
   </head>
   <body>
     <main>
-      <p class="eyebrow">Chopsticks Desktop</p>
+      <p class="eyebrow">Abacus Desktop</p>
       <h1>${escapeHtml(title)}</h1>
       <p>${escapeHtml(body)}</p>
       ${action}
@@ -142,7 +142,7 @@ function ensureWindow(): BrowserWindow {
     minWidth: 1100,
     minHeight: 720,
     show: false,
-    title: "Chopsticks",
+    title: "Abacus",
     backgroundColor: "#e7edf6",
     webPreferences: {
       preload: path.resolve(desktopAppRoot, "dist", "preload.js"),
@@ -179,7 +179,7 @@ function ensureWindow(): BrowserWindow {
 }
 
 async function loadLoadingPage(detail: string): Promise<void> {
-  await ensureWindow().loadURL(createHtmlDataUrl("Starting Chopsticks", detail));
+  await ensureWindow().loadURL(createHtmlDataUrl("Starting Abacus", detail));
 }
 
 async function loadErrorPage(title: string, detail: string): Promise<void> {
@@ -259,7 +259,7 @@ async function startWorkerProcess(reason: string): Promise<void> {
 
   startupTimer = setTimeout(() => {
     void loadErrorPage(
-      "Chopsticks failed to start",
+      "Abacus failed to start",
       "The local desktop runtime timed out while booting the control plane. Retry to start it again.",
     );
     void stopWorkerProcess();
@@ -277,7 +277,7 @@ async function startWorkerProcess(reason: string): Promise<void> {
 
     if (message?.type === "fatal") {
       clearStartupTimer();
-      void loadErrorPage("Chopsticks crashed during startup", message.error);
+      void loadErrorPage("Abacus crashed during startup", message.error);
     }
   });
 
@@ -296,7 +296,7 @@ async function startWorkerProcess(reason: string): Promise<void> {
     if (appIsQuitting || wasExpected) return;
 
     void loadErrorPage(
-      "Chopsticks stopped unexpectedly",
+      "Abacus stopped unexpectedly",
       `The local control plane exited with ${formatChildExit(code, signal)}.`,
     );
   });
@@ -316,8 +316,8 @@ async function terminateApplication(signal: NodeJS.Signals): Promise<void> {
   app.exit(signal === "SIGINT" ? 130 : 143);
 }
 
-app.setName("Chopsticks");
-app.setAppUserModelId("ai.chopsticks.desktop");
+app.setName("Abacus");
+app.setAppUserModelId("ai.abacus.desktop");
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();

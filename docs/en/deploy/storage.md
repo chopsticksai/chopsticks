@@ -3,14 +3,14 @@ title: Storage
 summary: Local disk vs S3-compatible storage
 ---
 
-Chopsticks stores uploaded files (issue attachments, images) using a configurable storage provider.
+Abacus stores uploaded files (issue attachments, images) using a configurable storage provider.
 
 ## Local Disk (Default)
 
 Files are stored at:
 
 ```
-~/.chopsticks/instances/default/data/storage
+~/.abacus/instances/default/data/storage
 ```
 
 No configuration required. Suitable for local development and single-machine deployments.
@@ -22,7 +22,7 @@ For production or multi-node deployments, use S3-compatible object storage (AWS 
 Configure via CLI:
 
 ```sh
-pnpm chopsticks configure --section storage
+pnpm abacus configure --section storage
 ```
 
 ## Configuration
@@ -35,5 +35,5 @@ pnpm chopsticks configure --section storage
 Storage configuration is stored in the instance config file:
 
 ```
-~/.chopsticks/instances/default/config.json
+~/.abacus/instances/default/config.json
 ```

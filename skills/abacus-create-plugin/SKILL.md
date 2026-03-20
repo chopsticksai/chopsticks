@@ -1,15 +1,15 @@
 ---
-name: chopsticks-create-plugin
+name: abacus-create-plugin
 description: >
-  Create new Chopsticks plugins with the current alpha SDK/runtime. Use when
+  Create new Abacus plugins with the current alpha SDK/runtime. Use when
   scaffolding a plugin package, adding a new example plugin, or updating plugin
   authoring docs. Covers the supported worker/UI surface, route conventions,
   scaffold flow, and verification steps.
 ---
 
-# Create a Chopsticks Plugin
+# Create a Abacus Plugin
 
-Use this skill when the task is to create, scaffold, or document a Chopsticks plugin.
+Use this skill when the task is to create, scaffold, or document a Abacus plugin.
 
 ## 1. Ground rules
 
@@ -33,17 +33,17 @@ Current runtime assumptions:
 Use the scaffold package instead of hand-writing the boilerplate:
 
 ```bash
-pnpm --filter @chopsticksai/create-chopsticks-plugin build
-node packages/plugins/create-chopsticks-plugin/dist/index.js <npm-package-name> --output <target-dir>
+pnpm --filter @abacus-lab/create-abacus-plugin build
+node packages/plugins/create-abacus-plugin/dist/index.js <npm-package-name> --output <target-dir>
 ```
 
-For a plugin that lives outside the Chopsticks repo, pass `--sdk-path` and let the scaffold snapshot the local SDK/shared packages into `.chopsticks-sdk/`:
+For a plugin that lives outside the Abacus repo, pass `--sdk-path` and let the scaffold snapshot the local SDK/shared packages into `.abacus-sdk/`:
 
 ```bash
-pnpm --filter @chopsticksai/create-chopsticks-plugin build
-node packages/plugins/create-chopsticks-plugin/dist/index.js @acme/plugin-name \
+pnpm --filter @abacus-lab/create-abacus-plugin build
+node packages/plugins/create-abacus-plugin/dist/index.js @acme/plugin-name \
   --output /absolute/path/to/plugin-repos \
-  --sdk-path /absolute/path/to/chopsticks/packages/plugins/sdk
+  --sdk-path /absolute/path/to/abacus/packages/plugins/sdk
 ```
 
 Recommended target inside this repo:
@@ -68,7 +68,7 @@ Make sure the plugin:
 - does not import host UI component stubs
 - keeps UI self-contained
 - uses `routePath` only on `page` slots
-- is installed into Chopsticks from an absolute local path during development
+- is installed into Abacus from an absolute local path during development
 
 ## 4. If the plugin should appear in the app
 

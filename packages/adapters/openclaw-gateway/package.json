@@ -1,14 +1,14 @@
 {
-  "name": "@chopsticks/adapter-openclaw-gateway",
+  "name": "@abacus/adapter-openclaw-gateway",
   "version": "0.3.1",
   "license": "MIT",
-  "homepage": "https://github.com/paperclipai/paperclip",
+  "homepage": "https://github.com/abacus-lab/abacus",
   "bugs": {
-    "url": "https://github.com/paperclipai/paperclip/issues"
+    "url": "https://github.com/abacus-lab/abacus/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/paperclipai/paperclip",
+    "url": "https://github.com/abacus-lab/abacus",
     "directory": "packages/adapters/openclaw-gateway"
   },
   "type": "module",
@@ -50,7 +50,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@chopsticks/adapter-utils": "workspace:*",
+    "@abacus/adapter-utils": "workspace:*",
     "picocolors": "^1.1.1",
     "ws": "^8.19.0"
   },

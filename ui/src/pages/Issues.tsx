@@ -105,7 +105,7 @@ export function Issues() {
       error={error as Error | null}
       agents={agents}
       liveIssueIds={liveIssueIds}
-      viewStateKey="chopsticks:issues-view"
+      viewStateKey="abacus:issues-view"
       issueLinkState={issueLinkState}
       initialAssignees={searchParams.get("assignee") ? [searchParams.get("assignee")!] : undefined}
       initialSearch={initialSearch}

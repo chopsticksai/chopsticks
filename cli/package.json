@@ -1,13 +1,13 @@
 {
-  "name": "chopsticks",
+  "name": "abacus",
   "version": "0.3.1",
-  "description": "Chopsticks CLI — orchestrate AI agent teams to run a business",
+  "description": "Abacus CLI — orchestrate AI agent teams to run a business",
   "type": "module",
   "bin": {
-    "chopsticks": "./dist/index.js"
+    "abacus": "./dist/index.js"
   },
   "keywords": [
-    "chopsticks",
+    "abacus",
     "ai",
     "agents",
     "orchestration",
@@ -16,12 +16,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chopsticksai/chopsticks.git",
+    "url": "https://github.com/abacus-lab/abacus.git",
     "directory": "cli"
   },
-  "homepage": "https://github.com/chopsticksai/chopsticks",
+  "homepage": "https://github.com/abacus-lab/abacus",
   "bugs": {
-    "url": "https://github.com/chopsticksai/chopsticks/issues"
+    "url": "https://github.com/abacus-lab/abacus/issues"
   },
   "files": [
     "dist"
@@ -37,18 +37,18 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.10.0",
-    "@chopsticks/adapter-claude-local": "workspace:*",
-    "@chopsticks/adapter-codebuddy-local": "workspace:*",
-    "@chopsticks/adapter-codex-local": "workspace:*",
-    "@chopsticks/adapter-cursor-local": "workspace:*",
-    "@chopsticks/adapter-gemini-local": "workspace:*",
-    "@chopsticks/adapter-opencode-local": "workspace:*",
-    "@chopsticks/adapter-pi-local": "workspace:*",
-    "@chopsticks/adapter-openclaw-gateway": "workspace:*",
-    "@chopsticks/adapter-utils": "workspace:*",
-    "@chopsticks/db": "workspace:*",
-    "@chopsticks/server": "workspace:*",
-    "@chopsticks/shared": "workspace:*",
+    "@abacus/adapter-claude-local": "workspace:*",
+    "@abacus/adapter-codebuddy-local": "workspace:*",
+    "@abacus/adapter-codex-local": "workspace:*",
+    "@abacus/adapter-cursor-local": "workspace:*",
+    "@abacus/adapter-gemini-local": "workspace:*",
+    "@abacus/adapter-opencode-local": "workspace:*",
+    "@abacus/adapter-pi-local": "workspace:*",
+    "@abacus/adapter-openclaw-gateway": "workspace:*",
+    "@abacus/adapter-utils": "workspace:*",
+    "@abacus/db": "workspace:*",
+    "@abacus/server": "workspace:*",
+    "@abacus/shared": "workspace:*",
     "drizzle-orm": "0.38.4",
     "dotenv": "^17.0.1",
     "commander": "^13.1.0",

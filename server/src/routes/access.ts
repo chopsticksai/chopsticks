@@ -10,13 +10,13 @@ import { fileURLToPath } from "node:url";
 import { Router } from "express";
 import type { Request } from "express";
 import { and, eq, isNull, desc } from "drizzle-orm";
-import type { Db } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
 import {
   agentApiKeys,
   authUsers,
   invites,
   joinRequests
-} from "@chopsticks/db";
+} from "@abacus/db";
 import {
   acceptInviteSchema,
   claimJoinRequestApiKeySchema,
@@ -26,8 +26,8 @@ import {
   updateMemberPermissionsSchema,
   updateUserCompanyAccessSchema,
   PERMISSION_KEYS
-} from "@chopsticks/shared";
-import type { DeploymentExposure, DeploymentMode } from "@chopsticks/shared";
+} from "@abacus/shared";
+import type { DeploymentExposure, DeploymentMode } from "@abacus/shared";
 import {
   forbidden,
   conflict,
@@ -98,9 +98,9 @@ function requestBaseUrl(req: Request) {
 function readSkillMarkdown(skillName: string): string | null {
   const normalized = skillName.trim().toLowerCase();
   if (
-    normalized !== "chopsticks" &&
-    normalized !== "chopsticks-create-agent" &&
-    normalized !== "chopsticks-create-plugin" &&
+    normalized !== "abacus" &&
+    normalized !== "abacus-create-agent" &&
+    normalized !== "abacus-create-plugin" &&
     normalized !== "para-memory-files"
   )
     return null;
@@ -120,8 +120,8 @@ function readSkillMarkdown(skillName: string): string | null {
   return null;
 }
 
-/** Resolve the Chopsticks repo skills directory (built-in / managed skills). */
-function resolveChopsticksSkillsDir(): string | null {
+/** Resolve the Abacus repo skills directory (built-in / managed skills). */
+function resolveAbacusSkillsDir(): string | null {
   const moduleDir = path.dirname(fileURLToPath(import.meta.url));
   const candidates = [
     path.resolve(moduleDir, "../../skills"),         // published
@@ -160,21 +160,21 @@ function parseSkillFrontmatter(markdown: string): { description: string } {
 interface AvailableSkill {
   name: string;
   description: string;
-  isChopsticksManaged: boolean;
+  isAbacusManaged: boolean;
 }
 
 /** Discover all available Claude Code skills from ~/.claude/skills/. */
 function listAvailableSkills(): AvailableSkill[] {
   const homeDir = process.env.HOME || process.env.USERPROFILE || "";
   const claudeSkillsDir = path.join(homeDir, ".claude", "skills");
-  const chopsticksSkillsDir = resolveChopsticksSkillsDir();
+  const abacusSkillsDir = resolveAbacusSkillsDir();
 
-  // Build set of Chopsticks-managed skill names
-  const chopsticksSkillNames = new Set<string>();
-  if (chopsticksSkillsDir) {
+  // Build set of Abacus-managed skill names
+  const abacusSkillNames = new Set<string>();
+  if (abacusSkillsDir) {
     try {
-      for (const entry of fs.readdirSync(chopsticksSkillsDir, { withFileTypes: true })) {
-        if (entry.isDirectory()) chopsticksSkillNames.add(entry.name);
+      for (const entry of fs.readdirSync(abacusSkillsDir, { withFileTypes: true })) {
+        if (entry.isDirectory()) abacusSkillNames.add(entry.name);
       }
     } catch { /* skip */ }
   }
@@ -195,7 +195,7 @@ function listAvailableSkills(): AvailableSkill[] {
       skills.push({
         name: entry.name,
         description,
-        isChopsticksManaged: chopsticksSkillNames.has(entry.name),
+        isAbacusManaged: abacusSkillNames.has(entry.name),
       });
     }
   } catch { /* ~/.claude/skills/ doesn't exist */ }
@@ -416,7 +416,7 @@ function generateEd25519PrivateKeyPem(): string {
 export function buildJoinDefaultsPayloadForAccept(input: {
   adapterType: string | null;
   defaultsPayload: unknown;
-  chopsticksApiUrl?: unknown;
+  abacusApiUrl?: unknown;
   inboundOpenClawAuthHeader?: string | null;
   inboundOpenClawTokenHeader?: string | null;
 }): unknown {
@@ -428,9 +428,9 @@ export function buildJoinDefaultsPayloadForAccept(input: {
     ? { ...(input.defaultsPayload as Record<string, unknown>) }
     : ({} as Record<string, unknown>);
 
-  if (!nonEmptyTrimmedString(merged.chopsticksApiUrl)) {
-    const legacyChopsticksApiUrl = nonEmptyTrimmedString(input.chopsticksApiUrl);
-    if (legacyChopsticksApiUrl) merged.chopsticksApiUrl = legacyChopsticksApiUrl;
+  if (!nonEmptyTrimmedString(merged.abacusApiUrl)) {
+    const legacyAbacusApiUrl = nonEmptyTrimmedString(input.abacusApiUrl);
+    if (legacyAbacusApiUrl) merged.abacusApiUrl = legacyAbacusApiUrl;
   }
   const mergedHeaders = normalizeHeaderMap(merged.headers) ?? {};
 
@@ -572,8 +572,8 @@ function summarizeOpenClawGatewayDefaultsForLog(defaultsPayload: unknown) {
     present: Boolean(defaults),
     keys: defaults ? Object.keys(defaults).sort() : [],
     url: defaults ? nonEmptyTrimmedString(defaults.url) : null,
-    chopsticksApiUrl: defaults
-      ? nonEmptyTrimmedString(defaults.chopsticksApiUrl)
+    abacusApiUrl: defaults
+      ? nonEmptyTrimmedString(defaults.abacusApiUrl)
       : null,
     headerKeys: headers ? Object.keys(headers).sort() : [],
     sessionKeyStrategy: defaults
@@ -810,35 +810,35 @@ export function normalizeAgentDefaultsForJoin(input: {
     }
   }
 
-  const rawChopsticksApiUrl =
-    typeof defaults.chopsticksApiUrl === "string"
-      ? defaults.chopsticksApiUrl.trim()
+  const rawAbacusApiUrl =
+    typeof defaults.abacusApiUrl === "string"
+      ? defaults.abacusApiUrl.trim()
       : "";
-  if (rawChopsticksApiUrl) {
+  if (rawAbacusApiUrl) {
     try {
-      const parsedChopsticksApiUrl = new URL(rawChopsticksApiUrl);
+      const parsedAbacusApiUrl = new URL(rawAbacusApiUrl);
       if (
-        parsedChopsticksApiUrl.protocol !== "http:" &&
-        parsedChopsticksApiUrl.protocol !== "https:"
+        parsedAbacusApiUrl.protocol !== "http:" &&
+        parsedAbacusApiUrl.protocol !== "https:"
       ) {
         diagnostics.push({
-          code: "openclaw_gateway_chopsticks_api_url_protocol",
+          code: "openclaw_gateway_abacus_api_url_protocol",
           level: "warn",
-          message: `chopsticksApiUrl must use http:// or https:// (got ${parsedChopsticksApiUrl.protocol}).`
+          message: `abacusApiUrl must use http:// or https:// (got ${parsedAbacusApiUrl.protocol}).`
         });
       } else {
-        normalized.chopsticksApiUrl = parsedChopsticksApiUrl.toString();
+        normalized.abacusApiUrl = parsedAbacusApiUrl.toString();
         diagnostics.push({
-          code: "openclaw_gateway_chopsticks_api_url_configured",
+          code: "openclaw_gateway_abacus_api_url_configured",
           level: "info",
-          message: `chopsticksApiUrl set to ${parsedChopsticksApiUrl.toString()}`
+          message: `abacusApiUrl set to ${parsedAbacusApiUrl.toString()}`
         });
       }
     } catch {
       diagnostics.push({
-        code: "openclaw_gateway_chopsticks_api_url_invalid",
+        code: "openclaw_gateway_abacus_api_url_invalid",
         level: "warn",
-        message: `Invalid chopsticksApiUrl: ${rawChopsticksApiUrl}`
+        message: `Invalid abacusApiUrl: ${rawAbacusApiUrl}`
       });
     }
   }
@@ -904,7 +904,7 @@ function buildOnboardingDiscoveryDiagnostics(input: {
       code: "openclaw_onboarding_api_loopback",
       level: "warn",
       message:
-        "Onboarding URL resolves to loopback hostname. Remote OpenClaw agents cannot reach localhost on your Chopsticks host.",
+        "Onboarding URL resolves to loopback hostname. Remote OpenClaw agents cannot reach localhost on your Abacus host.",
       hint: "Use a reachable hostname/IP (for example Tailscale hostname, Docker host alias, or public domain)."
     });
   }
@@ -917,7 +917,7 @@ function buildOnboardingDiscoveryDiagnostics(input: {
     diagnostics.push({
       code: "openclaw_onboarding_private_loopback_bind",
       level: "warn",
-      message: "Chopsticks is bound to loopback in authenticated/private mode.",
+      message: "Abacus is bound to loopback in authenticated/private mode.",
       hint: "Run with a reachable bind host or use pnpm dev --tailscale-auth for private-network onboarding."
     });
   }
@@ -934,7 +934,7 @@ function buildOnboardingDiscoveryDiagnostics(input: {
       code: "openclaw_onboarding_private_host_not_allowed",
       level: "warn",
       message: `Onboarding host "${apiHost}" is not in allowed hostnames for authenticated/private mode.`,
-      hint: `Run pnpm chopsticks allowed-hostname ${apiHost}`
+      hint: `Run pnpm abacus allowed-hostname ${apiHost}`
     });
   }
 
@@ -993,7 +993,7 @@ function buildInviteOnboardingManifest(
   }
 ) {
   const baseUrl = requestBaseUrl(req);
-  const skillPath = "/api/skills/chopsticks";
+  const skillPath = "/api/skills/abacus";
   const skillUrl = baseUrl ? `${baseUrl}${skillPath}` : skillPath;
   const registrationEndpointPath = `/api/invites/${token}/accept`;
   const registrationEndpointUrl = baseUrl
@@ -1020,7 +1020,7 @@ function buildInviteOnboardingManifest(
     invite: toInviteSummaryResponse(req, token, invite),
     onboarding: {
       instructions:
-        "Join as an OpenClaw Gateway agent, save your one-time claim secret, wait for board approval, then claim your API key. Save the claim response token to ~/.openclaw/workspace/chopsticks-claimed-api-key.json and load CHOPSTICKS_API_KEY from that file before starting heartbeat loops. You MUST submit adapterType='openclaw_gateway', set agentDefaultsPayload.url to your ws:// or wss:// OpenClaw gateway endpoint, and include agentDefaultsPayload.headers.x-openclaw-token (or legacy x-openclaw-auth).",
+        "Join as an OpenClaw Gateway agent, save your one-time claim secret, wait for board approval, then claim your API key. Save the claim response token to ~/.openclaw/workspace/abacus-claimed-api-key.json and load ABACUS_API_KEY from that file before starting heartbeat loops. You MUST submit adapterType='openclaw_gateway', set agentDefaultsPayload.url to your ws:// or wss:// OpenClaw gateway endpoint, and include agentDefaultsPayload.headers.x-openclaw-token (or legacy x-openclaw-auth).",
       inviteMessage: extractInviteMessage(invite),
       recommendedAdapterType: "openclaw_gateway",
       requiredFields: {
@@ -1029,7 +1029,7 @@ function buildInviteOnboardingManifest(
         adapterType: "Use 'openclaw_gateway' for OpenClaw Gateway agents",
         capabilities: "Optional capability summary",
         agentDefaultsPayload:
-          "Adapter config for OpenClaw gateway. MUST include url (ws:// or wss://) and headers.x-openclaw-token (or legacy x-openclaw-auth). Optional fields: chopsticksApiUrl, waitTimeoutMs, sessionKeyStrategy, sessionKey, role, scopes, disableDeviceAuth, devicePrivateKeyPem."
+          "Adapter config for OpenClaw gateway. MUST include url (ws:// or wss://) and headers.x-openclaw-token (or legacy x-openclaw-auth). Optional fields: abacusApiUrl, waitTimeoutMs, sessionKeyStrategy, sessionKey, role, scopes, disableDeviceAuth, devicePrivateKeyPem."
       },
       registrationEndpoint: {
         method: "POST",
@@ -1054,8 +1054,8 @@ function buildInviteOnboardingManifest(
         guidance:
           opts.deploymentMode === "authenticated" &&
           opts.deploymentExposure === "private"
-            ? "If OpenClaw runs on another machine, ensure the Chopsticks hostname is reachable and allowed via `pnpm chopsticks allowed-hostname <host>`."
-            : "Ensure OpenClaw can reach this Chopsticks API base URL for invite, claim, and skill bootstrap calls."
+            ? "If OpenClaw runs on another machine, ensure the Abacus hostname is reachable and allowed via `pnpm abacus allowed-hostname <host>`."
+            : "Ensure OpenClaw can reach this Abacus API base URL for invite, claim, and skill bootstrap calls."
       },
       textInstructions: {
         path: onboardingTextPath,
@@ -1063,10 +1063,10 @@ function buildInviteOnboardingManifest(
         contentType: "text/plain"
       },
       skill: {
-        name: "chopsticks",
+        name: "abacus",
         path: skillPath,
         url: skillUrl,
-        installPath: "~/.openclaw/skills/chopsticks/SKILL.md"
+        installPath: "~/.openclaw/skills/abacus/SKILL.md"
       }
     }
   };
@@ -1116,7 +1116,7 @@ export function buildInviteOnboardingTextDocument(
   };
 
   appendBlock(`
-    # Chopsticks OpenClaw Gateway Onboarding
+    # Abacus OpenClaw Gateway Onboarding
 
     This document is meant to be readable by both humans and agents.
 
@@ -1161,7 +1161,7 @@ export function buildInviteOnboardingTextDocument(
         capabilities: "OpenClaw agent adapter",
         agentDefaultsPayload: {
           url: "ws://127.0.0.1:18789",
-          chopsticksApiUrl: "http://host.docker.internal:3100",
+          abacusApiUrl: "http://host.docker.internal:3100",
           headers: { "x-openclaw-token": token },
           waitTimeoutMs: 120000,
           sessionKeyStrategy: "issue",
@@ -1181,7 +1181,7 @@ export function buildInviteOnboardingTextDocument(
     Legacy x-openclaw-auth is also accepted, but x-openclaw-token is preferred.
     Use adapterType "openclaw_gateway" and a ws:// or wss:// gateway URL.
     Pairing mode requirement:
-    - Keep device auth enabled (recommended). If devicePrivateKeyPem is omitted, Chopsticks generates and persists one during join so pairing approvals are stable.
+    - Keep device auth enabled (recommended). If devicePrivateKeyPem is omitted, Abacus generates and persists one during join so pairing approvals are stable.
     - You may set disableDeviceAuth=true only for special environments that cannot support pairing.
     - First run may return "pairing required" once; approve the pending pairing request in OpenClaw, then retry.
     Do NOT use /v1/responses or /hooks/* in this gateway join flow.
@@ -1194,7 +1194,7 @@ export function buildInviteOnboardingTextDocument(
       "capabilities": "Optional summary",
       "agentDefaultsPayload": {
         "url": "wss://your-openclaw-gateway.example",
-        "chopsticksApiUrl": "https://chopsticks-hostname-your-agent-can-reach:3100",
+        "abacusApiUrl": "https://abacus-hostname-your-agent-can-reach:3100",
         "headers": { "x-openclaw-token": "replace-me" },
         "waitTimeoutMs": 120000,
         "sessionKeyStrategy": "issue",
@@ -1209,7 +1209,7 @@ export function buildInviteOnboardingTextDocument(
     - claimApiKeyPath
 
     ## Step 2: Wait for board approval
-    The board approves the join request in Chopsticks before key claim is allowed.
+    The board approves the join request in Abacus before key claim is allowed.
 
     ## Step 3: Claim API key (one-time)
     ${
@@ -1223,33 +1223,33 @@ export function buildInviteOnboardingTextDocument(
 
     On successful claim, save the full JSON response to:
 
-    - ~/.openclaw/workspace/chopsticks-claimed-api-key.json
-    chmod 600 ~/.openclaw/workspace/chopsticks-claimed-api-key.json
+    - ~/.openclaw/workspace/abacus-claimed-api-key.json
+    chmod 600 ~/.openclaw/workspace/abacus-claimed-api-key.json
 
-    And set the CHOPSTICKS_API_KEY and CHOPSTICKS_API_URL in your environment variables as specified here:
+    And set the ABACUS_API_KEY and ABACUS_API_URL in your environment variables as specified here:
     https://docs.openclaw.ai/help/environment
 
     e.g. 
 
     {
       env: {
-        CHOPSTICKS_API_KEY: "...",
-        CHOPSTICKS_API_URL: "...",
+        ABACUS_API_KEY: "...",
+        ABACUS_API_URL: "...",
       },
     }
 
-    Then set CHOPSTICKS_API_KEY and CHOPSTICKS_API_URL from the saved token field for every heartbeat run.
+    Then set ABACUS_API_KEY and ABACUS_API_URL from the saved token field for every heartbeat run.
 
     Important:
     - claim secrets expire
     - claim secrets are single-use
     - claim fails before board approval
 
-    ## Step 4: Install Chopsticks skill in OpenClaw
+    ## Step 4: Install Abacus skill in OpenClaw
     GET ${onboarding.skill.url}
     Install path: ${onboarding.skill.installPath}
 
-    Be sure to prepend your CHOPSTICKS_API_URL to the top of your skill and note the path to your CHOPSTICKS_API_URL
+    Be sure to prepend your ABACUS_API_URL to the top of your skill and note the path to your ABACUS_API_URL
 
     ## Text onboarding URL
     ${onboarding.textInstructions.url}
@@ -1257,7 +1257,7 @@ export function buildInviteOnboardingTextDocument(
     ## Connectivity guidance
     ${
       onboarding.connectivity?.guidance ??
-      "Ensure Chopsticks is reachable from your OpenClaw runtime."
+      "Ensure Abacus is reachable from your OpenClaw runtime."
     }
   `);
 
@@ -1270,7 +1270,7 @@ export function buildInviteOnboardingTextDocument(
     : [];
 
   if (connectionCandidates.length > 0) {
-    lines.push("## Suggested Chopsticks base URLs to try");
+    lines.push("## Suggested Abacus base URLs to try");
     for (const candidate of connectionCandidates) {
       lines.push(`- ${candidate}`);
     }
@@ -1278,12 +1278,12 @@ export function buildInviteOnboardingTextDocument(
 
       Test each candidate with:
       - GET <candidate>/api/health
-      - set the first reachable candidate as agentDefaultsPayload.chopsticksApiUrl when submitting your join request
+      - set the first reachable candidate as agentDefaultsPayload.abacusApiUrl when submitting your join request
 
       If none are reachable: ask your human operator for a reachable hostname/address and help them update network configuration.
       For authenticated/private mode, they may need:
-      - pnpm chopsticks allowed-hostname <host>
-      - then restart Chopsticks and retry onboarding.
+      - pnpm abacus allowed-hostname <host>
+      - then restart Abacus and retry onboarding.
     `);
   }
 
@@ -1358,7 +1358,7 @@ function isLocalImplicit(req: Request) {
 }
 
 async function resolveActorEmail(db: Db, req: Request): Promise<string | null> {
-  if (isLocalImplicit(req)) return "local@chopsticks.local";
+  if (isLocalImplicit(req)) return "local@abacus.local";
   const userId = req.actor.userId;
   if (!userId) return null;
   const user = await db
@@ -1702,14 +1702,14 @@ export function accessRoutes(
   router.get("/skills/index", (_req, res) => {
     res.json({
       skills: [
-        { name: "chopsticks", path: "/api/skills/chopsticks" },
+        { name: "abacus", path: "/api/skills/abacus" },
         {
           name: "para-memory-files",
           path: "/api/skills/para-memory-files"
         },
         {
-          name: "chopsticks-create-agent",
-          path: "/api/skills/chopsticks-create-agent"
+          name: "abacus-create-agent",
+          path: "/api/skills/abacus-create-agent"
         }
       ]
     });
@@ -2024,7 +2024,7 @@ export function accessRoutes(
           ? buildJoinDefaultsPayloadForAccept({
               adapterType,
               defaultsPayload: replayMergedDefaults,
-              chopsticksApiUrl: req.body.chopsticksApiUrl ?? null,
+              abacusApiUrl: req.body.abacusApiUrl ?? null,
               inboundOpenClawAuthHeader: req.header("x-openclaw-auth") ?? null,
               inboundOpenClawTokenHeader: req.header("x-openclaw-token") ?? null
             })
@@ -2199,10 +2199,10 @@ export function accessRoutes(
         if (expectedDefaults.url && !persistedDefaults.url)
           missingPersistedFields.push("url");
         if (
-          expectedDefaults.chopsticksApiUrl &&
-          !persistedDefaults.chopsticksApiUrl
+          expectedDefaults.abacusApiUrl &&
+          !persistedDefaults.abacusApiUrl
         ) {
-          missingPersistedFields.push("chopsticksApiUrl");
+          missingPersistedFields.push("abacusApiUrl");
         }
         if (expectedDefaults.gatewayToken && !persistedDefaults.gatewayToken) {
           missingPersistedFields.push("headers.x-openclaw-token");

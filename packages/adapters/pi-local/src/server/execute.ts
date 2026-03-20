@@ -2,29 +2,29 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { inferOpenAiCompatibleBiller, type AdapterExecutionContext, type AdapterExecutionResult } from "@chopsticks/adapter-utils";
+import { inferOpenAiCompatibleBiller, type AdapterExecutionContext, type AdapterExecutionResult } from "@abacus/adapter-utils";
 import {
   asString,
   asNumber,
   asStringArray,
   parseObject,
-  buildChopsticksEnv,
+  buildAbacusEnv,
   joinPromptSections,
   redactEnvForLogs,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
-  ensureChopsticksSkillSymlink,
+  ensureAbacusSkillSymlink,
   ensurePathInEnv,
-  listChopsticksSkillEntries,
+  listAbacusSkillEntries,
   removeMaintainerOnlySkillSymlinks,
   renderTemplate,
   runChildProcess,
-} from "@chopsticks/adapter-utils/server-utils";
+} from "@abacus/adapter-utils/server-utils";
 import { isPiUnknownSessionError, parsePiJsonl } from "./parse.js";
 import { ensurePiModelConfiguredAndAvailable } from "./models.js";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
-const CHOPSTICKS_SESSIONS_DIR = path.join(os.homedir(), ".pi", "chopstickss");
+const ABACUS_SESSIONS_DIR = path.join(os.homedir(), ".pi", "abacuss");
 const PI_AGENT_SKILLS_DIR = path.join(os.homedir(), ".pi", "agent", "skills");
 
 function firstNonEmptyLine(text: string): string {
@@ -55,7 +55,7 @@ function resolvePiBiller(env: Record<string, string>, provider: string | null): 
 }
 
 async function ensurePiSkillsInjected(onLog: AdapterExecutionContext["onLog"]) {
-  const skillsEntries = await listChopsticksSkillEntries(__moduleDir);
+  const skillsEntries = await listAbacusSkillEntries(__moduleDir);
   await fs.mkdir(PI_AGENT_SKILLS_DIR, { recursive: true });
   if (skillsEntries.length === 0) return;
 
@@ -66,7 +66,7 @@ async function ensurePiSkillsInjected(onLog: AdapterExecutionContext["onLog"]) {
   for (const skillName of removedSkills) {
     await onLog(
       "stderr",
-      `[chopsticks] Removed maintainer-only Pi skill "${skillName}" from ${PI_AGENT_SKILLS_DIR}\n`,
+      `[abacus] Removed maintainer-only Pi skill "${skillName}" from ${PI_AGENT_SKILLS_DIR}\n`,
     );
   }
 
@@ -74,29 +74,29 @@ async function ensurePiSkillsInjected(onLog: AdapterExecutionContext["onLog"]) {
     const target = path.join(PI_AGENT_SKILLS_DIR, entry.name);
 
     try {
-      const result = await ensureChopsticksSkillSymlink(entry.source, target);
+      const result = await ensureAbacusSkillSymlink(entry.source, target);
       if (result === "skipped") continue;
       await onLog(
         "stderr",
-        `[chopsticks] ${result === "repaired" ? "Repaired" : "Injected"} Pi skill "${entry.name}" into ${PI_AGENT_SKILLS_DIR}\n`,
+        `[abacus] ${result === "repaired" ? "Repaired" : "Injected"} Pi skill "${entry.name}" into ${PI_AGENT_SKILLS_DIR}\n`,
       );
     } catch (err) {
       await onLog(
         "stderr",
-        `[chopsticks] Failed to inject Pi skill "${entry.name}" into ${PI_AGENT_SKILLS_DIR}: ${err instanceof Error ? err.message : String(err)}\n`,
+        `[abacus] Failed to inject Pi skill "${entry.name}" into ${PI_AGENT_SKILLS_DIR}: ${err instanceof Error ? err.message : String(err)}\n`,
       );
     }
   }
 }
 
 async function ensureSessionsDir(): Promise<string> {
-  await fs.mkdir(CHOPSTICKS_SESSIONS_DIR, { recursive: true });
-  return CHOPSTICKS_SESSIONS_DIR;
+  await fs.mkdir(ABACUS_SESSIONS_DIR, { recursive: true });
+  return ABACUS_SESSIONS_DIR;
 }
 
 function buildSessionPath(agentId: string, timestamp: string): string {
   const safeTimestamp = timestamp.replace(/[:.]/g, "-");
-  return path.join(CHOPSTICKS_SESSIONS_DIR, `${safeTimestamp}-${agentId}.jsonl`);
+  return path.join(ABACUS_SESSIONS_DIR, `${safeTimestamp}-${agentId}.jsonl`);
 }
 
 export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExecutionResult> {
@@ -104,7 +104,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Chopsticks work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your Abacus work.",
   );
   const command = asString(config.command, "pi");
   const model = asString(config.model, "").trim();
@@ -114,15 +114,15 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const provider = parseModelProvider(model);
   const modelId = parseModelId(model);
 
-  const workspaceContext = parseObject(context.chopsticksWorkspace);
+  const workspaceContext = parseObject(context.abacusWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceId = asString(workspaceContext.workspaceId, "");
   const workspaceRepoUrl = asString(workspaceContext.repoUrl, "");
   const workspaceRepoRef = asString(workspaceContext.repoRef, "");
   const agentHome = asString(workspaceContext.agentHome, "");
-  const workspaceHints = Array.isArray(context.chopsticksWorkspaces)
-    ? context.chopsticksWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.abacusWorkspaces)
+    ? context.abacusWorkspaces.filter(
       (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
     )
     : [];
@@ -141,9 +141,9 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   // Build environment
   const envConfig = parseObject(config.env);
   const hasExplicitApiKey =
-    typeof envConfig.CHOPSTICKS_API_KEY === "string" && envConfig.CHOPSTICKS_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildChopsticksEnv(agent) };
-  env.CHOPSTICKS_RUN_ID = runId;
+    typeof envConfig.ABACUS_API_KEY === "string" && envConfig.ABACUS_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildAbacusEnv(agent) };
+  env.ABACUS_RUN_ID = runId;
 
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
@@ -168,25 +168,25 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const linkedIssueIds = Array.isArray(context.issueIds)
     ? context.issueIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     : [];
-  if (wakeTaskId) env.CHOPSTICKS_TASK_ID = wakeTaskId;
-  if (wakeReason) env.CHOPSTICKS_WAKE_REASON = wakeReason;
-  if (wakeCommentId) env.CHOPSTICKS_WAKE_COMMENT_ID = wakeCommentId;
-  if (approvalId) env.CHOPSTICKS_APPROVAL_ID = approvalId;
-  if (approvalStatus) env.CHOPSTICKS_APPROVAL_STATUS = approvalStatus;
-  if (linkedIssueIds.length > 0) env.CHOPSTICKS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
-  if (workspaceCwd) env.CHOPSTICKS_WORKSPACE_CWD = workspaceCwd;
-  if (workspaceSource) env.CHOPSTICKS_WORKSPACE_SOURCE = workspaceSource;
-  if (workspaceId) env.CHOPSTICKS_WORKSPACE_ID = workspaceId;
-  if (workspaceRepoUrl) env.CHOPSTICKS_WORKSPACE_REPO_URL = workspaceRepoUrl;
-  if (workspaceRepoRef) env.CHOPSTICKS_WORKSPACE_REPO_REF = workspaceRepoRef;
+  if (wakeTaskId) env.ABACUS_TASK_ID = wakeTaskId;
+  if (wakeReason) env.ABACUS_WAKE_REASON = wakeReason;
+  if (wakeCommentId) env.ABACUS_WAKE_COMMENT_ID = wakeCommentId;
+  if (approvalId) env.ABACUS_APPROVAL_ID = approvalId;
+  if (approvalStatus) env.ABACUS_APPROVAL_STATUS = approvalStatus;
+  if (linkedIssueIds.length > 0) env.ABACUS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+  if (workspaceCwd) env.ABACUS_WORKSPACE_CWD = workspaceCwd;
+  if (workspaceSource) env.ABACUS_WORKSPACE_SOURCE = workspaceSource;
+  if (workspaceId) env.ABACUS_WORKSPACE_ID = workspaceId;
+  if (workspaceRepoUrl) env.ABACUS_WORKSPACE_REPO_URL = workspaceRepoUrl;
+  if (workspaceRepoRef) env.ABACUS_WORKSPACE_REPO_REF = workspaceRepoRef;
   if (agentHome) env.AGENT_HOME = agentHome;
-  if (workspaceHints.length > 0) env.CHOPSTICKS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+  if (workspaceHints.length > 0) env.ABACUS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
 
   for (const [key, value] of Object.entries(envConfig)) {
     if (typeof value === "string") env[key] = value;
   }
   if (!hasExplicitApiKey && authToken) {
-    env.CHOPSTICKS_API_KEY = authToken;
+    env.ABACUS_API_KEY = authToken;
   }
 
   const runtimeEnv = Object.fromEntries(
@@ -224,7 +224,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   if (runtimeSessionId && !canResumeSession) {
     await onLog(
       "stderr",
-      `[chopsticks] Pi session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[abacus] Pi session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
 
@@ -256,17 +256,17 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
         `${instructionsContents}\n\n` +
         `The above agent instructions were loaded from ${resolvedInstructionsFilePath}. ` +
         `Resolve any relative file references from ${instructionsFileDir}.\n\n` +
-        `You are agent {{agent.id}} ({{agent.name}}). Continue your Chopsticks work.`;
+        `You are agent {{agent.id}} ({{agent.name}}). Continue your Abacus work.`;
       await onLog(
         "stderr",
-        `[chopsticks] Loaded agent instructions file: ${resolvedInstructionsFilePath}\n`,
+        `[abacus] Loaded agent instructions file: ${resolvedInstructionsFilePath}\n`,
       );
     } catch (err) {
       instructionsReadFailed = true;
       const reason = err instanceof Error ? err.message : String(err);
       await onLog(
         "stderr",
-        `[chopsticks] Warning: could not read agent instructions file "${resolvedInstructionsFilePath}": ${reason}\n`,
+        `[abacus] Warning: could not read agent instructions file "${resolvedInstructionsFilePath}": ${reason}\n`,
       );
       // Fall back to base prompt template
       systemPromptExtension = promptTemplate;
@@ -300,7 +300,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     !canResumeSession && bootstrapPromptTemplate.trim().length > 0
       ? renderTemplate(bootstrapPromptTemplate, templateData).trim()
       : "";
-  const sessionHandoffNote = asString(context.chopsticksSessionHandoffMarkdown, "").trim();
+  const sessionHandoffNote = asString(context.abacusSessionHandoffMarkdown, "").trim();
   const userPrompt = joinPromptSections([
     renderedBootstrapPrompt,
     sessionHandoffNote,
@@ -343,7 +343,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     args.push("--tools", "read,bash,edit,write,grep,find,ls");
     args.push("--session", sessionFile);
 
-    // Add Chopsticks skills directory so Pi can load the managed skills.
+    // Add Abacus skills directory so Pi can load the managed skills.
     args.push("--skill", PI_AGENT_SKILLS_DIR);
 
     if (extraArgs.length > 0) args.push(...extraArgs);
@@ -485,7 +485,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stderr",
-      `[chopsticks] Pi session "${runtimeSessionId}" is unavailable; retrying with a fresh session.\n`,
+      `[abacus] Pi session "${runtimeSessionId}" is unavailable; retrying with a fresh session.\n`,
     );
     const newSessionPath = buildSessionPath(agent.id, new Date().toISOString());
     try {

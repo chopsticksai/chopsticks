@@ -11,7 +11,7 @@ export interface LocaleOption {
 
 type InterpolationValues = Record<string, string | number>;
 
-const LOCALE_STORAGE_KEY = "chopsticks.locale";
+const LOCALE_STORAGE_KEY = "abacus.locale";
 const DEFAULT_LOCALE: AppLocale = "en-US";
 
 const translations: Record<AppLocale, Record<string, string>> = {
@@ -20,10 +20,10 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Loading...": "加载中...",
     "Failed to load app state": "加载应用状态失败",
     "Instance setup required": "需要先完成实例初始化",
-    "No instance admin exists yet. A bootstrap invite is already active. Check your Chopsticks startup logs for the first admin invite URL, or run this command to rotate it:":
-      "当前还没有实例管理员。系统已经存在一个初始化邀请。请在 Chopsticks 启动日志中查看首个管理员邀请链接，或运行下面的命令重新生成：",
-    "No instance admin exists yet. Run this command in your Chopsticks environment to generate the first admin invite URL:":
-      "当前还没有实例管理员。请在 Chopsticks 环境中运行以下命令，生成首个管理员邀请链接：",
+    "No instance admin exists yet. A bootstrap invite is already active. Check your Abacus startup logs for the first admin invite URL, or run this command to rotate it:":
+      "当前还没有实例管理员。系统已经存在一个初始化邀请。请在 Abacus 启动日志中查看首个管理员邀请链接，或运行下面的命令重新生成：",
+    "No instance admin exists yet. Run this command in your Abacus environment to generate the first admin invite URL:":
+      "当前还没有实例管理员。请在 Abacus 环境中运行以下命令，生成首个管理员邀请链接：",
     "Create your first company": "创建你的第一家公司",
     "Create another company": "再创建一家公司",
     "Get started by creating a company.": "先创建一家公司开始使用。",
@@ -137,14 +137,14 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Full error output": "完整错误输出",
     "No stored error message.": "没有保存的错误信息。",
     "Hello World Widget (Example)": "Hello World 小组件（示例）",
-    "Reference UI plugin that adds a simple Hello World widget to the Chopsticks dashboard.":
-      "参考 UI 插件，会在 Chopsticks 仪表盘中添加一个简单的 Hello World 小组件。",
+    "Reference UI plugin that adds a simple Hello World widget to the Abacus dashboard.":
+      "参考 UI 插件，会在 Abacus 仪表盘中添加一个简单的 Hello World 小组件。",
     "File Browser (Example)": "文件浏览器（示例）",
     "Example plugin that adds a Files link in project navigation plus a project detail file browser.":
       "示例插件，会在项目导航中添加 Files 链接，并在项目详情页提供文件浏览器。",
     "Kitchen Sink (Example)": "功能全集（示例）",
-    "Reference plugin that demonstrates the current Chopsticks plugin API surface, bridge flows, UI extension surfaces, jobs, webhooks, tools, streams, and trusted local workspace/process demos.":
-      "参考插件，用于演示当前 Chopsticks 插件 API 能力、bridge 流程、UI 扩展面、任务、webhook、工具、流式能力以及本地可信工作区/进程示例。",
+    "Reference plugin that demonstrates the current Abacus plugin API surface, bridge flows, UI extension surfaces, jobs, webhooks, tools, streams, and trusted local workspace/process demos.":
+      "参考插件，用于演示当前 Abacus 插件 API 能力、bridge 流程、UI 扩展面、任务、webhook、工具、流式能力以及本地可信工作区/进程示例。",
     "Select a company to view this page.": "请选择一家公司以查看此页面。",
     "Multiple plugins declare the route {route}. Use the plugin-id route until the conflict is resolved.":
       "有多个插件声明了路由 {route}。在冲突解决前，请使用带 plugin-id 的路由。",
@@ -162,8 +162,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Must have at least {count} items": "至少需要 {count} 项",
     "Must have at most {count} items": "最多允许 {count} 项",
     "Select an option": "请选择一项",
-    "This secret is stored securely via the Chopsticks secret provider.":
-      "该密钥会通过 Chopsticks 密钥提供器安全存储。",
+    "This secret is stored securely via the Abacus secret provider.":
+      "该密钥会通过 Abacus 密钥提供器安全存储。",
     "Hide secret": "隐藏密钥",
     "Show secret": "显示密钥",
     "Add item": "添加项目",
@@ -251,8 +251,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Failed to archive": "归档失败",
     "No company selected. Select a company from the switcher above.":
       "尚未选择公司。请从上方切换器中选择一家公司。",
-    "Welcome to Chopsticks. Set up your first company and agent to get started.":
-      "欢迎使用 Chopsticks。先创建第一家公司和代理即可开始。",
+    "Welcome to Abacus. Set up your first company and agent to get started.":
+      "欢迎使用 Abacus。先创建第一家公司和代理即可开始。",
     "Get Started": "开始使用",
     "Create or select a company to view the dashboard.": "创建或选择一家公司以查看仪表盘。",
     "You have no agents.": "你还没有任何代理。",
@@ -310,8 +310,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "No approvals yet.": "暂无审批。",
     "Authentication failed": "认证失败",
     "Please fill in all required fields.": "请填写所有必填字段。",
-    "Sign in to Chopsticks": "登录 Chopsticks",
-    "Create your Chopsticks account": "创建你的 Chopsticks 账户",
+    "Sign in to Abacus": "登录 Abacus",
+    "Create your Abacus account": "创建你的 Abacus 账户",
     "Use your email and password to access this instance.": "使用邮箱和密码访问当前实例。",
     "Create an account for this instance. Email confirmation is not required in v1.": "为当前实例创建账户。V1 版本不需要邮件确认。",
     "Name": "姓名",
@@ -613,8 +613,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "{spent} of {budget}": "{spent} / {budget}",
     "Select a start and end date to load data.": "请选择开始和结束日期以加载数据。",
     "Accounting model": "记账模型",
-    "Chopsticks now separates request-level inference usage from account-level finance events.":
-      "Chopsticks 现在将请求级推理用量与账户级财务事件分开记录。",
+    "Abacus now separates request-level inference usage from account-level finance events.":
+      "Abacus 现在将请求级推理用量与账户级财务事件分开记录。",
     "That keeps provider reporting honest when the biller is OpenRouter, Cloudflare, Bedrock, or another intermediary.":
       "当计费方是 OpenRouter、Cloudflare、Bedrock 或其他中间层时，这能让提供方报表保持准确。",
     "Inference ledger": "推理账本",
@@ -954,12 +954,12 @@ const translations: Record<AppLocale, Record<string, string>> = {
       "你的请求正在等待管理员批准。在批准前你无法访问。",
     "Request ID:": "请求 ID：",
     "One-time claim secret (save now)": "一次性认领密钥（请立即保存）",
-    "Chopsticks skill bootstrap": "Chopsticks 技能初始化",
+    "Abacus skill bootstrap": "Abacus 技能初始化",
     "Install to {path}": "安装到 {path}",
     "Agent-readable onboarding text": "供代理读取的入门文本",
     "Connectivity diagnostics": "连接诊断",
-    "Bootstrap your Chopsticks instance": "初始化你的 Chopsticks 实例",
-    "Join this Chopsticks company": "加入这家 Chopsticks 公司",
+    "Bootstrap your Abacus instance": "初始化你的 Abacus 实例",
+    "Join this Abacus company": "加入这家 Abacus 公司",
     "Invite expires {date}.": "邀请将在 {date} 过期。",
     "Join as {type}": "以 {type} 身份加入",
     "Adapter type": "适配器类型",
@@ -1094,8 +1094,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Finished 2m ago": "2 分钟前完成",
     "UX Lab": "体验实验室",
     "Run Transcript Fixtures": "运行转录示例",
-    "Built from a real Chopsticks development run, then sanitized so no secrets, local paths, or environment details survive into the fixture.":
-      "基于一次真实的 Chopsticks 开发运行构建，并经过清洗处理，确保示例中不包含任何密钥、本地路径或环境细节。",
+    "Built from a real Abacus development run, then sanitized so no secrets, local paths, or environment details survive into the fixture.":
+      "基于一次真实的 Abacus 开发运行构建，并经过清洗处理，确保示例中不包含任何密钥、本地路径或环境细节。",
     "Source run {id}": "来源运行 {id}",
     "Controls": "控件",
     "Show settled state": "显示稳定状态",
@@ -1161,8 +1161,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "API key created - copy it now, it will not be shown again.":
       "API 密钥已创建，请立即复制，之后将不再显示。",
     "API Keys": "API 密钥",
-    "API keys allow this agent to authenticate calls to the Chopsticks server.":
-      "API 密钥允许该代理向 Chopsticks 服务器发起已认证的请求。",
+    "API keys allow this agent to authenticate calls to the Abacus server.":
+      "API 密钥允许该代理向 Abacus 服务器发起已认证的请求。",
     "Args (comma-separated)": "参数（逗号分隔）",
     "Assign Task": "分配任务",
     "assistant": "助手",
@@ -1357,8 +1357,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Workspaces help": "工作区帮助",
     "Worktree parent dir": "Worktree 父目录",
     "Design Guide": "设计指南",
-    "Every component, style, and pattern used across Chopsticks.":
-      "Chopsticks 中使用的每个组件、样式和模式。",
+    "Every component, style, and pattern used across Abacus.":
+      "Abacus 中使用的每个组件、样式和模式。",
     "This page should be updated when new UI primitives or app-level patterns ship.":
       "当新的 UI 原语或应用级模式上线时，应同步更新此页面。",
     "Component Coverage": "组件覆盖",
@@ -1509,7 +1509,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Heartbeat run #{count}: completed successfully": "心跳运行 #{count}：已成功完成",
     "Type a command or search...": "输入命令或搜索...",
     "Open command palette": "打开命令面板",
-    "Chopsticks App": "Chopsticks 应用",
+    "Abacus App": "Abacus 应用",
     "Issue List": "任务列表",
     "Card Title": "卡片标题",
     "Card description with supporting text.": "卡片说明文字。",
@@ -1597,8 +1597,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
       "描述该代理可以做什么。会显示在组织图中，并用于任务路由。",
     "How this agent runs: local CLI (Claude/CodeBuddy/Codex/Gemini/OpenCode/Cursor), OpenClaw Gateway, spawned process, or generic HTTP webhook.":
       "该代理的运行方式：本地 CLI（Claude/CodeBuddy/Codex/Gemini/OpenCode/Cursor）、OpenClaw 网关、派生进程或通用 HTTP Webhook。",
-    "Default working directory fallback for local adapters. Use an absolute path on the machine running Chopsticks.":
-      "本地适配器的默认工作目录回退值。请填写运行 Chopsticks 的机器上的绝对路径。",
+    "Default working directory fallback for local adapters. Use an absolute path on the machine running Abacus.":
+      "本地适配器的默认工作目录回退值。请填写运行 Abacus 的机器上的绝对路径。",
     "The prompt sent to the agent on each heartbeat. Supports {{ agent.id }}, {{ agent.name }}, {{ agent.role }} variables.":
       "每次心跳发送给代理的提示词。支持 {{ agent.id }}、{{ agent.name }}、{{ agent.role }} 变量。",
     "Override the default model used by the adapter.": "覆盖适配器默认使用的模型。",
@@ -1611,8 +1611,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Run Codex without sandbox restrictions. Required for filesystem/network access.":
       "运行 Codex 时不受沙箱限制。访问文件系统或网络时需要开启。",
     "Enable Codex web search capability during runs.": "在运行期间启用 Codex 的网页搜索能力。",
-    "How Chopsticks should realize an execution workspace for this agent. Keep project_primary for normal cwd execution, or use git_worktree for issue-scoped isolated checkouts.":
-      "指定 Chopsticks 应如何为该代理准备执行工作区。普通 cwd 执行请保持 project_primary，需要按任务隔离检出时使用 git_worktree。",
+    "How Abacus should realize an execution workspace for this agent. Keep project_primary for normal cwd execution, or use git_worktree for issue-scoped isolated checkouts.":
+      "指定 Abacus 应如何为该代理准备执行工作区。普通 cwd 执行请保持 project_primary，需要按任务隔离检出时使用 git_worktree。",
     "Base git ref used when creating a worktree branch. Leave blank to use the resolved workspace ref or HEAD.":
       "创建 worktree 分支时使用的基础 git ref。留空则使用解析后的工作区 ref 或 HEAD。",
     "Template for naming derived branches. Supports {{issue.identifier}}, {{issue.title}}, {{agent.name}}, {{project.id}}, {{workspace.repoRef}}, and {{slug}}.":
@@ -1632,8 +1632,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
       "注入到适配器进程中的环境变量。可使用明文值或密钥引用。",
     "Optional prompt prepended on the first run to bootstrap the agent's environment or habits.":
       "可选的首次运行前置提示词，用于初始化代理的环境或工作习惯。",
-    "Optional JSON merged into remote adapter request payloads before Chopsticks adds its standard wake and workspace fields.":
-      "可选 JSON，会在 Chopsticks 添加标准唤醒和工作区字段之前，先合并进远程适配器的请求负载中。",
+    "Optional JSON merged into remote adapter request payloads before Abacus adds its standard wake and workspace fields.":
+      "可选 JSON，会在 Abacus 添加标准唤醒和工作区字段之前，先合并进远程适配器的请求负载中。",
     "The URL that receives POST requests when the agent is invoked.":
       "代理被调用时接收 POST 请求的 URL。",
     "Run this agent automatically on a timer. Useful for periodic tasks like checking for new work.":
@@ -1676,7 +1676,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Run Policy": "运行策略",
     "Run heartbeat every": "每隔",
     "sec": "秒",
-    "Chopsticks API URL override": "Chopsticks API URL 覆盖",
+    "Abacus API URL override": "Abacus API URL 覆盖",
     "Session strategy": "会话策略",
     "Session key": "会话键",
     "Gateway auth token (x-openclaw-token)": "网关认证令牌（x-openclaw-token）",
@@ -1686,8 +1686,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Fixed": "固定",
     "Per issue": "按任务",
     "Per run": "按运行",
-    "Always enabled for gateway agents. Chopsticks persists a device key during onboarding so pairing approvals remain stable across runs.":
-      "网关代理始终启用。Chopsticks 会在引导阶段持久化一个设备密钥，以便配对审批在多次运行之间保持稳定。",
+    "Always enabled for gateway agents. Abacus persists a device key during onboarding so pairing approvals remain stable across runs.":
+      "网关代理始终启用。Abacus 会在引导阶段持久化一个设备密钥，以便配对审批在多次运行之间保持稳定。",
     "Runtime services JSON": "运行时服务 JSON",
     "Payload template JSON": "负载模板 JSON",
     "Enable Chrome": "启用 Chrome",
@@ -1719,8 +1719,8 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "value": "值",
     "Store value as secret and replace with reference": "将值存为密钥并替换为引用",
     "Seal": "封存",
-    "CHOPSTICKS_* variables are injected automatically at runtime.":
-      "CHOPSTICKS_* 变量会在运行时自动注入。",
+    "ABACUS_* variables are injected automatically at runtime.":
+      "ABACUS_* 变量会在运行时自动注入。",
     "Select model": "选择模型",
     "OK": "确定",
     "e.g. VP of Engineering": "例如：工程副总裁",
@@ -1740,7 +1740,7 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "https://github.com/org/repo": "https://github.com/org/repo",
     "ws://127.0.0.1:18789": "ws://127.0.0.1:18789",
     "origin/main": "origin/main",
-    ".chopsticks/worktrees": ".chopsticks/worktrees",
+    ".abacus/worktrees": ".abacus/worktrees",
     "{{issue.identifier}}-{{slug}}": "{{issue.identifier}}-{{slug}}",
     "bash ./scripts/provision-worktree.sh": "bash ./scripts/provision-worktree.sh",
     "bash ./scripts/teardown-worktree.sh": "bash ./scripts/teardown-worktree.sh",
@@ -1763,11 +1763,11 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Clear repo": "清除仓库",
     "Not set.": "未设置。",
     "Set repo": "设置仓库",
-    "Chopsticks-managed folder.": "Chopsticks 托管的文件夹。",
+    "Abacus-managed folder.": "Abacus 托管的文件夹。",
     "Change local folder": "更改本地文件夹",
     "Set local folder": "设置本地文件夹",
-    "Additional legacy workspace records exist on this project. Chopsticks is using the primary workspace as the codebase view.":
-      "此项目还存在额外的旧版工作区记录。Chopsticks 当前使用主工作区作为代码库视图。",
+    "Additional legacy workspace records exist on this project. Abacus is using the primary workspace as the codebase view.":
+      "此项目还存在额外的旧版工作区记录。Abacus 当前使用主工作区作为代码库视图。",
     "Clear local folder from this workspace?": "从此工作区清除本地文件夹？",
     "Delete this workspace local folder?": "删除此工作区的本地文件夹？",
     "Clear repo from this workspace?": "从此工作区清除仓库？",
@@ -1799,22 +1799,22 @@ const translations: Record<AppLocale, Record<string, string>> = {
     "Cleanup:": "清理：",
     "Created by this run": "由本次运行创建",
     "Reused existing workspace": "复用现有工作区",
-    "Chopsticks": "Chopsticks",
+    "Abacus": "Abacus",
     "Local": "本地",
     "No description available.": "暂无描述。",
     "Session compaction": "会话压缩",
     "Agent override": "代理覆盖",
     "Adapter default": "适配器默认",
-    "{adapterLabel} is treated as natively managing long context, so Chopsticks fresh-session rotation defaults to off.":
-      "{adapterLabel} 被视为原生管理长上下文，因此 Chopsticks 的新会话轮换默认关闭。",
-    "{adapterLabel} likely manages long context itself, but Chopsticks still keeps conservative rotation defaults for now.":
-      "{adapterLabel} 可能会自行管理长上下文，但 Chopsticks 目前仍保持保守的轮换默认值。",
-    "{adapterLabel} does not have verified native compaction behavior, so Chopsticks keeps conservative rotation defaults.":
-      "{adapterLabel} 尚未验证原生压缩行为，因此 Chopsticks 保持保守的轮换默认值。",
-    "No Chopsticks-managed fresh-session thresholds are active for this adapter.":
-      "此适配器当前没有启用任何 Chopsticks 管理的新会话阈值。",
-    "Chopsticks will start a fresh session when one of these thresholds is reached.":
-      "当达到以下任一阈值时，Chopsticks 会开启一个新会话。",
+    "{adapterLabel} is treated as natively managing long context, so Abacus fresh-session rotation defaults to off.":
+      "{adapterLabel} 被视为原生管理长上下文，因此 Abacus 的新会话轮换默认关闭。",
+    "{adapterLabel} likely manages long context itself, but Abacus still keeps conservative rotation defaults for now.":
+      "{adapterLabel} 可能会自行管理长上下文，但 Abacus 目前仍保持保守的轮换默认值。",
+    "{adapterLabel} does not have verified native compaction behavior, so Abacus keeps conservative rotation defaults.":
+      "{adapterLabel} 尚未验证原生压缩行为，因此 Abacus 保持保守的轮换默认值。",
+    "No Abacus-managed fresh-session thresholds are active for this adapter.":
+      "此适配器当前没有启用任何 Abacus 管理的新会话阈值。",
+    "Abacus will start a fresh session when one of these thresholds is reached.":
+      "当达到以下任一阈值时，Abacus 会开启一个新会话。",
     "Raw input": "原始输入",
     "Age": "时长",
     "A large cumulative raw token total does not mean the full session is resent on every heartbeat.":
@@ -1829,20 +1829,20 @@ const translations: Record<AppLocale, Record<string, string>> = {
     [`Create your CEO HEARTBEAT.md`]: "创建你的 CEO HEARTBEAT.md",
     [`Setup yourself as the CEO. Use the ceo persona found here: 
 
-https://github.com/chopsticksai/companies/blob/main/default/ceo/AGENTS.md
+https://github.com/abacus-lab/companies/blob/main/default/ceo/AGENTS.md
 
 Ensure you have a folder agents/ceo and then download this AGENTS.md as well as the sibling HEARTBEAT.md, SOUL.md, and TOOLS.md. and set that AGENTS.md as the path to your agents instruction file
 
 And after you've finished that, hire yourself a Founding Engineer agent`]:
       `先把自己设定为 CEO。使用这里的 ceo persona：
 
-https://github.com/chopsticksai/companies/blob/main/default/ceo/AGENTS.md
+https://github.com/abacus-lab/companies/blob/main/default/ceo/AGENTS.md
 
 请确保你有一个 agents/ceo 文件夹，然后下载这个 AGENTS.md，以及同级的 HEARTBEAT.md、SOUL.md 和 TOOLS.md，并把这个 AGENTS.md 设为你的代理说明文件路径。
 
 完成之后，再为自己招聘一名 Founding Engineer 代理。`,
-    "Chopsticks works best if you create a new folder for your agents to keep their memories and stay organized. Create a new folder and put the path here.":
-      "如果你为代理单独创建一个新文件夹来保存记忆并保持有序，Chopsticks 的效果会更好。请创建一个新文件夹，并把路径填在这里。",
+    "Abacus works best if you create a new folder for your agents to keep their memories and stay organized. Create a new folder and put the path here.":
+      "如果你为代理单独创建一个新文件夹来保存记忆并保持有序，Abacus 的效果会更好。请创建一个新文件夹，并把路径填在这里。",
   },
 };
 

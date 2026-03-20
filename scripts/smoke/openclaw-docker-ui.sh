@@ -61,7 +61,7 @@ OPENCLAW_IMAGE="${OPENCLAW_IMAGE:-openclaw:local}"
 OPENCLAW_TMP_DIR="${OPENCLAW_TMP_DIR:-${TMPDIR:-/tmp}}"
 OPENCLAW_TMP_DIR="${OPENCLAW_TMP_DIR%/}"
 OPENCLAW_TMP_DIR="${OPENCLAW_TMP_DIR:-/tmp}"
-OPENCLAW_CONFIG_DIR="${OPENCLAW_CONFIG_DIR:-$OPENCLAW_TMP_DIR/openclaw-chopsticks-smoke}"
+OPENCLAW_CONFIG_DIR="${OPENCLAW_CONFIG_DIR:-$OPENCLAW_TMP_DIR/openclaw-abacus-smoke}"
 OPENCLAW_WORKSPACE_DIR="${OPENCLAW_WORKSPACE_DIR:-$OPENCLAW_CONFIG_DIR/workspace}"
 OPENCLAW_GATEWAY_PORT="${OPENCLAW_GATEWAY_PORT:-18789}"
 OPENCLAW_BRIDGE_PORT="${OPENCLAW_BRIDGE_PORT:-18790}"
@@ -76,8 +76,8 @@ OPENCLAW_DISABLE_DEVICE_AUTH="${OPENCLAW_DISABLE_DEVICE_AUTH:-1}"
 OPENCLAW_MODEL_PRIMARY="${OPENCLAW_MODEL_PRIMARY:-openai/gpt-5.2}"
 OPENCLAW_MODEL_FALLBACK="${OPENCLAW_MODEL_FALLBACK:-openai/gpt-5.2-chat-latest}"
 OPENCLAW_RESET_STATE="${OPENCLAW_RESET_STATE:-1}"
-CHOPSTICKS_HOST_PORT="${CHOPSTICKS_HOST_PORT:-3100}"
-CHOPSTICKS_HOST_FROM_CONTAINER="${CHOPSTICKS_HOST_FROM_CONTAINER:-host.docker.internal}"
+ABACUS_HOST_PORT="${ABACUS_HOST_PORT:-3100}"
+ABACUS_HOST_FROM_CONTAINER="${ABACUS_HOST_FROM_CONTAINER:-host.docker.internal}"
 
 case "$OPENCLAW_DISABLE_DEVICE_AUTH" in
   1|true|TRUE|True|yes|YES|Yes)
@@ -189,7 +189,7 @@ OPENCLAW_IMAGE=$OPENCLAW_IMAGE
 OPENAI_API_KEY=$OPENAI_API_KEY
 EOF
 
-COMPOSE_OVERRIDE="${OPENCLAW_DOCKER_DIR}/.chopsticks-openclaw.override.yml"
+COMPOSE_OVERRIDE="${OPENCLAW_DOCKER_DIR}/.abacus-openclaw.override.yml"
 cat > "$COMPOSE_OVERRIDE" <<EOF
 services:
   openclaw-gateway:
@@ -209,14 +209,14 @@ compose() {
     "$@"
 }
 
-detect_chopsticks_base_url() {
+detect_abacus_base_url() {
   local bridge_gateway candidate health_url
   bridge_gateway="$(docker network inspect openclaw-docker_default --format '{{(index .IPAM.Config 0).Gateway}}' 2>/dev/null || true)"
-  for candidate in "$CHOPSTICKS_HOST_FROM_CONTAINER" "$bridge_gateway"; do
+  for candidate in "$ABACUS_HOST_FROM_CONTAINER" "$bridge_gateway"; do
     [[ -n "$candidate" ]] || continue
-    health_url="http://${candidate}:${CHOPSTICKS_HOST_PORT}/api/health"
+    health_url="http://${candidate}:${ABACUS_HOST_PORT}/api/health"
     if compose exec -T openclaw-gateway node -e "fetch('${health_url}').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" >/dev/null 2>&1; then
-      echo "http://${candidate}:${CHOPSTICKS_HOST_PORT}"
+      echo "http://${candidate}:${ABACUS_HOST_PORT}"
       return 0
     fi
   done
@@ -241,7 +241,7 @@ if [[ "$READY" != "1" ]]; then
   fail "gateway did not become healthy in ${OPENCLAW_WAIT_SECONDS}s"
 fi
 
-chopsticks_base_url="$(detect_chopsticks_base_url || true)"
+abacus_base_url="$(detect_abacus_base_url || true)"
 dashboard_output="$(compose run --rm openclaw-cli dashboard --no-open)"
 dashboard_url="$(grep -Eo 'https?://[^[:space:]]+#token=[^[:space:]]+' <<<"$dashboard_output" | head -n1 || true)"
 if [[ -z "$dashboard_url" ]]; then
@@ -266,20 +266,20 @@ Model:
   ${OPENCLAW_MODEL_PRIMARY} (fallback: ${OPENCLAW_MODEL_FALLBACK})
 State:
   OPENCLAW_RESET_STATE=$OPENCLAW_RESET_STATE
-Chopsticks URL for OpenClaw container:
+Abacus URL for OpenClaw container:
 EOF
-  if [[ -n "$chopsticks_base_url" ]]; then
+  if [[ -n "$abacus_base_url" ]]; then
     cat <<EOF
-  $chopsticks_base_url
+  $abacus_base_url
   (Use this base URL for invite/onboarding links from inside OpenClaw Docker.)
 EOF
   else
     cat <<EOF
-  Auto-detect failed. Try: http://host.docker.internal:${CHOPSTICKS_HOST_PORT}
-  (Do not use http://127.0.0.1:${CHOPSTICKS_HOST_PORT} inside the container.)
-  If Chopsticks rejects the host, run on host machine:
-    pnpm chopsticks allowed-hostname host.docker.internal
-  Then restart Chopsticks and re-run this script.
+  Auto-detect failed. Try: http://host.docker.internal:${ABACUS_HOST_PORT}
+  (Do not use http://127.0.0.1:${ABACUS_HOST_PORT} inside the container.)
+  If Abacus rejects the host, run on host machine:
+    pnpm abacus allowed-hostname host.docker.internal
+  Then restart Abacus and re-run this script.
 EOF
   fi
   cat <<EOF
@@ -299,20 +299,20 @@ Model:
   ${OPENCLAW_MODEL_PRIMARY} (fallback: ${OPENCLAW_MODEL_FALLBACK})
 State:
   OPENCLAW_RESET_STATE=$OPENCLAW_RESET_STATE
-Chopsticks URL for OpenClaw container:
+Abacus URL for OpenClaw container:
 EOF
-  if [[ -n "$chopsticks_base_url" ]]; then
+  if [[ -n "$abacus_base_url" ]]; then
     cat <<EOF
-  $chopsticks_base_url
+  $abacus_base_url
   (Use this base URL for invite/onboarding links from inside OpenClaw Docker.)
 EOF
   else
     cat <<EOF
-  Auto-detect failed. Try: http://host.docker.internal:${CHOPSTICKS_HOST_PORT}
-  (Do not use http://127.0.0.1:${CHOPSTICKS_HOST_PORT} inside the container.)
-  If Chopsticks rejects the host, run on host machine:
-    pnpm chopsticks allowed-hostname host.docker.internal
-  Then restart Chopsticks and re-run this script.
+  Auto-detect failed. Try: http://host.docker.internal:${ABACUS_HOST_PORT}
+  (Do not use http://127.0.0.1:${ABACUS_HOST_PORT} inside the container.)
+  If Abacus rejects the host, run on host machine:
+    pnpm abacus allowed-hostname host.docker.internal
+  Then restart Abacus and re-run this script.
 EOF
   fi
   cat <<EOF

@@ -3,7 +3,7 @@ title: 数据库
 summary: 内嵌 PGlite、Docker Postgres 与托管数据库
 ---
 
-Chopsticks 通过 Drizzle ORM 使用 PostgreSQL。数据库有三种运行方式。
+Abacus 通过 Drizzle ORM 使用 PostgreSQL。数据库有三种运行方式。
 
 ## 1. 内嵌 PostgreSQL（默认）
 
@@ -15,12 +15,12 @@ pnpm dev
 
 首次启动时，服务端会：
 
-1. 创建 `~/.chopsticks/instances/default/db/` 作为数据目录
-2. 确保 `chopsticks` 数据库存在
+1. 创建 `~/.abacus/instances/default/db/` 作为数据目录
+2. 确保 `abacus` 数据库存在
 3. 自动执行迁移
 4. 开始提供服务
 
-数据会跨重启保留。若要重置，可执行：`rm -rf ~/.chopsticks/instances/default/db`。
+数据会跨重启保留。若要重置，可执行：`rm -rf ~/.abacus/instances/default/db`。
 
 Docker 快速启动方案默认也使用内嵌 PostgreSQL。
 
@@ -36,13 +36,13 @@ docker compose up -d
 
 ```sh
 cp .env.example .env
-# DATABASE_URL=postgres://chopsticks:chopsticks@localhost:5432/chopsticks
+# DATABASE_URL=postgres://abacus:abacus@localhost:5432/abacus
 ```
 
 推送 schema：
 
 ```sh
-DATABASE_URL=postgres://chopsticks:chopsticks@localhost:5432/chopsticks \
+DATABASE_URL=postgres://abacus:abacus@localhost:5432/abacus \
   npx drizzle-kit push
 ```
 

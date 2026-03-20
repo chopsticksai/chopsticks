@@ -2,7 +2,7 @@
 
 ## Summary
 
-This document defines what it means for the Chopsticks UI to be localized, and
+This document defines what it means for the Abacus UI to be localized, and
 what must be checked when an upstream merge introduces or changes UI.
 
 Use this document to answer:
@@ -51,7 +51,7 @@ Do not use this document as the merge procedure. For the execution flow, use
   - `localStorage`
   - `navigator.language`
   - `en-US`
-- The storage key is fixed to `chopsticks.locale`.
+- The storage key is fixed to `abacus.locale`.
 - Language changes must update `document.documentElement.lang`.
 
 ### Required Language Entry Points
@@ -84,10 +84,10 @@ Localization scope includes more than top-level headings. It includes:
 
 - `DEFAULT_TASK_DESCRIPTION` must exist in English and Chinese.
 - The CEO persona link in `DEFAULT_TASK_DESCRIPTION` must point to
-  `https://github.com/chopsticksai/companies/...`.
+  `https://github.com/abacus-lab/companies/...`.
 - User-visible current-product links that still point to
-  `https://github.com/paperclipai/paperclip` must be updated to
-  `https://github.com/chopsticksai/chopsticks`.
+  `https://github.com/abacus-lab/abacus` must be updated to
+  `https://github.com/abacus-lab/abacus`.
 
 ## Merge Intake Checklist
 
@@ -143,7 +143,7 @@ When upstream introduces structured labels plus free-form detail:
   will not recompute them. Build locale-dependent arrays/objects inside the
   component or hook.
 - After merging upstream UI, do a dedicated scan for user-visible brand names
-  and GitHub links. Do not assume new upstream UI already matches Chopsticks
+  and GitHub links. Do not assume new upstream UI already matches Abacus
   naming rules.
 
 ## Test and Acceptance Requirements

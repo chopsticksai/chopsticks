@@ -136,19 +136,19 @@ export function OpenClawGatewayConfigFields({
 
       {!isCreate && (
         <>
-          <Field label="Chopsticks API URL override">
+          <Field label="Abacus API URL override">
             <DraftInput
               value={
                 eff(
                   "adapterConfig",
-                  "chopsticksApiUrl",
-                  String(config.chopsticksApiUrl ?? ""),
+                  "abacusApiUrl",
+                  String(config.abacusApiUrl ?? ""),
                 )
               }
-              onCommit={(v) => mark("adapterConfig", "chopsticksApiUrl", v || undefined)}
+              onCommit={(v) => mark("adapterConfig", "abacusApiUrl", v || undefined)}
               immediate
               className={inputClass}
-              placeholder="https://chopsticks.example"
+              placeholder="https://abacus.example"
             />
           </Field>
 
@@ -167,11 +167,11 @@ export function OpenClawGatewayConfigFields({
           {sessionStrategy === "fixed" && (
             <Field label="Session key">
               <DraftInput
-                value={eff("adapterConfig", "sessionKey", String(config.sessionKey ?? "chopsticks"))}
+                value={eff("adapterConfig", "sessionKey", String(config.sessionKey ?? "abacus"))}
                 onCommit={(v) => mark("adapterConfig", "sessionKey", v || undefined)}
                 immediate
                 className={inputClass}
-                placeholder="chopsticks"
+                placeholder="abacus"
               />
             </Field>
           )}
@@ -229,7 +229,7 @@ export function OpenClawGatewayConfigFields({
           <Field label="Device auth">
             <div className="text-xs text-muted-foreground leading-relaxed">
               {t(
-                "Always enabled for gateway agents. Chopsticks persists a device key during onboarding so pairing approvals remain stable across runs."
+                "Always enabled for gateway agents. Abacus persists a device key during onboarding so pairing approvals remain stable across runs."
               )}
             </div>
           </Field>

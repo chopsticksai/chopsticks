@@ -1,14 +1,14 @@
 {
-  "name": "@chopsticks/server",
+  "name": "@abacus/server",
   "version": "0.3.1",
   "license": "MIT",
-  "homepage": "https://github.com/paperclipai/paperclip",
+  "homepage": "https://github.com/abacus-lab/abacus",
   "bugs": {
-    "url": "https://github.com/paperclipai/paperclip/issues"
+    "url": "https://github.com/abacus-lab/abacus/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/paperclipai/paperclip",
+    "url": "https://github.com/abacus-lab/abacus",
     "directory": "server"
   },
   "type": "module",
@@ -33,29 +33,29 @@
   ],
   "scripts": {
     "dev": "tsx src/index.ts",
-    "dev:watch": "cross-env CHOPSTICKS_MIGRATION_PROMPT=never CHOPSTICKS_MIGRATION_AUTO_APPLY=true tsx watch --ignore ../ui/node_modules --ignore ../ui/.vite --ignore ../ui/dist src/index.ts",
+    "dev:watch": "cross-env ABACUS_MIGRATION_PROMPT=never ABACUS_MIGRATION_AUTO_APPLY=true tsx watch --ignore ../ui/node_modules --ignore ../ui/.vite --ignore ../ui/dist src/index.ts",
     "prepare:ui-dist": "bash ../scripts/prepare-server-ui-dist.sh",
     "build": "tsc",
     "prepack": "pnpm run prepare:ui-dist",
     "postpack": "rm -rf ui-dist",
     "clean": "rm -rf dist",
     "start": "node dist/index.js",
-    "typecheck": "pnpm --filter @chopsticks/plugin-sdk build && tsc --noEmit"
+    "typecheck": "pnpm --filter @abacus/plugin-sdk build && tsc --noEmit"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.888.0",
-    "@chopsticks/adapter-claude-local": "workspace:*",
-    "@chopsticks/adapter-codebuddy-local": "workspace:*",
-    "@chopsticks/adapter-codex-local": "workspace:*",
-    "@chopsticks/adapter-cursor-local": "workspace:*",
-    "@chopsticks/adapter-gemini-local": "workspace:*",
-    "@chopsticks/adapter-openclaw-gateway": "workspace:*",
-    "@chopsticks/adapter-opencode-local": "workspace:*",
-    "@chopsticks/adapter-pi-local": "workspace:*",
-    "@chopsticks/adapter-utils": "workspace:*",
-    "@chopsticks/db": "workspace:*",
-    "@chopsticks/plugin-sdk": "workspace:*",
-    "@chopsticks/shared": "workspace:*",
+    "@abacus/adapter-claude-local": "workspace:*",
+    "@abacus/adapter-codebuddy-local": "workspace:*",
+    "@abacus/adapter-codex-local": "workspace:*",
+    "@abacus/adapter-cursor-local": "workspace:*",
+    "@abacus/adapter-gemini-local": "workspace:*",
+    "@abacus/adapter-openclaw-gateway": "workspace:*",
+    "@abacus/adapter-opencode-local": "workspace:*",
+    "@abacus/adapter-pi-local": "workspace:*",
+    "@abacus/adapter-utils": "workspace:*",
+    "@abacus/db": "workspace:*",
+    "@abacus/plugin-sdk": "workspace:*",
+    "@abacus/shared": "workspace:*",
     "hermes-paperclip-adapter": "0.1.1",
     "ajv": "^8.18.0",
     "ajv-formats": "^3.0.1",

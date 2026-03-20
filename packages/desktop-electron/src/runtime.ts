@@ -27,7 +27,7 @@ export function resolveServerEntrypoint(input: DesktopRuntimeInput): string {
     : path.resolve(
         resolvePackagedRuntimeRoot(input.appRoot),
         "node_modules",
-        "@chopsticks",
+        "@abacus",
         "server",
         "dist",
         "index.js",
@@ -37,16 +37,16 @@ export function resolveServerEntrypoint(input: DesktopRuntimeInput): string {
 export function buildWorkerEnvironment(input: DesktopRuntimeInput): NodeJS.ProcessEnv {
   return {
     ...process.env,
-    CHOPSTICKS_DESKTOP_MODE: input.mode,
-    CHOPSTICKS_DESKTOP_SERVER_ENTRY: resolveServerEntrypoint(input),
-    CHOPSTICKS_HOME: process.env.CHOPSTICKS_HOME?.trim() || input.userDataDir,
-    CHOPSTICKS_INSTANCE_ID: process.env.CHOPSTICKS_INSTANCE_ID?.trim() || "default",
+    ABACUS_DESKTOP_MODE: input.mode,
+    ABACUS_DESKTOP_SERVER_ENTRY: resolveServerEntrypoint(input),
+    ABACUS_HOME: process.env.ABACUS_HOME?.trim() || input.userDataDir,
+    ABACUS_INSTANCE_ID: process.env.ABACUS_INSTANCE_ID?.trim() || "default",
     HOST: "127.0.0.1",
     PORT: process.env.PORT?.trim() || "3100",
-    CHOPSTICKS_OPEN_ON_LISTEN: "false",
+    ABACUS_OPEN_ON_LISTEN: "false",
     ...(input.mode === "development"
       ? {
-          CHOPSTICKS_UI_DEV_MIDDLEWARE: "true",
+          ABACUS_UI_DEV_MIDDLEWARE: "true",
         }
       : {}),
   };

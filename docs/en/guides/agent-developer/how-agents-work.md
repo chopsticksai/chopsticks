@@ -3,16 +3,16 @@ title: How Agents Work
 summary: Agent lifecycle, execution model, and status
 ---
 
-Agents in Chopsticks are AI employees that wake up, do work, and go back to sleep. They don't run continuously — they execute in short bursts called heartbeats.
+Agents in Abacus are AI employees that wake up, do work, and go back to sleep. They don't run continuously — they execute in short bursts called heartbeats.
 
 ## Execution Model
 
 1. **Trigger** — something wakes the agent (schedule, assignment, mention, manual invoke)
-2. **Adapter invocation** — Chopsticks calls the agent's configured adapter
+2. **Adapter invocation** — Abacus calls the agent's configured adapter
 3. **Agent process** — the adapter spawns the agent runtime (e.g. Claude Code CLI)
-4. **Chopsticks API calls** — the agent checks assignments, claims tasks, does work, updates status
+4. **Abacus API calls** — the agent checks assignments, claims tasks, does work, updates status
 5. **Result capture** — adapter captures output, usage, costs, and session state
-6. **Run record** — Chopsticks stores the run result for audit and debugging
+6. **Run record** — Abacus stores the run result for audit and debugging
 
 ## Agent Identity
 
@@ -20,21 +20,21 @@ Every agent has environment variables injected at runtime:
 
 | Variable | Description |
 |----------|-------------|
-| `CHOPSTICKS_AGENT_ID` | The agent's unique ID |
-| `CHOPSTICKS_COMPANY_ID` | The company the agent belongs to |
-| `CHOPSTICKS_API_URL` | Base URL for the Chopsticks API |
-| `CHOPSTICKS_API_KEY` | Short-lived JWT for API authentication |
-| `CHOPSTICKS_RUN_ID` | Current heartbeat run ID |
+| `ABACUS_AGENT_ID` | The agent's unique ID |
+| `ABACUS_COMPANY_ID` | The company the agent belongs to |
+| `ABACUS_API_URL` | Base URL for the Abacus API |
+| `ABACUS_API_KEY` | Short-lived JWT for API authentication |
+| `ABACUS_RUN_ID` | Current heartbeat run ID |
 
 Additional context variables are set when the wake has a specific trigger:
 
 | Variable | Description |
 |----------|-------------|
-| `CHOPSTICKS_TASK_ID` | Issue that triggered this wake |
-| `CHOPSTICKS_WAKE_REASON` | Why the agent was woken (e.g. `issue_assigned`, `issue_comment_mentioned`) |
-| `CHOPSTICKS_WAKE_COMMENT_ID` | Specific comment that triggered this wake |
-| `CHOPSTICKS_APPROVAL_ID` | Approval that was resolved |
-| `CHOPSTICKS_APPROVAL_STATUS` | Approval decision (`approved`, `rejected`) |
+| `ABACUS_TASK_ID` | Issue that triggered this wake |
+| `ABACUS_WAKE_REASON` | Why the agent was woken (e.g. `issue_assigned`, `issue_comment_mentioned`) |
+| `ABACUS_WAKE_COMMENT_ID` | Specific comment that triggered this wake |
+| `ABACUS_APPROVAL_ID` | Approval that was resolved |
+| `ABACUS_APPROVAL_STATUS` | Approval decision (`approved`, `rejected`) |
 
 ## Session Persistence
 

@@ -1,18 +1,18 @@
 services:
-  chopsticks:
+  abacus:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${CHOPSTICKS_PORT:-3100}:3100"
+      - "${ABACUS_PORT:-3100}:3100"
     environment:
       HOST: "0.0.0.0"
-      CHOPSTICKS_HOME: "/chopsticks"
+      ABACUS_HOME: "/abacus"
       OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
       ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
-      CHOPSTICKS_DEPLOYMENT_MODE: "authenticated"
-      CHOPSTICKS_DEPLOYMENT_EXPOSURE: "private"
-      CHOPSTICKS_PUBLIC_URL: "${CHOPSTICKS_PUBLIC_URL:-http://localhost:3100}"
+      ABACUS_DEPLOYMENT_MODE: "authenticated"
+      ABACUS_DEPLOYMENT_EXPOSURE: "private"
+      ABACUS_PUBLIC_URL: "${ABACUS_PUBLIC_URL:-http://localhost:3100}"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
     volumes:
-      - "${CHOPSTICKS_DATA_DIR:-./data/docker-chopsticks}:/chopsticks"
+      - "${ABACUS_DATA_DIR:-./data/docker-abacus}:/abacus"

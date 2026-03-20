@@ -21,7 +21,7 @@ import {
   rewriteLocalUrlPort,
   sanitizeWorktreeInstanceId,
 } from "../commands/worktree-lib.js";
-import type { ChopsticksConfig } from "../config/schema.js";
+import type { AbacusConfig } from "../config/schema.js";
 
 const ORIGINAL_CWD = process.cwd();
 const ORIGINAL_ENV = { ...process.env };
@@ -37,7 +37,7 @@ afterEach(() => {
   }
 });
 
-function buildSourceConfig(): ChopsticksConfig {
+function buildSourceConfig(): AbacusConfig {
   return {
     $meta: {
       version: 1,
@@ -78,7 +78,7 @@ function buildSourceConfig(): ChopsticksConfig {
         baseDir: "/tmp/main/storage",
       },
       s3: {
-        bucket: "chopsticks",
+        bucket: "abacus",
         region: "us-east-1",
         prefix: "",
         forcePathStyle: false,
@@ -101,13 +101,13 @@ describe("worktree helpers", () => {
   });
 
   it("resolves worktree:make target paths under the user home directory", () => {
-    expect(resolveWorktreeMakeTargetPath("chopsticks-pr-432")).toBe(
-      path.resolve(os.homedir(), "chopsticks-pr-432"),
+    expect(resolveWorktreeMakeTargetPath("abacus-pr-432")).toBe(
+      path.resolve(os.homedir(), "abacus-pr-432"),
     );
   });
 
   it("rejects worktree:make names that are not safe directory/branch names", () => {
-    expect(() => resolveWorktreeMakeTargetPath("chopsticks/pr-432")).toThrow(
+    expect(() => resolveWorktreeMakeTargetPath("abacus/pr-432")).toThrow(
       "Worktree name must contain only letters, numbers, dots, underscores, or dashes.",
     );
   });
@@ -154,13 +154,13 @@ describe("worktree helpers", () => {
 
   it("rewrites loopback auth URLs to the new port only", () => {
     expect(rewriteLocalUrlPort("http://127.0.0.1:3100", 3110)).toBe("http://127.0.0.1:3110/");
-    expect(rewriteLocalUrlPort("https://chopsticks.example", 3110)).toBe("https://chopsticks.example");
+    expect(rewriteLocalUrlPort("https://abacus.example", 3110)).toBe("https://abacus.example");
   });
 
   it("builds isolated config and env paths for a worktree", () => {
     const paths = resolveWorktreeLocalPaths({
-      cwd: "/tmp/chopsticks-feature",
-      homeDir: "/tmp/chopsticks-worktrees",
+      cwd: "/tmp/abacus-feature",
+      homeDir: "/tmp/abacus-worktrees",
       instanceId: "feature-worktree-support",
     });
     const config = buildWorktreeConfig({
@@ -172,22 +172,22 @@ describe("worktree helpers", () => {
     });
 
     expect(config.database.embeddedPostgresDataDir).toBe(
-      path.resolve("/tmp/chopsticks-worktrees", "instances", "feature-worktree-support", "db"),
+      path.resolve("/tmp/abacus-worktrees", "instances", "feature-worktree-support", "db"),
     );
     expect(config.database.embeddedPostgresPort).toBe(54339);
     expect(config.server.port).toBe(3110);
     expect(config.auth.publicBaseUrl).toBe("http://127.0.0.1:3110/");
     expect(config.storage.localDisk.baseDir).toBe(
-      path.resolve("/tmp/chopsticks-worktrees", "instances", "feature-worktree-support", "data", "storage"),
+      path.resolve("/tmp/abacus-worktrees", "instances", "feature-worktree-support", "data", "storage"),
     );
 
     const env = buildWorktreeEnvEntries(paths);
-    expect(env.CHOPSTICKS_HOME).toBe(path.resolve("/tmp/chopsticks-worktrees"));
-    expect(env.CHOPSTICKS_INSTANCE_ID).toBe("feature-worktree-support");
-    expect(env.CHOPSTICKS_IN_WORKTREE).toBe("true");
-    expect(formatShellExports(env)).toContain("export CHOPSTICKS_INSTANCE_ID='feature-worktree-support'");
-    expect(paths.configPath).toBe(path.resolve("/tmp/chopsticks-feature", ".chopsticks", "config.json"));
-    expect(paths.envPath).toBe(path.resolve("/tmp/chopsticks-feature", ".chopsticks", ".env"));
+    expect(env.ABACUS_HOME).toBe(path.resolve("/tmp/abacus-worktrees"));
+    expect(env.ABACUS_INSTANCE_ID).toBe("feature-worktree-support");
+    expect(env.ABACUS_IN_WORKTREE).toBe("true");
+    expect(formatShellExports(env)).toContain("export ABACUS_INSTANCE_ID='feature-worktree-support'");
+    expect(paths.configPath).toBe(path.resolve("/tmp/abacus-feature", ".abacus", "config.json"));
+    expect(paths.envPath).toBe(path.resolve("/tmp/abacus-feature", ".abacus", ".env"));
   });
 
   it("uses minimal seed mode to keep app state but drop heavy runtime history", () => {
@@ -205,12 +205,12 @@ describe("worktree helpers", () => {
   });
 
   it("copies the source local_encrypted secrets key into the seeded worktree instance", () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-worktree-secrets-"));
-    const originalInlineMasterKey = process.env.CHOPSTICKS_SECRETS_MASTER_KEY;
-    const originalKeyFile = process.env.CHOPSTICKS_SECRETS_MASTER_KEY_FILE;
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-secrets-"));
+    const originalInlineMasterKey = process.env.ABACUS_SECRETS_MASTER_KEY;
+    const originalKeyFile = process.env.ABACUS_SECRETS_MASTER_KEY_FILE;
     try {
-      delete process.env.CHOPSTICKS_SECRETS_MASTER_KEY;
-      delete process.env.CHOPSTICKS_SECRETS_MASTER_KEY_FILE;
+      delete process.env.ABACUS_SECRETS_MASTER_KEY;
+      delete process.env.ABACUS_SECRETS_MASTER_KEY_FILE;
       const sourceConfigPath = path.join(tempRoot, "source", "config.json");
       const sourceKeyPath = path.join(tempRoot, "source", "secrets", "master.key");
       const targetKeyPath = path.join(tempRoot, "target", "secrets", "master.key");
@@ -230,21 +230,21 @@ describe("worktree helpers", () => {
       expect(fs.readFileSync(targetKeyPath, "utf8")).toBe("source-master-key");
     } finally {
       if (originalInlineMasterKey === undefined) {
-        delete process.env.CHOPSTICKS_SECRETS_MASTER_KEY;
+        delete process.env.ABACUS_SECRETS_MASTER_KEY;
       } else {
-        process.env.CHOPSTICKS_SECRETS_MASTER_KEY = originalInlineMasterKey;
+        process.env.ABACUS_SECRETS_MASTER_KEY = originalInlineMasterKey;
       }
       if (originalKeyFile === undefined) {
-        delete process.env.CHOPSTICKS_SECRETS_MASTER_KEY_FILE;
+        delete process.env.ABACUS_SECRETS_MASTER_KEY_FILE;
       } else {
-        process.env.CHOPSTICKS_SECRETS_MASTER_KEY_FILE = originalKeyFile;
+        process.env.ABACUS_SECRETS_MASTER_KEY_FILE = originalKeyFile;
       }
       fs.rmSync(tempRoot, { recursive: true, force: true });
     }
   });
 
   it("writes the source inline secrets master key into the seeded worktree instance", () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-worktree-secrets-"));
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-secrets-"));
     try {
       const sourceConfigPath = path.join(tempRoot, "source", "config.json");
       const targetKeyPath = path.join(tempRoot, "target", "secrets", "master.key");
@@ -253,7 +253,7 @@ describe("worktree helpers", () => {
         sourceConfigPath,
         sourceConfig: buildSourceConfig(),
         sourceEnvEntries: {
-          CHOPSTICKS_SECRETS_MASTER_KEY: "inline-source-master-key",
+          ABACUS_SECRETS_MASTER_KEY: "inline-source-master-key",
         },
         targetKeyFilePath: targetKeyPath,
       });
@@ -265,30 +265,30 @@ describe("worktree helpers", () => {
   });
 
   it("persists the current agent jwt secret into the worktree env file", async () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-worktree-jwt-"));
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-jwt-"));
     const repoRoot = path.join(tempRoot, "repo");
     const originalCwd = process.cwd();
-    const originalJwtSecret = process.env.CHOPSTICKS_AGENT_JWT_SECRET;
+    const originalJwtSecret = process.env.ABACUS_AGENT_JWT_SECRET;
 
     try {
       fs.mkdirSync(repoRoot, { recursive: true });
-      process.env.CHOPSTICKS_AGENT_JWT_SECRET = "worktree-shared-secret";
+      process.env.ABACUS_AGENT_JWT_SECRET = "worktree-shared-secret";
       process.chdir(repoRoot);
 
       await worktreeInitCommand({
         seed: false,
         fromConfig: path.join(tempRoot, "missing", "config.json"),
-        home: path.join(tempRoot, ".chopsticks-worktrees"),
+        home: path.join(tempRoot, ".abacus-worktrees"),
       });
 
-      const envPath = path.join(repoRoot, ".chopsticks", ".env");
-      expect(fs.readFileSync(envPath, "utf8")).toContain("CHOPSTICKS_AGENT_JWT_SECRET=worktree-shared-secret");
+      const envPath = path.join(repoRoot, ".abacus", ".env");
+      expect(fs.readFileSync(envPath, "utf8")).toContain("ABACUS_AGENT_JWT_SECRET=worktree-shared-secret");
     } finally {
       process.chdir(originalCwd);
       if (originalJwtSecret === undefined) {
-        delete process.env.CHOPSTICKS_AGENT_JWT_SECRET;
+        delete process.env.ABACUS_AGENT_JWT_SECRET;
       } else {
-        process.env.CHOPSTICKS_AGENT_JWT_SECRET = originalJwtSecret;
+        process.env.ABACUS_AGENT_JWT_SECRET = originalJwtSecret;
       }
       fs.rmSync(tempRoot, { recursive: true, force: true });
     }
@@ -297,33 +297,33 @@ describe("worktree helpers", () => {
   it("rebinds same-repo workspace paths onto the current worktree root", () => {
     expect(
       rebindWorkspaceCwd({
-        sourceRepoRoot: "/Users/example/chopsticks",
-        targetRepoRoot: "/Users/example/chopsticks-pr-432",
-        workspaceCwd: "/Users/example/chopsticks",
+        sourceRepoRoot: "/Users/example/abacus",
+        targetRepoRoot: "/Users/example/abacus-pr-432",
+        workspaceCwd: "/Users/example/abacus",
       }),
-    ).toBe(path.resolve("/Users/example/chopsticks-pr-432"));
+    ).toBe(path.resolve("/Users/example/abacus-pr-432"));
 
     expect(
       rebindWorkspaceCwd({
-        sourceRepoRoot: "/Users/example/chopsticks",
-        targetRepoRoot: "/Users/example/chopsticks-pr-432",
-        workspaceCwd: "/Users/example/chopsticks/packages/db",
+        sourceRepoRoot: "/Users/example/abacus",
+        targetRepoRoot: "/Users/example/abacus-pr-432",
+        workspaceCwd: "/Users/example/abacus/packages/db",
       }),
-    ).toBe(path.resolve("/Users/example/chopsticks-pr-432/packages/db"));
+    ).toBe(path.resolve("/Users/example/abacus-pr-432/packages/db"));
   });
 
   it("does not rebind paths outside the source repo root", () => {
     expect(
       rebindWorkspaceCwd({
-        sourceRepoRoot: "/Users/example/chopsticks",
-        targetRepoRoot: "/Users/example/chopsticks-pr-432",
+        sourceRepoRoot: "/Users/example/abacus",
+        targetRepoRoot: "/Users/example/abacus-pr-432",
         workspaceCwd: "/Users/example/other-project",
       }),
     ).toBeNull();
   });
 
   it("copies shared git hooks into a linked worktree git dir", () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-worktree-hooks-"));
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-hooks-"));
     const repoRoot = path.join(tempRoot, "repo");
     const worktreePath = path.join(tempRoot, "repo-feature");
 
@@ -373,10 +373,10 @@ describe("worktree helpers", () => {
   }, 15_000);
 
   it("creates and initializes a worktree from the top-level worktree:make command", async () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-worktree-make-"));
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-make-"));
     const repoRoot = path.join(tempRoot, "repo");
     const fakeHome = path.join(tempRoot, "home");
-    const worktreePath = path.join(fakeHome, "chopsticks-make-test");
+    const worktreePath = path.join(fakeHome, "abacus-make-test");
     const originalCwd = process.cwd();
     const homedirSpy = vi.spyOn(os, "homedir").mockReturnValue(fakeHome);
 
@@ -394,12 +394,12 @@ describe("worktree helpers", () => {
 
       await worktreeMakeCommand("make-test", {
         seed: false,
-        home: path.join(tempRoot, ".chopsticks-worktrees"),
+        home: path.join(tempRoot, ".abacus-worktrees"),
       });
 
       expect(fs.existsSync(path.join(worktreePath, ".git"))).toBe(true);
-      expect(fs.existsSync(path.join(worktreePath, ".chopsticks", "config.json"))).toBe(true);
-      expect(fs.existsSync(path.join(worktreePath, ".chopsticks", ".env"))).toBe(true);
+      expect(fs.existsSync(path.join(worktreePath, ".abacus", "config.json"))).toBe(true);
+      expect(fs.existsSync(path.join(worktreePath, ".abacus", ".env"))).toBe(true);
     } finally {
       process.chdir(originalCwd);
       homedirSpy.mockRestore();

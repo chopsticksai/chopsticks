@@ -22,7 +22,7 @@ export function useDismissedInboxItems() {
 
   useEffect(() => {
     const handleStorage = (event: StorageEvent) => {
-      if (event.key !== "chopsticks:inbox:dismissed") return;
+      if (event.key !== "abacus:inbox:dismissed") return;
       setDismissed(loadDismissedInboxItems());
     };
     window.addEventListener("storage", handleStorage);

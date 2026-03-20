@@ -1,15 +1,15 @@
 ---
 title: 在 Docker 中运行 OpenClaw
-summary: 在本地 Docker 环境中配置 OpenClaw，并测试 Chopsticks 的 OpenClaw 适配器
+summary: 在本地 Docker 环境中配置 OpenClaw，并测试 Abacus 的 OpenClaw 适配器
 ---
 
 # 在 Docker 中运行 OpenClaw（本地开发）
 
-这篇文档说明如何在 Docker 容器中运行 OpenClaw，并用于本地开发或验证 Chopsticks 的 OpenClaw 适配器集成。
+这篇文档说明如何在 Docker 容器中运行 OpenClaw，并用于本地开发或验证 Abacus 的 OpenClaw 适配器集成。
 
 ## 自动化 Join Smoke Test（推荐先跑）
 
-Chopsticks 内置了一个端到端 join smoke harness：
+Abacus 内置了一个端到端 join smoke harness：
 
 ```bash
 pnpm smoke:openclaw-join
@@ -44,10 +44,10 @@ pnpm smoke:openclaw-docker-ui
 
 - 在 `/tmp/openclaw-docker` 克隆 / 更新 `openclaw/openclaw`
 - 构建 `openclaw:local`（除非设置 `OPENCLAW_BUILD=0`）
-- 在 `~/.openclaw-chopsticks-smoke/openclaw.json` 和 Docker `.env` 中写入隔离 smoke 配置
+- 在 `~/.openclaw-abacus-smoke/openclaw.json` 和 Docker `.env` 中写入隔离 smoke 配置
 - 把默认模型固定为 OpenAI（`openai/gpt-5.2`，并带 OpenAI fallback）
 - 通过 Compose 启动 `openclaw-gateway`（包含必须的 `/tmp` tmpfs 覆盖）
-- 自动探测一个从 OpenClaw Docker 容器内部可访问的 Chopsticks 主机 URL，并把它打印出来
+- 自动探测一个从 OpenClaw Docker 容器内部可访问的 Abacus 主机 URL，并把它打印出来
 - 等待健康检查通过后，输出：
   - `http://127.0.0.1:18789/#token=...`
 - 默认关闭 Control UI 设备配对，以降低本地 smoke 使用门槛
@@ -64,33 +64,33 @@ pnpm smoke:openclaw-docker-ui
 - `OPENCLAW_DISABLE_DEVICE_AUTH=0`：保留配对机制
 - `OPENCLAW_MODEL_PRIMARY`：默认 `openai/gpt-5.2`
 - `OPENCLAW_MODEL_FALLBACK`：默认 `openai/gpt-5.2-chat-latest`
-- `OPENCLAW_CONFIG_DIR`：默认 `~/.openclaw-chopsticks-smoke`
+- `OPENCLAW_CONFIG_DIR`：默认 `~/.openclaw-abacus-smoke`
 - `OPENCLAW_RESET_STATE=1`：默认每次运行都重置 smoke 状态，避免旧认证 / 会话残留
-- `CHOPSTICKS_HOST_PORT`：默认 `3100`
-- `CHOPSTICKS_HOST_FROM_CONTAINER`：默认 `host.docker.internal`
+- `ABACUS_HOST_PORT`：默认 `3100`
+- `ABACUS_HOST_FROM_CONTAINER`：默认 `host.docker.internal`
 
 ### Authenticated 模式
 
-如果你的 Chopsticks 部署使用 `authenticated` 模式，请提供认证上下文：
+如果你的 Abacus 部署使用 `authenticated` 模式，请提供认证上下文：
 
 ```bash
-CHOPSTICKS_AUTH_HEADER="Bearer <token>" pnpm smoke:openclaw-join
+ABACUS_AUTH_HEADER="Bearer <token>" pnpm smoke:openclaw-join
 # or
-CHOPSTICKS_COOKIE="your_session_cookie=..." pnpm smoke:openclaw-join
+ABACUS_COOKIE="your_session_cookie=..." pnpm smoke:openclaw-join
 ```
 
 ### 网络拓扑提示
 
 - 本机 smoke 默认使用 `http://127.0.0.1:<port>/webhook` 作为 callback。
-- 在 OpenClaw Docker 容器里，`127.0.0.1` 指向的是容器本身，而不是宿主机上的 Chopsticks。
-- 如果 OpenClaw 在 Docker 中消费 invite / onboarding URL，请优先使用脚本打印出来的 Chopsticks URL（通常是 `http://host.docker.internal:3100`）。
-- 如果 Chopsticks 因主机名校验拒绝了容器可见 host，请在宿主机上执行：
+- 在 OpenClaw Docker 容器里，`127.0.0.1` 指向的是容器本身，而不是宿主机上的 Abacus。
+- 如果 OpenClaw 在 Docker 中消费 invite / onboarding URL，请优先使用脚本打印出来的 Abacus URL（通常是 `http://host.docker.internal:3100`）。
+- 如果 Abacus 因主机名校验拒绝了容器可见 host，请在宿主机上执行：
 
 ```bash
-pnpm chopsticks allowed-hostname host.docker.internal
+pnpm abacus allowed-hostname host.docker.internal
 ```
 
-然后重启 Chopsticks，再重跑 smoke 脚本。
+然后重启 Abacus，再重跑 smoke 脚本。
 
 ## 前置条件
 

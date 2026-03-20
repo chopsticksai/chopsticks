@@ -11,12 +11,12 @@ const tscCliPath = path.join(rootDir, "node_modules", "typescript", "bin", "tsc"
 
 const buildTargets = [
   {
-    name: "@chopsticks/shared",
+    name: "@abacus/shared",
     output: path.join(rootDir, "packages/shared/dist/index.js"),
     tsconfig: path.join(rootDir, "packages/shared/tsconfig.json"),
   },
   {
-    name: "@chopsticks/plugin-sdk",
+    name: "@abacus/plugin-sdk",
     output: path.join(rootDir, "packages/plugins/sdk/dist/index.js"),
     tsconfig: path.join(rootDir, "packages/plugins/sdk/tsconfig.json"),
   },

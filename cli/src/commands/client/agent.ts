@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import type { Agent } from "@chopsticks/shared";
+import type { Agent } from "@abacus/shared";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -39,7 +39,7 @@ interface SkillsInstallSummary {
 }
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
-const CHOPSTICKS_SKILLS_CANDIDATES = [
+const ABACUS_SKILLS_CANDIDATES = [
   path.resolve(__moduleDir, "../../../../../skills"), // dev: cli/src/commands/client -> repo root/skills
   path.resolve(process.cwd(), "skills"),
 ];
@@ -56,8 +56,8 @@ function claudeSkillsHome(): string {
   return path.join(base, "skills");
 }
 
-async function resolveChopsticksSkillsDir(): Promise<string | null> {
-  for (const candidate of CHOPSTICKS_SKILLS_CANDIDATES) {
+async function resolveAbacusSkillsDir(): Promise<string | null> {
+  for (const candidate of ABACUS_SKILLS_CANDIDATES) {
     const isDir = await fs.stat(candidate).then((s) => s.isDirectory()).catch(() => false);
     if (isDir) return candidate;
   }
@@ -111,10 +111,10 @@ function buildAgentEnvExports(input: {
 }): string {
   const escaped = (value: string) => value.replace(/'/g, "'\"'\"'");
   return [
-    `export CHOPSTICKS_API_URL='${escaped(input.apiBase)}'`,
-    `export CHOPSTICKS_COMPANY_ID='${escaped(input.companyId)}'`,
-    `export CHOPSTICKS_AGENT_ID='${escaped(input.agentId)}'`,
-    `export CHOPSTICKS_API_KEY='${escaped(input.apiKey)}'`,
+    `export ABACUS_API_URL='${escaped(input.apiBase)}'`,
+    `export ABACUS_COMPANY_ID='${escaped(input.companyId)}'`,
+    `export ABACUS_AGENT_ID='${escaped(input.agentId)}'`,
+    `export ABACUS_API_KEY='${escaped(input.apiKey)}'`,
   ].join("\n");
 }
 
@@ -181,14 +181,14 @@ export function registerAgentCommands(program: Command): void {
     agent
       .command("local-cli")
       .description(
-        "Create an agent API key, install local Chopsticks skills for Codex/Claude, and print shell exports",
+        "Create an agent API key, install local Abacus skills for Codex/Claude, and print shell exports",
       )
       .argument("<agentRef>", "Agent ID or shortname/url-key")
       .requiredOption("-C, --company-id <id>", "Company ID")
       .option("--key-name <name>", "API key label", "local-cli")
       .option(
         "--no-install-skills",
-        "Skip installing Chopsticks skills into ~/.codex/skills and ~/.claude/skills",
+        "Skip installing Abacus skills into ~/.codex/skills and ~/.claude/skills",
       )
       .action(async (agentRef: string, opts: AgentLocalCliOptions) => {
         try {
@@ -210,10 +210,10 @@ export function registerAgentCommands(program: Command): void {
 
           const installSummaries: SkillsInstallSummary[] = [];
           if (opts.installSkills !== false) {
-            const skillsDir = await resolveChopsticksSkillsDir();
+            const skillsDir = await resolveAbacusSkillsDir();
             if (!skillsDir) {
               throw new Error(
-                "Could not locate local Chopsticks skills directory. Expected ./skills in the repo checkout.",
+                "Could not locate local Abacus skills directory. Expected ./skills in the repo checkout.",
               );
             }
 

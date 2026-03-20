@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { execute } from "@chopsticks/adapter-codex-local/server";
+import { execute } from "@abacus/adapter-codex-local/server";
 
 async function writeFakeCodexCommand(root: string, baseName: string): Promise<string> {
   const scriptPath = path.join(root, `${baseName}.cjs`);
@@ -13,13 +13,13 @@ async function writeFakeCodexCommand(root: string, baseName: string): Promise<st
   const script = `#!/usr/bin/env node
 const fs = require("node:fs");
 
-const capturePath = process.env.CHOPSTICKS_TEST_CAPTURE_PATH;
+const capturePath = process.env.ABACUS_TEST_CAPTURE_PATH;
 const payload = {
   argv: process.argv.slice(2),
   prompt: fs.readFileSync(0, "utf8"),
   codexHome: process.env.CODEX_HOME || null,
-  chopsticksEnvKeys: Object.keys(process.env)
-    .filter((key) => key.startsWith("CHOPSTICKS_"))
+  abacusEnvKeys: Object.keys(process.env)
+    .filter((key) => key.startsWith("ABACUS_"))
     .sort(),
 };
 if (capturePath) {
@@ -44,7 +44,7 @@ type CapturePayload = {
   argv: string[];
   prompt: string;
   codexHome: string | null;
-  chopsticksEnvKeys: string[];
+  abacusEnvKeys: string[];
 };
 
 type LogEntry = {
@@ -54,11 +54,11 @@ type LogEntry = {
 
 describe("codex execute", () => {
   it("preserves the configured CODEX_HOME while injecting shared auth, config, and skills", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-codex-execute-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-codex-execute-"));
     const workspace = path.join(root, "workspace");
     const capturePath = path.join(root, "capture.json");
     const sharedCodexHome = path.join(root, "shared-codex-home");
-    const chopsticksHome = path.join(root, "chopsticks-home");
+    const abacusHome = path.join(root, "abacus-home");
     await fs.mkdir(workspace, { recursive: true });
     await fs.mkdir(sharedCodexHome, { recursive: true });
     await fs.writeFile(path.join(sharedCodexHome, "auth.json"), '{"token":"shared"}\n', "utf8");
@@ -66,19 +66,19 @@ describe("codex execute", () => {
     const commandPath = await writeFakeCodexCommand(root, "codex");
 
     const previousHome = process.env.HOME;
-    const previousChopsticksHome = process.env.CHOPSTICKS_HOME;
-    const previousChopsticksInstanceId = process.env.CHOPSTICKS_INSTANCE_ID;
-    const previousChopsticksInWorktree = process.env.CHOPSTICKS_IN_WORKTREE;
+    const previousAbacusHome = process.env.ABACUS_HOME;
+    const previousAbacusInstanceId = process.env.ABACUS_INSTANCE_ID;
+    const previousAbacusInWorktree = process.env.ABACUS_IN_WORKTREE;
     const previousCodexHome = process.env.CODEX_HOME;
     process.env.HOME = root;
-    process.env.CHOPSTICKS_HOME = chopsticksHome;
-    process.env.CHOPSTICKS_INSTANCE_ID = "worktree-1";
-    process.env.CHOPSTICKS_IN_WORKTREE = "true";
+    process.env.ABACUS_HOME = abacusHome;
+    process.env.ABACUS_INSTANCE_ID = "worktree-1";
+    process.env.ABACUS_IN_WORKTREE = "true";
     process.env.CODEX_HOME = sharedCodexHome;
 
     try {
       const logs: LogEntry[] = [];
-      const isolatedCodexHome = path.join(chopsticksHome, "instances", "worktree-1", "codex-home");
+      const isolatedCodexHome = path.join(abacusHome, "instances", "worktree-1", "codex-home");
       const result = await execute({
         runId: "run-1",
         agent: {
@@ -98,9 +98,9 @@ describe("codex execute", () => {
           command: commandPath,
           cwd: workspace,
           env: {
-            CHOPSTICKS_TEST_CAPTURE_PATH: capturePath,
+            ABACUS_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the chopsticks heartbeat.",
+          promptTemplate: "Follow the abacus heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -115,20 +115,20 @@ describe("codex execute", () => {
       const capture = JSON.parse(await fs.readFile(capturePath, "utf8")) as CapturePayload;
       expect(capture.codexHome).toBe(isolatedCodexHome);
       expect(capture.argv).toEqual(expect.arrayContaining(["exec", "--json", "-"]));
-      expect(capture.prompt).toContain("Follow the chopsticks heartbeat.");
-      expect(capture.chopsticksEnvKeys).toEqual(
+      expect(capture.prompt).toContain("Follow the abacus heartbeat.");
+      expect(capture.abacusEnvKeys).toEqual(
         expect.arrayContaining([
-          "CHOPSTICKS_AGENT_ID",
-          "CHOPSTICKS_API_KEY",
-          "CHOPSTICKS_API_URL",
-          "CHOPSTICKS_COMPANY_ID",
-          "CHOPSTICKS_RUN_ID",
+          "ABACUS_AGENT_ID",
+          "ABACUS_API_KEY",
+          "ABACUS_API_URL",
+          "ABACUS_COMPANY_ID",
+          "ABACUS_RUN_ID",
         ]),
       );
 
       const isolatedAuth = path.join(isolatedCodexHome, "auth.json");
       const isolatedConfig = path.join(isolatedCodexHome, "config.toml");
-      const isolatedSkill = path.join(isolatedCodexHome, "skills", "chopsticks");
+      const isolatedSkill = path.join(isolatedCodexHome, "skills", "abacus");
 
       expect((await fs.lstat(isolatedAuth)).isSymbolicLink()).toBe(true);
       expect(await fs.realpath(isolatedAuth)).toBe(await fs.realpath(path.join(sharedCodexHome, "auth.json")));
@@ -144,18 +144,18 @@ describe("codex execute", () => {
       expect(logs).toContainEqual(
         expect.objectContaining({
           stream: "stdout",
-          chunk: expect.stringContaining('Injected Codex skill "chopsticks"'),
+          chunk: expect.stringContaining('Injected Codex skill "abacus"'),
         }),
       );
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
-      if (previousChopsticksHome === undefined) delete process.env.CHOPSTICKS_HOME;
-      else process.env.CHOPSTICKS_HOME = previousChopsticksHome;
-      if (previousChopsticksInstanceId === undefined) delete process.env.CHOPSTICKS_INSTANCE_ID;
-      else process.env.CHOPSTICKS_INSTANCE_ID = previousChopsticksInstanceId;
-      if (previousChopsticksInWorktree === undefined) delete process.env.CHOPSTICKS_IN_WORKTREE;
-      else process.env.CHOPSTICKS_IN_WORKTREE = previousChopsticksInWorktree;
+      if (previousAbacusHome === undefined) delete process.env.ABACUS_HOME;
+      else process.env.ABACUS_HOME = previousAbacusHome;
+      if (previousAbacusInstanceId === undefined) delete process.env.ABACUS_INSTANCE_ID;
+      else process.env.ABACUS_INSTANCE_ID = previousAbacusInstanceId;
+      if (previousAbacusInWorktree === undefined) delete process.env.ABACUS_IN_WORKTREE;
+      else process.env.ABACUS_IN_WORKTREE = previousAbacusInWorktree;
       if (previousCodexHome === undefined) delete process.env.CODEX_HOME;
       else process.env.CODEX_HOME = previousCodexHome;
       await fs.rm(root, { recursive: true, force: true });
@@ -163,26 +163,26 @@ describe("codex execute", () => {
   });
 
   it("respects an explicit CODEX_HOME config override even in worktree mode", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-codex-execute-explicit-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-codex-execute-explicit-"));
     const workspace = path.join(root, "workspace");
     const capturePath = path.join(root, "capture.json");
     const sharedCodexHome = path.join(root, "shared-codex-home");
     const explicitCodexHome = path.join(root, "explicit-codex-home");
-    const chopsticksHome = path.join(root, "chopsticks-home");
+    const abacusHome = path.join(root, "abacus-home");
     await fs.mkdir(workspace, { recursive: true });
     await fs.mkdir(sharedCodexHome, { recursive: true });
     await fs.writeFile(path.join(sharedCodexHome, "auth.json"), '{"token":"shared"}\n', "utf8");
     const commandPath = await writeFakeCodexCommand(root, "codex");
 
     const previousHome = process.env.HOME;
-    const previousChopsticksHome = process.env.CHOPSTICKS_HOME;
-    const previousChopsticksInstanceId = process.env.CHOPSTICKS_INSTANCE_ID;
-    const previousChopsticksInWorktree = process.env.CHOPSTICKS_IN_WORKTREE;
+    const previousAbacusHome = process.env.ABACUS_HOME;
+    const previousAbacusInstanceId = process.env.ABACUS_INSTANCE_ID;
+    const previousAbacusInWorktree = process.env.ABACUS_IN_WORKTREE;
     const previousCodexHome = process.env.CODEX_HOME;
     process.env.HOME = root;
-    process.env.CHOPSTICKS_HOME = chopsticksHome;
-    process.env.CHOPSTICKS_INSTANCE_ID = "worktree-1";
-    process.env.CHOPSTICKS_IN_WORKTREE = "true";
+    process.env.ABACUS_HOME = abacusHome;
+    process.env.ABACUS_INSTANCE_ID = "worktree-1";
+    process.env.ABACUS_IN_WORKTREE = "true";
     process.env.CODEX_HOME = sharedCodexHome;
 
     try {
@@ -205,10 +205,10 @@ describe("codex execute", () => {
           command: commandPath,
           cwd: workspace,
           env: {
-            CHOPSTICKS_TEST_CAPTURE_PATH: capturePath,
+            ABACUS_TEST_CAPTURE_PATH: capturePath,
             CODEX_HOME: explicitCodexHome,
           },
-          promptTemplate: "Follow the chopsticks heartbeat.",
+          promptTemplate: "Follow the abacus heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -220,16 +220,16 @@ describe("codex execute", () => {
 
       const capture = JSON.parse(await fs.readFile(capturePath, "utf8")) as CapturePayload;
       expect(capture.codexHome).toBe(explicitCodexHome);
-      await expect(fs.lstat(path.join(chopsticksHome, "instances", "worktree-1", "codex-home"))).rejects.toThrow();
+      await expect(fs.lstat(path.join(abacusHome, "instances", "worktree-1", "codex-home"))).rejects.toThrow();
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
-      if (previousChopsticksHome === undefined) delete process.env.CHOPSTICKS_HOME;
-      else process.env.CHOPSTICKS_HOME = previousChopsticksHome;
-      if (previousChopsticksInstanceId === undefined) delete process.env.CHOPSTICKS_INSTANCE_ID;
-      else process.env.CHOPSTICKS_INSTANCE_ID = previousChopsticksInstanceId;
-      if (previousChopsticksInWorktree === undefined) delete process.env.CHOPSTICKS_IN_WORKTREE;
-      else process.env.CHOPSTICKS_IN_WORKTREE = previousChopsticksInWorktree;
+      if (previousAbacusHome === undefined) delete process.env.ABACUS_HOME;
+      else process.env.ABACUS_HOME = previousAbacusHome;
+      if (previousAbacusInstanceId === undefined) delete process.env.ABACUS_INSTANCE_ID;
+      else process.env.ABACUS_INSTANCE_ID = previousAbacusInstanceId;
+      if (previousAbacusInWorktree === undefined) delete process.env.ABACUS_IN_WORKTREE;
+      else process.env.ABACUS_IN_WORKTREE = previousAbacusInWorktree;
       if (previousCodexHome === undefined) delete process.env.CODEX_HOME;
       else process.env.CODEX_HOME = previousCodexHome;
       await fs.rm(root, { recursive: true, force: true });

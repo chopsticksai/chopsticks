@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import type { AdapterExecutionContext } from "@chopsticks/adapter-utils";
+import type { AdapterExecutionContext } from "@abacus/adapter-utils";
 
 const TRUTHY_ENV_RE = /^(1|true|yes|on)$/i;
 const COPIED_SHARED_FILES = ["config.json", "config.toml", "instructions.md"] as const;
@@ -22,19 +22,19 @@ export function resolveCodexHomeDir(env: NodeJS.ProcessEnv = process.env): strin
 }
 
 function isWorktreeMode(env: NodeJS.ProcessEnv): boolean {
-  const marker = env.CHOPSTICKS_IN_WORKTREE ?? "";
+  const marker = env.ABACUS_IN_WORKTREE ?? "";
   return TRUTHY_ENV_RE.test(marker);
 }
 
 function resolveWorktreeCodexHomeDir(env: NodeJS.ProcessEnv): string | null {
   if (!isWorktreeMode(env)) return null;
-  const chopsticksHome = nonEmpty(env.CHOPSTICKS_HOME);
-  if (!chopsticksHome) return null;
-  const instanceId = nonEmpty(env.CHOPSTICKS_INSTANCE_ID);
+  const abacusHome = nonEmpty(env.ABACUS_HOME);
+  if (!abacusHome) return null;
+  const instanceId = nonEmpty(env.ABACUS_INSTANCE_ID);
   if (instanceId) {
-    return path.resolve(chopsticksHome, "instances", instanceId, "codex-home");
+    return path.resolve(abacusHome, "instances", instanceId, "codex-home");
   }
-  return path.resolve(chopsticksHome, "codex-home");
+  return path.resolve(abacusHome, "codex-home");
 }
 
 async function ensureParentDir(target: string): Promise<void> {
@@ -96,7 +96,7 @@ export async function prepareWorktreeCodexHome(
 
   await onLog(
     "stdout",
-    `[chopsticks] Using worktree-isolated Codex home "${targetHome}" (seeded from "${sourceHome}").\n`,
+    `[abacus] Using worktree-isolated Codex home "${targetHome}" (seeded from "${sourceHome}").\n`,
   );
   return targetHome;
 }

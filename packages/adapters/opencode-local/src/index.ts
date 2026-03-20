@@ -8,7 +8,7 @@ export const agentConfigurationDoc = `# opencode_local agent configuration
 Adapter: opencode_local
 
 Use when:
-- You want Chopsticks to run OpenCode locally as the agent runtime
+- You want Abacus to run OpenCode locally as the agent runtime
 - You want provider/model routing in OpenCode format (provider/model)
 - You want OpenCode session resume across heartbeats via --session
 
@@ -34,7 +34,7 @@ Operational fields:
 Notes:
 - OpenCode supports multiple providers and models. Use \
   \`opencode models\` to list available options in provider/model format.
-- Chopsticks requires an explicit \`model\` value for \`opencode_local\` agents.
+- Abacus requires an explicit \`model\` value for \`opencode_local\` agents.
 - Runs are executed with: opencode run --format json ...
 - Sessions are resumed with --session when stored session cwd matches current cwd.
 `;

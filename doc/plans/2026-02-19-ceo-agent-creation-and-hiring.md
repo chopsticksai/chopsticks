@@ -204,7 +204,7 @@ Add plain-text reflection routes:
 
 Index file includes:
 
-- installed adapter list for this Chopsticks instance
+- installed adapter list for this Abacus instance
 - per-adapter doc URLs
 - brief "how to hire" API sequence links
 
@@ -284,12 +284,12 @@ Provide board-only destructive action in approval detail:
 - explicit confirmation dialog
 - preserves approval + comment history (audit)
 
-## 8. New Skill: `chopsticks-create-agent`
+## 8. New Skill: `abacus-create-agent`
 
 Create new skill directory:
 
-- `skills/chopsticks-create-agent/SKILL.md`
-- `skills/chopsticks-create-agent/references/api-reference.md`
+- `skills/abacus-create-agent/SKILL.md`
+- `skills/abacus-create-agent/references/api-reference.md`
 
 Skill responsibilities:
 
@@ -301,7 +301,7 @@ Skill responsibilities:
 - Execute hire API flow
 - Handle revision loop with board comments
 
-Also update `skills/chopsticks/SKILL.md` to reference this skill for hiring workflows.
+Also update `skills/abacus/SKILL.md` to reference this skill for hiring workflows.
 
 ## 9. Enforcement and Invariants
 
@@ -344,7 +344,7 @@ New/updated invariants:
 - permission controls
 - approval detail + comments/revision flow in inbox/approvals
 - disapproved agent delete flow
-- `chopsticks-create-agent` skill + docs updates
+- `abacus-create-agent` skill + docs updates
 
 ## 11. Test Plan
 

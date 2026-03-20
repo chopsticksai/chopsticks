@@ -1,6 +1,6 @@
-appId: ai.chopsticks.desktop
-productName: Chopsticks
-artifactName: "Chopsticks-${version}-${arch}.${ext}"
+appId: ai.abacus.desktop
+productName: Abacus
+artifactName: "Abacus-${version}-${arch}.${ext}"
 asar: false
 
 directories:

@@ -9,9 +9,9 @@
  * @see PLUGIN_SPEC.md §10 — Plugin Manifest
  * @see packages/shared/src/validators/plugin.ts — Zod schema definition
  */
-import { pluginManifestV1Schema } from "@chopsticks/shared";
-import type { ChopsticksPluginManifestV1 } from "@chopsticks/shared";
-import { PLUGIN_API_VERSION } from "@chopsticks/shared";
+import { pluginManifestV1Schema } from "@abacus/shared";
+import type { AbacusPluginManifestV1 } from "@abacus/shared";
+import { PLUGIN_API_VERSION } from "@abacus/shared";
 import { badRequest } from "../errors.js";
 
 // ---------------------------------------------------------------------------
@@ -34,7 +34,7 @@ const SUPPORTED_VERSIONS = [PLUGIN_API_VERSION] as const;
  */
 export interface ManifestParseSuccess {
   success: true;
-  manifest: ChopsticksPluginManifestV1;
+  manifest: AbacusPluginManifestV1;
 }
 
 /**
@@ -79,7 +79,7 @@ export interface PluginManifestValidator {
    *
    * @throws {HttpError} 400 Bad Request if the manifest is invalid.
    */
-  parseOrThrow(input: unknown): ChopsticksPluginManifestV1;
+  parseOrThrow(input: unknown): AbacusPluginManifestV1;
 
   /**
    * Return the list of plugin API versions supported by this host.
@@ -124,7 +124,7 @@ export function pluginManifestValidator(): PluginManifestValidator {
       if (result.success) {
         return {
           success: true,
-          manifest: result.data as ChopsticksPluginManifestV1,
+          manifest: result.data as AbacusPluginManifestV1,
         };
       }
 
@@ -146,7 +146,7 @@ export function pluginManifestValidator(): PluginManifestValidator {
       };
     },
 
-    parseOrThrow(input: unknown): ChopsticksPluginManifestV1 {
+    parseOrThrow(input: unknown): AbacusPluginManifestV1 {
       const result = this.parse(input);
 
       if (!result.success) {

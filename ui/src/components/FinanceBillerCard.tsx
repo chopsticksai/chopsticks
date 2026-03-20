@@ -1,4 +1,4 @@
-import type { FinanceByBiller } from "@chopsticks/shared";
+import type { FinanceByBiller } from "@abacus/shared";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCents, providerDisplayName } from "@/lib/utils";
 import { useI18n } from "../context/I18nContext";

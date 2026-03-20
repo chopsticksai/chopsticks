@@ -90,7 +90,7 @@ function patchPublishMetadata(packageJsonPath) {
   }
 
   const pkg = readJson(packageJsonPath);
-  if (!pkg.name?.startsWith("@chopsticks/")) return false;
+  if (!pkg.name?.startsWith("@abacus/")) return false;
 
   let changed = false;
   if (pkg.publishConfig?.exports) {
@@ -112,7 +112,7 @@ function patchPublishMetadata(packageJsonPath) {
 }
 
 console.log("[desktop-stage] Building server workspace and dependencies...");
-runPnpm(["--dir", repoRoot, "--filter", "@chopsticks/server...", "build"], {
+runPnpm(["--dir", repoRoot, "--filter", "@abacus/server...", "build"], {
   cwd: repoRoot,
 });
 
@@ -122,7 +122,7 @@ runNodeScript(path.resolve(repoRoot, "scripts", "prepare-server-ui-dist.mjs"), [
 });
 
 console.log("[desktop-stage] Building Electron shell...");
-runPnpm(["--dir", repoRoot, "--filter", "@chopsticks/desktop-electron", "build"], {
+runPnpm(["--dir", repoRoot, "--filter", "@abacus/desktop-electron", "build"], {
   cwd: repoRoot,
 });
 
@@ -136,7 +136,7 @@ runPnpm(
     "--dir",
     repoRoot,
     "--filter",
-    "@chopsticks/desktop-electron",
+    "@abacus/desktop-electron",
     "deploy",
     "--legacy",
     "--prod",
@@ -146,7 +146,7 @@ runPnpm(
 );
 
 console.log("[desktop-stage] Patching deployed workspace package metadata...");
-const packageJsons = collectScopedPackageJsons(stageNodeModules, "@chopsticks");
+const packageJsons = collectScopedPackageJsons(stageNodeModules, "@abacus");
 let patchedCount = 0;
 for (const packageJsonPath of packageJsons) {
   if (patchPublishMetadata(packageJsonPath)) {

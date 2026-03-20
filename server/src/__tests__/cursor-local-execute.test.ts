@@ -2,18 +2,18 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@chopsticks/adapter-cursor-local/server";
+import { execute } from "@abacus/adapter-cursor-local/server";
 
 async function writeFakeCursorCommand(basePath: string): Promise<string> {
   const script = `
 const fs = require("node:fs");
 
-const capturePath = process.env.CHOPSTICKS_TEST_CAPTURE_PATH;
+const capturePath = process.env.ABACUS_TEST_CAPTURE_PATH;
 const payload = {
   argv: process.argv.slice(2),
   prompt: fs.readFileSync(0, "utf8"),
-  chopsticksEnvKeys: Object.keys(process.env)
-    .filter((key) => key.startsWith("CHOPSTICKS_"))
+  abacusEnvKeys: Object.keys(process.env)
+    .filter((key) => key.startsWith("ABACUS_"))
     .sort(),
 };
 if (capturePath) {
@@ -56,12 +56,12 @@ console.log(JSON.stringify({
 type CapturePayload = {
   argv: string[];
   prompt: string;
-  chopsticksEnvKeys: string[];
+  abacusEnvKeys: string[];
 };
 
 describe("cursor execute", () => {
-  it("injects chopsticks env vars and prompt note by default", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-cursor-execute-"));
+  it("injects abacus env vars and prompt note by default", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-cursor-execute-"));
     const workspace = path.join(root, "workspace");
     const commandPath = await writeFakeCursorCommand(path.join(root, "agent"));
     const capturePath = path.join(root, "capture.json");
@@ -92,9 +92,9 @@ describe("cursor execute", () => {
           cwd: workspace,
           model: "auto",
           env: {
-            CHOPSTICKS_TEST_CAPTURE_PATH: capturePath,
+            ABACUS_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the chopsticks heartbeat.",
+          promptTemplate: "Follow the abacus heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -108,22 +108,22 @@ describe("cursor execute", () => {
       expect(result.errorMessage).toBeNull();
 
       const capture = JSON.parse(await fs.readFile(capturePath, "utf8")) as CapturePayload;
-      expect(capture.argv).not.toContain("Follow the chopsticks heartbeat.");
+      expect(capture.argv).not.toContain("Follow the abacus heartbeat.");
       expect(capture.argv).not.toContain("--mode");
       expect(capture.argv).not.toContain("ask");
-      expect(capture.chopsticksEnvKeys).toEqual(
+      expect(capture.abacusEnvKeys).toEqual(
         expect.arrayContaining([
-          "CHOPSTICKS_AGENT_ID",
-          "CHOPSTICKS_API_KEY",
-          "CHOPSTICKS_API_URL",
-          "CHOPSTICKS_COMPANY_ID",
-          "CHOPSTICKS_RUN_ID",
+          "ABACUS_AGENT_ID",
+          "ABACUS_API_KEY",
+          "ABACUS_API_URL",
+          "ABACUS_COMPANY_ID",
+          "ABACUS_RUN_ID",
         ]),
       );
-      expect(capture.prompt).toContain("Chopsticks runtime note:");
-      expect(capture.prompt).toContain("CHOPSTICKS_API_KEY");
-      expect(invocationPrompt).toContain("Chopsticks runtime note:");
-      expect(invocationPrompt).toContain("CHOPSTICKS_API_URL");
+      expect(capture.prompt).toContain("Abacus runtime note:");
+      expect(capture.prompt).toContain("ABACUS_API_KEY");
+      expect(invocationPrompt).toContain("Abacus runtime note:");
+      expect(invocationPrompt).toContain("ABACUS_API_URL");
     } finally {
       if (previousHome === undefined) {
         delete process.env.HOME;
@@ -135,7 +135,7 @@ describe("cursor execute", () => {
   });
 
   it("passes --mode when explicitly configured", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-cursor-execute-mode-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-cursor-execute-mode-"));
     const workspace = path.join(root, "workspace");
     const commandPath = await writeFakeCursorCommand(path.join(root, "agent"));
     const capturePath = path.join(root, "capture.json");
@@ -166,9 +166,9 @@ describe("cursor execute", () => {
           model: "auto",
           mode: "ask",
           env: {
-            CHOPSTICKS_TEST_CAPTURE_PATH: capturePath,
+            ABACUS_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the chopsticks heartbeat.",
+          promptTemplate: "Follow the abacus heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",

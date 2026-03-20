@@ -3,12 +3,12 @@ title: CLI 概览
 summary: CLI 安装与使用入门
 ---
 
-Chopsticks CLI 用于处理实例初始化、诊断检查和控制平面操作。
+Abacus CLI 用于处理实例初始化、诊断检查和控制平面操作。
 
 ## 用法
 
 ```sh
-pnpm chopsticks --help
+pnpm abacus --help
 ```
 
 ## 全局选项
@@ -17,7 +17,7 @@ pnpm chopsticks --help
 
 | Flag | Description |
 |------|-------------|
-| `--data-dir <path>` | 本地 Chopsticks 数据根目录（与 `~/.chopsticks` 隔离） |
+| `--data-dir <path>` | 本地 Abacus 数据根目录（与 `~/.abacus` 隔离） |
 | `--api-base <url>` | API 基础 URL |
 | `--api-key <token>` | API 认证 token |
 | `--context <path>` | context 文件路径 |
@@ -29,7 +29,7 @@ pnpm chopsticks --help
 如果想使用干净隔离的本地实例，可以在命令里显式传入 `--data-dir`：
 
 ```sh
-pnpm chopsticks run --data-dir ./tmp/chopsticks-dev
+pnpm abacus run --data-dir ./tmp/abacus-dev
 ```
 
 ## Context Profile
@@ -38,26 +38,26 @@ pnpm chopsticks run --data-dir ./tmp/chopsticks-dev
 
 ```sh
 # 设置默认值
-pnpm chopsticks context set --api-base http://localhost:3100 --company-id <id>
+pnpm abacus context set --api-base http://localhost:3100 --company-id <id>
 
 # 查看当前 context
-pnpm chopsticks context show
+pnpm abacus context show
 
 # 列出 profile
-pnpm chopsticks context list
+pnpm abacus context list
 
 # 切换 profile
-pnpm chopsticks context use default
+pnpm abacus context use default
 ```
 
 如果不想把 secrets 存进 context，可以改用环境变量：
 
 ```sh
-pnpm chopsticks context set --api-key-env-var-name CHOPSTICKS_API_KEY
-export CHOPSTICKS_API_KEY=...
+pnpm abacus context set --api-key-env-var-name ABACUS_API_KEY
+export ABACUS_API_KEY=...
 ```
 
-context 会保存在 `~/.chopsticks/context.json`。
+context 会保存在 `~/.abacus/context.json`。
 
 ## 命令分类
 

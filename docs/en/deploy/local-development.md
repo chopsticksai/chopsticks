@@ -1,9 +1,9 @@
 ---
 title: Local Development
-summary: Set up Chopsticks for local development
+summary: Set up Abacus for local development
 ---
 
-Run Chopsticks locally with zero external dependencies.
+Run Abacus locally with zero external dependencies.
 
 ## Prerequisites
 
@@ -22,20 +22,20 @@ This starts:
 - **API server** at `http://localhost:3100`
 - **UI** served by the API server in dev middleware mode (same origin)
 
-No Docker or external database required. Chopsticks uses embedded PostgreSQL automatically.
+No Docker or external database required. Abacus uses embedded PostgreSQL automatically.
 
 ## One-Command Bootstrap
 
 For a first-time install:
 
 ```sh
-pnpm chopsticks run
+pnpm abacus run
 ```
 
 This does:
 
 1. Auto-onboards if config is missing
-2. Runs `chopsticks doctor` with repair enabled
+2. Runs `abacus doctor` with repair enabled
 3. Starts the server when checks pass
 
 ## Tailscale/Private Auth Dev Mode
@@ -57,7 +57,7 @@ pnpm dev --authenticated-private
 Allow additional private hostnames:
 
 ```sh
-pnpm chopsticks allowed-hostname dotta-macbook-pro
+pnpm abacus allowed-hostname dotta-macbook-pro
 ```
 
 For full setup and troubleshooting, see [Tailscale Private Access](/en/deploy/tailscale-private-access).
@@ -77,7 +77,7 @@ curl http://localhost:3100/api/companies
 To wipe local data and start fresh:
 
 ```sh
-rm -rf ~/.chopsticks/instances/default/db
+rm -rf ~/.abacus/instances/default/db
 pnpm dev
 ```
 
@@ -85,16 +85,16 @@ pnpm dev
 
 | Data | Path |
 |------|------|
-| Config | `~/.chopsticks/instances/default/config.json` |
-| Database | `~/.chopsticks/instances/default/db` |
-| Storage | `~/.chopsticks/instances/default/data/storage` |
-| Secrets key | `~/.chopsticks/instances/default/secrets/master.key` |
-| Logs | `~/.chopsticks/instances/default/logs` |
+| Config | `~/.abacus/instances/default/config.json` |
+| Database | `~/.abacus/instances/default/db` |
+| Storage | `~/.abacus/instances/default/data/storage` |
+| Secrets key | `~/.abacus/instances/default/secrets/master.key` |
+| Logs | `~/.abacus/instances/default/logs` |
 
 Override with environment variables:
 
 ```sh
-CHOPSTICKS_HOME=/custom/path CHOPSTICKS_INSTANCE_ID=dev pnpm chopsticks run
+ABACUS_HOME=/custom/path ABACUS_INSTANCE_ID=dev pnpm abacus run
 ```
 
-Compatibility note: `~/.chopsticks` is now the only default local home. Legacy `~/.chopsticks` homes are no longer auto-detected; move the directory to `~/.chopsticks` or set `CHOPSTICKS_HOME` explicitly during migration.
+Compatibility note: `~/.abacus` is now the only default local home. Legacy `~/.abacus` homes are no longer auto-detected; move the directory to `~/.abacus` or set `ABACUS_HOME` explicitly during migration.

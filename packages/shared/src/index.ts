@@ -231,7 +231,7 @@ export type {
   PluginLauncherDeclaration,
   PluginMinimumHostVersion,
   PluginUiDeclaration,
-  ChopsticksPluginManifestV1,
+  AbacusPluginManifestV1,
   PluginRecord,
   PluginStateRecord,
   PluginConfig,
@@ -425,7 +425,7 @@ export {
 } from "./project-mentions.js";
 
 export {
-  chopsticksConfigSchema,
+  abacusConfigSchema,
   configMetaSchema,
   llmConfigSchema,
   databaseBackupConfigSchema,
@@ -438,7 +438,7 @@ export {
   storageLocalDiskConfigSchema,
   storageS3ConfigSchema,
   secretsLocalEncryptedConfigSchema,
-  type ChopsticksConfig,
+  type AbacusConfig,
   type LlmConfig,
   type DatabaseBackupConfig,
   type DatabaseConfig,

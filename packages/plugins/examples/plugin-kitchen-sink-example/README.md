@@ -1,6 +1,6 @@
-# @chopsticks/plugin-kitchen-sink-example
+# @abacus/plugin-kitchen-sink-example
 
-Kitchen Sink is the first-party reference plugin that demonstrates nearly the full currently implemented Chopsticks plugin surface in one package.
+Kitchen Sink is the first-party reference plugin that demonstrates nearly the full currently implemented Abacus plugin surface in one package.
 
 It is intentionally broad:
 
@@ -20,14 +20,14 @@ This plugin is for local development, contributor onboarding, and runtime regres
 ## Install
 
 ```sh
-pnpm --filter @chopsticks/plugin-kitchen-sink-example build
-pnpm chopsticks plugin install ./packages/plugins/examples/plugin-kitchen-sink-example
+pnpm --filter @abacus/plugin-kitchen-sink-example build
+pnpm abacus plugin install ./packages/plugins/examples/plugin-kitchen-sink-example
 ```
 
-Or install it from the Chopsticks plugin manager as a bundled example once this repo is built.
+Or install it from the Abacus plugin manager as a bundled example once this repo is built.
 
 ## Notes
 
 - Local workspace and process demos are trusted-only and default to safe, curated commands.
 - The plugin settings page lets you toggle optional demo surfaces and local runtime behavior.
-- Some SDK-defined host surfaces still depend on the Chopsticks host wiring them visibly; this package aims to exercise the currently mounted ones and make the rest obvious.
+- Some SDK-defined host surfaces still depend on the Abacus host wiring them visibly; this package aims to exercise the currently mounted ones and make the rest obvious.

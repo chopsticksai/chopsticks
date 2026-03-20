@@ -1,6 +1,6 @@
 import { and, desc, eq, isNull, or, sql } from "drizzle-orm";
-import type { Db } from "@chopsticks/db";
-import { activityLog, heartbeatRuns, issues } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
+import { activityLog, heartbeatRuns, issues } from "@abacus/db";
 
 export interface ActivityFilters {
   companyId: string;

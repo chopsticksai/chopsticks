@@ -1,54 +1,54 @@
 import type { ServerAdapterModule } from "./types.js";
-import { getAdapterSessionManagement } from "@chopsticks/adapter-utils";
+import { getAdapterSessionManagement } from "@abacus/adapter-utils";
 import {
   execute as claudeExecute,
   testEnvironment as claudeTestEnvironment,
   sessionCodec as claudeSessionCodec,
   getQuotaWindows as claudeGetQuotaWindows,
-} from "@chopsticks/adapter-claude-local/server";
-import { agentConfigurationDoc as claudeAgentConfigurationDoc, models as claudeModels } from "@chopsticks/adapter-claude-local";
+} from "@abacus/adapter-claude-local/server";
+import { agentConfigurationDoc as claudeAgentConfigurationDoc, models as claudeModels } from "@abacus/adapter-claude-local";
 import {
   execute as codeBuddyExecute,
   testEnvironment as codeBuddyTestEnvironment,
   sessionCodec as codeBuddySessionCodec,
-} from "@chopsticks/adapter-codebuddy-local/server";
-import { agentConfigurationDoc as codeBuddyAgentConfigurationDoc, models as codeBuddyModels } from "@chopsticks/adapter-codebuddy-local";
+} from "@abacus/adapter-codebuddy-local/server";
+import { agentConfigurationDoc as codeBuddyAgentConfigurationDoc, models as codeBuddyModels } from "@abacus/adapter-codebuddy-local";
 import {
   execute as codexExecute,
   testEnvironment as codexTestEnvironment,
   sessionCodec as codexSessionCodec,
   getQuotaWindows as codexGetQuotaWindows,
-} from "@chopsticks/adapter-codex-local/server";
-import { agentConfigurationDoc as codexAgentConfigurationDoc, models as codexModels } from "@chopsticks/adapter-codex-local";
+} from "@abacus/adapter-codex-local/server";
+import { agentConfigurationDoc as codexAgentConfigurationDoc, models as codexModels } from "@abacus/adapter-codex-local";
 import {
   execute as cursorExecute,
   testEnvironment as cursorTestEnvironment,
   sessionCodec as cursorSessionCodec,
-} from "@chopsticks/adapter-cursor-local/server";
-import { agentConfigurationDoc as cursorAgentConfigurationDoc, models as cursorModels } from "@chopsticks/adapter-cursor-local";
+} from "@abacus/adapter-cursor-local/server";
+import { agentConfigurationDoc as cursorAgentConfigurationDoc, models as cursorModels } from "@abacus/adapter-cursor-local";
 import {
   execute as geminiExecute,
   testEnvironment as geminiTestEnvironment,
   sessionCodec as geminiSessionCodec,
-} from "@chopsticks/adapter-gemini-local/server";
-import { agentConfigurationDoc as geminiAgentConfigurationDoc, models as geminiModels } from "@chopsticks/adapter-gemini-local";
+} from "@abacus/adapter-gemini-local/server";
+import { agentConfigurationDoc as geminiAgentConfigurationDoc, models as geminiModels } from "@abacus/adapter-gemini-local";
 import {
   execute as openCodeExecute,
   testEnvironment as openCodeTestEnvironment,
   sessionCodec as openCodeSessionCodec,
   listOpenCodeModels,
-} from "@chopsticks/adapter-opencode-local/server";
+} from "@abacus/adapter-opencode-local/server";
 import {
   agentConfigurationDoc as openCodeAgentConfigurationDoc,
-} from "@chopsticks/adapter-opencode-local";
+} from "@abacus/adapter-opencode-local";
 import {
   execute as openclawGatewayExecute,
   testEnvironment as openclawGatewayTestEnvironment,
-} from "@chopsticks/adapter-openclaw-gateway/server";
+} from "@abacus/adapter-openclaw-gateway/server";
 import {
   agentConfigurationDoc as openclawGatewayAgentConfigurationDoc,
   models as openclawGatewayModels,
-} from "@chopsticks/adapter-openclaw-gateway";
+} from "@abacus/adapter-openclaw-gateway";
 import { listCodexModels } from "./codex-models.js";
 import { listCursorModels } from "./cursor-models.js";
 import {
@@ -56,10 +56,10 @@ import {
   testEnvironment as piTestEnvironment,
   sessionCodec as piSessionCodec,
   listPiModels,
-} from "@chopsticks/adapter-pi-local/server";
+} from "@abacus/adapter-pi-local/server";
 import {
   agentConfigurationDoc as piAgentConfigurationDoc,
-} from "@chopsticks/adapter-pi-local";
+} from "@abacus/adapter-pi-local";
 import {
   execute as hermesExecute,
   testEnvironment as hermesTestEnvironment,

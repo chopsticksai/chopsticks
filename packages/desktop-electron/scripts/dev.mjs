@@ -27,7 +27,7 @@ const child = spawn(electronBin, [...electronArgs, mainScript], {
   stdio: "inherit",
   env: {
     ...process.env,
-    CHOPSTICKS_DESKTOP_DEV: "true",
+    ABACUS_DESKTOP_DEV: "true",
   },
 });
 

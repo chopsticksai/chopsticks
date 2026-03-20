@@ -33,5 +33,5 @@ Operational fields:
 - graceSec (number, optional): SIGTERM grace period in seconds
 
 Notes:
-- When Chopsticks realizes a workspace/runtime for a run, it injects CHOPSTICKS_WORKSPACE_* and CHOPSTICKS_RUNTIME_* env vars for agent-side tooling.
+- When Abacus realizes a workspace/runtime for a run, it injects ABACUS_WORKSPACE_* and ABACUS_RUNTIME_* env vars for agent-side tooling.
 `;

@@ -2,8 +2,8 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AdapterExecutionContext, AdapterExecutionResult } from "@chopsticks/adapter-utils";
-import type { RunProcessResult } from "@chopsticks/adapter-utils/server-utils";
+import type { AdapterExecutionContext, AdapterExecutionResult } from "@abacus/adapter-utils";
+import type { RunProcessResult } from "@abacus/adapter-utils/server-utils";
 import {
   asString,
   asNumber,
@@ -11,14 +11,14 @@ import {
   asStringArray,
   parseObject,
   parseJson,
-  buildChopsticksEnv,
+  buildAbacusEnv,
   redactEnvForLogs,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
   ensurePathInEnv,
   renderTemplate,
   runChildProcess,
-} from "@chopsticks/adapter-utils/server-utils";
+} from "@abacus/adapter-utils/server-utils";
 import {
   parseClaudeStreamJson,
   describeClaudeFailure,
@@ -28,13 +28,13 @@ import {
 } from "./parse.js";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
-const CHOPSTICKS_SKILLS_CANDIDATES = [
+const ABACUS_SKILLS_CANDIDATES = [
   path.resolve(__moduleDir, "../../skills"),         // published: <pkg>/dist/server/ -> <pkg>/skills/
   path.resolve(__moduleDir, "../../../../../skills"), // dev: src/server/ -> repo root/skills/
 ];
 
-async function resolveChopsticksSkillsDir(): Promise<string | null> {
-  for (const candidate of CHOPSTICKS_SKILLS_CANDIDATES) {
+async function resolveAbacusSkillsDir(): Promise<string | null> {
+  for (const candidate of ABACUS_SKILLS_CANDIDATES) {
     const isDir = await fs.stat(candidate).then((s) => s.isDirectory()).catch(() => false);
     if (isDir) return candidate;
   }
@@ -47,10 +47,10 @@ async function resolveChopsticksSkillsDir(): Promise<string | null> {
  * them as proper registered skills.
  */
 async function buildSkillsDir(): Promise<string> {
-  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-skills-"));
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-skills-"));
   const target = path.join(tmp, ".claude", "skills");
   await fs.mkdir(target, { recursive: true });
-  const skillsDir = await resolveChopsticksSkillsDir();
+  const skillsDir = await resolveAbacusSkillsDir();
   if (!skillsDir) return tmp;
   const entries = await fs.readdir(skillsDir, { withFileTypes: true });
   for (const entry of entries) {
@@ -112,7 +112,7 @@ async function buildClaudeRuntimeConfig(input: ClaudeExecutionInput): Promise<Cl
   const { runId, agent, config, context, authToken } = input;
 
   const command = asString(config.command, "claude");
-  const workspaceContext = parseObject(context.chopsticksWorkspace);
+  const workspaceContext = parseObject(context.abacusWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceStrategy = asString(workspaceContext.strategy, "");
@@ -122,22 +122,22 @@ async function buildClaudeRuntimeConfig(input: ClaudeExecutionInput): Promise<Cl
   const workspaceBranch = asString(workspaceContext.branchName, "") || null;
   const workspaceWorktreePath = asString(workspaceContext.worktreePath, "") || null;
   const agentHome = asString(workspaceContext.agentHome, "") || null;
-  const workspaceHints = Array.isArray(context.chopsticksWorkspaces)
-    ? context.chopsticksWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.abacusWorkspaces)
+    ? context.abacusWorkspaces.filter(
       (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
     )
     : [];
-  const runtimeServiceIntents = Array.isArray(context.chopsticksRuntimeServiceIntents)
-    ? context.chopsticksRuntimeServiceIntents.filter(
+  const runtimeServiceIntents = Array.isArray(context.abacusRuntimeServiceIntents)
+    ? context.abacusRuntimeServiceIntents.filter(
       (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
     )
     : [];
-  const runtimeServices = Array.isArray(context.chopsticksRuntimeServices)
-    ? context.chopsticksRuntimeServices.filter(
+  const runtimeServices = Array.isArray(context.abacusRuntimeServices)
+    ? context.abacusRuntimeServices.filter(
       (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
     )
     : [];
-  const runtimePrimaryUrl = asString(context.chopsticksRuntimePrimaryUrl, "");
+  const runtimePrimaryUrl = asString(context.abacusRuntimePrimaryUrl, "");
   const configuredCwd = asString(config.cwd, "");
   const useConfiguredInsteadOfAgentHome = workspaceSource === "agent_home" && configuredCwd.length > 0;
   const effectiveWorkspaceCwd = useConfiguredInsteadOfAgentHome ? "" : workspaceCwd;
@@ -146,9 +146,9 @@ async function buildClaudeRuntimeConfig(input: ClaudeExecutionInput): Promise<Cl
 
   const envConfig = parseObject(config.env);
   const hasExplicitApiKey =
-    typeof envConfig.CHOPSTICKS_API_KEY === "string" && envConfig.CHOPSTICKS_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildChopsticksEnv(agent) };
-  env.CHOPSTICKS_RUN_ID = runId;
+    typeof envConfig.ABACUS_API_KEY === "string" && envConfig.ABACUS_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildAbacusEnv(agent) };
+  env.ABACUS_RUN_ID = runId;
 
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
@@ -175,61 +175,61 @@ async function buildClaudeRuntimeConfig(input: ClaudeExecutionInput): Promise<Cl
     : [];
 
   if (wakeTaskId) {
-    env.CHOPSTICKS_TASK_ID = wakeTaskId;
+    env.ABACUS_TASK_ID = wakeTaskId;
   }
   if (wakeReason) {
-    env.CHOPSTICKS_WAKE_REASON = wakeReason;
+    env.ABACUS_WAKE_REASON = wakeReason;
   }
   if (wakeCommentId) {
-    env.CHOPSTICKS_WAKE_COMMENT_ID = wakeCommentId;
+    env.ABACUS_WAKE_COMMENT_ID = wakeCommentId;
   }
   if (approvalId) {
-    env.CHOPSTICKS_APPROVAL_ID = approvalId;
+    env.ABACUS_APPROVAL_ID = approvalId;
   }
   if (approvalStatus) {
-    env.CHOPSTICKS_APPROVAL_STATUS = approvalStatus;
+    env.ABACUS_APPROVAL_STATUS = approvalStatus;
   }
   if (linkedIssueIds.length > 0) {
-    env.CHOPSTICKS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+    env.ABACUS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
   }
   if (effectiveWorkspaceCwd) {
-    env.CHOPSTICKS_WORKSPACE_CWD = effectiveWorkspaceCwd;
+    env.ABACUS_WORKSPACE_CWD = effectiveWorkspaceCwd;
   }
   if (workspaceSource) {
-    env.CHOPSTICKS_WORKSPACE_SOURCE = workspaceSource;
+    env.ABACUS_WORKSPACE_SOURCE = workspaceSource;
   }
   if (workspaceStrategy) {
-    env.CHOPSTICKS_WORKSPACE_STRATEGY = workspaceStrategy;
+    env.ABACUS_WORKSPACE_STRATEGY = workspaceStrategy;
   }
   if (workspaceId) {
-    env.CHOPSTICKS_WORKSPACE_ID = workspaceId;
+    env.ABACUS_WORKSPACE_ID = workspaceId;
   }
   if (workspaceRepoUrl) {
-    env.CHOPSTICKS_WORKSPACE_REPO_URL = workspaceRepoUrl;
+    env.ABACUS_WORKSPACE_REPO_URL = workspaceRepoUrl;
   }
   if (workspaceRepoRef) {
-    env.CHOPSTICKS_WORKSPACE_REPO_REF = workspaceRepoRef;
+    env.ABACUS_WORKSPACE_REPO_REF = workspaceRepoRef;
   }
   if (workspaceBranch) {
-    env.CHOPSTICKS_WORKSPACE_BRANCH = workspaceBranch;
+    env.ABACUS_WORKSPACE_BRANCH = workspaceBranch;
   }
   if (workspaceWorktreePath) {
-    env.CHOPSTICKS_WORKSPACE_WORKTREE_PATH = workspaceWorktreePath;
+    env.ABACUS_WORKSPACE_WORKTREE_PATH = workspaceWorktreePath;
   }
   if (agentHome) {
     env.AGENT_HOME = agentHome;
   }
   if (workspaceHints.length > 0) {
-    env.CHOPSTICKS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+    env.ABACUS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
   }
   if (runtimeServiceIntents.length > 0) {
-    env.CHOPSTICKS_RUNTIME_SERVICE_INTENTS_JSON = JSON.stringify(runtimeServiceIntents);
+    env.ABACUS_RUNTIME_SERVICE_INTENTS_JSON = JSON.stringify(runtimeServiceIntents);
   }
   if (runtimeServices.length > 0) {
-    env.CHOPSTICKS_RUNTIME_SERVICES_JSON = JSON.stringify(runtimeServices);
+    env.ABACUS_RUNTIME_SERVICES_JSON = JSON.stringify(runtimeServices);
   }
   if (runtimePrimaryUrl) {
-    env.CHOPSTICKS_RUNTIME_PRIMARY_URL = runtimePrimaryUrl;
+    env.ABACUS_RUNTIME_PRIMARY_URL = runtimePrimaryUrl;
   }
 
   for (const [key, value] of Object.entries(envConfig)) {
@@ -237,7 +237,7 @@ async function buildClaudeRuntimeConfig(input: ClaudeExecutionInput): Promise<Cl
   }
 
   if (!hasExplicitApiKey && authToken) {
-    env.CHOPSTICKS_API_KEY = authToken;
+    env.ABACUS_API_KEY = authToken;
   }
 
   const runtimeEnv = ensurePathInEnv({ ...process.env, ...env });
@@ -306,7 +306,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Chopsticks work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your Abacus work.",
   );
   const model = asString(config.model, "");
   const effort = asString(config.effort, "");
@@ -369,7 +369,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   if (runtimeSessionId && !canResumeSession) {
     await onLog(
       "stderr",
-      `[chopsticks] Claude session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[abacus] Claude session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
   const prompt = renderTemplate(promptTemplate, {
@@ -553,7 +553,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     ) {
       await onLog(
         "stderr",
-        `[chopsticks] Claude resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
+        `[abacus] Claude resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
       );
       const retry = await runAttempt(null);
       return toAdapterResult(retry, { fallbackSessionId: null, clearSessionOnMissingSession: true });

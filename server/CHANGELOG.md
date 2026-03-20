@@ -1,4 +1,4 @@
-# @papertape/server
+# @abacus/server
 
 ## 0.3.1
 
@@ -6,16 +6,16 @@
 
 - Stable release preparation for 0.3.1
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.3.1
-  - @paperclipai/adapter-claude-local@0.3.1
-  - @paperclipai/adapter-codex-local@0.3.1
-  - @paperclipai/adapter-cursor-local@0.3.1
-  - @paperclipai/adapter-gemini-local@0.3.1
-  - @paperclipai/adapter-openclaw-gateway@0.3.1
-  - @paperclipai/adapter-opencode-local@0.3.1
-  - @paperclipai/adapter-pi-local@0.3.1
-  - @paperclipai/db@0.3.1
-  - @paperclipai/shared@0.3.1
+  - @abacus-lab/adapter-utils@0.3.1
+  - @abacus-lab/adapter-claude-local@0.3.1
+  - @abacus-lab/adapter-codex-local@0.3.1
+  - @abacus-lab/adapter-cursor-local@0.3.1
+  - @abacus-lab/adapter-gemini-local@0.3.1
+  - @abacus-lab/adapter-openclaw-gateway@0.3.1
+  - @abacus-lab/adapter-opencode-local@0.3.1
+  - @abacus-lab/adapter-pi-local@0.3.1
+  - @abacus-lab/db@0.3.1
+  - @abacus-lab/shared@0.3.1
 
 ## 0.3.0
 
@@ -27,15 +27,15 @@
 
 - Updated dependencies [6077ae6]
 - Updated dependencies
-  - @papertape/shared@0.3.0
-  - @papertape/adapter-utils@0.3.0
-  - @papertape/adapter-claude-local@0.3.0
-  - @papertape/adapter-codex-local@0.3.0
-  - @papertape/adapter-cursor-local@0.3.0
-  - @papertape/adapter-openclaw-gateway@0.3.0
-  - @papertape/adapter-opencode-local@0.3.0
-  - @papertape/adapter-pi-local@0.3.0
-  - @papertape/db@0.3.0
+  - @abacus/shared@0.3.0
+  - @abacus/adapter-utils@0.3.0
+  - @abacus/adapter-claude-local@0.3.0
+  - @abacus/adapter-codex-local@0.3.0
+  - @abacus/adapter-cursor-local@0.3.0
+  - @abacus/adapter-openclaw-gateway@0.3.0
+  - @abacus/adapter-opencode-local@0.3.0
+  - @abacus/adapter-pi-local@0.3.0
+  - @abacus/db@0.3.0
 
 ## 0.2.7
 
@@ -43,12 +43,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @papertape/shared@0.2.7
-  - @papertape/adapter-utils@0.2.7
-  - @papertape/db@0.2.7
-  - @papertape/adapter-claude-local@0.2.7
-  - @papertape/adapter-codex-local@0.2.7
-  - @papertape/adapter-openclaw@0.2.7
+  - @abacus/shared@0.2.7
+  - @abacus/adapter-utils@0.2.7
+  - @abacus/db@0.2.7
+  - @abacus/adapter-claude-local@0.2.7
+  - @abacus/adapter-codex-local@0.2.7
+  - @abacus/adapter-openclaw@0.2.7
 
 ## 0.2.6
 
@@ -56,12 +56,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @papertape/shared@0.2.6
-  - @papertape/adapter-utils@0.2.6
-  - @papertape/db@0.2.6
-  - @papertape/adapter-claude-local@0.2.6
-  - @papertape/adapter-codex-local@0.2.6
-  - @papertape/adapter-openclaw@0.2.6
+  - @abacus/shared@0.2.6
+  - @abacus/adapter-utils@0.2.6
+  - @abacus/db@0.2.6
+  - @abacus/adapter-claude-local@0.2.6
+  - @abacus/adapter-codex-local@0.2.6
+  - @abacus/adapter-openclaw@0.2.6
 
 ## 0.2.5
 
@@ -69,12 +69,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @papertape/shared@0.2.5
-  - @papertape/adapter-utils@0.2.5
-  - @papertape/db@0.2.5
-  - @papertape/adapter-claude-local@0.2.5
-  - @papertape/adapter-codex-local@0.2.5
-  - @papertape/adapter-openclaw@0.2.5
+  - @abacus/shared@0.2.5
+  - @abacus/adapter-utils@0.2.5
+  - @abacus/db@0.2.5
+  - @abacus/adapter-claude-local@0.2.5
+  - @abacus/adapter-codex-local@0.2.5
+  - @abacus/adapter-openclaw@0.2.5
 
 ## 0.2.4
 
@@ -82,12 +82,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @papertape/shared@0.2.4
-  - @papertape/adapter-utils@0.2.4
-  - @papertape/db@0.2.4
-  - @papertape/adapter-claude-local@0.2.4
-  - @papertape/adapter-codex-local@0.2.4
-  - @papertape/adapter-openclaw@0.2.4
+  - @abacus/shared@0.2.4
+  - @abacus/adapter-utils@0.2.4
+  - @abacus/db@0.2.4
+  - @abacus/adapter-claude-local@0.2.4
+  - @abacus/adapter-codex-local@0.2.4
+  - @abacus/adapter-openclaw@0.2.4
 
 ## 0.2.3
 
@@ -95,12 +95,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @papertape/shared@0.2.3
-  - @papertape/adapter-utils@0.2.3
-  - @papertape/db@0.2.3
-  - @papertape/adapter-claude-local@0.2.3
-  - @papertape/adapter-codex-local@0.2.3
-  - @papertape/adapter-openclaw@0.2.3
+  - @abacus/shared@0.2.3
+  - @abacus/adapter-utils@0.2.3
+  - @abacus/db@0.2.3
+  - @abacus/adapter-claude-local@0.2.3
+  - @abacus/adapter-codex-local@0.2.3
+  - @abacus/adapter-openclaw@0.2.3
 
 ## 0.2.2
 
@@ -108,12 +108,12 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @papertape/shared@0.2.2
-  - @papertape/adapter-utils@0.2.2
-  - @papertape/db@0.2.2
-  - @papertape/adapter-claude-local@0.2.2
-  - @papertape/adapter-codex-local@0.2.2
-  - @papertape/adapter-openclaw@0.2.2
+  - @abacus/shared@0.2.2
+  - @abacus/adapter-utils@0.2.2
+  - @abacus/db@0.2.2
+  - @abacus/adapter-claude-local@0.2.2
+  - @abacus/adapter-codex-local@0.2.2
+  - @abacus/adapter-openclaw@0.2.2
 
 ## 0.2.1
 
@@ -121,9 +121,9 @@
 
 - Version bump (patch)
 - Updated dependencies
-  - @papertape/shared@0.2.1
-  - @papertape/adapter-utils@0.2.1
-  - @papertape/db@0.2.1
-  - @papertape/adapter-claude-local@0.2.1
-  - @papertape/adapter-codex-local@0.2.1
-  - @papertape/adapter-openclaw@0.2.1
+  - @abacus/shared@0.2.1
+  - @abacus/adapter-utils@0.2.1
+  - @abacus/db@0.2.1
+  - @abacus/adapter-claude-local@0.2.1
+  - @abacus/adapter-codex-local@0.2.1
+  - @abacus/adapter-openclaw@0.2.1

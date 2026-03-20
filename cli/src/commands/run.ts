@@ -7,14 +7,14 @@ import { bootstrapCeoInvite } from "./auth-bootstrap-ceo.js";
 import { onboard } from "./onboard.js";
 import { doctor } from "./doctor.js";
 import { publicCliCommand } from "../config/branding.js";
-import { loadChopsticksEnvFile } from "../config/env.js";
+import { loadAbacusEnvFile } from "../config/env.js";
 import { configExists, resolveConfigPath } from "../config/store.js";
-import type { ChopsticksConfig } from "../config/schema.js";
+import type { AbacusConfig } from "../config/schema.js";
 import { readConfig } from "../config/store.js";
 import {
   describeLocalInstancePaths,
-  resolveChopsticksHomeDir,
-  resolveChopsticksInstanceId,
+  resolveAbacusHomeDir,
+  resolveAbacusInstanceId,
 } from "../config/home.js";
 
 interface RunOptions {
@@ -32,18 +32,18 @@ interface StartedServer {
 }
 
 export async function runCommand(opts: RunOptions): Promise<void> {
-  const instanceId = resolveChopsticksInstanceId(opts.instance);
-  process.env.CHOPSTICKS_INSTANCE_ID = instanceId;
+  const instanceId = resolveAbacusInstanceId(opts.instance);
+  process.env.ABACUS_INSTANCE_ID = instanceId;
 
-  const homeDir = resolveChopsticksHomeDir();
+  const homeDir = resolveAbacusHomeDir();
   fs.mkdirSync(homeDir, { recursive: true });
 
   const paths = describeLocalInstancePaths(instanceId);
   fs.mkdirSync(paths.instanceRoot, { recursive: true });
 
   const configPath = resolveConfigPath(opts.config);
-  process.env.CHOPSTICKS_CONFIG = configPath;
-  loadChopsticksEnvFile(configPath);
+  process.env.ABACUS_CONFIG = configPath;
+  loadAbacusEnvFile(configPath);
 
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("run")} `)));
   p.log.message(pc.dim(`Home: ${paths.homeDir}`));
@@ -81,7 +81,7 @@ export async function runCommand(opts: RunOptions): Promise<void> {
     process.exit(1);
   }
 
-  p.log.step("Starting Chopsticks server...");
+  p.log.step("Starting Abacus server...");
   const startedServer = await importServerEntry();
 
   if (shouldGenerateBootstrapInviteAfterStart(config)) {
@@ -95,12 +95,12 @@ export async function runCommand(opts: RunOptions): Promise<void> {
 }
 
 function resolveBootstrapInviteBaseUrl(
-  config: ChopsticksConfig,
+  config: AbacusConfig,
   startedServer: StartedServer,
 ): string {
   const explicitBaseUrl =
-    process.env.CHOPSTICKS_PUBLIC_URL ??
-    process.env.CHOPSTICKS_AUTH_PUBLIC_BASE_URL ??
+    process.env.ABACUS_PUBLIC_URL ??
+    process.env.ABACUS_AUTH_PUBLIC_BASE_URL ??
     process.env.BETTER_AUTH_URL ??
     process.env.BETTER_AUTH_BASE_URL ??
     (config.auth.baseUrlMode === "explicit" ? config.auth.publicBaseUrl : undefined);
@@ -142,10 +142,10 @@ function getMissingModuleSpecifier(err: unknown): string | null {
 }
 
 function maybeEnableUiDevMiddleware(entrypoint: string): void {
-  if (process.env.CHOPSTICKS_UI_DEV_MIDDLEWARE !== undefined) return;
+  if (process.env.ABACUS_UI_DEV_MIDDLEWARE !== undefined) return;
   const normalized = entrypoint.replaceAll("\\", "/");
-  if (normalized.endsWith("/server/src/index.ts") || normalized.endsWith("@chopsticks/server/src/index.ts")) {
-    process.env.CHOPSTICKS_UI_DEV_MIDDLEWARE = "true";
+  if (normalized.endsWith("/server/src/index.ts") || normalized.endsWith("@abacus/server/src/index.ts")) {
+    process.env.ABACUS_UI_DEV_MIDDLEWARE = "true";
   }
 }
 
@@ -159,35 +159,35 @@ async function importServerEntry(): Promise<StartedServer> {
     return await startServerFromModule(mod, devEntry);
   }
 
-  // Production mode: import the published @chopsticks/server package
+  // Production mode: import the published @abacus/server package
   try {
-    const mod = await import("@chopsticks/server");
-    return await startServerFromModule(mod, "@chopsticks/server");
+    const mod = await import("@abacus/server");
+    return await startServerFromModule(mod, "@abacus/server");
   } catch (err) {
     const missingSpecifier = getMissingModuleSpecifier(err);
-    const missingServerEntrypoint = !missingSpecifier || missingSpecifier === "@chopsticks/server";
+    const missingServerEntrypoint = !missingSpecifier || missingSpecifier === "@abacus/server";
     if (isModuleNotFoundError(err) && missingServerEntrypoint) {
       throw new Error(
-        `Could not locate a Chopsticks server entrypoint.\n` +
-        `Tried: ${devEntry}, @chopsticks/server\n` +
+        `Could not locate a Abacus server entrypoint.\n` +
+        `Tried: ${devEntry}, @abacus/server\n` +
         `${formatError(err)}`,
       );
     }
     throw new Error(
-      `Chopsticks server failed to start.\n` +
+      `Abacus server failed to start.\n` +
       `${formatError(err)}`,
     );
   }
 }
 
-function shouldGenerateBootstrapInviteAfterStart(config: ChopsticksConfig): boolean {
+function shouldGenerateBootstrapInviteAfterStart(config: AbacusConfig): boolean {
   return config.server.deploymentMode === "authenticated" && config.database.mode === "embedded-postgres";
 }
 
 async function startServerFromModule(mod: unknown, label: string): Promise<StartedServer> {
   const startServer = (mod as { startServer?: () => Promise<StartedServer> }).startServer;
   if (typeof startServer !== "function") {
-    throw new Error(`Chopsticks server entrypoint did not export startServer(): ${label}`);
+    throw new Error(`Abacus server entrypoint did not export startServer(): ${label}`);
   }
   return await startServer();
 }

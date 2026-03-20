@@ -142,7 +142,7 @@ Note:
 
 - use Better Auth canonical table names/types to avoid custom forks
 
-## 5.2 New Chopsticks tables
+## 5.2 New Abacus tables
 
 1. `instance_user_roles`
 
@@ -455,11 +455,11 @@ Files:
 
 Commands:
 
-1. `chopsticks auth bootstrap-ceo`
+1. `abacus auth bootstrap-ceo`
 - create bootstrap invite
 - print one-time URL
 
-2. `chopsticks onboard`
+2. `abacus onboard`
 - in cloud mode with `bootstrap_pending`, print bootstrap URL and next steps
 - in local mode, skip bootstrap requirement
 

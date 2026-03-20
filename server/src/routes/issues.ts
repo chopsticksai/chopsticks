@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import multer from "multer";
-import type { Db } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
 import {
   addIssueCommentSchema,
   createIssueAttachmentMetadataSchema,
@@ -13,7 +13,7 @@ import {
   updateIssueWorkProductSchema,
   upsertIssueDocumentSchema,
   updateIssueSchema,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 import type { StorageService } from "../storage/types.js";
 import { validate } from "../middleware/validate.js";
 import {

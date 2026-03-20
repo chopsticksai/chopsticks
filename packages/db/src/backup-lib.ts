@@ -48,7 +48,7 @@ type TableDefinition = {
 const DRIZZLE_SCHEMA = "drizzle";
 const DRIZZLE_MIGRATIONS_TABLE = "__drizzle_migrations";
 
-const STATEMENT_BREAKPOINT = "-- chopsticks statement breakpoint 69f6f3f1-42fd-46a6-bf17-d1d85f8f3900";
+const STATEMENT_BREAKPOINT = "-- abacus statement breakpoint 69f6f3f1-42fd-46a6-bf17-d1d85f8f3900";
 
 function sanitizeRestoreErrorMessage(error: unknown): string {
   if (error && typeof error === "object") {
@@ -96,9 +96,9 @@ function formatBackupSize(sizeBytes: number): string {
 
 function formatSqlLiteral(value: string): string {
   const sanitized = value.replace(/\u0000/g, "");
-  let tag = "$chopsticks$";
+  let tag = "$abacus$";
   while (sanitized.includes(tag)) {
-    tag = `$chopsticks_${Math.random().toString(36).slice(2, 8)}$`;
+    tag = `$abacus_${Math.random().toString(36).slice(2, 8)}$`;
   }
   return `${tag}${sanitized}${tag}`;
 }
@@ -142,7 +142,7 @@ function tableKey(schemaName: string, tableName: string): string {
 }
 
 export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise<RunDatabaseBackupResult> {
-  const filenamePrefix = opts.filenamePrefix ?? "chopsticks";
+  const filenamePrefix = opts.filenamePrefix ?? "abacus";
   const retentionDays = Math.max(1, Math.trunc(opts.retentionDays));
   const connectTimeout = Math.max(1, Math.trunc(opts.connectTimeoutSeconds ?? 5));
   const includeMigrationJournal = opts.includeMigrationJournal === true;
@@ -163,7 +163,7 @@ export async function runDatabaseBackup(opts: RunDatabaseBackupOptions): Promise
       emit(STATEMENT_BREAKPOINT);
     };
 
-    emit("-- Chopsticks database backup");
+    emit("-- Abacus database backup");
     emit(`-- Created: ${new Date().toISOString()}`);
     emit("");
     emitStatement("BEGIN;");

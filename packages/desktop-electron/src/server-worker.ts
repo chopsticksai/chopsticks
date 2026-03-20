@@ -14,9 +14,9 @@ type FatalMessage = {
 };
 
 function resolveServerEntrypoint(): string {
-  const entry = process.env.CHOPSTICKS_DESKTOP_SERVER_ENTRY?.trim();
+  const entry = process.env.ABACUS_DESKTOP_SERVER_ENTRY?.trim();
   if (!entry) {
-    throw new Error("CHOPSTICKS_DESKTOP_SERVER_ENTRY is required.");
+    throw new Error("ABACUS_DESKTOP_SERVER_ENTRY is required.");
   }
   if (!fs.existsSync(entry)) {
     throw new Error(`Server entrypoint not found: ${entry}`);
@@ -25,11 +25,11 @@ function resolveServerEntrypoint(): string {
 }
 
 function applyDesktopEnvironment(): void {
-  process.env.CHOPSTICKS_HOME = process.env.CHOPSTICKS_HOME?.trim() || process.cwd();
-  process.env.CHOPSTICKS_INSTANCE_ID = process.env.CHOPSTICKS_INSTANCE_ID?.trim() || "default";
+  process.env.ABACUS_HOME = process.env.ABACUS_HOME?.trim() || process.cwd();
+  process.env.ABACUS_INSTANCE_ID = process.env.ABACUS_INSTANCE_ID?.trim() || "default";
   process.env.HOST = "127.0.0.1";
   process.env.PORT = process.env.PORT?.trim() || "3100";
-  process.env.CHOPSTICKS_OPEN_ON_LISTEN = "false";
+  process.env.ABACUS_OPEN_ON_LISTEN = "false";
 }
 
 async function loadServerModule(entryPath: string): Promise<() => Promise<{ apiUrl: string }>> {

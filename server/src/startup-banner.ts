@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
-import { resolveChopsticksConfigPath, resolveChopsticksEnvPath } from "./paths.js";
-import type { DeploymentExposure, DeploymentMode } from "@chopsticks/shared";
+import { resolveAbacusConfigPath, resolveAbacusEnvPath } from "./paths.js";
+import type { DeploymentExposure, DeploymentMode } from "@abacus/shared";
 
 import { parse as parseEnvFileContents } from "dotenv";
 
@@ -71,7 +71,7 @@ function resolveAgentJwtSecretStatus(
   status: "pass" | "warn";
   message: string;
 } {
-  const envValue = process.env.CHOPSTICKS_AGENT_JWT_SECRET?.trim();
+  const envValue = process.env.ABACUS_AGENT_JWT_SECRET?.trim();
   if (envValue) {
     return {
       status: "pass",
@@ -81,7 +81,7 @@ function resolveAgentJwtSecretStatus(
 
   if (existsSync(envFilePath)) {
     const parsed = parseEnvFileContents(readFileSync(envFilePath, "utf-8"));
-    const fileValue = typeof parsed.CHOPSTICKS_AGENT_JWT_SECRET === "string" ? parsed.CHOPSTICKS_AGENT_JWT_SECRET.trim() : "";
+    const fileValue = typeof parsed.ABACUS_AGENT_JWT_SECRET === "string" ? parsed.ABACUS_AGENT_JWT_SECRET.trim() : "";
     if (fileValue) {
       return {
         status: "warn",
@@ -92,7 +92,7 @@ function resolveAgentJwtSecretStatus(
 
   return {
     status: "warn",
-    message: "missing (run `pnpm chopsticks onboard`)",
+    message: "missing (run `pnpm abacus onboard`)",
   };
 }
 
@@ -101,8 +101,8 @@ export function printStartupBanner(opts: StartupBannerOptions): void {
   const baseUrl = `http://${baseHost}:${opts.listenPort}`;
   const apiUrl = `${baseUrl}/api`;
   const uiUrl = opts.uiMode === "none" ? "disabled" : baseUrl;
-  const configPath = resolveChopsticksConfigPath();
-  const envFilePath = resolveChopsticksEnvPath();
+  const configPath = resolveAbacusConfigPath();
+  const envFilePath = resolveAbacusEnvPath();
   const agentJwtSecret = resolveAgentJwtSecretStatus(envFilePath);
 
   const dbMode =

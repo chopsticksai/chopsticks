@@ -24,18 +24,18 @@ OPENCLAW_METHOD="${OPENCLAW_METHOD:-POST}"
 OPENCLAW_AUTH_HEADER="${OPENCLAW_AUTH_HEADER:-}"
 OPENCLAW_TIMEOUT_SEC="${OPENCLAW_TIMEOUT_SEC:-180}"
 OPENCLAW_MODEL="${OPENCLAW_MODEL:-openclaw}"
-OPENCLAW_USER="${OPENCLAW_USER:-chopsticks-smoke}"
+OPENCLAW_USER="${OPENCLAW_USER:-abacus-smoke}"
 
-CHOPSTICKS_RUN_ID="${CHOPSTICKS_RUN_ID:-smoke-run-$(date +%s)}"
-CHOPSTICKS_AGENT_ID="${CHOPSTICKS_AGENT_ID:-openclaw-smoke-agent}"
-CHOPSTICKS_COMPANY_ID="${CHOPSTICKS_COMPANY_ID:-openclaw-smoke-company}"
-CHOPSTICKS_API_URL="${CHOPSTICKS_API_URL:-http://localhost:3100}"
-CHOPSTICKS_TASK_ID="${CHOPSTICKS_TASK_ID:-openclaw-smoke-task}"
-CHOPSTICKS_WAKE_REASON="${CHOPSTICKS_WAKE_REASON:-openclaw_smoke_test}"
-CHOPSTICKS_WAKE_COMMENT_ID="${CHOPSTICKS_WAKE_COMMENT_ID:-}"
-CHOPSTICKS_APPROVAL_ID="${CHOPSTICKS_APPROVAL_ID:-}"
-CHOPSTICKS_APPROVAL_STATUS="${CHOPSTICKS_APPROVAL_STATUS:-}"
-CHOPSTICKS_LINKED_ISSUE_IDS="${CHOPSTICKS_LINKED_ISSUE_IDS:-}"
+ABACUS_RUN_ID="${ABACUS_RUN_ID:-smoke-run-$(date +%s)}"
+ABACUS_AGENT_ID="${ABACUS_AGENT_ID:-openclaw-smoke-agent}"
+ABACUS_COMPANY_ID="${ABACUS_COMPANY_ID:-openclaw-smoke-company}"
+ABACUS_API_URL="${ABACUS_API_URL:-http://localhost:3100}"
+ABACUS_TASK_ID="${ABACUS_TASK_ID:-openclaw-smoke-task}"
+ABACUS_WAKE_REASON="${ABACUS_WAKE_REASON:-openclaw_smoke_test}"
+ABACUS_WAKE_COMMENT_ID="${ABACUS_WAKE_COMMENT_ID:-}"
+ABACUS_APPROVAL_ID="${ABACUS_APPROVAL_ID:-}"
+ABACUS_APPROVAL_STATUS="${ABACUS_APPROVAL_STATUS:-}"
+ABACUS_LINKED_ISSUE_IDS="${ABACUS_LINKED_ISSUE_IDS:-}"
 OPENCLAW_TEXT_PREFIX="${OPENCLAW_TEXT_PREFIX:-Standalone OpenClaw SSE smoke test.}"
 
 [[ -n "$OPENCLAW_URL" ]] || fail "OPENCLAW_URL is required"
@@ -43,51 +43,51 @@ OPENCLAW_TEXT_PREFIX="${OPENCLAW_TEXT_PREFIX:-Standalone OpenClaw SSE smoke test
 read -r -d '' TEXT_BODY <<EOF || true
 ${OPENCLAW_TEXT_PREFIX}
 
-CHOPSTICKS_RUN_ID=${CHOPSTICKS_RUN_ID}
-CHOPSTICKS_AGENT_ID=${CHOPSTICKS_AGENT_ID}
-CHOPSTICKS_COMPANY_ID=${CHOPSTICKS_COMPANY_ID}
-CHOPSTICKS_API_URL=${CHOPSTICKS_API_URL}
-CHOPSTICKS_TASK_ID=${CHOPSTICKS_TASK_ID}
-CHOPSTICKS_WAKE_REASON=${CHOPSTICKS_WAKE_REASON}
-CHOPSTICKS_WAKE_COMMENT_ID=${CHOPSTICKS_WAKE_COMMENT_ID}
-CHOPSTICKS_APPROVAL_ID=${CHOPSTICKS_APPROVAL_ID}
-CHOPSTICKS_APPROVAL_STATUS=${CHOPSTICKS_APPROVAL_STATUS}
-CHOPSTICKS_LINKED_ISSUE_IDS=${CHOPSTICKS_LINKED_ISSUE_IDS}
+ABACUS_RUN_ID=${ABACUS_RUN_ID}
+ABACUS_AGENT_ID=${ABACUS_AGENT_ID}
+ABACUS_COMPANY_ID=${ABACUS_COMPANY_ID}
+ABACUS_API_URL=${ABACUS_API_URL}
+ABACUS_TASK_ID=${ABACUS_TASK_ID}
+ABACUS_WAKE_REASON=${ABACUS_WAKE_REASON}
+ABACUS_WAKE_COMMENT_ID=${ABACUS_WAKE_COMMENT_ID}
+ABACUS_APPROVAL_ID=${ABACUS_APPROVAL_ID}
+ABACUS_APPROVAL_STATUS=${ABACUS_APPROVAL_STATUS}
+ABACUS_LINKED_ISSUE_IDS=${ABACUS_LINKED_ISSUE_IDS}
 
-Run your Chopsticks heartbeat procedure now.
+Run your Abacus heartbeat procedure now.
 EOF
 
 PAYLOAD="$(jq -nc \
   --arg text "$TEXT_BODY" \
   --arg model "$OPENCLAW_MODEL" \
   --arg user "$OPENCLAW_USER" \
-  --arg runId "$CHOPSTICKS_RUN_ID" \
-  --arg agentId "$CHOPSTICKS_AGENT_ID" \
-  --arg companyId "$CHOPSTICKS_COMPANY_ID" \
-  --arg apiUrl "$CHOPSTICKS_API_URL" \
-  --arg taskId "$CHOPSTICKS_TASK_ID" \
-  --arg wakeReason "$CHOPSTICKS_WAKE_REASON" \
-  --arg wakeCommentId "$CHOPSTICKS_WAKE_COMMENT_ID" \
-  --arg approvalId "$CHOPSTICKS_APPROVAL_ID" \
-  --arg approvalStatus "$CHOPSTICKS_APPROVAL_STATUS" \
-  --arg linkedIssueIds "$CHOPSTICKS_LINKED_ISSUE_IDS" \
+  --arg runId "$ABACUS_RUN_ID" \
+  --arg agentId "$ABACUS_AGENT_ID" \
+  --arg companyId "$ABACUS_COMPANY_ID" \
+  --arg apiUrl "$ABACUS_API_URL" \
+  --arg taskId "$ABACUS_TASK_ID" \
+  --arg wakeReason "$ABACUS_WAKE_REASON" \
+  --arg wakeCommentId "$ABACUS_WAKE_COMMENT_ID" \
+  --arg approvalId "$ABACUS_APPROVAL_ID" \
+  --arg approvalStatus "$ABACUS_APPROVAL_STATUS" \
+  --arg linkedIssueIds "$ABACUS_LINKED_ISSUE_IDS" \
   '{
     model: $model,
     user: $user,
     input: $text,
     stream: true,
     metadata: {
-      CHOPSTICKS_RUN_ID: $runId,
-      CHOPSTICKS_AGENT_ID: $agentId,
-      CHOPSTICKS_COMPANY_ID: $companyId,
-      CHOPSTICKS_API_URL: $apiUrl,
-      CHOPSTICKS_TASK_ID: $taskId,
-      CHOPSTICKS_WAKE_REASON: $wakeReason,
-      CHOPSTICKS_WAKE_COMMENT_ID: $wakeCommentId,
-      CHOPSTICKS_APPROVAL_ID: $approvalId,
-      CHOPSTICKS_APPROVAL_STATUS: $approvalStatus,
-      CHOPSTICKS_LINKED_ISSUE_IDS: $linkedIssueIds,
-      chopsticks_session_key: ("chopsticks:run:" + $runId)
+      ABACUS_RUN_ID: $runId,
+      ABACUS_AGENT_ID: $agentId,
+      ABACUS_COMPANY_ID: $companyId,
+      ABACUS_API_URL: $apiUrl,
+      ABACUS_TASK_ID: $taskId,
+      ABACUS_WAKE_REASON: $wakeReason,
+      ABACUS_WAKE_COMMENT_ID: $wakeCommentId,
+      ABACUS_APPROVAL_ID: $approvalId,
+      ABACUS_APPROVAL_STATUS: $approvalStatus,
+      ABACUS_LINKED_ISSUE_IDS: $linkedIssueIds,
+      abacus_session_key: ("abacus:run:" + $runId)
     }
   }')"
 
@@ -105,7 +105,7 @@ args=(
   -X "$OPENCLAW_METHOD"
   -H "content-type: application/json"
   -H "accept: text/event-stream"
-  -H "x-openclaw-session-key: chopsticks:run:${CHOPSTICKS_RUN_ID}"
+  -H "x-openclaw-session-key: abacus:run:${ABACUS_RUN_ID}"
   -D "$headers_file"
   -o "$body_file"
   --data "$PAYLOAD"

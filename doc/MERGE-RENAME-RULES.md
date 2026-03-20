@@ -3,7 +3,7 @@
 ## Summary
 
 This document is the normative rule set for merging upstream `paperclipai/paperclip`
-changes into this Chopsticks fork.
+changes into this Abacus fork.
 
 Use this document to answer:
 
@@ -28,9 +28,9 @@ flow, use [`doc/UPSTREAM-MERGE-RUNBOOK.md`](./UPSTREAM-MERGE-RUNBOOK.md).
 
 ## Terminology
 
-- `upstream`: the semantic role for the canonical Paperclip repo. In this
+- `upstream`: the semantic role for the canonical abacus repo. In this
   checkout the default remote name is `origin`.
-- `private fork`: the semantic role for the Chopsticks repo. In this checkout
+- `private fork`: the semantic role for the Abacus repo. In this checkout
   the default remote name is `private`.
 - `base branch`: the private-fork branch used as the PR comparison target. By
   default this is `private/master`.
@@ -51,7 +51,7 @@ When the same area contains both upstream logic changes and local rename/UI
 customizations, resolve in this order:
 
 1. Keep upstream behavior changes, bug fixes, and contract alignment.
-2. Keep Chopsticks naming, branding, package scopes, and user-visible links.
+2. Keep Abacus naming, branding, package scopes, and user-visible links.
 3. Keep existing repository invariants, especially company-scoped boundaries,
    audit/approval semantics, budget hard-stop behavior, and UI-localized
    behavior.
@@ -61,16 +61,16 @@ customizations, resolve in this order:
 
 Apply the following replacements when upstream code introduces legacy names:
 
-| Upstream token | Chopsticks token | Typical locations |
-|---|---|---|
-| `paperclipai` | `chopsticks` | npm scope, import path, GitHub org/URL, CLI name, URL slug |
-| `Paperclipai` | `Chopsticks` | class names, components, title-cased branding |
-| `PAPERCLIPAI` | `CHOPSTICKS` | env vars, constants |
-| `papercli` | `chopsticks` | legacy short names |
-| `Papercli` | `Chopsticks` | legacy short names |
-| `PAPERCLI` | `CHOPSTICKS` | legacy short names |
-| `Paperclip` | `Chopsticks` | user-visible brand text |
-| `paperclip` | `chopsticks` | lowercase product references, config values, CLI names |
+| Upstream token | Abacus token | Typical locations                             |
+|----------------|--------------|-----------------------------------------------|
+| `paperclipai`  | `abacus-lab` | npm scope, import path, GitHub org/URL, URL slug |
+| `paperclipai`  | `abacus`     | class names, components, title-cased branding |
+| `PAPERCLIPAI`  | `ABACUS`     | env vars, constants                           |
+| `papercli`     | `abacus`     | legacy short names                            |
+| `Papercli`     | `Abacus`     | legacy short names                            |
+| `PAPERCLI`     | `ABACUS`     | legacy short names                            |
+| `paperclip`    | `abacus`     | user-visible brand text                       |
+| `paperclip`    | `abacus`     | lowercase product references, config values, CLI names |
 
 > [!IMPORTANT]
 > Match case exactly and prefer longer matches before shorter matches. For
@@ -84,32 +84,32 @@ Apply the following replacements when upstream code introduces legacy names:
   paths, env var names, CLI-facing strings, RPC/app identity fields, and
   user-visible brand text.
 - If upstream adds new logic in a conflicting block, keep the upstream logic and
-  re-apply Chopsticks naming on top.
+  re-apply Abacus naming on top.
 - Rename obligations include user-visible error messages, helper text, brand
   labels, and product links. Do not stop at import-path fixes.
 
 ### `package.json`
 
-- Keep `"name"` aligned to `chopsticks` or `@chopsticks/*`.
+- Keep `"name"` aligned to `abacus` or `@abacus/*`.
 - Keep `"repository"` aligned to
-  `https://github.com/chopsticksai/chopsticks`.
-- Replace dependency scopes from `@paperclipai/*` to `@chopsticks/*`.
+  `https://github.com/abacus-lab/abacus`.
+- Replace dependency scopes from `@paperclipai/*` to `@abacus-lab/*`.
 - When versions conflict, prefer the newer upstream version unless the private
   fork has an explicit release constraint.
 
 ### Markdown / Docs
 
-- Replace user-visible `Paperclip` branding with `Chopsticks`.
+- Replace user-visible `Paperclip` branding with `Abacus`.
 - Replace `github.com/paperclipai/paperclip` with
-  `github.com/chopsticksai/chopsticks` in user-visible current-product links.
-- Replace `github.com/paperclipai/` with `github.com/chopsticksai/` when it is
+  `github.com/abacus-lab/abacus` in user-visible current-product links.
+- Replace `github.com/paperclipai/` with `github.com/abacus-lab/` when it is
   referring to the current product rather than historical upstream context.
 - If the merged docs add UI-visible copy or prompt text, they must also satisfy
   [`doc/UI-LOCALIZATION.md`](./UI-LOCALIZATION.md).
 
 ### Config / Templates
 
-- Replace `PAPERCLIP` / `PAPERCLIPAI` env var names with `CHOPSTICKS`.
+- Replace `PAPERCLIP` / `PAPERCLIPAI` env var names with `ABACUS`.
 - Replace legacy config values using the mapping table above.
 
 ### Lockfiles and CI-Managed Files
@@ -129,7 +129,7 @@ The following may keep the upstream name unchanged:
 - explicit fork-source statements such as `Forked from paperclip`
 - historical commit hashes or commit message references
 - upstream changelog or release-note history references
-- third-party dependency names outside the Chopsticks namespace
+- third-party dependency names outside the Abacus namespace
 - comments explicitly marked as `upstream reference`
 - inert, non-user-visible test fixtures or temp directory names, as long as the
   legacy token does not leak into product UI, public contracts, or assertion
@@ -144,7 +144,7 @@ The following may keep the upstream name unchanged:
 After an upstream merge is considered done, all of the following must be true:
 
 - merged behavior keeps the upstream logic changes
-- merged code and docs keep Chopsticks naming
+- merged code and docs keep Abacus naming
 - merged UI is UI-localized according to
   [`doc/UI-LOCALIZATION.md`](./UI-LOCALIZATION.md)
 - the PR diff against the base branch does not include `pnpm-lock.yaml`, unless

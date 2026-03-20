@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { deriveAgentUrlKey, deriveProjectUrlKey, type BillingType, type FinanceDirection, type FinanceEventKind } from "@chopsticks/shared";
+import { deriveAgentUrlKey, deriveProjectUrlKey, type BillingType, type FinanceDirection, type FinanceEventKind } from "@abacus/shared";
 import {
   formatCurrency,
   formatDateTimeValue,

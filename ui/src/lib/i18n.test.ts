@@ -12,7 +12,7 @@ import {
 
 const DEFAULT_TASK_DESCRIPTION = `Setup yourself as the CEO. Use the ceo persona found here: 
 
-https://github.com/chopsticksai/companies/blob/main/default/ceo/AGENTS.md
+https://github.com/abacus-lab/companies/blob/main/default/ceo/AGENTS.md
 
 Ensure you have a folder agents/ceo and then download this AGENTS.md as well as the sibling HEARTBEAT.md, SOUL.md, and TOOLS.md. and set that AGENTS.md as the path to your agents instruction file
 
@@ -71,7 +71,7 @@ describe("i18n", () => {
     ).toBe("一切都已准备就绪。现在启动会创建起始任务、唤醒代理，并打开该任务。");
     expect(translateText(DEFAULT_TASK_DESCRIPTION)).toContain("先把自己设定为 CEO");
     expect(translateText(DEFAULT_TASK_DESCRIPTION)).toContain(
-      "https://github.com/chopsticksai/companies/blob/main/default/ceo/AGENTS.md",
+      "https://github.com/abacus-lab/companies/blob/main/default/ceo/AGENTS.md",
     );
   });
 });

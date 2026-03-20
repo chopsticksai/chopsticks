@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { isCodexUnknownSessionError, parseCodexJsonl } from "@chopsticks/adapter-codex-local/server";
-import { parseCodexStdoutLine } from "@chopsticks/adapter-codex-local/ui";
-import { printCodexStreamEvent } from "@chopsticks/adapter-codex-local/cli";
+import { isCodexUnknownSessionError, parseCodexJsonl } from "@abacus/adapter-codex-local/server";
+import { parseCodexStdoutLine } from "@abacus/adapter-codex-local/ui";
+import { printCodexStreamEvent } from "@abacus/adapter-codex-local/cli";
 
 describe("codex_local parser", () => {
   it("extracts session, summary, usage, and terminal error message", () => {
@@ -45,12 +45,12 @@ describe("codex_local ui stdout parser", () => {
       parseCodexStdoutLine(
         JSON.stringify({
           type: "item.completed",
-          item: { id: "item_1", type: "reasoning", text: "**Preparing to use chopsticks skill**" },
+          item: { id: "item_1", type: "reasoning", text: "**Preparing to use abacus skill**" },
         }),
         ts,
       ),
     ).toEqual([
-      { kind: "thinking", ts, text: "**Preparing to use chopsticks skill**" },
+      { kind: "thinking", ts, text: "**Preparing to use abacus skill**" },
     ]);
   });
 
@@ -107,7 +107,7 @@ describe("codex_local ui stdout parser", () => {
           item: {
             id: "item_52",
             type: "file_change",
-            changes: [{ path: "/Users/chopsticksuser/project/ui/src/pages/AgentDetail.tsx", kind: "update" }],
+            changes: [{ path: "/Users/abacususer/project/ui/src/pages/AgentDetail.tsx", kind: "update" }],
             status: "completed",
           },
         }),

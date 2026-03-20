@@ -30,48 +30,48 @@ afterEach(() => {
 
 describe("resolveDatabaseTarget", () => {
   it("uses DATABASE_URL from process env first", () => {
-    process.env.DATABASE_URL = "postgres://env-user:env-pass@db.example.com:5432/chopsticks";
+    process.env.DATABASE_URL = "postgres://env-user:env-pass@db.example.com:5432/abacus";
 
     const target = resolveDatabaseTarget();
 
     expect(target).toMatchObject({
       mode: "postgres",
-      connectionString: "postgres://env-user:env-pass@db.example.com:5432/chopsticks",
+      connectionString: "postgres://env-user:env-pass@db.example.com:5432/abacus",
       source: "DATABASE_URL",
     });
   });
 
-  it("uses DATABASE_URL from repo-local .chopsticks/.env", () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-db-runtime-"));
+  it("uses DATABASE_URL from repo-local .abacus/.env", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-db-runtime-"));
     const projectDir = path.join(tempDir, "repo");
     fs.mkdirSync(projectDir, { recursive: true });
     process.chdir(projectDir);
-    delete process.env.CHOPSTICKS_CONFIG;
-    writeJson(path.join(projectDir, ".chopsticks", "config.json"), {
+    delete process.env.ABACUS_CONFIG;
+    writeJson(path.join(projectDir, ".abacus", "config.json"), {
       database: { mode: "embedded-postgres", embeddedPostgresPort: 54329 },
     });
     writeText(
-      path.join(projectDir, ".chopsticks", ".env"),
-      'DATABASE_URL="postgres://file-user:file-pass@db.example.com:6543/chopsticks"\n',
+      path.join(projectDir, ".abacus", ".env"),
+      'DATABASE_URL="postgres://file-user:file-pass@db.example.com:6543/abacus"\n',
     );
 
     const target = resolveDatabaseTarget();
 
     expect(target).toMatchObject({
       mode: "postgres",
-      connectionString: "postgres://file-user:file-pass@db.example.com:6543/chopsticks",
-      source: "chopsticks-env",
+      connectionString: "postgres://file-user:file-pass@db.example.com:6543/abacus",
+      source: "abacus-env",
     });
   });
 
   it("uses config postgres connection string when configured", () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-db-runtime-"));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-db-runtime-"));
     const configPath = path.join(tempDir, "instance", "config.json");
-    process.env.CHOPSTICKS_CONFIG = configPath;
+    process.env.ABACUS_CONFIG = configPath;
     writeJson(configPath, {
       database: {
         mode: "postgres",
-        connectionString: "postgres://cfg-user:cfg-pass@db.example.com:5432/chopsticks",
+        connectionString: "postgres://cfg-user:cfg-pass@db.example.com:5432/abacus",
       },
     });
 
@@ -79,15 +79,15 @@ describe("resolveDatabaseTarget", () => {
 
     expect(target).toMatchObject({
       mode: "postgres",
-      connectionString: "postgres://cfg-user:cfg-pass@db.example.com:5432/chopsticks",
+      connectionString: "postgres://cfg-user:cfg-pass@db.example.com:5432/abacus",
       source: "config.database.connectionString",
     });
   });
 
   it("rejects unsupported database modes in config", () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-db-runtime-"));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-db-runtime-"));
     const configPath = path.join(tempDir, "instance", "config.json");
-    process.env.CHOPSTICKS_CONFIG = configPath;
+    process.env.ABACUS_CONFIG = configPath;
     writeJson(configPath, {
       database: {
         mode: "pglite",
@@ -98,13 +98,13 @@ describe("resolveDatabaseTarget", () => {
   });
 
   it("falls back to embedded postgres settings from config", () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-db-runtime-"));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-db-runtime-"));
     const configPath = path.join(tempDir, "instance", "config.json");
-    process.env.CHOPSTICKS_CONFIG = configPath;
+    process.env.ABACUS_CONFIG = configPath;
     writeJson(configPath, {
       database: {
         mode: "embedded-postgres",
-        embeddedPostgresDataDir: "~/chopsticks-test-db",
+        embeddedPostgresDataDir: "~/abacus-test-db",
         embeddedPostgresPort: 55444,
       },
     });
@@ -113,7 +113,7 @@ describe("resolveDatabaseTarget", () => {
 
     expect(target).toMatchObject({
       mode: "embedded-postgres",
-      dataDir: path.resolve(os.homedir(), "chopsticks-test-db"),
+      dataDir: path.resolve(os.homedir(), "abacus-test-db"),
       port: 55444,
       source: "embedded-postgres@55444",
     });

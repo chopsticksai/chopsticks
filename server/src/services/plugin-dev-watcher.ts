@@ -51,7 +51,7 @@ type PluginWatchTarget = {
 };
 
 type PluginPackageJson = {
-  chopsticksPlugin?: {
+  abacusPlugin?: {
     manifest?: string;
     worker?: string;
     ui?: string;
@@ -67,7 +67,7 @@ function shouldIgnorePath(filename: string | null | undefined): boolean {
       segment === "node_modules" ||
       segment === ".git" ||
       segment === ".vite" ||
-      segment === ".chopsticks-sdk" ||
+      segment === ".abacus-sdk" ||
       segment.startsWith("."),
   );
 }
@@ -127,9 +127,9 @@ export function resolvePluginWatchTargets(
   }
 
   const entrypointPaths = [
-    packageJson?.chopsticksPlugin?.manifest,
-    packageJson?.chopsticksPlugin?.worker,
-    packageJson?.chopsticksPlugin?.ui,
+    packageJson?.abacusPlugin?.manifest,
+    packageJson?.abacusPlugin?.worker,
+    packageJson?.abacusPlugin?.ui,
   ].filter((value): value is string => typeof value === "string" && value.length > 0);
 
   if (entrypointPaths.length === 0) {

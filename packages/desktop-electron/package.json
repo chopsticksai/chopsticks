@@ -1,10 +1,10 @@
 {
-  "name": "@chopsticks/desktop-electron",
+  "name": "@abacus/desktop-electron",
   "version": "0.0.1",
   "private": true,
-  "description": "Windows-first Electron wrapper for the Chopsticks control plane",
-  "author": "Chopsticks AI",
-  "homepage": "https://github.com/chopsticksai/chopsticks",
+  "description": "Windows-first Electron wrapper for the Abacus control plane",
+  "author": "Abacus AI",
+  "homepage": "https://github.com/abacus-lab/abacus",
   "type": "module",
   "main": "dist/main.js",
   "files": [
@@ -20,7 +20,7 @@
     "dist:win": "node scripts/prepare-stage.mjs && electron-builder --config electron-builder.yml --win"
   },
   "dependencies": {
-    "@chopsticks/server": "workspace:*"
+    "@abacus/server": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.6.0",

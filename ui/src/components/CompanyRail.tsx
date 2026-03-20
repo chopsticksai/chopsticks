@@ -29,10 +29,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Company } from "@chopsticks/shared";
+import type { Company } from "@abacus/shared";
 import { CompanyPatternIcon } from "./CompanyPatternIcon";
 
-const ORDER_STORAGE_KEY = "__KEEP_CHOPSTICKS_COM__panyOrder";
+const ORDER_STORAGE_KEY = "__KEEP_ABACUS_COM__panyOrder";
 
 function getStoredOrder(): string[] {
   try {

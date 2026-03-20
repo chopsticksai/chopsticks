@@ -7,8 +7,8 @@ import type {
   HeartbeatRun,
   Approval,
   AgentConfigRevision,
-} from "@chopsticks/shared";
-import { isUuidLike, normalizeAgentUrlKey } from "@chopsticks/shared";
+} from "@abacus/shared";
+import { isUuidLike, normalizeAgentUrlKey } from "@abacus/shared";
 import { ApiError, api } from "./client";
 
 export interface AgentKey {
@@ -151,5 +151,5 @@ export const agentsApi = {
 export interface AvailableSkill {
   name: string;
   description: string;
-  isPaperclipManaged: boolean;
+  isabacusManaged: boolean;
 }

@@ -57,14 +57,14 @@ async function getAvailablePort(): Promise<number> {
 }
 
 async function createTempDatabase(): Promise<string> {
-  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "paperclip-db-client-"));
+  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-db-client-"));
   tempPaths.push(dataDir);
   const port = await getAvailablePort();
   const EmbeddedPostgres = await getEmbeddedPostgresCtor();
   const instance = new EmbeddedPostgres({
     databaseDir: dataDir,
-    user: "paperclip",
-    password: "paperclip",
+    user: "abacus",
+    password: "abacus",
     port,
     persistent: true,
     initdbFlags: ["--encoding=UTF8", "--locale=C"],
@@ -75,9 +75,9 @@ async function createTempDatabase(): Promise<string> {
   await instance.start();
   runningInstances.push(instance);
 
-  const adminUrl = `postgres://paperclip:paperclip@127.0.0.1:${port}/postgres`;
-  await ensurePostgresDatabase(adminUrl, "paperclip");
-  return `postgres://paperclip:paperclip@127.0.0.1:${port}/paperclip`;
+  const adminUrl = `postgres://abacus:abacus@127.0.0.1:${port}/postgres`;
+  await ensurePostgresDatabase(adminUrl, "abacus");
+  return `postgres://abacus:abacus@127.0.0.1:${port}/abacus`;
 }
 
 async function migrationHash(migrationFile: string): Promise<string> {

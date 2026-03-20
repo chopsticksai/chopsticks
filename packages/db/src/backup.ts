@@ -21,22 +21,22 @@ function expandHomePrefix(value: string): string {
   return value;
 }
 
-function resolveChopsticksHomeDir(): string {
-  const envHome = process.env.CHOPSTICKS_HOME?.trim();
+function resolveAbacusHomeDir(): string {
+  const envHome = process.env.ABACUS_HOME?.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
-  return path.resolve(os.homedir(), ".chopsticks");
+  return path.resolve(os.homedir(), ".abacus");
 }
 
-function resolveChopsticksInstanceId(): string {
-  const raw = process.env.CHOPSTICKS_INSTANCE_ID?.trim() || "default";
+function resolveAbacusInstanceId(): string {
+  const raw = process.env.ABACUS_INSTANCE_ID?.trim() || "default";
   if (!/^[a-zA-Z0-9_-]+$/.test(raw)) {
-    throw new Error(`Invalid CHOPSTICKS_INSTANCE_ID '${raw}'.`);
+    throw new Error(`Invalid ABACUS_INSTANCE_ID '${raw}'.`);
   }
   return raw;
 }
 
 function resolveDefaultConfigPath(): string {
-  return path.resolve(resolveChopsticksHomeDir(), "instances", resolveChopsticksInstanceId(), "config.json");
+  return path.resolve(resolveAbacusHomeDir(), "instances", resolveAbacusInstanceId(), "config.json");
 }
 
 function readConfig(configPath: string): PartialConfig | null {
@@ -111,11 +111,11 @@ function resolveConnectionString(config: PartialConfig | null): string {
   }
 
   const port = resolveEmbeddedPort(config);
-  return `postgres://chopsticks:chopsticks@127.0.0.1:${port}/chopsticks`;
+  return `postgres://abacus:abacus@127.0.0.1:${port}/abacus`;
 }
 
 function resolveDefaultBackupDir(): string {
-  return path.resolve(resolveChopsticksHomeDir(), "instances", resolveChopsticksInstanceId(), "data", "backups");
+  return path.resolve(resolveAbacusHomeDir(), "instances", resolveAbacusInstanceId(), "data", "backups");
 }
 
 function resolveBackupDir(config: PartialConfig | null): string {
@@ -146,7 +146,7 @@ async function main() {
       connectionString,
       backupDir,
       retentionDays,
-      filenamePrefix: "chopsticks",
+      filenamePrefix: "abacus",
     });
 
     console.log(`Backup saved: ${formatDatabaseBackupResult(result)}`);

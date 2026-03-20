@@ -13,7 +13,7 @@ import {
   stopRuntimeServicesForExecutionWorkspace,
   type RealizedExecutionWorkspace,
 } from "../services/workspace-runtime.ts";
-import type { WorkspaceOperation } from "@chopsticks/shared";
+import type { WorkspaceOperation } from "@abacus/shared";
 import type { WorkspaceOperationRecorder } from "../services/workspace-operations.ts";
 
 const execFileAsync = promisify(execFile);
@@ -24,10 +24,10 @@ async function runGit(cwd: string, args: string[]) {
 }
 
 async function createTempRepo() {
-  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-worktree-repo-"));
+  const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-worktree-repo-"));
   await runGit(repoRoot, ["init"]);
-  await runGit(repoRoot, ["config", "user.email", "chopsticks@example.com"]);
-  await runGit(repoRoot, ["config", "user.name", "Chopsticks Test"]);
+  await runGit(repoRoot, ["config", "user.email", "abacus@example.com"]);
+  await runGit(repoRoot, ["config", "user.name", "Abacus Test"]);
   await fs.writeFile(path.join(repoRoot, "README.md"), "hello\n", "utf8");
   await runGit(repoRoot, ["add", "README.md"]);
   await runGit(repoRoot, ["commit", "-m", "Initial commit"]);
@@ -136,10 +136,10 @@ afterEach(async () => {
       leasedRunIds.delete(runId);
     }),
   );
-  delete process.env.CHOPSTICKS_CONFIG;
-  delete process.env.CHOPSTICKS_HOME;
-  delete process.env.CHOPSTICKS_INSTANCE_ID;
-  delete process.env.CHOPSTICKS_SENTINEL;
+  delete process.env.ABACUS_CONFIG;
+  delete process.env.ABACUS_HOME;
+  delete process.env.ABACUS_INSTANCE_ID;
+  delete process.env.ABACUS_SENTINEL;
   delete process.env.DATABASE_URL;
 });
 
@@ -177,7 +177,7 @@ describe("realizeExecutionWorkspace", () => {
     expect(first.strategy).toBe("git_worktree");
     expect(first.created).toBe(true);
     expect(first.branchName).toBe("PAP-447-add-worktree-support");
-    expect(first.cwd).toContain(path.join(".chopsticks", "worktrees"));
+    expect(first.cwd).toContain(path.join(".abacus", "worktrees"));
     await expect(fs.stat(path.join(first.cwd, ".git"))).resolves.toBeTruthy();
 
     const second = await realizeExecutionWorkspace({
@@ -219,9 +219,9 @@ describe("realizeExecutionWorkspace", () => {
       path.join(repoRoot, "scripts", "provision.js"),
       [
         "const fs = require('node:fs');",
-        "fs.writeFileSync('.chopsticks-provision-branch', `${process.env.CHOPSTICKS_WORKSPACE_BRANCH}\\n`);",
-        "fs.writeFileSync('.chopsticks-provision-base', `${process.env.CHOPSTICKS_WORKSPACE_BASE_CWD}\\n`);",
-        "fs.writeFileSync('.chopsticks-provision-created', `${process.env.CHOPSTICKS_WORKSPACE_CREATED}\\n`);",
+        "fs.writeFileSync('.abacus-provision-branch', `${process.env.ABACUS_WORKSPACE_BRANCH}\\n`);",
+        "fs.writeFileSync('.abacus-provision-base', `${process.env.ABACUS_WORKSPACE_BASE_CWD}\\n`);",
+        "fs.writeFileSync('.abacus-provision-created', `${process.env.ABACUS_WORKSPACE_CREATED}\\n`);",
       ].join("\n"),
       "utf8",
     );
@@ -256,13 +256,13 @@ describe("realizeExecutionWorkspace", () => {
       },
     });
 
-    await expect(fs.readFile(path.join(workspace.cwd, ".chopsticks-provision-branch"), "utf8")).resolves.toBe(
+    await expect(fs.readFile(path.join(workspace.cwd, ".abacus-provision-branch"), "utf8")).resolves.toBe(
       "PAP-448-run-provision-command\n",
     );
-    await expect(fs.readFile(path.join(workspace.cwd, ".chopsticks-provision-base"), "utf8")).resolves.toBe(
+    await expect(fs.readFile(path.join(workspace.cwd, ".abacus-provision-base"), "utf8")).resolves.toBe(
       `${repoRoot}\n`,
     );
-    await expect(fs.readFile(path.join(workspace.cwd, ".chopsticks-provision-created"), "utf8")).resolves.toBe(
+    await expect(fs.readFile(path.join(workspace.cwd, ".abacus-provision-created"), "utf8")).resolves.toBe(
       "true\n",
     );
 
@@ -294,14 +294,14 @@ describe("realizeExecutionWorkspace", () => {
       },
     });
 
-    await expect(fs.readFile(path.join(reused.cwd, ".chopsticks-provision-created"), "utf8")).resolves.toBe("false\n");
+    await expect(fs.readFile(path.join(reused.cwd, ".abacus-provision-created"), "utf8")).resolves.toBe("false\n");
   }, 15_000);
 
   it("throws when the branch is already checked out in another worktree", async () => {
     const repoRoot = await createTempRepo();
     const alternateWorktreePath = path.join(
       path.dirname(repoRoot),
-      "chopsticks-alt-worktrees",
+      "abacus-alt-worktrees",
       "PAP-449-branch-conflict",
     );
     await fs.mkdir(path.dirname(alternateWorktreePath), { recursive: true });
@@ -639,7 +639,7 @@ describe("realizeExecutionWorkspace", () => {
 
 describe("ensureRuntimeServicesForRun", () => {
   it("reuses shared runtime services across runs and starts a new service after release", async () => {
-    const workspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-runtime-workspace-"));
+    const workspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-runtime-workspace-"));
     const workspace = buildWorkspace(workspaceRoot);
     await fs.writeFile(
       path.join(workspaceRoot, "serve.js"),
@@ -745,8 +745,8 @@ describe("ensureRuntimeServicesForRun", () => {
     expect(third[0]?.id).not.toBe(first[0]?.id);
   }, 15_000);
 
-  it("does not leak parent Chopsticks instance env into runtime service commands", async () => {
-    const workspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-runtime-env-"));
+  it("does not leak parent Abacus instance env into runtime service commands", async () => {
+    const workspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-runtime-env-"));
     const workspace = buildWorkspace(workspaceRoot);
     const envCapturePath = path.join(workspaceRoot, "captured-env.json");
     const serviceScriptPath = path.join(workspaceRoot, "capture-service.js");
@@ -755,10 +755,10 @@ describe("ensureRuntimeServicesForRun", () => {
       [
         "const fs = require('node:fs');",
         `fs.writeFileSync(${JSON.stringify(envCapturePath)}, JSON.stringify({`,
-        "  chopsticksConfig: process.env.CHOPSTICKS_CONFIG ?? null,",
-        "  chopsticksHome: process.env.CHOPSTICKS_HOME ?? null,",
-        "  chopsticksInstanceId: process.env.CHOPSTICKS_INSTANCE_ID ?? null,",
-        "  chopsticksSentinel: process.env.CHOPSTICKS_SENTINEL ?? null,",
+        "  abacusConfig: process.env.ABACUS_CONFIG ?? null,",
+        "  abacusHome: process.env.ABACUS_HOME ?? null,",
+        "  abacusInstanceId: process.env.ABACUS_INSTANCE_ID ?? null,",
+        "  abacusSentinel: process.env.ABACUS_SENTINEL ?? null,",
         "  databaseUrl: process.env.DATABASE_URL ?? null,",
         "  customEnv: process.env.RUNTIME_CUSTOM_ENV ?? null,",
         "  port: process.env.PORT ?? null,",
@@ -769,11 +769,11 @@ describe("ensureRuntimeServicesForRun", () => {
     );
     const serviceCommand = "node ./capture-service.js";
 
-    process.env.CHOPSTICKS_CONFIG = "/tmp/base-chopsticks-config.json";
-    process.env.CHOPSTICKS_HOME = "/tmp/base-chopsticks-home";
-    process.env.CHOPSTICKS_INSTANCE_ID = "base-instance";
-    process.env.CHOPSTICKS_SENTINEL = "strip-me";
-    process.env.DATABASE_URL = "postgres://shared-db.example.com/chopsticks";
+    process.env.ABACUS_CONFIG = "/tmp/base-abacus-config.json";
+    process.env.ABACUS_HOME = "/tmp/base-abacus-home";
+    process.env.ABACUS_INSTANCE_ID = "base-instance";
+    process.env.ABACUS_SENTINEL = "strip-me";
+    process.env.DATABASE_URL = "postgres://shared-db.example.com/abacus";
 
     const runId = "run-env";
     leasedRunIds.add(runId);
@@ -817,10 +817,10 @@ describe("ensureRuntimeServicesForRun", () => {
 
     expect(services).toHaveLength(1);
     const captured = JSON.parse(await fs.readFile(envCapturePath, "utf8")) as Record<string, string | null>;
-    expect(captured.chopsticksConfig).toBeNull();
-    expect(captured.chopsticksHome).toBeNull();
-    expect(captured.chopsticksInstanceId).toBeNull();
-    expect(captured.chopsticksSentinel).toBeNull();
+    expect(captured.abacusConfig).toBeNull();
+    expect(captured.abacusHome).toBeNull();
+    expect(captured.abacusInstanceId).toBeNull();
+    expect(captured.abacusSentinel).toBeNull();
     expect(captured.databaseUrl).toBeNull();
     expect(captured.customEnv).toBe("from-adapter");
     expect(captured.port).toMatch(/^\d+$/);
@@ -830,7 +830,7 @@ describe("ensureRuntimeServicesForRun", () => {
   }, 15_000);
 
   it("stops execution workspace runtime services by executionWorkspaceId", async () => {
-    const workspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-runtime-stop-"));
+    const workspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-runtime-stop-"));
     const workspace = buildWorkspace(workspaceRoot);
     await fs.writeFile(
       path.join(workspaceRoot, "serve.js"),
@@ -886,7 +886,7 @@ describe("ensureRuntimeServicesForRun", () => {
   }, 15_000);
 
   it("does not stop services in sibling directories when matching by workspace cwd", async () => {
-    const workspaceParent = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-runtime-sibling-"));
+    const workspaceParent = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-runtime-sibling-"));
     const targetWorkspaceRoot = path.join(workspaceParent, "project");
     const siblingWorkspaceRoot = path.join(workspaceParent, "project-extended", "service");
     await fs.mkdir(targetWorkspaceRoot, { recursive: true });

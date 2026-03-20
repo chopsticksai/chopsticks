@@ -1,14 +1,14 @@
 {
-  "name": "@chopsticks/db",
+  "name": "@abacus/db",
   "version": "0.3.1",
   "license": "MIT",
-  "homepage": "https://github.com/chopsticksai/chopsticks",
+  "homepage": "https://github.com/abacus-lab/abacus",
   "bugs": {
-    "url": "https://github.com/chopsticksai/chopsticks/issues"
+    "url": "https://github.com/abacus-lab/abacus/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chopsticksai/chopsticks",
+    "url": "https://github.com/abacus-lab/abacus",
     "directory": "packages/db"
   },
   "type": "module",
@@ -43,7 +43,7 @@
     "seed": "tsx src/seed.ts"
   },
   "dependencies": {
-    "@chopsticks/shared": "workspace:*",
+    "@abacus/shared": "workspace:*",
     "drizzle-orm": "^0.38.4",
     "embedded-postgres": "^18.1.0-beta.16",
     "postgres": "^3.4.5"

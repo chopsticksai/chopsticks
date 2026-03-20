@@ -1,8 +1,8 @@
 import { and, eq } from "drizzle-orm";
 import { Router } from "express";
-import type { Db } from "@chopsticks/db";
-import { issues, projects, projectWorkspaces } from "@chopsticks/db";
-import { updateExecutionWorkspaceSchema } from "@chopsticks/shared";
+import type { Db } from "@abacus/db";
+import { issues, projects, projectWorkspaces } from "@abacus/db";
+import { updateExecutionWorkspaceSchema } from "@abacus/shared";
 import { validate } from "../middleware/validate.js";
 import { executionWorkspaceService, logActivity, workspaceOperationService } from "../services/index.js";
 import { parseProjectExecutionWorkspacePolicy } from "../services/execution-workspace-policy.js";

@@ -3,7 +3,7 @@ title: 成本与预算
 summary: 预算上限、成本跟踪与自动暂停机制
 ---
 
-Chopsticks 会跟踪每个代理消耗的每一个 token，并通过预算限制阻止成本失控。
+Abacus 会跟踪每个代理消耗的每一个 token，并通过预算限制阻止成本失控。
 
 ## 成本跟踪如何工作
 
@@ -39,7 +39,7 @@ PATCH /api/agents/{agentId}
 
 ## 预算执行
 
-Chopsticks 会自动执行预算规则：
+Abacus 会自动执行预算规则：
 
 | Threshold | Action |
 |-----------|--------|

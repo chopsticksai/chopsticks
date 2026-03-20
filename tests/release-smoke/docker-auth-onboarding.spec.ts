@@ -1,13 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const ADMIN_EMAIL =
-  process.env.CHOPSTICKS_RELEASE_SMOKE_EMAIL ??
+  process.env.ABACUS_RELEASE_SMOKE_EMAIL ??
   process.env.SMOKE_ADMIN_EMAIL ??
-  "smoke-admin@chopsticks.local";
+  "smoke-admin@abacus.local";
 const ADMIN_PASSWORD =
-  process.env.CHOPSTICKS_RELEASE_SMOKE_PASSWORD ??
+  process.env.ABACUS_RELEASE_SMOKE_PASSWORD ??
   process.env.SMOKE_ADMIN_PASSWORD ??
-  "chopsticks-smoke-password";
+  "abacus-smoke-password";
 
 const COMPANY_NAME = `Release-Smoke-${Date.now()}`;
 const AGENT_NAME = "CEO";

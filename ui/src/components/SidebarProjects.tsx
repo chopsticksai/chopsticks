@@ -27,7 +27,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import type { Project } from "@chopsticks/shared";
+import type { Project } from "@abacus/shared";
 import { PluginSlotMount, usePluginSlots } from "@/plugins/slots";
 
 type ProjectSidebarSlot = ReturnType<typeof usePluginSlots>["slots"][number];

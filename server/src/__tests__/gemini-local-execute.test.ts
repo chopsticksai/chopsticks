@@ -2,17 +2,17 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@chopsticks/adapter-gemini-local/server";
+import { execute } from "@abacus/adapter-gemini-local/server";
 
 async function writeFakeGeminiCommand(basePath: string): Promise<string> {
   const script = `
 const fs = require("node:fs");
 
-const capturePath = process.env.CHOPSTICKS_TEST_CAPTURE_PATH;
+const capturePath = process.env.ABACUS_TEST_CAPTURE_PATH;
 const payload = {
   argv: process.argv.slice(2),
-  chopsticksEnvKeys: Object.keys(process.env)
-    .filter((key) => key.startsWith("CHOPSTICKS_"))
+  abacusEnvKeys: Object.keys(process.env)
+    .filter((key) => key.startsWith("ABACUS_"))
     .sort(),
 };
 if (capturePath) {
@@ -54,12 +54,12 @@ console.log(JSON.stringify({
 
 type CapturePayload = {
   argv: string[];
-  chopsticksEnvKeys: string[];
+  abacusEnvKeys: string[];
 };
 
 describe("gemini execute", () => {
-  it("passes prompt as final argument and injects chopsticks env vars", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-gemini-execute-"));
+  it("passes prompt as final argument and injects abacus env vars", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-gemini-execute-"));
     const workspace = path.join(root, "workspace");
     const commandPath = await writeFakeGeminiCommand(path.join(root, "gemini"));
     const capturePath = path.join(root, "capture.json");
@@ -90,9 +90,9 @@ describe("gemini execute", () => {
           cwd: workspace,
           model: "gemini-2.5-pro",
           env: {
-            CHOPSTICKS_TEST_CAPTURE_PATH: capturePath,
+            ABACUS_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the chopsticks heartbeat.",
+          promptTemplate: "Follow the abacus heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -111,24 +111,24 @@ describe("gemini execute", () => {
       expect(capture.argv).toContain("--approval-mode");
       expect(capture.argv).toContain("yolo");
       if (process.platform === "win32") {
-        expect(invocationPrompt).toContain("Follow the chopsticks heartbeat.");
-        expect(invocationPrompt).toContain("Chopsticks runtime note:");
+        expect(invocationPrompt).toContain("Follow the abacus heartbeat.");
+        expect(invocationPrompt).toContain("Abacus runtime note:");
       } else {
-        expect(capture.argv.at(-1)).toContain("Follow the chopsticks heartbeat.");
-        expect(capture.argv.at(-1)).toContain("Chopsticks runtime note:");
+        expect(capture.argv.at(-1)).toContain("Follow the abacus heartbeat.");
+        expect(capture.argv.at(-1)).toContain("Abacus runtime note:");
       }
-      expect(capture.chopsticksEnvKeys).toEqual(
+      expect(capture.abacusEnvKeys).toEqual(
         expect.arrayContaining([
-          "CHOPSTICKS_AGENT_ID",
-          "CHOPSTICKS_API_KEY",
-          "CHOPSTICKS_API_URL",
-          "CHOPSTICKS_COMPANY_ID",
-          "CHOPSTICKS_RUN_ID",
+          "ABACUS_AGENT_ID",
+          "ABACUS_API_KEY",
+          "ABACUS_API_URL",
+          "ABACUS_COMPANY_ID",
+          "ABACUS_RUN_ID",
         ]),
       );
-      expect(invocationPrompt).toContain("Chopsticks runtime note:");
-      expect(invocationPrompt).toContain("CHOPSTICKS_API_URL");
-      expect(invocationPrompt).toContain("Chopsticks API access note:");
+      expect(invocationPrompt).toContain("Abacus runtime note:");
+      expect(invocationPrompt).toContain("ABACUS_API_URL");
+      expect(invocationPrompt).toContain("Abacus API access note:");
       expect(invocationPrompt).toContain("run_shell_command");
       expect(result.question).toBeNull();
     } finally {
@@ -142,7 +142,7 @@ describe("gemini execute", () => {
   });
 
   it("always passes --approval-mode yolo", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "chopsticks-gemini-yolo-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-gemini-yolo-"));
     const workspace = path.join(root, "workspace");
     const commandPath = await writeFakeGeminiCommand(path.join(root, "gemini"));
     const capturePath = path.join(root, "capture.json");
@@ -159,7 +159,7 @@ describe("gemini execute", () => {
         config: {
           command: commandPath,
           cwd: workspace,
-          env: { CHOPSTICKS_TEST_CAPTURE_PATH: capturePath },
+          env: { ABACUS_TEST_CAPTURE_PATH: capturePath },
         },
         context: {},
         authToken: "t",

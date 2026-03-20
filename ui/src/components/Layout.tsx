@@ -36,8 +36,8 @@ import { NotFoundPage } from "../pages/NotFound";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-const INSTANCE_SETTINGS_MEMORY_KEY = "chopsticks.lastInstanceSettingsPath";
-const DOCS_URL = "__KEEP_DOCS_CHOPSTICKS__";
+const INSTANCE_SETTINGS_MEMORY_KEY = "abacus.lastInstanceSettingsPath";
+const DOCS_URL = "__KEEP_DOCS_ABACUS__";
 
 function readRememberedInstanceSettingsPath(): string {
   if (typeof window === "undefined") return DEFAULT_INSTANCE_SETTINGS_PATH;

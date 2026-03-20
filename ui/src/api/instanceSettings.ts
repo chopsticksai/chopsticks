@@ -1,7 +1,7 @@
 import type {
   InstanceExperimentalSettings,
   PatchInstanceExperimentalSettings,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 import { api } from "./client";
 
 export const instanceSettingsApi = {

@@ -8,7 +8,7 @@ export const agentConfigurationDoc = `# pi_local agent configuration
 Adapter: pi_local
 
 Use when:
-- You want Chopsticks to run Pi (the AI coding agent) locally as the agent runtime
+- You want Abacus to run Pi (the AI coding agent) locally as the agent runtime
 - You want provider/model routing in Pi format (--provider <name> --model <id>)
 - You want Pi session resume across heartbeats via --session
 - You need Pi's tool set (read, bash, edit, write, grep, find, ls)
@@ -33,8 +33,8 @@ Operational fields:
 
 Notes:
 - Pi supports multiple providers and models. Use \`pi --list-models\` to list available options.
-- Chopsticks requires an explicit \`model\` value for \`pi_local\` agents.
-- Sessions are stored in ~/.pi/chopstickss/ and resumed with --session.
+- Abacus requires an explicit \`model\` value for \`pi_local\` agents.
+- Sessions are stored in ~/.pi/abacuss/ and resumed with --session.
 - All tools (read, bash, edit, write, grep, find, ls) are enabled by default.
 - Agent instructions are appended to Pi's system prompt via --append-system-prompt, while the user task is sent via -p.
 `;

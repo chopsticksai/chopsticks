@@ -8,7 +8,7 @@ import type {
   IssueLabel,
   IssueWorkProduct,
   UpsertIssueDocument,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 import { api } from "./client";
 
 export const issuesApi = {

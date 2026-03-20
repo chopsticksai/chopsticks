@@ -1,5 +1,5 @@
 /**
- * PluginEventBus — typed in-process event bus for the Chopsticks plugin system.
+ * PluginEventBus — typed in-process event bus for the Abacus plugin system.
  *
  * Responsibilities:
  * - Deliver core domain events to subscribing plugin workers (server-side).
@@ -20,8 +20,8 @@
  * @see PLUGIN_SPEC.md §16.2 — Plugin-to-Plugin Events
  */
 
-import type { PluginEventType } from "@chopsticks/shared";
-import type { PluginEvent, EventFilter } from "@chopsticks/plugin-sdk";
+import type { PluginEventType } from "@abacus/shared";
+import type { PluginEvent, EventFilter } from "@abacus/plugin-sdk";
 
 // ---------------------------------------------------------------------------
 // Internal types

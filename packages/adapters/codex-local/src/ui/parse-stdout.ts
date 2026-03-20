@@ -2,7 +2,7 @@ import {
   redactHomePathUserSegments,
   redactHomePathUserSegmentsInValue,
   type TranscriptEntry,
-} from "@chopsticks/adapter-utils";
+} from "@abacus/adapter-utils";
 
 function safeJsonParse(text: string): unknown {
   try {

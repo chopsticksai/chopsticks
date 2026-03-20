@@ -1,12 +1,12 @@
 import { Router, type Request } from "express";
-import type { Db } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
 import {
   createProjectSchema,
   createProjectWorkspaceSchema,
   isUuidLike,
   updateProjectSchema,
   updateProjectWorkspaceSchema,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 import { validate } from "../middleware/validate.js";
 import { projectService, logActivity } from "../services/index.js";
 import { conflict } from "../errors.js";

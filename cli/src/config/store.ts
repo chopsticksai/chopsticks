@@ -1,14 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
-import { chopsticksConfigSchema, type ChopsticksConfig } from "./schema.js";
+import { abacusConfigSchema, type AbacusConfig } from "./schema.js";
 import {
   resolveDefaultConfigPath,
-  resolveChopsticksInstanceId,
+  resolveAbacusInstanceId,
 } from "./home.js";
 
 const DEFAULT_CONFIG_BASENAME = "config.json";
 const DEFAULT_ENV_BASENAME = ".env";
-const REPO_CONFIG_DIRNAME = ".chopsticks";
+const REPO_CONFIG_DIRNAME = ".abacus";
 
 function findConfigFileFromAncestors(startDir: string): string | null {
   const absoluteStartDir = path.resolve(startDir);
@@ -30,8 +30,8 @@ function findConfigFileFromAncestors(startDir: string): string | null {
 
 export function resolveConfigPath(overridePath?: string): string {
   if (overridePath) return path.resolve(overridePath);
-  if (process.env.CHOPSTICKS_CONFIG) return path.resolve(process.env.CHOPSTICKS_CONFIG);
-  return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath(resolveChopsticksInstanceId());
+  if (process.env.ABACUS_CONFIG) return path.resolve(process.env.ABACUS_CONFIG);
+  return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath(resolveAbacusInstanceId());
 }
 
 function parseJson(filePath: string): unknown {
@@ -57,11 +57,11 @@ function formatValidationError(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
 }
 
-export function readConfig(configPath?: string): ChopsticksConfig | null {
+export function readConfig(configPath?: string): AbacusConfig | null {
   const filePath = resolveConfigPath(configPath);
   if (!fs.existsSync(filePath)) return null;
   const raw = parseJson(filePath);
-  const parsed = chopsticksConfigSchema.safeParse(raw);
+  const parsed = abacusConfigSchema.safeParse(raw);
   if (!parsed.success) {
     throw new Error(`Invalid config at ${filePath}: ${formatValidationError(parsed.error)}`);
   }
@@ -69,7 +69,7 @@ export function readConfig(configPath?: string): ChopsticksConfig | null {
 }
 
 export function writeConfig(
-  config: ChopsticksConfig,
+  config: AbacusConfig,
   configPath?: string,
 ): void {
   const filePath = resolveConfigPath(configPath);

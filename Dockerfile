@@ -27,29 +27,29 @@ FROM base AS build
 WORKDIR /app
 COPY --from=deps /app /app
 COPY . .
-RUN pnpm --filter @chopsticks/ui build
-RUN pnpm --filter @chopsticks/server build
+RUN pnpm --filter @abacus/ui build
+RUN pnpm --filter @abacus/server build
 RUN test -f server/dist/index.js || (echo "ERROR: server build output missing" && exit 1)
 
 FROM base AS production
 WORKDIR /app
 COPY --chown=node:node --from=build /app /app
 RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/codex@latest opencode-ai \
-  && mkdir -p /chopsticks \
-  && chown node:node /chopsticks
+  && mkdir -p /abacus \
+  && chown node:node /abacus
 
 ENV NODE_ENV=production \
-  HOME=/chopsticks \
+  HOME=/abacus \
   HOST=0.0.0.0 \
   PORT=3100 \
   SERVE_UI=true \
-  CHOPSTICKS_HOME=/chopsticks \
-  CHOPSTICKS_INSTANCE_ID=default \
-  CHOPSTICKS_CONFIG=/chopsticks/instances/default/config.json \
-  CHOPSTICKS_DEPLOYMENT_MODE=authenticated \
-  CHOPSTICKS_DEPLOYMENT_EXPOSURE=private
+  ABACUS_HOME=/abacus \
+  ABACUS_INSTANCE_ID=default \
+  ABACUS_CONFIG=/abacus/instances/default/config.json \
+  ABACUS_DEPLOYMENT_MODE=authenticated \
+  ABACUS_DEPLOYMENT_EXPOSURE=private
 
-VOLUME ["/chopsticks"]
+VOLUME ["/abacus"]
 EXPOSE 3100
 
 USER node

@@ -1,20 +1,20 @@
 FROM ubuntu:24.04
 
 ARG NODE_MAJOR=20
-ARG CHOPSTICKS_VERSION=latest
+ARG ABACUS_VERSION=latest
 ARG HOST_UID=10001
 
 ENV DEBIAN_FRONTEND=noninteractive \
-  CHOPSTICKS_HOME=/chopsticks \
-  CHOPSTICKS_OPEN_ON_LISTEN=false \
+  ABACUS_HOME=/abacus \
+  ABACUS_OPEN_ON_LISTEN=false \
   HOST=0.0.0.0 \
   PORT=3100 \
-  HOME=/home/chopsticks \
+  HOME=/home/abacus \
   LANG=en_US.UTF-8 \
   LC_ALL=en_US.UTF-8 \
   NPM_CONFIG_UPDATE_NOTIFIER=false \
   NODE_MAJOR=${NODE_MAJOR} \
-  CHOPSTICKS_VERSION=${CHOPSTICKS_VERSION}
+  ABACUS_VERSION=${ABACUS_VERSION}
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates curl gnupg locales \
@@ -26,15 +26,15 @@ RUN apt-get update \
   && apt-get update \
   && apt-get install -y --no-install-recommends nodejs \
   && locale-gen en_US.UTF-8 \
-  && groupadd --gid 10001 chopsticks \
-  && useradd --create-home --shell /bin/bash --uid "${HOST_UID}" --gid 10001 chopsticks \
-  && mkdir -p /chopsticks /home/chopsticks/workspace \
-  && chown -R chopsticks:chopsticks /chopsticks /home/chopsticks \
+  && groupadd --gid 10001 abacus \
+  && useradd --create-home --shell /bin/bash --uid "${HOST_UID}" --gid 10001 abacus \
+  && mkdir -p /abacus /home/abacus/workspace \
+  && chown -R abacus:abacus /abacus /home/abacus \
   && rm -rf /var/lib/apt/lists/*
 
-VOLUME ["/chopsticks"]
-WORKDIR /home/chopsticks/workspace
+VOLUME ["/abacus"]
+WORKDIR /home/abacus/workspace
 EXPOSE 3100
-USER chopsticks
+USER abacus
 
-CMD ["bash", "-lc", "set -euo pipefail; mkdir -p \"$CHOPSTICKS_HOME\"; npx --yes \"chopsticks@${CHOPSTICKS_VERSION}\" onboard --yes --data-dir \"$CHOPSTICKS_HOME\""]
+CMD ["bash", "-lc", "set -euo pipefail; mkdir -p \"$ABACUS_HOME\"; npx --yes \"abacus@${ABACUS_VERSION}\" onboard --yes --data-dir \"$ABACUS_HOME\""]

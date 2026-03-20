@@ -1,4 +1,4 @@
-import type { CompanySecret, SecretProviderDescriptor, SecretProvider } from "@chopsticks/shared";
+import type { CompanySecret, SecretProviderDescriptor, SecretProvider } from "@abacus/shared";
 import { api } from "./client";
 
 export const secretsApi = {

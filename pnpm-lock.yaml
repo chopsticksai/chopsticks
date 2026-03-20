@@ -26,40 +26,40 @@ importers:
 
   cli:
     dependencies:
-      '@chopsticks/adapter-claude-local':
+      '@abacus/adapter-claude-local':
         specifier: workspace:*
         version: link:../packages/adapters/claude-local
-      '@chopsticks/adapter-codebuddy-local':
+      '@abacus/adapter-codebuddy-local':
         specifier: workspace:*
         version: link:../packages/adapters/codebuddy-local
-      '@chopsticks/adapter-codex-local':
+      '@abacus/adapter-codex-local':
         specifier: workspace:*
         version: link:../packages/adapters/codex-local
-      '@chopsticks/adapter-cursor-local':
+      '@abacus/adapter-cursor-local':
         specifier: workspace:*
         version: link:../packages/adapters/cursor-local
-      '@chopsticks/adapter-gemini-local':
+      '@abacus/adapter-gemini-local':
         specifier: workspace:*
         version: link:../packages/adapters/gemini-local
-      '@chopsticks/adapter-openclaw-gateway':
+      '@abacus/adapter-openclaw-gateway':
         specifier: workspace:*
         version: link:../packages/adapters/openclaw-gateway
-      '@chopsticks/adapter-opencode-local':
+      '@abacus/adapter-opencode-local':
         specifier: workspace:*
         version: link:../packages/adapters/opencode-local
-      '@chopsticks/adapter-pi-local':
+      '@abacus/adapter-pi-local':
         specifier: workspace:*
         version: link:../packages/adapters/pi-local
-      '@chopsticks/adapter-utils':
+      '@abacus/adapter-utils':
         specifier: workspace:*
         version: link:../packages/adapter-utils
-      '@chopsticks/db':
+      '@abacus/db':
         specifier: workspace:*
         version: link:../packages/db
-      '@chopsticks/server':
+      '@abacus/server':
         specifier: workspace:*
         version: link:../server
-      '@chopsticks/shared':
+      '@abacus/shared':
         specifier: workspace:*
         version: link:../packages/shared
       '@clack/prompts':
@@ -102,7 +102,7 @@ importers:
 
   packages/adapters/claude-local:
     dependencies:
-      '@chopsticks/adapter-utils':
+      '@abacus/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -118,7 +118,7 @@ importers:
 
   packages/adapters/codebuddy-local:
     dependencies:
-      '@chopsticks/adapter-utils':
+      '@abacus/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -134,7 +134,7 @@ importers:
 
   packages/adapters/codex-local:
     dependencies:
-      '@chopsticks/adapter-utils':
+      '@abacus/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -150,7 +150,7 @@ importers:
 
   packages/adapters/cursor-local:
     dependencies:
-      '@chopsticks/adapter-utils':
+      '@abacus/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -166,7 +166,7 @@ importers:
 
   packages/adapters/gemini-local:
     dependencies:
-      '@chopsticks/adapter-utils':
+      '@abacus/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -182,7 +182,7 @@ importers:
 
   packages/adapters/openclaw-gateway:
     dependencies:
-      '@chopsticks/adapter-utils':
+      '@abacus/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -204,7 +204,7 @@ importers:
 
   packages/adapters/opencode-local:
     dependencies:
-      '@chopsticks/adapter-utils':
+      '@abacus/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -220,7 +220,7 @@ importers:
 
   packages/adapters/pi-local:
     dependencies:
-      '@chopsticks/adapter-utils':
+      '@abacus/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -236,7 +236,7 @@ importers:
 
   packages/db:
     dependencies:
-      '@chopsticks/shared':
+      '@abacus/shared':
         specifier: workspace:*
         version: link:../shared
       drizzle-orm:
@@ -267,7 +267,7 @@ importers:
 
   packages/desktop-electron:
     dependencies:
-      '@chopsticks/server':
+      '@abacus/server':
         specifier: workspace:*
         version: link:../../server
     devDependencies:
@@ -287,9 +287,9 @@ importers:
         specifier: ^5.7.3
         version: 5.9.3
 
-  packages/plugins/create-paperclip-plugin:
+  packages/plugins/create-abacus-plugin:
     dependencies:
-      '@chopsticks/plugin-sdk':
+      '@abacus/plugin-sdk':
         specifier: workspace:*
         version: link:../sdk
     devDependencies:
@@ -302,7 +302,7 @@ importers:
 
   packages/plugins/examples/plugin-authoring-smoke-example:
     dependencies:
-      '@chopsticks/plugin-sdk':
+      '@abacus/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
       react:
@@ -339,7 +339,7 @@ importers:
 
   packages/plugins/examples/plugin-file-browser-example:
     dependencies:
-      '@chopsticks/plugin-sdk':
+      '@abacus/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
       '@codemirror/lang-javascript':
@@ -385,7 +385,7 @@ importers:
 
   packages/plugins/examples/plugin-hello-world-example:
     dependencies:
-      '@chopsticks/plugin-sdk':
+      '@abacus/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
     devDependencies:
@@ -410,10 +410,10 @@ importers:
 
   packages/plugins/examples/plugin-kitchen-sink-example:
     dependencies:
-      '@chopsticks/plugin-sdk':
+      '@abacus/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
-      '@chopsticks/shared':
+      '@abacus/shared':
         specifier: workspace:*
         version: link:../../../shared
     devDependencies:
@@ -441,7 +441,7 @@ importers:
 
   packages/plugins/sdk:
     dependencies:
-      '@chopsticks/shared':
+      '@abacus/shared':
         specifier: workspace:*
         version: link:../../shared
       react:
@@ -476,40 +476,40 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.888.0
         version: 3.994.0
-      '@chopsticks/adapter-claude-local':
+      '@abacus/adapter-claude-local':
         specifier: workspace:*
         version: link:../packages/adapters/claude-local
-      '@chopsticks/adapter-codebuddy-local':
+      '@abacus/adapter-codebuddy-local':
         specifier: workspace:*
         version: link:../packages/adapters/codebuddy-local
-      '@chopsticks/adapter-codex-local':
+      '@abacus/adapter-codex-local':
         specifier: workspace:*
         version: link:../packages/adapters/codex-local
-      '@chopsticks/adapter-cursor-local':
+      '@abacus/adapter-cursor-local':
         specifier: workspace:*
         version: link:../packages/adapters/cursor-local
-      '@chopsticks/adapter-gemini-local':
+      '@abacus/adapter-gemini-local':
         specifier: workspace:*
         version: link:../packages/adapters/gemini-local
-      '@chopsticks/adapter-openclaw-gateway':
+      '@abacus/adapter-openclaw-gateway':
         specifier: workspace:*
         version: link:../packages/adapters/openclaw-gateway
-      '@chopsticks/adapter-opencode-local':
+      '@abacus/adapter-opencode-local':
         specifier: workspace:*
         version: link:../packages/adapters/opencode-local
-      '@chopsticks/adapter-pi-local':
+      '@abacus/adapter-pi-local':
         specifier: workspace:*
         version: link:../packages/adapters/pi-local
-      '@chopsticks/adapter-utils':
+      '@abacus/adapter-utils':
         specifier: workspace:*
         version: link:../packages/adapter-utils
-      '@chopsticks/db':
+      '@abacus/db':
         specifier: workspace:*
         version: link:../packages/db
-      '@chopsticks/plugin-sdk':
+      '@abacus/plugin-sdk':
         specifier: workspace:*
         version: link:../packages/plugins/sdk
-      '@chopsticks/shared':
+      '@abacus/shared':
         specifier: workspace:*
         version: link:../packages/shared
       ajv:
@@ -612,34 +612,34 @@ importers:
 
   ui:
     dependencies:
-      '@chopsticks/adapter-claude-local':
+      '@abacus/adapter-claude-local':
         specifier: workspace:*
         version: link:../packages/adapters/claude-local
-      '@chopsticks/adapter-codebuddy-local':
+      '@abacus/adapter-codebuddy-local':
         specifier: workspace:*
         version: link:../packages/adapters/codebuddy-local
-      '@chopsticks/adapter-codex-local':
+      '@abacus/adapter-codex-local':
         specifier: workspace:*
         version: link:../packages/adapters/codex-local
-      '@chopsticks/adapter-cursor-local':
+      '@abacus/adapter-cursor-local':
         specifier: workspace:*
         version: link:../packages/adapters/cursor-local
-      '@chopsticks/adapter-gemini-local':
+      '@abacus/adapter-gemini-local':
         specifier: workspace:*
         version: link:../packages/adapters/gemini-local
-      '@chopsticks/adapter-openclaw-gateway':
+      '@abacus/adapter-openclaw-gateway':
         specifier: workspace:*
         version: link:../packages/adapters/openclaw-gateway
-      '@chopsticks/adapter-opencode-local':
+      '@abacus/adapter-opencode-local':
         specifier: workspace:*
         version: link:../packages/adapters/opencode-local
-      '@chopsticks/adapter-pi-local':
+      '@abacus/adapter-pi-local':
         specifier: workspace:*
         version: link:../packages/adapters/pi-local
-      '@chopsticks/adapter-utils':
+      '@abacus/adapter-utils':
         specifier: workspace:*
         version: link:../packages/adapter-utils
-      '@chopsticks/shared':
+      '@abacus/shared':
         specifier: workspace:*
         version: link:../packages/shared
       '@dnd-kit/core':
@@ -1999,7 +1999,7 @@ packages:
   '@open-draft/deferred-promise@2.2.0':
     resolution: {integrity: sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA==}
 
-  '@paperclipai/adapter-utils@0.3.1':
+  '@abacus-lab/adapter-utils@0.3.1':
     resolution: {integrity: sha512-W66k+hJkQE8ma0asM/Sd90AC8HHy/BLG/sd0aOC+rDWw+gOasQyUkTnDoPv1zhQuTyKEEvLFV6ByOOKqEiAz/A==}
 
   '@paralleldrive/cuid2@2.3.1':
@@ -8619,7 +8619,7 @@ snapshots:
 
   '@open-draft/deferred-promise@2.2.0': {}
 
-  '@paperclipai/adapter-utils@0.3.1': {}
+  '@abacus-lab/adapter-utils@0.3.1': {}
 
   '@paralleldrive/cuid2@2.3.1':
     dependencies:
@@ -11759,7 +11759,7 @@ snapshots:
 
   hermes-paperclip-adapter@0.1.1:
     dependencies:
-      '@paperclipai/adapter-utils': 0.3.1
+      '@abacus-lab/adapter-utils': 0.3.1
       picocolors: 1.1.1
 
   hosted-git-info@4.1.0:

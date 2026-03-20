@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import type { AdapterModel } from "@chopsticks/adapter-utils";
-import { asString, runChildProcess } from "@chopsticks/adapter-utils/server-utils";
+import type { AdapterModel } from "@abacus/adapter-utils";
+import { asString, runChildProcess } from "@abacus/adapter-utils/server-utils";
 
 const MODELS_CACHE_TTL_MS = 60_000;
 
@@ -65,15 +65,15 @@ function sortModels(models: AdapterModel[]): AdapterModel[] {
 
 function resolvePiCommand(input: unknown): string {
   const envOverride =
-    typeof process.env.CHOPSTICKS_PI_COMMAND === "string" &&
-      process.env.CHOPSTICKS_PI_COMMAND.trim().length > 0
-      ? process.env.CHOPSTICKS_PI_COMMAND.trim()
+    typeof process.env.ABACUS_PI_COMMAND === "string" &&
+      process.env.ABACUS_PI_COMMAND.trim().length > 0
+      ? process.env.ABACUS_PI_COMMAND.trim()
       : "pi";
   return asString(input, envOverride);
 }
 
 const discoveryCache = new Map<string, { expiresAt: number; models: AdapterModel[] }>();
-const VOLATILE_ENV_KEY_PREFIXES = ["CHOPSTICKS_", "npm_", "NPM_"] as const;
+const VOLATILE_ENV_KEY_PREFIXES = ["ABACUS_", "npm_", "NPM_"] as const;
 const VOLATILE_ENV_KEY_EXACT = new Set(["PWD", "OLDPWD", "SHLVL", "_", "TERM_SESSION_ID"]);
 
 function isVolatileEnvKey(key: string): boolean {

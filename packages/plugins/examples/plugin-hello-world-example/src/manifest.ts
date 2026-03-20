@@ -1,9 +1,9 @@
-import type { ChopsticksPluginManifestV1 } from "@chopsticks/plugin-sdk";
+import type { AbacusPluginManifestV1 } from "@abacus/plugin-sdk";
 
 /**
  * Stable plugin ID used by host registration and namespacing.
  */
-const PLUGIN_ID = "chopsticks.hello-world-example";
+const PLUGIN_ID = "abacus.hello-world-example";
 const PLUGIN_VERSION = "0.1.0";
 const DASHBOARD_WIDGET_SLOT_ID = "hello-world-dashboard-widget";
 const DASHBOARD_WIDGET_EXPORT_NAME = "HelloWorldDashboardWidget";
@@ -11,13 +11,13 @@ const DASHBOARD_WIDGET_EXPORT_NAME = "HelloWorldDashboardWidget";
 /**
  * Minimal manifest demonstrating a UI-only plugin with one dashboard widget slot.
  */
-const manifest: ChopsticksPluginManifestV1 = {
+const manifest: AbacusPluginManifestV1 = {
   id: PLUGIN_ID,
   apiVersion: 1,
   version: PLUGIN_VERSION,
   displayName: "Hello World Widget (Example)",
-  description: "Reference UI plugin that adds a simple Hello World widget to the Chopsticks dashboard.",
-  author: "Chopsticks",
+  description: "Reference UI plugin that adds a simple Hello World widget to the Abacus dashboard.",
+  author: "Abacus",
   categories: ["ui"],
   capabilities: ["ui.dashboardWidget.register"],
   entrypoints: {

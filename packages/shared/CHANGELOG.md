@@ -1,4 +1,4 @@
-# @papertape/shared
+# @abacus/shared
 
 ## 0.3.1
 

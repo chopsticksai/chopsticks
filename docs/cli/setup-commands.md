@@ -5,32 +5,32 @@ summary: onboard、run、doctor 和 configure
 
 用于实例初始化和诊断的命令。
 
-## `chopsticks run`
+## `abacus run`
 
 单命令引导并启动：
 
 ```sh
-pnpm chopsticks run
+pnpm abacus run
 ```
 
 它会：
 
 1. 在缺少配置时自动完成引导
-2. 运行启用修复能力的 `chopsticks doctor`
+2. 运行启用修复能力的 `abacus doctor`
 3. 在检查通过后启动服务
 
 指定某个实例：
 
 ```sh
-pnpm chopsticks run --instance dev
+pnpm abacus run --instance dev
 ```
 
-## `chopsticks onboard`
+## `abacus onboard`
 
 首次交互式初始化：
 
 ```sh
-pnpm chopsticks onboard
+pnpm abacus onboard
 ```
 
 第一步会让你选择：
@@ -41,22 +41,22 @@ pnpm chopsticks onboard
 引导结束后立刻启动：
 
 ```sh
-pnpm chopsticks onboard --run
+pnpm abacus onboard --run
 ```
 
 使用非交互默认值并立即启动（服务监听后会打开浏览器）：
 
 ```sh
-pnpm chopsticks onboard --yes
+pnpm abacus onboard --yes
 ```
 
-## `chopsticks doctor`
+## `abacus doctor`
 
 带可选自动修复的健康检查：
 
 ```sh
-pnpm chopsticks doctor
-pnpm chopsticks doctor --repair
+pnpm abacus doctor
+pnpm abacus doctor --repair
 ```
 
 检查内容包括：
@@ -67,51 +67,51 @@ pnpm chopsticks doctor --repair
 - 存储配置
 - 缺失的 key 文件
 
-## `chopsticks configure`
+## `abacus configure`
 
 更新配置分区：
 
 ```sh
-pnpm chopsticks configure --section server
-pnpm chopsticks configure --section secrets
-pnpm chopsticks configure --section storage
+pnpm abacus configure --section server
+pnpm abacus configure --section secrets
+pnpm abacus configure --section storage
 ```
 
-## `chopsticks env`
+## `abacus env`
 
 显示解析后的环境配置：
 
 ```sh
-pnpm chopsticks env
+pnpm abacus env
 ```
 
-## `chopsticks allowed-hostname`
+## `abacus allowed-hostname`
 
 为 authenticated/private 模式放行私有主机名：
 
 ```sh
-pnpm chopsticks allowed-hostname my-tailscale-host
+pnpm abacus allowed-hostname my-tailscale-host
 ```
 
 ## 本地存储路径
 
 | Data | Default Path |
 |------|-------------|
-| 配置 | `~/.chopsticks/instances/default/config.json` |
-| 数据库 | `~/.chopsticks/instances/default/db` |
-| 日志 | `~/.chopsticks/instances/default/logs` |
-| 存储 | `~/.chopsticks/instances/default/data/storage` |
-| Secrets key | `~/.chopsticks/instances/default/secrets/master.key` |
+| 配置 | `~/.abacus/instances/default/config.json` |
+| 数据库 | `~/.abacus/instances/default/db` |
+| 日志 | `~/.abacus/instances/default/logs` |
+| 存储 | `~/.abacus/instances/default/data/storage` |
+| Secrets key | `~/.abacus/instances/default/secrets/master.key` |
 
 可以通过下面的方式覆盖：
 
 ```sh
-CHOPSTICKS_HOME=/custom/home CHOPSTICKS_INSTANCE_ID=dev pnpm chopsticks run
+ABACUS_HOME=/custom/home ABACUS_INSTANCE_ID=dev pnpm abacus run
 ```
 
 也可以直接在任意命令上加 `--data-dir`：
 
 ```sh
-pnpm chopsticks run --data-dir ./tmp/chopsticks-dev
-pnpm chopsticks doctor --data-dir ./tmp/chopsticks-dev
+pnpm abacus run --data-dir ./tmp/abacus-dev
+pnpm abacus doctor --data-dir ./tmp/abacus-dev
 ```

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import type { Db } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
 import { and, eq, sql } from "drizzle-orm";
-import { joinRequests } from "@chopsticks/db";
+import { joinRequests } from "@abacus/db";
 import { sidebarBadgeService } from "../services/sidebar-badges.js";
 import { accessService } from "../services/access.js";
 import { dashboardService } from "../services/dashboard.js";

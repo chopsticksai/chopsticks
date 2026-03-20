@@ -3,7 +3,7 @@ title: Deployment Overview
 summary: Deployment modes at a glance
 ---
 
-Chopsticks supports three deployment configurations, from zero-friction local to internet-facing production.
+Abacus supports three deployment configurations, from zero-friction local to internet-facing production.
 
 ## Deployment Modes
 
@@ -38,18 +38,18 @@ Chopsticks supports three deployment configurations, from zero-friction local to
 
 ## Choosing a Mode
 
-- **Just trying Chopsticks?** Use `local_trusted` (the default)
+- **Just trying Abacus?** Use `local_trusted` (the default)
 - **Sharing with a team on private network?** Use `authenticated` + `private`
 - **Deploying to the cloud?** Use `authenticated` + `public`
 
 Set the mode during onboarding:
 
 ```sh
-pnpm chopsticks onboard
+pnpm abacus onboard
 ```
 
 Or update it later:
 
 ```sh
-pnpm chopsticks configure --section server
+pnpm abacus configure --section server
 ```

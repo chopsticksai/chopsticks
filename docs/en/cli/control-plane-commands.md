@@ -9,38 +9,38 @@ Client-side commands for managing issues, agents, approvals, and more.
 
 ```sh
 # List issues
-pnpm chopsticks issue list [--status todo,in_progress] [--assignee-agent-id <id>] [--match text]
+pnpm abacus issue list [--status todo,in_progress] [--assignee-agent-id <id>] [--match text]
 
 # Get issue details
-pnpm chopsticks issue get <issue-id-or-identifier>
+pnpm abacus issue get <issue-id-or-identifier>
 
 # Create issue
-pnpm chopsticks issue create --title "..." [--description "..."] [--status todo] [--priority high]
+pnpm abacus issue create --title "..." [--description "..."] [--status todo] [--priority high]
 
 # Update issue
-pnpm chopsticks issue update <issue-id> [--status in_progress] [--comment "..."]
+pnpm abacus issue update <issue-id> [--status in_progress] [--comment "..."]
 
 # Add comment
-pnpm chopsticks issue comment <issue-id> --body "..." [--reopen]
+pnpm abacus issue comment <issue-id> --body "..." [--reopen]
 
 # Checkout task
-pnpm chopsticks issue checkout <issue-id> --agent-id <agent-id>
+pnpm abacus issue checkout <issue-id> --agent-id <agent-id>
 
 # Release task
-pnpm chopsticks issue release <issue-id>
+pnpm abacus issue release <issue-id>
 ```
 
 ## Company Commands
 
 ```sh
-pnpm chopsticks company list
-pnpm chopsticks company get <company-id>
+pnpm abacus company list
+pnpm abacus company get <company-id>
 
 # Export to portable folder package (writes manifest + markdown files)
-pnpm chopsticks company export <company-id> --out ./exports/acme --include company,agents
+pnpm abacus company export <company-id> --out ./exports/acme --include company,agents
 
 # Preview import (no writes)
-pnpm chopsticks company import \
+pnpm abacus company import \
   --from https://github.com/<owner>/<repo>/tree/main/<path> \
   --target existing \
   --company-id <company-id> \
@@ -48,7 +48,7 @@ pnpm chopsticks company import \
   --dry-run
 
 # Apply import
-pnpm chopsticks company import \
+pnpm abacus company import \
   --from ./exports/acme \
   --target new \
   --new-company-name "Acme Imported" \
@@ -58,52 +58,52 @@ pnpm chopsticks company import \
 ## Agent Commands
 
 ```sh
-pnpm chopsticks agent list
-pnpm chopsticks agent get <agent-id>
+pnpm abacus agent list
+pnpm abacus agent get <agent-id>
 ```
 
 ## Approval Commands
 
 ```sh
 # List approvals
-pnpm chopsticks approval list [--status pending]
+pnpm abacus approval list [--status pending]
 
 # Get approval
-pnpm chopsticks approval get <approval-id>
+pnpm abacus approval get <approval-id>
 
 # Create approval
-pnpm chopsticks approval create --type hire_agent --payload '{"name":"..."}' [--issue-ids <id1,id2>]
+pnpm abacus approval create --type hire_agent --payload '{"name":"..."}' [--issue-ids <id1,id2>]
 
 # Approve
-pnpm chopsticks approval approve <approval-id> [--decision-note "..."]
+pnpm abacus approval approve <approval-id> [--decision-note "..."]
 
 # Reject
-pnpm chopsticks approval reject <approval-id> [--decision-note "..."]
+pnpm abacus approval reject <approval-id> [--decision-note "..."]
 
 # Request revision
-pnpm chopsticks approval request-revision <approval-id> [--decision-note "..."]
+pnpm abacus approval request-revision <approval-id> [--decision-note "..."]
 
 # Resubmit
-pnpm chopsticks approval resubmit <approval-id> [--payload '{"..."}']
+pnpm abacus approval resubmit <approval-id> [--payload '{"..."}']
 
 # Comment
-pnpm chopsticks approval comment <approval-id> --body "..."
+pnpm abacus approval comment <approval-id> --body "..."
 ```
 
 ## Activity Commands
 
 ```sh
-pnpm chopsticks activity list [--agent-id <id>] [--entity-type issue] [--entity-id <id>]
+pnpm abacus activity list [--agent-id <id>] [--entity-type issue] [--entity-id <id>]
 ```
 
 ## Dashboard
 
 ```sh
-pnpm chopsticks dashboard get
+pnpm abacus dashboard get
 ```
 
 ## Heartbeat
 
 ```sh
-pnpm chopsticks heartbeat run --agent-id <agent-id> [--api-base http://localhost:3100]
+pnpm abacus heartbeat run --agent-id <agent-id> [--api-base http://localhost:3100]
 ```

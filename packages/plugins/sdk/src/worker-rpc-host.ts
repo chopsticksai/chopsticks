@@ -38,9 +38,9 @@ import path from "node:path";
 import { createInterface, type Interface as ReadlineInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 
-import type { ChopsticksPluginManifestV1 } from "@chopsticks/shared";
+import type { AbacusPluginManifestV1 } from "@abacus/shared";
 
-import type { ChopsticksPlugin } from "./define-plugin.js";
+import type { AbacusPlugin } from "./define-plugin.js";
 import type {
   PluginHealthDiagnostics,
   PluginConfigValidationResult,
@@ -105,7 +105,7 @@ export interface WorkerRpcHostOptions {
    *
    * The worker entrypoint should import its plugin and pass it here.
    */
-  plugin: ChopsticksPlugin;
+  plugin: AbacusPlugin;
 
   /**
    * Input stream to read JSON-RPC messages from.
@@ -193,7 +193,7 @@ export interface RunWorkerOptions {
  * ```
  */
 export function runWorker(
-  plugin: ChopsticksPlugin,
+  plugin: AbacusPlugin,
   moduleUrl: string,
   options?: RunWorkerOptions,
 ): WorkerRpcHost | void {
@@ -225,7 +225,7 @@ export function runWorker(
  * ```ts
  * // worker-bootstrap.ts
  * import plugin from "./worker.js";
- * import { startWorkerRpcHost } from "@chopsticks/plugin-sdk";
+ * import { startWorkerRpcHost } from "@abacus/plugin-sdk";
  *
  * startWorkerRpcHost({ plugin });
  * ```
@@ -248,7 +248,7 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
 
   let running = true;
   let initialized = false;
-  let manifest: ChopsticksPluginManifestV1 | null = null;
+  let manifest: AbacusPluginManifestV1 | null = null;
   let currentConfig: Record<string, unknown> = {};
 
   // Plugin handler registrations (populated during setup())
@@ -258,7 +258,7 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
   const dataHandlers = new Map<string, (params: Record<string, unknown>) => Promise<unknown>>();
   const actionHandlers = new Map<string, (params: Record<string, unknown>) => Promise<unknown>>();
   const toolHandlers = new Map<string, {
-    declaration: Pick<import("@chopsticks/shared").PluginToolDeclaration, "displayName" | "description" | "parametersSchema">;
+    declaration: Pick<import("@abacus/shared").PluginToolDeclaration, "displayName" | "description" | "parametersSchema">;
     fn: (params: unknown, runCtx: ToolRunContext) => Promise<ToolResult>;
   }>();
 
@@ -779,7 +779,7 @@ export function startWorkerRpcHost(options: WorkerRpcHostOptions): WorkerRpcHost
       tools: {
         register(
           name: string,
-          declaration: Pick<import("@chopsticks/shared").PluginToolDeclaration, "displayName" | "description" | "parametersSchema">,
+          declaration: Pick<import("@abacus/shared").PluginToolDeclaration, "displayName" | "description" | "parametersSchema">,
           fn: (params: unknown, runCtx: ToolRunContext) => Promise<ToolResult>,
         ): void {
           toolHandlers.set(name, { declaration, fn });

@@ -1,6 +1,6 @@
 import { and, eq, gte, sql } from "drizzle-orm";
-import type { Db } from "@chopsticks/db";
-import { agents, approvals, companies, costEvents, issues } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
+import { agents, approvals, companies, costEvents, issues } from "@abacus/db";
 import { notFound } from "../errors.js";
 import { budgetService } from "./budgets.js";
 

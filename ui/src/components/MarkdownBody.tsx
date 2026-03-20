@@ -1,7 +1,7 @@
 import { isValidElement, useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { parseProjectMentionHref } from "@chopsticks/shared";
+import { parseProjectMentionHref } from "@abacus/shared";
 import { cn } from "../lib/utils";
 import { useTheme } from "../context/ThemeContext";
 
@@ -76,7 +76,7 @@ function MermaidDiagramBlock({ source, darkMode }: { source: string; darkMode: b
           fontFamily: "inherit",
           suppressErrorRendering: true,
         });
-        const rendered = await mermaid.render(`chopsticks-mermaid-${renderId}`, source);
+        const rendered = await mermaid.render(`abacus-mermaid-${renderId}`, source);
         if (!active) return;
         setSvg(rendered.svg);
       })
@@ -95,15 +95,15 @@ function MermaidDiagramBlock({ source, darkMode }: { source: string; darkMode: b
   }, [darkMode, renderId, source]);
 
   return (
-    <div className="chopsticks-mermaid">
+    <div className="abacus-mermaid">
       {svg ? (
         <div dangerouslySetInnerHTML={{ __html: svg }} />
       ) : (
         <>
-          <p className={cn("chopsticks-mermaid-status", error && "chopsticks-mermaid-status-error")}>
+          <p className={cn("abacus-mermaid-status", error && "abacus-mermaid-status-error")}>
             {error ? `Unable to render Mermaid diagram: ${error}` : "Rendering Mermaid diagram..."}
           </p>
-          <pre className="chopsticks-mermaid-source">
+          <pre className="abacus-mermaid-source">
             <code className="language-mermaid">{source}</code>
           </pre>
         </>
@@ -117,7 +117,7 @@ export function MarkdownBody({ children, className }: MarkdownBodyProps) {
   return (
     <div
       className={cn(
-        "chopsticks-markdown prose prose-sm max-w-none break-words overflow-hidden prose-pre:whitespace-pre-wrap prose-pre:break-words prose-code:break-all",
+        "abacus-markdown prose prose-sm max-w-none break-words overflow-hidden prose-pre:whitespace-pre-wrap prose-pre:break-words prose-code:break-all",
         theme === "dark" && "prose-invert",
         className,
       )}
@@ -139,7 +139,7 @@ export function MarkdownBody({ children, className }: MarkdownBodyProps) {
               return (
                 <a
                   href={`/projects/${parsed.projectId}`}
-                  className="chopsticks-project-mention-chip"
+                  className="abacus-project-mention-chip"
                   style={mentionChipStyle(parsed.color)}
                 >
                   {label}

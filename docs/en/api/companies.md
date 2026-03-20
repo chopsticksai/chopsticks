@@ -3,7 +3,7 @@ title: Companies
 summary: Company CRUD endpoints
 ---
 
-Manage companies within your Chopsticks instance.
+Manage companies within your Abacus instance.
 
 ## List Companies
 

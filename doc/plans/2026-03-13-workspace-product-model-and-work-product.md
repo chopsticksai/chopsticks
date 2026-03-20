@@ -486,7 +486,7 @@ without turning issues into a raw dump of adapter details.
   - `artifact`
   - `document`
 - `provider`
-  - `chopsticks`
+  - `abacus`
   - `github`
   - `gitlab`
   - `vercel`

@@ -72,8 +72,8 @@ import {
   type AgentRuntimeState,
   type LiveEvent,
   type WorkspaceOperation,
-} from "@chopsticks/shared";
-import { redactHomePathUserSegments, redactHomePathUserSegmentsInValue } from "@chopsticks/adapter-utils";
+} from "@abacus/shared";
+import { redactHomePathUserSegments, redactHomePathUserSegmentsInValue } from "@abacus/adapter-utils";
 import { agentRouteRef } from "../lib/utils";
 
 const runStatusIcons: Record<string, { icon: typeof CheckCircle2; color: string }> = {
@@ -1493,8 +1493,8 @@ function SkillRow({ skill }: { skill: AvailableSkill }) {
     <div className="rounded-md border border-border bg-muted/20 px-3 py-2 space-y-1.5">
       <div className="flex items-center gap-2">
         <span className="font-mono text-sm">{skill.name}</span>
-        <Badge variant={skill.isPaperclipManaged ? "secondary" : "outline"}>
-          {skill.isPaperclipManaged ? translateStaticText("Chopsticks") : translateStaticText("Local")}
+        <Badge variant={skill.isabacusManaged ? "secondary" : "outline"}>
+          {skill.isabacusManaged ? translateStaticText("Abacus") : translateStaticText("Local")}
         </Badge>
       </div>
       <p className="text-sm text-muted-foreground">
@@ -2743,7 +2743,7 @@ function KeysTab({ agentId, companyId }: { agentId: string; companyId?: string }
           {translateText("Create API Key")}
         </h3>
         <p className="text-xs text-muted-foreground">
-          {translateText("API keys allow this agent to authenticate calls to the Chopsticks server.")}
+          {translateText("API keys allow this agent to authenticate calls to the Abacus server.")}
         </p>
         <div className="flex items-center gap-2">
           <Input

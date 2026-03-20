@@ -11,7 +11,7 @@ export function agentJwtSecretCheck(configPath?: string): CheckResult {
     return {
       name: "Agent JWT secret",
       status: "pass",
-      message: "CHOPSTICKS_AGENT_JWT_SECRET is set in environment",
+      message: "ABACUS_AGENT_JWT_SECRET is set in environment",
     };
   }
 
@@ -22,19 +22,19 @@ export function agentJwtSecretCheck(configPath?: string): CheckResult {
     return {
       name: "Agent JWT secret",
       status: "warn",
-      message: `CHOPSTICKS_AGENT_JWT_SECRET is present in ${envPath} but not loaded into environment`,
-      repairHint: `Set the value from ${envPath} in your shell before starting the Chopsticks server`,
+      message: `ABACUS_AGENT_JWT_SECRET is present in ${envPath} but not loaded into environment`,
+      repairHint: `Set the value from ${envPath} in your shell before starting the Abacus server`,
     };
   }
 
   return {
     name: "Agent JWT secret",
     status: "fail",
-    message: `CHOPSTICKS_AGENT_JWT_SECRET missing from environment and ${envPath}`,
+    message: `ABACUS_AGENT_JWT_SECRET missing from environment and ${envPath}`,
     canRepair: true,
     repair: () => {
       ensureAgentJwtSecret(configPath);
     },
-    repairHint: `Run with --repair to create ${envPath} containing CHOPSTICKS_AGENT_JWT_SECRET`,
+    repairHint: `Run with --repair to create ${envPath} containing ABACUS_AGENT_JWT_SECRET`,
   };
 }

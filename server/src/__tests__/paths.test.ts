@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { resolveChopsticksConfigPath } from "../paths.ts";
+import { resolveAbacusConfigPath } from "../paths.ts";
 
 const ORIGINAL_CWD = process.cwd();
 const ORIGINAL_ENV = { ...process.env };
@@ -18,15 +18,15 @@ afterEach(() => {
   }
 });
 
-describe("resolveChopsticksConfigPath", () => {
-  it("prefers repo-local .chopsticks config files", () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "chopsticks-server-paths-"));
+describe("resolveAbacusConfigPath", () => {
+  it("prefers repo-local .abacus config files", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-server-paths-"));
     const projectDir = path.join(tempDir, "repo");
-    fs.mkdirSync(path.join(projectDir, ".chopsticks"), { recursive: true });
-    fs.writeFileSync(path.join(projectDir, ".chopsticks", "config.json"), "{}\n");
-    delete process.env.CHOPSTICKS_CONFIG;
+    fs.mkdirSync(path.join(projectDir, ".abacus"), { recursive: true });
+    fs.writeFileSync(path.join(projectDir, ".abacus", "config.json"), "{}\n");
+    delete process.env.ABACUS_CONFIG;
     process.chdir(projectDir);
 
-    expect(resolveChopsticksConfigPath()).toBe(path.join(projectDir, ".chopsticks", "config.json"));
+    expect(resolveAbacusConfigPath()).toBe(path.join(projectDir, ".abacus", "config.json"));
   });
 });

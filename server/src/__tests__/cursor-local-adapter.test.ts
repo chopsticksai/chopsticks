@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { isCursorUnknownSessionError, parseCursorJsonl } from "@chopsticks/adapter-cursor-local/server";
-import { parseCursorStdoutLine } from "@chopsticks/adapter-cursor-local/ui";
-import { printCursorStreamEvent } from "@chopsticks/adapter-cursor-local/cli";
+import { isCursorUnknownSessionError, parseCursorJsonl } from "@abacus/adapter-cursor-local/server";
+import { parseCursorStdoutLine } from "@abacus/adapter-cursor-local/ui";
+import { printCursorStreamEvent } from "@abacus/adapter-cursor-local/cli";
 
 describe("cursor parser", () => {
   it("extracts session, summary, usage, cost, and terminal error message", () => {
@@ -139,7 +139,7 @@ describe("cursor ui stdout parser", () => {
 
   it("compacts shellToolCall and shell tool result for run log", () => {
     const ts = "2026-03-05T00:00:00.000Z";
-    const longCommand = "curl -s -X POST \"$CHOPSTICKS_API_URL/api/issues/abc/checkout\" -H \"Authorization: Bearer $CHOPSTICKS_API_KEY\"";
+    const longCommand = "curl -s -X POST \"$ABACUS_API_URL/api/issues/abc/checkout\" -H \"Authorization: Bearer $ABACUS_API_KEY\"";
 
     expect(
       parseCursorStdoutLine(

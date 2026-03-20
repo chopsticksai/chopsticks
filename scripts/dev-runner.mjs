@@ -31,22 +31,22 @@ if (process.env.npm_config_authenticated_private === "true") {
 
 const env = {
   ...process.env,
-  CHOPSTICKS_UI_DEV_MIDDLEWARE: "true",
+  ABACUS_UI_DEV_MIDDLEWARE: "true",
 };
 
 if (mode === "watch") {
-  env.CHOPSTICKS_MIGRATION_PROMPT ??= "never";
-  env.CHOPSTICKS_MIGRATION_AUTO_APPLY ??= "true";
+  env.ABACUS_MIGRATION_PROMPT ??= "never";
+  env.ABACUS_MIGRATION_AUTO_APPLY ??= "true";
 }
 
 if (tailscaleAuth) {
-  env.CHOPSTICKS_DEPLOYMENT_MODE = "authenticated";
-  env.CHOPSTICKS_DEPLOYMENT_EXPOSURE = "private";
-  env.CHOPSTICKS_AUTH_BASE_URL_MODE = "auto";
+  env.ABACUS_DEPLOYMENT_MODE = "authenticated";
+  env.ABACUS_DEPLOYMENT_EXPOSURE = "private";
+  env.ABACUS_AUTH_BASE_URL_MODE = "auto";
   env.HOST = "0.0.0.0";
-  console.log("[chopsticks] dev mode: authenticated/private (tailscale-friendly) on 0.0.0.0");
+  console.log("[abacus] dev mode: authenticated/private (tailscale-friendly) on 0.0.0.0");
 } else {
-  console.log("[chopsticks] dev mode: local_trusted (default)");
+  console.log("[abacus] dev mode: local_trusted (default)");
 }
 
 const pnpmBin = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
@@ -130,17 +130,17 @@ async function runPnpm(args, options = {}) {
 
 async function maybePreflightMigrations() {
   if (mode !== "watch") return;
-  if (process.env.CHOPSTICKS_MIGRATION_PROMPT === "never") return;
+  if (process.env.ABACUS_MIGRATION_PROMPT === "never") return;
 
   const status = await runPnpm(
-    ["--filter", "@chopsticks/db", "exec", "tsx", "src/migration-status.ts", "--json"],
+    ["--filter", "@abacus/db", "exec", "tsx", "src/migration-status.ts", "--json"],
     { env },
   );
   if (status.code !== 0) {
     process.stderr.write(
       status.stderr ||
         status.stdout ||
-        `[chopsticks] Command failed with code ${status.code}: pnpm --filter @chopsticks/db exec tsx src/migration-status.ts --json\n`,
+        `[abacus] Command failed with code ${status.code}: pnpm --filter @abacus/db exec tsx src/migration-status.ts --json\n`,
     );
     process.exit(status.code);
   }
@@ -152,7 +152,7 @@ async function maybePreflightMigrations() {
     process.stderr.write(
       status.stderr ||
         status.stdout ||
-        "[chopsticks] migration-status returned invalid JSON payload\n",
+        "[abacus] migration-status returned invalid JSON payload\n",
     );
     throw toError(error, "Unable to parse migration-status JSON output");
   }
@@ -161,7 +161,7 @@ async function maybePreflightMigrations() {
     return;
   }
 
-  const autoApply = process.env.CHOPSTICKS_MIGRATION_AUTO_APPLY === "true";
+  const autoApply = process.env.ABACUS_MIGRATION_AUTO_APPLY === "true";
   let shouldApply = autoApply;
 
   if (!autoApply) {
@@ -186,7 +186,7 @@ async function maybePreflightMigrations() {
 
   if (!shouldApply) {
     process.stderr.write(
-      `[chopsticks] Pending migrations detected (${formatPendingMigrationSummary(payload.pendingMigrations)}). ` +
+      `[abacus] Pending migrations detected (${formatPendingMigrationSummary(payload.pendingMigrations)}). ` +
         "Refusing to start watch mode against a stale schema.\n",
     );
     process.exit(1);
@@ -211,9 +211,9 @@ async function maybePreflightMigrations() {
 await maybePreflightMigrations();
 
 async function buildPluginSdk() {
-  console.log("[chopsticks] building plugin sdk...");
+  console.log("[abacus] building plugin sdk...");
   const result = await runPnpm(
-    ["--filter", "@chopsticks/plugin-sdk", "build"],
+    ["--filter", "@abacus/plugin-sdk", "build"],
     { stdio: "inherit" },
   );
   if (result.signal) {
@@ -221,7 +221,7 @@ async function buildPluginSdk() {
     return;
   }
   if (result.code !== 0) {
-    console.error("[chopsticks] plugin sdk build failed");
+    console.error("[abacus] plugin sdk build failed");
     process.exit(result.code);
   }
 }
@@ -229,10 +229,10 @@ async function buildPluginSdk() {
 await buildPluginSdk();
 
 if (mode === "watch") {
-  env.CHOPSTICKS_MIGRATION_PROMPT = "never";
+  env.ABACUS_MIGRATION_PROMPT = "never";
 }
 const serverScript = mode === "watch" ? "dev:watch" : "dev";
-const child = spawnPnpm(["--filter", "@chopsticks/server", serverScript, ...forwardedArgs], {
+const child = spawnPnpm(["--filter", "@abacus/server", serverScript, ...forwardedArgs], {
   stdio: "inherit",
   env,
 });

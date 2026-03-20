@@ -17,16 +17,16 @@ export {
   resolvePathValue,
   renderTemplate,
   redactEnvForLogs,
-  buildChopsticksEnv,
+  buildAbacusEnv,
   defaultPathForPlatform,
   ensurePathInEnv,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
-} from "@chopsticks/adapter-utils/server-utils";
+} from "@abacus/adapter-utils/server-utils";
 
 // Re-export runChildProcess with the server's pino logger wired in.
-import { runChildProcess as _runChildProcess } from "@chopsticks/adapter-utils/server-utils";
-import type { RunProcessResult } from "@chopsticks/adapter-utils/server-utils";
+import { runChildProcess as _runChildProcess } from "@abacus/adapter-utils/server-utils";
+import type { RunProcessResult } from "@abacus/adapter-utils/server-utils";
 
 export async function runChildProcess(
   runId: string,

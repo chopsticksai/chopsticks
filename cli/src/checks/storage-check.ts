@@ -1,10 +1,10 @@
 import fs from "node:fs";
-import type { ChopsticksConfig } from "../config/schema.js";
+import type { AbacusConfig } from "../config/schema.js";
 import { publicCliCommand } from "../config/branding.js";
 import type { CheckResult } from "./index.js";
 import { resolveRuntimeLikePath } from "./path-resolver.js";
 
-export function storageCheck(config: ChopsticksConfig, configPath?: string): CheckResult {
+export function storageCheck(config: AbacusConfig, configPath?: string): CheckResult {
   if (config.storage.provider === "local_disk") {
     const baseDir = resolveRuntimeLikePath(config.storage.localDisk.baseDir, configPath);
     if (!fs.existsSync(baseDir)) {

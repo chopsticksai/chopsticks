@@ -3,7 +3,7 @@ title: Docker
 summary: Docker Compose quickstart
 ---
 
-Run Chopsticks in Docker without installing Node or pnpm locally.
+Run Abacus in Docker without installing Node or pnpm locally.
 
 ## Compose Quickstart (Recommended)
 
@@ -16,30 +16,30 @@ Open [http://localhost:3100](http://localhost:3100).
 Defaults:
 
 - Host port: `3100`
-- Data directory: `./data/docker-chopsticks`
+- Data directory: `./data/docker-abacus`
 
 Override with environment variables:
 
 ```sh
-CHOPSTICKS_PORT=3200 CHOPSTICKS_DATA_DIR=./data/pc \
+ABACUS_PORT=3200 ABACUS_DATA_DIR=./data/pc \
   docker compose -f docker-compose.quickstart.yml up --build
 ```
 
 ## Manual Docker Build
 
 ```sh
-docker build -t chopsticks-local .
-docker run --name chopsticks \
+docker build -t abacus-local .
+docker run --name abacus \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e CHOPSTICKS_HOME=/chopsticks \
-  -v "$(pwd)/data/docker-chopsticks:/chopsticks" \
-  chopsticks-local
+  -e ABACUS_HOME=/abacus \
+  -v "$(pwd)/data/docker-abacus:/abacus" \
+  abacus-local
 ```
 
 ## Data Persistence
 
-All data is persisted under the bind mount (`./data/docker-chopsticks`):
+All data is persisted under the bind mount (`./data/docker-abacus`):
 
 - Embedded PostgreSQL data
 - Uploaded assets
@@ -56,14 +56,14 @@ The Docker image pre-installs:
 Pass API keys to enable local adapter runs inside the container:
 
 ```sh
-docker run --name chopsticks \
+docker run --name abacus \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e CHOPSTICKS_HOME=/chopsticks \
+  -e ABACUS_HOME=/abacus \
   -e OPENAI_API_KEY=sk-... \
   -e ANTHROPIC_API_KEY=sk-... \
-  -v "$(pwd)/data/docker-chopsticks:/chopsticks" \
-  chopsticks-local
+  -v "$(pwd)/data/docker-abacus:/abacus" \
+  abacus-local
 ```
 
 Without API keys, the app runs normally — adapter environment checks will surface missing prerequisites.

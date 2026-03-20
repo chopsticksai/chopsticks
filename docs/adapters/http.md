@@ -3,7 +3,7 @@ title: HTTP 适配器
 summary: HTTP webhook 适配器
 ---
 
-`http` 适配器会向外部代理服务发送 webhook 请求。代理在外部运行，而 Chopsticks 只负责触发它。
+`http` 适配器会向外部代理服务发送 webhook 请求。代理在外部运行，而 Abacus 只负责触发它。
 
 ## 适用场景
 
@@ -26,9 +26,9 @@ summary: HTTP webhook 适配器
 
 ## 工作方式
 
-1. Chopsticks 向配置的 URL 发送 POST 请求
+1. Abacus 向配置的 URL 发送 POST 请求
 2. 请求体中包含执行上下文（代理 ID、任务信息、唤醒原因）
-3. 外部代理处理请求后，再回调 Chopsticks API
+3. 外部代理处理请求后，再回调 Abacus API
 4. Webhook 的响应会作为运行结果被记录
 
 ## 请求体
@@ -48,4 +48,4 @@ webhook 接收到的 JSON 负载如下：
 }
 ```
 
-外部代理会使用 `CHOPSTICKS_API_URL` 和 API key 回调到 Chopsticks。
+外部代理会使用 `ABACUS_API_URL` 和 API key 回调到 Abacus。

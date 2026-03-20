@@ -1,6 +1,6 @@
 .git
 .github
-.chopsticks
+.abacus
 .pnpm-store
 node_modules
 **/node_modules

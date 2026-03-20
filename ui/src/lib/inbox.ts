@@ -4,13 +4,13 @@ import type {
   HeartbeatRun,
   Issue,
   JoinRequest,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 
 export const RECENT_ISSUES_LIMIT = 100;
 export const FAILED_RUN_STATUSES = new Set(["failed", "timed_out"]);
 export const ACTIONABLE_APPROVAL_STATUSES = new Set(["pending", "revision_requested"]);
-export const DISMISSED_KEY = "chopsticks:inbox:dismissed";
-export const INBOX_LAST_TAB_KEY = "chopsticks:inbox:last-tab";
+export const DISMISSED_KEY = "abacus:inbox:dismissed";
+export const INBOX_LAST_TAB_KEY = "abacus:inbox:last-tab";
 export type InboxTab = "recent" | "unread" | "all";
 export type InboxApprovalFilter = "all" | "actionable" | "resolved";
 export type InboxWorkItem =

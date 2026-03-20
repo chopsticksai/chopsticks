@@ -22,12 +22,12 @@
  * @see PLUGIN_SPEC.md §13.10 — `executeTool`
  */
 
-import type { Db } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
 import type {
-  ChopsticksPluginManifestV1,
+  AbacusPluginManifestV1,
   PluginRecord,
-} from "@chopsticks/shared";
-import type { ToolRunContext, ToolResult } from "@chopsticks/plugin-sdk";
+} from "@abacus/shared";
+import type { ToolRunContext, ToolResult } from "@abacus/plugin-sdk";
 import type { PluginWorkerManager } from "./plugin-worker-manager.js";
 import type { PluginLifecycleManager } from "./plugin-lifecycle.js";
 import {
@@ -155,7 +155,7 @@ export interface PluginToolDispatcher {
    */
   registerPluginTools(
     pluginId: string,
-    manifest: ChopsticksPluginManifestV1,
+    manifest: AbacusPluginManifestV1,
   ): void;
 
   /**
@@ -428,7 +428,7 @@ export function createPluginToolDispatcher(
 
     registerPluginTools(
       pluginId: string,
-      manifest: ChopsticksPluginManifestV1,
+      manifest: AbacusPluginManifestV1,
     ): void {
       registry.registerPlugin(pluginId, manifest);
     },

@@ -1,8 +1,8 @@
-import type { ChopsticksConfig } from "../config/schema.js";
+import type { AbacusConfig } from "../config/schema.js";
 import { checkPort } from "../utils/net.js";
 import type { CheckResult } from "./index.js";
 
-export async function portCheck(config: ChopsticksConfig): Promise<CheckResult> {
+export async function portCheck(config: AbacusConfig): Promise<CheckResult> {
   const port = config.server.port;
   const result = await checkPort(port);
 

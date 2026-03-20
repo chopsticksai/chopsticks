@@ -3,8 +3,8 @@ import path from "node:path";
 import { execFile as execFileCallback } from "node:child_process";
 import { promisify } from "node:util";
 import { and, asc, desc, eq, gt, inArray, sql } from "drizzle-orm";
-import type { Db } from "@chopsticks/db";
-import type { BillingType } from "@chopsticks/shared";
+import type { Db } from "@abacus/db";
+import type { BillingType } from "@abacus/shared";
 import {
   agents,
   agentRuntimeState,
@@ -15,7 +15,7 @@ import {
   issues,
   projects,
   projectWorkspaces,
-} from "@chopsticks/db";
+} from "@abacus/db";
 import { conflict, notFound } from "../errors.js";
 import { logger } from "../middleware/logger.js";
 import { publishLiveEvent } from "./live-events.js";
@@ -54,14 +54,14 @@ import {
   hasSessionCompactionThresholds,
   resolveSessionCompactionPolicy,
   type SessionCompactionPolicy,
-} from "@chopsticks/adapter-utils";
+} from "@abacus/adapter-utils";
 
 const MAX_LIVE_LOG_CHUNK_BYTES = 8 * 1024;
 const HEARTBEAT_MAX_CONCURRENT_RUNS_DEFAULT = 1;
 const HEARTBEAT_MAX_CONCURRENT_RUNS_MAX = 10;
-const DEFERRED_WAKE_CONTEXT_KEY = "_chopsticksWakeContext";
+const DEFERRED_WAKE_CONTEXT_KEY = "_abacusWakeContext";
 const startLocksByAgent = new Map<string, Promise<void>>();
-const REPO_ONLY_CWD_SENTINEL = "/__chopsticks_repo_only__";
+const REPO_ONLY_CWD_SENTINEL = "/__abacus_repo_only__";
 const MANAGED_WORKSPACE_GIT_CLONE_TIMEOUT_MS = 10 * 60 * 1000;
 const execFile = promisify(execFileCallback);
 const SESSIONED_LOCAL_ADAPTERS = new Set([
@@ -500,7 +500,7 @@ export function shouldResetTaskSessionForWake(
 export function formatRuntimeWorkspaceWarningLog(warning: string) {
   return {
     stream: "stdout" as const,
-    chunk: `[chopsticks] ${warning}\n`,
+    chunk: `[abacus] ${warning}\n`,
   };
 }
 
@@ -903,7 +903,7 @@ export function heartbeatService(db: Db) {
       readNonEmptyString(latestRun.error);
 
     const handoffMarkdown = [
-      "Chopsticks session handoff:",
+      "Abacus session handoff:",
       `- Previous session: ${sessionId}`,
       issueId ? `- Issue: ${issueId}` : "",
       `- Rotation reason: ${reason}`,
@@ -1897,7 +1897,7 @@ export function heartbeatService(db: Db) {
           ]
         : []),
     ];
-    context.chopsticksWorkspace = {
+    context.abacusWorkspace = {
       cwd: executionWorkspace.cwd,
       source: executionWorkspace.source,
       mode: executionWorkspaceMode,
@@ -1910,7 +1910,7 @@ export function heartbeatService(db: Db) {
       worktreePath: executionWorkspace.worktreePath,
       agentHome: resolveDefaultAgentWorkspaceDir(agent.id),
     };
-    context.chopsticksWorkspaces = resolvedWorkspace.workspaceHints;
+    context.abacusWorkspaces = resolvedWorkspace.workspaceHints;
     const runtimeServiceIntents = (() => {
       const runtimeConfig = parseObject(resolvedConfig.workspaceRuntime);
       return Array.isArray(runtimeConfig.services)
@@ -1920,9 +1920,9 @@ export function heartbeatService(db: Db) {
         : [];
     })();
     if (runtimeServiceIntents.length > 0) {
-      context.chopsticksRuntimeServiceIntents = runtimeServiceIntents;
+      context.abacusRuntimeServiceIntents = runtimeServiceIntents;
     } else {
-      delete context.chopsticksRuntimeServiceIntents;
+      delete context.abacusRuntimeServiceIntents;
     }
     if (executionWorkspace.projectId && !readNonEmptyString(context.projectId)) {
       context.projectId = executionWorkspace.projectId;
@@ -1944,9 +1944,9 @@ export function heartbeatService(db: Db) {
       issueId,
     });
     if (sessionCompaction.rotate) {
-      context.chopsticksSessionHandoffMarkdown = sessionCompaction.handoffMarkdown;
-      context.chopsticksSessionRotationReason = sessionCompaction.reason;
-      context.chopsticksPreviousSessionId = previousSessionDisplayId ?? runtimeSessionIdForAdapter;
+      context.abacusSessionHandoffMarkdown = sessionCompaction.handoffMarkdown;
+      context.abacusSessionRotationReason = sessionCompaction.reason;
+      context.abacusPreviousSessionId = previousSessionDisplayId ?? runtimeSessionIdForAdapter;
       runtimeSessionIdForAdapter = null;
       runtimeSessionParamsForAdapter = null;
       previousSessionDisplayId = null;
@@ -1956,9 +1956,9 @@ export function heartbeatService(db: Db) {
         );
       }
     } else {
-      delete context.chopsticksSessionHandoffMarkdown;
-      delete context.chopsticksSessionRotationReason;
-      delete context.chopsticksPreviousSessionId;
+      delete context.abacusSessionHandoffMarkdown;
+      delete context.abacusSessionRotationReason;
+      delete context.abacusPreviousSessionId;
     }
 
     const runtimeForAdapter = {
@@ -2086,8 +2086,8 @@ export function heartbeatService(db: Db) {
         onLog,
       });
       if (runtimeServices.length > 0) {
-        context.chopsticksRuntimeServices = runtimeServices;
-        context.chopsticksRuntimePrimaryUrl =
+        context.abacusRuntimeServices = runtimeServices;
+        context.abacusRuntimePrimaryUrl =
           runtimeServices.find((service) => readNonEmptyString(service.url))?.url ?? null;
         await db
           .update(heartbeatRuns)
@@ -2110,7 +2110,7 @@ export function heartbeatService(db: Db) {
         } catch (err) {
           await onLog(
             "stderr",
-            `[chopsticks] Failed to post workspace-ready comment: ${err instanceof Error ? err.message : String(err)}\n`,
+            `[abacus] Failed to post workspace-ready comment: ${err instanceof Error ? err.message : String(err)}\n`,
           );
         }
       }
@@ -2141,7 +2141,7 @@ export function heartbeatService(db: Db) {
             runId: run.id,
             adapterType: agent.adapterType,
           },
-          "local agent jwt secret missing or invalid; running without injected CHOPSTICKS_API_KEY",
+          "local agent jwt secret missing or invalid; running without injected ABACUS_API_KEY",
         );
       }
       const adapterResult = await adapter.execute({
@@ -2174,8 +2174,8 @@ export function heartbeatService(db: Db) {
           ...runtimeServices,
           ...adapterManagedRuntimeServices,
         ];
-        context.chopsticksRuntimeServices = combinedRuntimeServices;
-        context.chopsticksRuntimePrimaryUrl =
+        context.abacusRuntimeServices = combinedRuntimeServices;
+        context.abacusRuntimePrimaryUrl =
           combinedRuntimeServices.find((service) => readNonEmptyString(service.url))?.url ?? null;
         await db
           .update(heartbeatRuns)
@@ -2197,7 +2197,7 @@ export function heartbeatService(db: Db) {
           } catch (err) {
             await onLog(
               "stderr",
-              `[chopsticks] Failed to post adapter-managed runtime comment: ${err instanceof Error ? err.message : String(err)}\n`,
+              `[abacus] Failed to post adapter-managed runtime comment: ${err instanceof Error ? err.message : String(err)}\n`,
             );
           }
         }

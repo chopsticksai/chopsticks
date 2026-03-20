@@ -1,8 +1,8 @@
 /**
- * Core types for the Chopsticks plugin worker-side SDK.
+ * Core types for the Abacus plugin worker-side SDK.
  *
  * These types define the stable public API surface that plugin workers import
- * from `@chopsticks/plugin-sdk`.  The host provides a concrete implementation
+ * from `@abacus/plugin-sdk`.  The host provides a concrete implementation
  * of `PluginContext` to the plugin at initialisation time.
  *
  * @see PLUGIN_SPEC.md §14 — SDK Surface
@@ -10,7 +10,7 @@
  */
 
 import type {
-  ChopsticksPluginManifestV1,
+  AbacusPluginManifestV1,
   PluginStateScopeKind,
   PluginEventType,
   PluginToolDeclaration,
@@ -23,14 +23,14 @@ import type {
   IssueDocumentSummary,
   Agent,
   Goal,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 
 // ---------------------------------------------------------------------------
-// Re-exports from @chopsticks/shared (plugin authors import from one place)
+// Re-exports from @abacus/shared (plugin authors import from one place)
 // ---------------------------------------------------------------------------
 
 export type {
-  ChopsticksPluginManifestV1,
+  AbacusPluginManifestV1,
   PluginJobDeclaration,
   PluginWebhookDeclaration,
   PluginToolDeclaration,
@@ -67,7 +67,7 @@ export type {
   IssueDocumentSummary,
   Agent,
   Goal,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 
 // ---------------------------------------------------------------------------
 // Scope key — identifies where plugin state is stored
@@ -85,7 +85,7 @@ export type {
  * @see PLUGIN_SPEC.md §21.3 `plugin_state`
  */
 export interface ScopeKey {
-  /** What kind of Chopsticks object this state is scoped to. */
+  /** What kind of Abacus object this state is scoped to. */
   scopeKind: PluginStateScopeKind;
   /** UUID or text identifier for the scoped object. Omit for `instance` scope. */
   scopeId?: string;
@@ -217,7 +217,7 @@ export interface PluginEntityUpsert {
   scopeId?: string;
   /** External identifier in the remote system (e.g. Linear issue ID). */
   externalId?: string;
-  /** Human-readable title for display in the Chopsticks UI. */
+  /** Human-readable title for display in the Abacus UI. */
   title?: string;
   /** Optional status string. */
   status?: string;
@@ -323,7 +323,7 @@ export interface PluginConfigClient {
 }
 
 /**
- * `ctx.events` — subscribe to and emit Chopsticks domain events.
+ * `ctx.events` — subscribe to and emit Abacus domain events.
  *
  * Requires `events.subscribe` capability for `on()`.
  * Requires `events.emit` capability for `emit()`.
@@ -332,7 +332,7 @@ export interface PluginConfigClient {
  */
 export interface PluginEventsClient {
   /**
-   * Subscribe to a core Chopsticks domain event or a plugin-namespaced event.
+   * Subscribe to a core Abacus domain event or a plugin-namespaced event.
    *
    * @param name - Event type, e.g. `"issue.created"` or `"plugin.@acme/linear.sync-done"`
    * @param fn - Async event handler
@@ -435,7 +435,7 @@ export interface PluginHttpClient {
  * Requires `secrets.read-ref` capability.
  *
  * Plugins store secret *references* in their config (e.g. a secret name).
- * This client resolves the reference through the Chopsticks secret provider
+ * This client resolves the reference through the Abacus secret provider
  * system and returns the resolved value at execution time.
  *
  * @see PLUGIN_SPEC.md §22 — Secrets
@@ -445,7 +445,7 @@ export interface PluginSecretsClient {
    * Resolve a secret reference to its current value.
    *
    * The reference is a string identifier pointing to a secret configured
-   * in the Chopsticks secret provider (e.g. `"MY_API_KEY"`).
+   * in the Abacus secret provider (e.g. `"MY_API_KEY"`).
    *
    * Secret values are resolved at call time and must never be cached or
    * written to logs, config, or other persistent storage.
@@ -1039,7 +1039,7 @@ export interface PluginGoalsClient {
  * ctx.streams.close("chat");
  * ```
  *
- * @see usePluginStream in `@chopsticks/plugin-sdk/ui`
+ * @see usePluginStream in `@abacus/plugin-sdk/ui`
  */
 export interface PluginStreamsClient {
   /**
@@ -1076,7 +1076,7 @@ export interface PluginStreamsClient {
  *
  * @example
  * ```ts
- * import { definePlugin } from "@chopsticks/plugin-sdk";
+ * import { definePlugin } from "@abacus/plugin-sdk";
  *
  * export default definePlugin({
  *   async setup(ctx) {
@@ -1096,7 +1096,7 @@ export interface PluginStreamsClient {
  */
 export interface PluginContext {
   /** The plugin's manifest as validated at install time. */
-  manifest: ChopsticksPluginManifestV1;
+  manifest: AbacusPluginManifestV1;
 
   /** Read resolved operator configuration. */
   config: PluginConfigClient;

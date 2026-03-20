@@ -1,11 +1,11 @@
-import type { Db } from "@chopsticks/db";
-import { companies, instanceSettings } from "@chopsticks/db";
+import type { Db } from "@abacus/db";
+import { companies, instanceSettings } from "@abacus/db";
 import {
   instanceExperimentalSettingsSchema,
   type InstanceExperimentalSettings,
   type InstanceSettings,
   type PatchInstanceExperimentalSettings,
-} from "@chopsticks/shared";
+} from "@abacus/shared";
 import { eq } from "drizzle-orm";
 
 const DEFAULT_SINGLETON_KEY = "default";

@@ -1,19 +1,19 @@
 {
-  "name": "@chopsticks/create-chopsticks-plugin",
+  "name": "@abacus/create-abacus-plugin",
   "version": "0.1.0",
   "license": "MIT",
-  "homepage": "https://github.com/chopsticksai/chopsticks",
+  "homepage": "https://github.com/abacus-lab/abacus",
   "bugs": {
-    "url": "https://github.com/chopsticksai/chopsticks/issues"
+    "url": "https://github.com/abacus-lab/abacus/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chopsticksai/chopsticks",
-    "directory": "packages/plugins/create-paperclip-plugin"
+    "url": "https://github.com/abacus-lab/abacus",
+    "directory": "packages/plugins/create-abacus-plugin"
   },
   "type": "module",
   "bin": {
-    "create-chopsticks-plugin": "./dist/index.js"
+    "create-abacus-plugin": "./dist/index.js"
   },
   "exports": {
     ".": "./src/index.ts"
@@ -21,7 +21,7 @@
   "publishConfig": {
     "access": "public",
     "bin": {
-      "create-chopsticks-plugin": "./dist/index.js"
+      "create-abacus-plugin": "./dist/index.js"
     },
     "exports": {
       ".": {
@@ -41,7 +41,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@chopsticks/plugin-sdk": "workspace:*"
+    "@abacus/plugin-sdk": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.6.0",

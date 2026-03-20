@@ -29,7 +29,7 @@ import {
   Github,
   GitBranch,
 } from "lucide-react";
-import { PROJECT_COLORS } from "@chopsticks/shared";
+import { PROJECT_COLORS } from "@abacus/shared";
 import { cn } from "../lib/utils";
 import { MarkdownEditor, type MarkdownEditorRef } from "./MarkdownEditor";
 import { StatusBadge } from "./StatusBadge";
@@ -44,7 +44,7 @@ const projectStatuses = [
 ];
 
 type WorkspaceSetup = "none" | "local" | "repo" | "both";
-const REPO_ONLY_CWD_SENTINEL = "/__chopsticks_repo_only__";
+const REPO_ONLY_CWD_SENTINEL = "/__abacus_repo_only__";
 
 export function NewProjectDialog() {
   const { t } = useI18n();

@@ -7,11 +7,11 @@ summary: Agent wakeups, runtime settings, session resume, and troubleshooting
 
 Status: User-facing guide  
 Last updated: 2026-02-17  
-Audience: Operators setting up and running agents in Chopsticks
+Audience: Operators setting up and running agents in Abacus
 
 ## 1. What this system does
 
-Agents in Chopsticks do not run continuously.  
+Agents in Abacus do not run continuously.  
 They run in **heartbeats**: short execution windows triggered by a wakeup.
 
 Each heartbeat:
@@ -44,7 +44,7 @@ Common choices:
 - `process`: generic shell command adapter
 - `http`: calls an external HTTP endpoint
 
-For `claude_local` and `codex_local`, Chopsticks assumes the CLI is already installed and authenticated on the host machine.
+For `claude_local` and `codex_local`, Abacus assumes the CLI is already installed and authenticated on the host machine.
 
 ## 3.2 Runtime behavior
 
@@ -76,7 +76,7 @@ Templates support variables like `{{agent.id}}`, `{{agent.name}}`, and run conte
 
 ## 4. Session resume behavior
 
-Chopsticks stores session IDs for resumable adapters.
+Abacus stores session IDs for resumable adapters.
 
 - Next heartbeat reuses the saved session automatically.
 - This gives continuity across heartbeats.
@@ -101,7 +101,7 @@ In local/dev setups, full logs are stored on disk under the configured run-log p
 
 ## 6. Live updates in the UI
 
-Chopsticks pushes runtime/activity updates to the browser in real time.
+Abacus pushes runtime/activity updates to the browser in real time.
 
 You should see live changes for:
 
@@ -155,7 +155,7 @@ Typical failure causes:
 
 Claude-specific note:
 
-- If `ANTHROPIC_API_KEY` is set in adapter env or host environment, Claude uses API-key auth instead of subscription login. Chopsticks surfaces this as a warning in environment tests, not a hard error.
+- If `ANTHROPIC_API_KEY` is set in adapter env or host environment, Claude uses API-key auth instead of subscription login. Abacus surfaces this as a warning in environment tests, not a hard error.
 
 ## 9. Security and risk notes
 

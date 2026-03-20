@@ -1,4 +1,4 @@
-# @papertape/adapter-pi-local
+# @abacus/adapter-pi-local
 
 ## 0.3.1
 
@@ -6,7 +6,7 @@
 
 - Stable release preparation for 0.3.1
 - Updated dependencies
-  - @paperclipai/adapter-utils@0.3.1
+  - @abacus-lab/adapter-utils@0.3.1
 
 ## 0.3.0
 
@@ -17,4 +17,4 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @papertape/adapter-utils@0.3.0
+  - @abacus/adapter-utils@0.3.0

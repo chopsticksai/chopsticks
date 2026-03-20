@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { History } from "lucide-react";
-import type { Agent } from "@chopsticks/shared";
+import type { Agent } from "@abacus/shared";
 
 export function Activity() {
   const { t } = useI18n();

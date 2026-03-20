@@ -1,6 +1,6 @@
 # CLI Reference
 
-Chopsticks CLI now supports both:
+Abacus CLI now supports both:
 
 - instance setup/diagnostics (`onboard`, `doctor`, `configure`, `env`, `allowed-hostname`)
 - control-plane client operations (issues, approvals, agents, activity, dashboard)
@@ -10,19 +10,19 @@ Chopsticks CLI now supports both:
 Use repo script in development:
 
 ```sh
-pnpm chopsticks --help
+pnpm abacus --help
 ```
 
 First-time local bootstrap + run:
 
 ```sh
-pnpm chopsticks run
+pnpm abacus run
 ```
 
 Choose local instance:
 
 ```sh
-pnpm chopsticks run --instance dev
+pnpm abacus run --instance dev
 ```
 
 ## Deployment Modes
@@ -31,16 +31,16 @@ Mode taxonomy and design intent are documented in `doc/DEPLOYMENT-MODES.md`.
 
 Current CLI behavior:
 
-- `chopsticks onboard` and `chopsticks configure --section server` set deployment mode in config
-- runtime can override mode with `CHOPSTICKS_DEPLOYMENT_MODE`
-- `chopsticks run` and `chopsticks doctor` do not yet expose a direct `--mode` flag
+- `abacus onboard` and `abacus configure --section server` set deployment mode in config
+- runtime can override mode with `ABACUS_DEPLOYMENT_MODE`
+- `abacus run` and `abacus doctor` do not yet expose a direct `--mode` flag
 
 Target behavior (planned) is documented in `doc/DEPLOYMENT-MODES.md` section 5.
 
 Allow an authenticated/private hostname (for example custom Tailscale DNS):
 
 ```sh
-pnpm chopsticks allowed-hostname dotta-macbook-pro
+pnpm abacus allowed-hostname dotta-macbook-pro
 ```
 
 All client commands support:
@@ -54,107 +54,107 @@ All client commands support:
 
 Company-scoped commands also support `--company-id <id>`.
 
-Use `--data-dir` on any CLI command to isolate all default local state (config/context/db/logs/storage/secrets) away from `~/.chopsticks`:
+Use `--data-dir` on any CLI command to isolate all default local state (config/context/db/logs/storage/secrets) away from `~/.abacus`:
 
 ```sh
-pnpm chopsticks run --data-dir ./tmp/chopsticks-dev
-pnpm chopsticks issue list --data-dir ./tmp/chopsticks-dev
+pnpm abacus run --data-dir ./tmp/abacus-dev
+pnpm abacus issue list --data-dir ./tmp/abacus-dev
 ```
 
 ## Context Profiles
 
-Store local defaults in `~/.chopsticks/context.json`:
+Store local defaults in `~/.abacus/context.json`:
 
 ```sh
-pnpm chopsticks context set --api-base http://localhost:3100 --company-id <company-id>
-pnpm chopsticks context show
-pnpm chopsticks context list
-pnpm chopsticks context use default
+pnpm abacus context set --api-base http://localhost:3100 --company-id <company-id>
+pnpm abacus context show
+pnpm abacus context list
+pnpm abacus context use default
 ```
 
 To avoid storing secrets in context, set `apiKeyEnvVarName` and keep the key in env:
 
 ```sh
-pnpm chopsticks context set --api-key-env-var-name CHOPSTICKS_API_KEY
-export CHOPSTICKS_API_KEY=...
+pnpm abacus context set --api-key-env-var-name ABACUS_API_KEY
+export ABACUS_API_KEY=...
 ```
 
 ## Company Commands
 
 ```sh
-pnpm chopsticks company list
-pnpm chopsticks company get <company-id>
-pnpm chopsticks company delete <company-id-or-prefix> --yes --confirm <same-id-or-prefix>
+pnpm abacus company list
+pnpm abacus company get <company-id>
+pnpm abacus company delete <company-id-or-prefix> --yes --confirm <same-id-or-prefix>
 ```
 
 Examples:
 
 ```sh
-pnpm chopsticks company delete PAP --yes --confirm PAP
-pnpm chopsticks company delete 5cbe79ee-acb3-4597-896e-7662742593cd --yes --confirm 5cbe79ee-acb3-4597-896e-7662742593cd
+pnpm abacus company delete PAP --yes --confirm PAP
+pnpm abacus company delete 5cbe79ee-acb3-4597-896e-7662742593cd --yes --confirm 5cbe79ee-acb3-4597-896e-7662742593cd
 ```
 
 Notes:
 
-- Deletion is server-gated by `CHOPSTICKS_ENABLE_COMPANY_DELETION`.
-- With agent authentication, company deletion is company-scoped. Use the current company ID/prefix (for example via `--company-id` or `CHOPSTICKS_COMPANY_ID`), not another company.
+- Deletion is server-gated by `ABACUS_ENABLE_COMPANY_DELETION`.
+- With agent authentication, company deletion is company-scoped. Use the current company ID/prefix (for example via `--company-id` or `ABACUS_COMPANY_ID`), not another company.
 
 ## Issue Commands
 
 ```sh
-pnpm chopsticks issue list --company-id <company-id> [--status todo,in_progress] [--assignee-agent-id <agent-id>] [--match text]
-pnpm chopsticks issue get <issue-id-or-identifier>
-pnpm chopsticks issue create --company-id <company-id> --title "..." [--description "..."] [--status todo] [--priority high]
-pnpm chopsticks issue update <issue-id> [--status in_progress] [--comment "..."]
-pnpm chopsticks issue comment <issue-id> --body "..." [--reopen]
-pnpm chopsticks issue checkout <issue-id> --agent-id <agent-id> [--expected-statuses todo,backlog,blocked]
-pnpm chopsticks issue release <issue-id>
+pnpm abacus issue list --company-id <company-id> [--status todo,in_progress] [--assignee-agent-id <agent-id>] [--match text]
+pnpm abacus issue get <issue-id-or-identifier>
+pnpm abacus issue create --company-id <company-id> --title "..." [--description "..."] [--status todo] [--priority high]
+pnpm abacus issue update <issue-id> [--status in_progress] [--comment "..."]
+pnpm abacus issue comment <issue-id> --body "..." [--reopen]
+pnpm abacus issue checkout <issue-id> --agent-id <agent-id> [--expected-statuses todo,backlog,blocked]
+pnpm abacus issue release <issue-id>
 ```
 
 ## Agent Commands
 
 ```sh
-pnpm chopsticks agent list --company-id <company-id>
-pnpm chopsticks agent get <agent-id>
-pnpm chopsticks agent local-cli <agent-id-or-shortname> --company-id <company-id>
+pnpm abacus agent list --company-id <company-id>
+pnpm abacus agent get <agent-id>
+pnpm abacus agent local-cli <agent-id-or-shortname> --company-id <company-id>
 ```
 
-`agent local-cli` is the quickest way to run local Claude/Codex manually as a Chopsticks agent:
+`agent local-cli` is the quickest way to run local Claude/Codex manually as a Abacus agent:
 
 - creates a new long-lived agent API key
-- installs missing Chopsticks skills into `~/.codex/skills` and `~/.claude/skills`
-- prints `export ...` lines for `CHOPSTICKS_API_URL`, `CHOPSTICKS_COMPANY_ID`, `CHOPSTICKS_AGENT_ID`, and `CHOPSTICKS_API_KEY`
+- installs missing Abacus skills into `~/.codex/skills` and `~/.claude/skills`
+- prints `export ...` lines for `ABACUS_API_URL`, `ABACUS_COMPANY_ID`, `ABACUS_AGENT_ID`, and `ABACUS_API_KEY`
 
 Example for shortname-based local setup:
 
 ```sh
-pnpm chopsticks agent local-cli codexcoder --company-id <company-id>
-pnpm chopsticks agent local-cli claudecoder --company-id <company-id>
+pnpm abacus agent local-cli codexcoder --company-id <company-id>
+pnpm abacus agent local-cli claudecoder --company-id <company-id>
 ```
 
 ## Approval Commands
 
 ```sh
-pnpm chopsticks approval list --company-id <company-id> [--status pending]
-pnpm chopsticks approval get <approval-id>
-pnpm chopsticks approval create --company-id <company-id> --type hire_agent --payload '{"name":"..."}' [--issue-ids <id1,id2>]
-pnpm chopsticks approval approve <approval-id> [--decision-note "..."]
-pnpm chopsticks approval reject <approval-id> [--decision-note "..."]
-pnpm chopsticks approval request-revision <approval-id> [--decision-note "..."]
-pnpm chopsticks approval resubmit <approval-id> [--payload '{"...":"..."}']
-pnpm chopsticks approval comment <approval-id> --body "..."
+pnpm abacus approval list --company-id <company-id> [--status pending]
+pnpm abacus approval get <approval-id>
+pnpm abacus approval create --company-id <company-id> --type hire_agent --payload '{"name":"..."}' [--issue-ids <id1,id2>]
+pnpm abacus approval approve <approval-id> [--decision-note "..."]
+pnpm abacus approval reject <approval-id> [--decision-note "..."]
+pnpm abacus approval request-revision <approval-id> [--decision-note "..."]
+pnpm abacus approval resubmit <approval-id> [--payload '{"...":"..."}']
+pnpm abacus approval comment <approval-id> --body "..."
 ```
 
 ## Activity Commands
 
 ```sh
-pnpm chopsticks activity list --company-id <company-id> [--agent-id <agent-id>] [--entity-type issue] [--entity-id <id>]
+pnpm abacus activity list --company-id <company-id> [--agent-id <agent-id>] [--entity-type issue] [--entity-id <id>]
 ```
 
 ## Dashboard Commands
 
 ```sh
-pnpm chopsticks dashboard get --company-id <company-id>
+pnpm abacus dashboard get --company-id <company-id>
 ```
 
 ## Heartbeat Command
@@ -162,23 +162,23 @@ pnpm chopsticks dashboard get --company-id <company-id>
 `heartbeat run` now also supports context/api-key options and uses the shared client stack:
 
 ```sh
-pnpm chopsticks heartbeat run --agent-id <agent-id> [--api-base http://localhost:3100] [--api-key <token>]
+pnpm abacus heartbeat run --agent-id <agent-id> [--api-base http://localhost:3100] [--api-key <token>]
 ```
 
 ## Local Storage Defaults
 
-Default local instance root is `~/.chopsticks/instances/default`:
+Default local instance root is `~/.abacus/instances/default`:
 
-- config: `~/.chopsticks/instances/default/config.json`
-- embedded db: `~/.chopsticks/instances/default/db`
-- logs: `~/.chopsticks/instances/default/logs`
-- storage: `~/.chopsticks/instances/default/data/storage`
-- secrets key: `~/.chopsticks/instances/default/secrets/master.key`
+- config: `~/.abacus/instances/default/config.json`
+- embedded db: `~/.abacus/instances/default/db`
+- logs: `~/.abacus/instances/default/logs`
+- storage: `~/.abacus/instances/default/data/storage`
+- secrets key: `~/.abacus/instances/default/secrets/master.key`
 
 Override base home or instance with env vars:
 
 ```sh
-CHOPSTICKS_HOME=/custom/home CHOPSTICKS_INSTANCE_ID=dev pnpm chopsticks run
+ABACUS_HOME=/custom/home ABACUS_INSTANCE_ID=dev pnpm abacus run
 ```
 
 ## Storage Configuration
@@ -186,7 +186,7 @@ CHOPSTICKS_HOME=/custom/home CHOPSTICKS_INSTANCE_ID=dev pnpm chopsticks run
 Configure storage provider and settings:
 
 ```sh
-pnpm chopsticks configure --section storage
+pnpm abacus configure --section storage
 ```
 
 Supported providers:

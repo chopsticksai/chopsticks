@@ -2,10 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createLocalAgentJwt, verifyLocalAgentJwt } from "../agent-auth-jwt.js";
 
 describe("agent local JWT", () => {
-  const secretEnv = "CHOPSTICKS_AGENT_JWT_SECRET";
-  const ttlEnv = "CHOPSTICKS_AGENT_JWT_TTL_SECONDS";
-  const issuerEnv = "CHOPSTICKS_AGENT_JWT_ISSUER";
-  const audienceEnv = "CHOPSTICKS_AGENT_JWT_AUDIENCE";
+  const secretEnv = "ABACUS_AGENT_JWT_SECRET";
+  const ttlEnv = "ABACUS_AGENT_JWT_TTL_SECONDS";
+  const issuerEnv = "ABACUS_AGENT_JWT_ISSUER";
+  const audienceEnv = "ABACUS_AGENT_JWT_AUDIENCE";
 
   const originalEnv = {
     secret: process.env[secretEnv],
@@ -45,8 +45,8 @@ describe("agent local JWT", () => {
       company_id: "company-1",
       adapter_type: "claude_local",
       run_id: "run-1",
-      iss: "chopsticks",
-      aud: "chopsticks-api",
+      iss: "abacus",
+      aud: "abacus-api",
     });
   });
 
@@ -72,8 +72,8 @@ describe("agent local JWT", () => {
     vi.setSystemTime(new Date("2026-01-01T00:00:00.000Z"));
     const token = createLocalAgentJwt("agent-1", "company-1", "codex_local", "run-1");
 
-    process.env[issuerEnv] = "chopsticks";
-    process.env[audienceEnv] = "chopsticks-api";
+    process.env[issuerEnv] = "abacus";
+    process.env[audienceEnv] = "abacus-api";
     expect(verifyLocalAgentJwt(token!)).toBeNull();
   });
 });

@@ -8,7 +8,7 @@ import {
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import type { PluginCategory, PluginStatus, ChopsticksPluginManifestV1 } from "@chopsticks/shared";
+import type { PluginCategory, PluginStatus, AbacusPluginManifestV1 } from "@abacus/shared";
 
 /**
  * `plugins` table — stores one row per installed plugin.
@@ -29,7 +29,7 @@ export const plugins = pgTable(
     version: text("version").notNull(),
     apiVersion: integer("api_version").notNull().default(1),
     categories: jsonb("categories").$type<PluginCategory[]>().notNull().default([]),
-    manifestJson: jsonb("manifest_json").$type<ChopsticksPluginManifestV1>().notNull(),
+    manifestJson: jsonb("manifest_json").$type<AbacusPluginManifestV1>().notNull(),
     status: text("status").$type<PluginStatus>().notNull().default("installed"),
     installOrder: integer("install_order"),
     /** Resolved package path for local-path installs; used to find worker entrypoint. */

@@ -1,6 +1,6 @@
 # Plugin Authoring Smoke Example
 
-A Chopsticks plugin
+A Abacus plugin
 
 ## Development
 
@@ -11,13 +11,13 @@ pnpm dev:ui         # local dev server with hot-reload events
 pnpm test
 ```
 
-## Install Into Chopsticks
+## Install Into Abacus
 
 ```bash
-pnpm chopsticks plugin install ./
+pnpm abacus plugin install ./
 ```
 
 ## Build Options
 
-- `pnpm build` uses esbuild presets from `@chopsticks/plugin-sdk/bundlers`.
+- `pnpm build` uses esbuild presets from `@abacus/plugin-sdk/bundlers`.
 - `pnpm build:rollup` uses rollup presets from the same SDK.

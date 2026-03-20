@@ -10,11 +10,11 @@ import { test, expect, type Page } from "@playwright/test";
  *   Step 4 — Ready to launch (summary + create/open issue)
  *
  * By default this runs in skip_llm mode: we do NOT assert that an LLM
- * heartbeat fires. Set CHOPSTICKS_E2E_SKIP_LLM=false to enable LLM-dependent
+ * heartbeat fires. Set ABACUS_E2E_SKIP_LLM=false to enable LLM-dependent
  * assertions (requires a valid ANTHROPIC_API_KEY).
  */
 
-const SKIP_LLM = process.env.CHOPSTICKS_E2E_SKIP_LLM !== "false";
+const SKIP_LLM = process.env.ABACUS_E2E_SKIP_LLM !== "false";
 
 const COMPANY_NAME = `E2E-Test-${Date.now()}`;
 const AGENT_NAME = "CEO";
@@ -234,7 +234,7 @@ test.describe("Onboarding wizard", () => {
     const descriptionInput = taskDescriptionInput(page);
     await expect(page.locator("h3", { hasText: "给它一个任务" })).toBeVisible({ timeout: 60_000 });
     await expect(titleInput).toHaveValue("创建你的 CEO HEARTBEAT.md", { timeout: 60_000 });
-    await expect(descriptionInput).toContainText("https://github.com/chopsticksai/companies/blob/main/default/ceo/AGENTS.md");
+    await expect(descriptionInput).toContainText("https://github.com/abacus-lab/companies/blob/main/default/ceo/AGENTS.md");
 
     await onboardingLanguageButton(page).click();
     await page.getByRole("button", { name: "English" }).click();

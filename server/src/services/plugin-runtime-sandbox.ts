@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, realpathSync } from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
-import type { ChopsticksPluginManifestV1 } from "@chopsticks/shared";
+import type { AbacusPluginManifestV1 } from "@abacus/shared";
 import type { PluginCapabilityValidator } from "./plugin-capability-validator.js";
 
 export class PluginSandboxError extends Error {
@@ -54,7 +54,7 @@ const DEFAULT_GLOBALS: Record<string, unknown> = {
 };
 
 export function createCapabilityScopedInvoker(
-  manifest: ChopsticksPluginManifestV1,
+  manifest: AbacusPluginManifestV1,
   validator: PluginCapabilityValidator,
 ): CapabilityScopedInvoker {
   return {
@@ -144,15 +144,15 @@ export async function loadPluginModuleInSandbox(
     // `(fn)(exports, module, ...)` in the script text, the timeout also covers
     // the actual module body execution — preventing infinite loops from hanging.
     const sandboxArgs = {
-      __chopsticks_exports: module.exports,
-      __chopsticks_module: module,
-      __chopsticks_require: requireInSandbox,
-      __chopsticks_filename: realPath,
-      __chopsticks_dirname: path.dirname(realPath),
+      __abacus_exports: module.exports,
+      __abacus_module: module,
+      __abacus_require: requireInSandbox,
+      __abacus_filename: realPath,
+      __abacus_dirname: path.dirname(realPath),
     };
     // Temporarily inject args into the context, run, then remove to avoid pollution.
     Object.assign(context, sandboxArgs);
-    const wrapped = `(function (exports, module, require, __filename, __dirname) {\n${code}\n})(__chopsticks_exports, __chopsticks_module, __chopsticks_require, __chopsticks_filename, __chopsticks_dirname)`;
+    const wrapped = `(function (exports, module, require, __filename, __dirname) {\n${code}\n})(__abacus_exports, __abacus_module, __abacus_require, __abacus_filename, __abacus_dirname)`;
     const script = new vm.Script(wrapped, { filename: realPath });
     try {
       script.runInContext(context, { timeout: timeoutMs });
