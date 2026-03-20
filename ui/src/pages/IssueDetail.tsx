@@ -48,7 +48,7 @@ import {
   ListTree,
   MessageSquare,
   MoreHorizontal,
-  BrainCircuit,
+  SlidersVertical,
   SlidersHorizontal,
   Trash2,
 } from "lucide-react";
@@ -271,8 +271,8 @@ export function IssueDetail() {
 
   const hasLiveRuns = (liveRuns ?? []).length > 0 || !!activeRun;
   const sourceBreadcrumb = useMemo(
-    () => readIssueDetailBreadcrumb(location.state) ?? { label: "Issues", href: "/issues" },
-    [location.state],
+    () => readIssueDetailBreadcrumb(location.state) ?? { label: t("Issues"), href: "/issues" },
+    [location.state, t],
   );
 
   // Filter out runs already shown by the live widget to avoid duplication
@@ -515,7 +515,7 @@ export function IssueDetail() {
 
   const uploadAttachment = useMutation({
     mutationFn: async (file: File) => {
-      if (!selectedCompanyId) throw new Error("No company selected");
+      if (!selectedCompanyId) throw new Error(t("No company selected"));
       return issuesApi.uploadAttachment(selectedCompanyId, issueId!, file);
     },
     onSuccess: () => {
@@ -548,7 +548,7 @@ export function IssueDetail() {
       invalidateIssue();
     },
     onError: (err) => {
-      setAttachmentError(err instanceof Error ? err.message : "Document import failed");
+      setAttachmentError(err instanceof Error ? err.message : t("Document import failed"));
     },
   });
 
@@ -669,7 +669,7 @@ export function IssueDetail() {
           attachmentDragActive && "border-primary bg-primary/5",
         )}
       >
-        <BrainCircuit className="h-3.5 w-3.5 mr-1.5" />
+        <SlidersVertical className="h-3.5 w-3.5 mr-1.5" />
         {uploadAttachment.isPending || importMarkdownDocument.isPending ? t("Uploading...") : t("Upload attachment")}
       </Button>
     </>

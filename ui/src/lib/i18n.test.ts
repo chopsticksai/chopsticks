@@ -74,4 +74,16 @@ describe("i18n", () => {
       "https://github.com/abacus-lab/companies/blob/main/default/ceo/AGENTS.md",
     );
   });
+
+  it("translates interpolated UI copy and preserves english fallback for unknown keys", () => {
+    setActiveLocale("zh-CN");
+
+    expect(
+      translateText("Created {issueRef} with upload warnings", { issueRef: "ABC-42" }),
+    ).toBe("已创建 ABC-42，但上传有警告");
+    expect(
+      translateText("No company matches prefix \"{prefix}\".", { prefix: "demo" }),
+    ).toBe("没有公司匹配前缀“demo”。");
+    expect(translateText("Unknown untranslated key")).toBe("Unknown untranslated key");
+  });
 });
