@@ -24,7 +24,7 @@
 
 <br/>
 
-> Forked from abacus. MIT Licensed.
+> Forked from paperclip. MIT Licensed.
 
 ## What is Abacus?
 
