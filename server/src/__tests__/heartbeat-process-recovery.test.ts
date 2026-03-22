@@ -86,6 +86,25 @@ async function startTempDatabase() {
   return { connectionString, instance, dataDir };
 }
 
+async function removeTempDirectory(target: string) {
+  let lastError: unknown = null;
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    try {
+      fs.rmSync(target, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+      return;
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== "EPERM" && code !== "EBUSY" && code !== "ENOTEMPTY") {
+        throw error;
+      }
+      lastError = error;
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    }
+  }
+
+  if (lastError) throw lastError;
+}
+
 function spawnAliveProcess() {
   return spawn(process.execPath, ["-e", "setInterval(() => {}, 1000)"], {
     stdio: "ignore",
@@ -120,14 +139,18 @@ describe("heartbeat orphaned process recovery", () => {
   });
 
   afterAll(async () => {
+    const closableDb = db as typeof db & {
+      $client?: { end?: (opts?: { timeout?: number }) => Promise<void> };
+    };
     for (const child of childProcesses) {
       child.kill("SIGKILL");
     }
     childProcesses.clear();
     runningProcesses.clear();
+    await closableDb.$client?.end?.({ timeout: 5 }).catch(() => undefined);
     await instance?.stop();
     if (dataDir) {
-      fs.rmSync(dataDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+      await removeTempDirectory(dataDir);
     }
   });
 

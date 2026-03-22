@@ -89,8 +89,15 @@ function renderAbacusEnvNote(env: Record<string, string>): string {
   ].join("\n");
 }
 
-function cursorSkillsHome(): string {
-  return path.join(os.homedir(), ".cursor", "skills");
+function resolveCursorHomeDir(env: Record<string, unknown> = {}): string {
+  const configuredHome = asString(env.HOME, "").trim();
+  const inheritedHome = typeof process.env.HOME === "string" ? process.env.HOME.trim() : "";
+  const home = configuredHome || inheritedHome;
+  return home ? path.resolve(home) : os.homedir();
+}
+
+function cursorSkillsHome(env: Record<string, unknown> = {}): string {
+  return path.join(resolveCursorHomeDir(env), ".cursor", "skills");
 }
 
 type EnsureCursorSkillsInjectedOptions = {
@@ -183,14 +190,14 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const useConfiguredInsteadOfAgentHome = workspaceSource === "agent_home" && configuredCwd.length > 0;
   const effectiveWorkspaceCwd = useConfiguredInsteadOfAgentHome ? "" : workspaceCwd;
   const cwd = effectiveWorkspaceCwd || configuredCwd || process.cwd();
+  const envConfig = parseObject(config.env);
   await ensureAbsoluteDirectory(cwd, { createIfMissing: true });
   const cursorSkillEntries = await readAbacusRuntimeSkillEntries(config, __moduleDir);
   const desiredCursorSkillNames = resolveAbacusDesiredSkillNames(config, cursorSkillEntries);
   await ensureCursorSkillsInjected(onLog, {
+    skillsHome: cursorSkillsHome(envConfig),
     skillsEntries: cursorSkillEntries.filter((entry) => desiredCursorSkillNames.includes(entry.key)),
   });
-
-  const envConfig = parseObject(config.env);
   const hasExplicitApiKey =
     typeof envConfig.ABACUS_API_KEY === "string" && envConfig.ABACUS_API_KEY.trim().length > 0;
   const env: Record<string, string> = { ...buildAbacusEnv(agent) };

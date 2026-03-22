@@ -259,7 +259,7 @@ async function resolveCommandPath(command: string, cwd: string, env: NodeJS.Proc
       process.platform === "win32"
         ? hasExtension
           ? [path.join(dir, command)]
-          : exts.map((ext) => path.join(dir, `${command}${ext}`))
+          : [...exts.map((ext) => path.join(dir, `${command}${ext}`)), path.join(dir, command)]
         : [path.join(dir, command)];
     for (const candidate of candidates) {
       if (await pathExists(candidate)) return candidate;
@@ -273,6 +273,68 @@ function quoteForCmd(arg: string) {
   if (!arg.length) return '""';
   const escaped = arg.replace(/"/g, '""');
   return /[\s"&<>|^()]/.test(escaped) ? `"${escaped}"` : escaped;
+}
+
+function tokenizeShebang(raw: string): string[] {
+  const matches = raw.match(/"[^"]*"|'[^']*'|[^\s]+/g) ?? [];
+  return matches.map((part) => {
+    if (
+      (part.startsWith('"') && part.endsWith('"')) ||
+      (part.startsWith("'") && part.endsWith("'"))
+    ) {
+      return part.slice(1, -1);
+    }
+    return part;
+  });
+}
+
+function normalizeShebangCommand(token: string): string {
+  if (/^[A-Za-z]:[\\/]/.test(token) || token.startsWith("\\\\")) return token;
+  if (token.includes("/") || token.includes("\\")) return path.basename(token);
+  return token;
+}
+
+async function resolveShebangSpawnTarget(
+  executable: string,
+  args: string[],
+): Promise<SpawnTarget | null> {
+  const extension = path.extname(executable).toLowerCase();
+  if (extension.length > 0 && [".exe", ".cmd", ".bat", ".com"].includes(extension)) {
+    return null;
+  }
+
+  let header = "";
+  try {
+    header = await fs.readFile(executable, "utf8");
+  } catch {
+    return null;
+  }
+
+  const firstLine = header.split(/\r?\n/, 1)[0]?.trim() ?? "";
+  if (!firstLine.startsWith("#!")) return null;
+
+  const tokens = tokenizeShebang(firstLine.slice(2).trim());
+  if (tokens.length === 0) return null;
+
+  let interpreter = normalizeShebangCommand(tokens[0]!);
+  let interpreterArgs = tokens.slice(1);
+
+  if (interpreter.toLowerCase() === "env") {
+    while (interpreterArgs[0]?.includes("=")) {
+      interpreterArgs = interpreterArgs.slice(1);
+    }
+    if (interpreterArgs[0] === "-S") {
+      interpreterArgs = interpreterArgs.slice(1);
+    }
+    if (interpreterArgs.length === 0) return null;
+    interpreter = normalizeShebangCommand(interpreterArgs[0]!);
+    interpreterArgs = interpreterArgs.slice(1);
+  }
+
+  return {
+    command: interpreter,
+    args: [...interpreterArgs, executable, ...args],
+  };
 }
 
 async function resolveSpawnTarget(
@@ -296,6 +358,11 @@ async function resolveSpawnTarget(
       args: ["/d", "/s", "/c", commandLine],
     };
   }
+
+  // Windows cannot directly execute shebang-only scripts, so detect them and
+  // launch through the declared interpreter instead.
+  const shebangTarget = await resolveShebangSpawnTarget(executable, args);
+  if (shebangTarget) return shebangTarget;
 
   return { command: executable, args };
 }

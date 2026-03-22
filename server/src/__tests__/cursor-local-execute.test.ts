@@ -201,10 +201,9 @@ describe("cursor execute", () => {
   it("injects company-library runtime skills into the Cursor skills home before execution", async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-cursor-execute-runtime-skill-"));
     const workspace = path.join(root, "workspace");
-    const commandPath = path.join(root, "agent");
+    const commandPath = await writeFakeCursorCommand(path.join(root, "agent"));
     const runtimeSkillsRoot = path.join(root, "runtime-skills");
     await fs.mkdir(workspace, { recursive: true });
-    await writeFakeCursorCommand(commandPath);
 
     const abacusDir = await createSkillDir(runtimeSkillsRoot, "abacus");
     const asciiHeartDir = await createSkillDir(runtimeSkillsRoot, "ascii-heart");

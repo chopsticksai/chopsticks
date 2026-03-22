@@ -80,6 +80,25 @@ async function createTempDatabase(): Promise<string> {
   return `postgres://abacus:abacus@127.0.0.1:${port}/abacus`;
 }
 
+async function removeTempDirectory(target: string) {
+  let lastError: unknown = null;
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    try {
+      fs.rmSync(target, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+      return;
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== "EPERM" && code !== "EBUSY" && code !== "ENOTEMPTY") {
+        throw error;
+      }
+      lastError = error;
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    }
+  }
+
+  if (lastError) throw lastError;
+}
+
 async function migrationHash(migrationFile: string): Promise<string> {
   const content = await fs.promises.readFile(
     new URL(`./migrations/${migrationFile}`, import.meta.url),
@@ -97,7 +116,7 @@ afterEach(async () => {
   while (tempPaths.length > 0) {
     const tempPath = tempPaths.pop();
     if (!tempPath) continue;
-    fs.rmSync(tempPath, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+    await removeTempDirectory(tempPath);
   }
 });
 
