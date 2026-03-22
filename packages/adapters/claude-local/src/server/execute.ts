@@ -295,6 +295,31 @@ export async function runClaudeLogin(input: {
   });
 }
 
+export async function prepareClaudeInstructionsFile(options: {
+  instructionsFilePath: string;
+  skillsDir: string;
+  onLog: AdapterExecutionContext["onLog"];
+}): Promise<string | undefined> {
+  const { instructionsFilePath, skillsDir, onLog } = options;
+  const instructionsFileDir = `${path.dirname(instructionsFilePath)}/`;
+
+  try {
+    const instructionsContent = await fs.readFile(instructionsFilePath, "utf-8");
+    const pathDirective = `\nThe above agent instructions were loaded from ${instructionsFilePath}. Resolve any relative file references from ${instructionsFileDir}.`;
+    const combinedPath = path.join(skillsDir, "agent-instructions.md");
+    await fs.writeFile(combinedPath, instructionsContent + pathDirective, "utf-8");
+    await onLog("stderr", `[abacus] Loaded agent instructions file: ${instructionsFilePath}\n`);
+    return combinedPath;
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : String(err);
+    await onLog(
+      "stderr",
+      `[abacus] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
+    );
+    return undefined;
+  }
+}
+
 export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExecutionResult> {
   const { runId, agent, runtime, config, context, onLog, onMeta, onSpawn, authToken } = ctx;
 
@@ -308,7 +333,6 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const maxTurns = asNumber(config.maxTurnsPerRun, 0);
   const dangerouslySkipPermissions = asBoolean(config.dangerouslySkipPermissions, false);
   const instructionsFilePath = asString(config.instructionsFilePath, "").trim();
-  const instructionsFileDir = instructionsFilePath ? `${path.dirname(instructionsFilePath)}/` : "";
   const commandNotes = instructionsFilePath
     ? [
         `Injected agent instructions via --append-system-prompt-file ${instructionsFilePath} (with path directive appended)`,
@@ -346,21 +370,11 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   // --append-system-prompt-file (Claude CLI forbids using both flags together).
   let effectiveInstructionsFilePath: string | undefined = instructionsFilePath;
   if (instructionsFilePath) {
-    try {
-      const instructionsContent = await fs.readFile(instructionsFilePath, "utf-8");
-      const pathDirective = `\nThe above agent instructions were loaded from ${instructionsFilePath}. Resolve any relative file references from ${instructionsFileDir}.`;
-      const combinedPath = path.join(skillsDir, "agent-instructions.md");
-      await fs.writeFile(combinedPath, instructionsContent + pathDirective, "utf-8");
-      effectiveInstructionsFilePath = combinedPath;
-      await onLog("stderr", `[paperclip] Loaded agent instructions file: ${instructionsFilePath}\n`);
-    } catch (err) {
-      const reason = err instanceof Error ? err.message : String(err);
-      await onLog(
-        "stderr",
-        `[paperclip] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
-      );
-      effectiveInstructionsFilePath = undefined;
-    }
+    effectiveInstructionsFilePath = await prepareClaudeInstructionsFile({
+      instructionsFilePath,
+      skillsDir,
+      onLog,
+    });
   }
 
   const runtimeSessionParams = parseObject(runtime.sessionParams);

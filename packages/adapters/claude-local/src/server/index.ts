@@ -1,4 +1,4 @@
-export { execute, runClaudeLogin } from "./execute.js";
+export { execute, runClaudeLogin, prepareClaudeInstructionsFile } from "./execute.js";
 export { listClaudeSkills, syncClaudeSkills } from "./skills.js";
 export { testEnvironment } from "./test.js";
 export {
