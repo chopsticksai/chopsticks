@@ -129,7 +129,7 @@ git commit -m "docs: update documentation for accuracy
 
 - [list each fix briefly]
 
-Co-Authored-By: runeach <noreply@runeachai.run>"
+Co-Authored-By: runeach <noreply@runeach.com>"
 
 git push -u origin "$BRANCH"
 
