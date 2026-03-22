@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { notFound, unprocessable } from "../errors.js";
-import { resolveHomeAwarePath, resolveAbacusInstanceRoot } from "../home-paths.js";
+import { resolveHomeAwarePath, resolveRunEachInstanceRoot } from "../home-paths.js";
 
 const ENTRY_FILE_DEFAULT = "AGENTS.md";
 const MODE_KEY = "instructionsBundleMode";
@@ -131,7 +131,7 @@ function resolvePathWithinRoot(rootPath: string, relativePath: string): string {
 
 function resolveManagedInstructionsRoot(agent: AgentLike): string {
   return path.resolve(
-    resolveAbacusInstanceRoot(),
+    resolveRunEachInstanceRoot(),
     "companies",
     agent.companyId,
     "agents",

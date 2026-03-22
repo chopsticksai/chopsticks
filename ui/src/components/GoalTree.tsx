@@ -1,4 +1,4 @@
-import type { Goal } from "@abacus-lab/shared";
+import type { Goal } from "@runeachai/shared";
 import { Link } from "@/lib/router";
 import { StatusBadge } from "./StatusBadge";
 import { ChevronRight } from "lucide-react";

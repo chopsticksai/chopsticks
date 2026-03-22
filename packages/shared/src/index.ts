@@ -297,7 +297,7 @@ export type {
   PluginLauncherDeclaration,
   PluginMinimumHostVersion,
   PluginUiDeclaration,
-  AbacusPluginManifestV1,
+  RunEachPluginManifestV1,
   PluginRecord,
   PluginStateRecord,
   PluginConfig,
@@ -537,7 +537,7 @@ export {
 } from "./project-mentions.js";
 
 export {
-  abacusConfigSchema,
+  runeachConfigSchema,
   configMetaSchema,
   llmConfigSchema,
   databaseBackupConfigSchema,
@@ -550,7 +550,7 @@ export {
   storageLocalDiskConfigSchema,
   storageS3ConfigSchema,
   secretsLocalEncryptedConfigSchema,
-  type AbacusConfig,
+  type RunEachConfig,
   type LlmConfig,
   type DatabaseBackupConfig,
   type DatabaseConfig,

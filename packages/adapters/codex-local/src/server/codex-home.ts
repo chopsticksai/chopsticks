@@ -1,12 +1,12 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import type { AdapterExecutionContext } from "@abacus-lab/adapter-utils";
+import type { AdapterExecutionContext } from "@runeachai/adapter-utils";
 
 const TRUTHY_ENV_RE = /^(1|true|yes|on)$/i;
 const COPIED_SHARED_FILES = ["config.json", "config.toml", "instructions.md"] as const;
 const SYMLINKED_SHARED_FILES = ["auth.json"] as const;
-const DEFAULT_ABACUS_INSTANCE_ID = "default";
+const DEFAULT_RUNEACH_INSTANCE_ID = "default";
 
 function nonEmpty(value: string | undefined): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
@@ -24,18 +24,18 @@ export function resolveSharedCodexHomeDir(
 }
 
 function isWorktreeMode(env: NodeJS.ProcessEnv): boolean {
-  return TRUTHY_ENV_RE.test(env.ABACUS_IN_WORKTREE ?? "");
+  return TRUTHY_ENV_RE.test(env.RUNEACH_IN_WORKTREE ?? "");
 }
 
 export function resolveManagedCodexHomeDir(
   env: NodeJS.ProcessEnv,
   companyId?: string,
 ): string {
-  const abacusHome = nonEmpty(env.ABACUS_HOME) ?? path.resolve(os.homedir(), ".abacus");
-  const instanceId = nonEmpty(env.ABACUS_INSTANCE_ID) ?? DEFAULT_ABACUS_INSTANCE_ID;
+  const runeachHome = nonEmpty(env.RUNEACH_HOME) ?? path.resolve(os.homedir(), ".runeach");
+  const instanceId = nonEmpty(env.RUNEACH_INSTANCE_ID) ?? DEFAULT_RUNEACH_INSTANCE_ID;
   return companyId
-    ? path.resolve(abacusHome, "instances", instanceId, "companies", companyId, "codex-home")
-    : path.resolve(abacusHome, "instances", instanceId, "codex-home");
+    ? path.resolve(runeachHome, "instances", instanceId, "companies", companyId, "codex-home")
+    : path.resolve(runeachHome, "instances", instanceId, "codex-home");
 }
 
 async function ensureParentDir(target: string): Promise<void> {
@@ -97,7 +97,7 @@ export async function prepareManagedCodexHome(
 
   await onLog(
     "stdout",
-    `[abacus] Using ${isWorktreeMode(env) ? "worktree-isolated" : "Abacus-managed"} Codex home "${targetHome}" (seeded from "${sourceHome}").\n`,
+    `[runeach] Using ${isWorktreeMode(env) ? "worktree-isolated" : "RunEach-managed"} Codex home "${targetHome}" (seeded from "${sourceHome}").\n`,
   );
   return targetHome;
 }

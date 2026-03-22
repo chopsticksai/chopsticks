@@ -1,12 +1,12 @@
 import { Router, type Request } from "express";
-import type { Db } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
 import {
   createProjectSchema,
   createProjectWorkspaceSchema,
   isUuidLike,
   updateProjectSchema,
   updateProjectWorkspaceSchema,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { validate } from "../middleware/validate.js";
 import { projectService, logActivity } from "../services/index.js";
 import { conflict } from "../errors.js";

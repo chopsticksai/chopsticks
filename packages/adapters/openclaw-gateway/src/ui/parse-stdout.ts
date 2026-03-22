@@ -1,4 +1,4 @@
-import type { TranscriptEntry } from "@abacus-lab/adapter-utils";
+import type { TranscriptEntry } from "@runeachai/adapter-utils";
 import { normalizeOpenClawGatewayStreamLine } from "../shared/stream.js";
 
 function safeJsonParse(text: string): unknown {

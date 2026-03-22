@@ -33,5 +33,5 @@ Operational fields:
 - graceSec (number, optional): SIGTERM grace period in seconds
 
 Notes:
-- When Abacus realizes a workspace/runtime for a run, it injects ABACUS_WORKSPACE_* and ABACUS_RUNTIME_* env vars for agent-side tooling.
+- When RunEach realizes a workspace/runtime for a run, it injects RUNEACH_WORKSPACE_* and RUNEACH_RUNTIME_* env vars for agent-side tooling.
 `;

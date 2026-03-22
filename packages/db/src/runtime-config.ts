@@ -6,8 +6,8 @@ const DEFAULT_INSTANCE_ID = "default";
 const CONFIG_BASENAME = "config.json";
 const ENV_BASENAME = ".env";
 const INSTANCE_ID_RE = /^[a-zA-Z0-9_-]+$/;
-const DEFAULT_HOME_BASENAME = ".abacus";
-const REPO_CONFIG_DIRNAME = ".abacus";
+const DEFAULT_HOME_BASENAME = ".runeach";
+const REPO_CONFIG_DIRNAME = ".runeach";
 
 type PartialConfig = {
   database?: {
@@ -22,7 +22,7 @@ export type ResolvedDatabaseTarget =
   | {
     mode: "postgres";
     connectionString: string;
-    source: "DATABASE_URL" | "abacus-env" | "config.database.connectionString";
+    source: "DATABASE_URL" | "runeach-env" | "config.database.connectionString";
     configPath: string;
     envPath: string;
   }
@@ -41,31 +41,31 @@ function expandHomePrefix(value: string): string {
   return value;
 }
 
-function resolveAbacusHomeDir(): string {
-  const envHome = process.env.ABACUS_HOME?.trim();
+function resolveRunEachHomeDir(): string {
+  const envHome = process.env.RUNEACH_HOME?.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
   return path.resolve(os.homedir(), DEFAULT_HOME_BASENAME);
 }
 
-function resolveAbacusInstanceId(): string {
-  const raw = process.env.ABACUS_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
+function resolveRunEachInstanceId(): string {
+  const raw = process.env.RUNEACH_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
   if (!INSTANCE_ID_RE.test(raw)) {
-    throw new Error(`Invalid ABACUS_INSTANCE_ID '${raw}'.`);
+    throw new Error(`Invalid RUNEACH_INSTANCE_ID '${raw}'.`);
   }
   return raw;
 }
 
 function resolveDefaultConfigPath(): string {
   return path.resolve(
-    resolveAbacusHomeDir(),
+    resolveRunEachHomeDir(),
     "instances",
-    resolveAbacusInstanceId(),
+    resolveRunEachInstanceId(),
     CONFIG_BASENAME,
   );
 }
 
 function resolveDefaultEmbeddedPostgresDir(): string {
-  return path.resolve(resolveAbacusHomeDir(), "instances", resolveAbacusInstanceId(), "db");
+  return path.resolve(resolveRunEachHomeDir(), "instances", resolveRunEachInstanceId(), "db");
 }
 
 function resolveHomeAwarePath(value: string): string {
@@ -85,14 +85,14 @@ function findConfigFileFromAncestors(startDir: string): string | null {
   }
 }
 
-function resolveAbacusConfigPath(): string {
-  if (process.env.ABACUS_CONFIG?.trim()) {
-    return path.resolve(process.env.ABACUS_CONFIG.trim());
+function resolveRunEachConfigPath(): string {
+  if (process.env.RUNEACH_CONFIG?.trim()) {
+    return path.resolve(process.env.RUNEACH_CONFIG.trim());
   }
   return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath();
 }
 
-function resolveAbacusEnvPath(configPath: string): string {
+function resolveRunEachEnvPath(configPath: string): string {
   return path.resolve(path.dirname(configPath), ENV_BASENAME);
 }
 
@@ -188,8 +188,8 @@ function readConfig(configPath: string): PartialConfig | null {
 }
 
 export function resolveDatabaseTarget(): ResolvedDatabaseTarget {
-  const configPath = resolveAbacusConfigPath();
-  const envPath = resolveAbacusEnvPath(configPath);
+  const configPath = resolveRunEachConfigPath();
+  const envPath = resolveRunEachEnvPath(configPath);
   const envEntries = readEnvEntries(envPath);
 
   const envUrl = process.env.DATABASE_URL?.trim();
@@ -208,7 +208,7 @@ export function resolveDatabaseTarget(): ResolvedDatabaseTarget {
     return {
       mode: "postgres",
       connectionString: fileEnvUrl,
-      source: "abacus-env",
+      source: "runeach-env",
       configPath,
       envPath,
     };

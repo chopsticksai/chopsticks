@@ -26,40 +26,40 @@ importers:
 
   cli:
     dependencies:
-      '@abacus-lab/adapter-claude-local':
+      '@runeachai/adapter-claude-local':
         specifier: workspace:*
         version: link:../packages/adapters/claude-local
-      '@abacus-lab/adapter-codebuddy-local':
+      '@runeachai/adapter-codebuddy-local':
         specifier: workspace:*
         version: link:../packages/adapters/codebuddy-local
-      '@abacus-lab/adapter-codex-local':
+      '@runeachai/adapter-codex-local':
         specifier: workspace:*
         version: link:../packages/adapters/codex-local
-      '@abacus-lab/adapter-cursor-local':
+      '@runeachai/adapter-cursor-local':
         specifier: workspace:*
         version: link:../packages/adapters/cursor-local
-      '@abacus-lab/adapter-gemini-local':
+      '@runeachai/adapter-gemini-local':
         specifier: workspace:*
         version: link:../packages/adapters/gemini-local
-      '@abacus-lab/adapter-openclaw-gateway':
+      '@runeachai/adapter-openclaw-gateway':
         specifier: workspace:*
         version: link:../packages/adapters/openclaw-gateway
-      '@abacus-lab/adapter-opencode-local':
+      '@runeachai/adapter-opencode-local':
         specifier: workspace:*
         version: link:../packages/adapters/opencode-local
-      '@abacus-lab/adapter-pi-local':
+      '@runeachai/adapter-pi-local':
         specifier: workspace:*
         version: link:../packages/adapters/pi-local
-      '@abacus-lab/adapter-utils':
+      '@runeachai/adapter-utils':
         specifier: workspace:*
         version: link:../packages/adapter-utils
-      '@abacus-lab/db':
+      '@runeachai/db':
         specifier: workspace:*
         version: link:../packages/db
-      '@abacus-lab/server':
+      '@runeachai/server':
         specifier: workspace:*
         version: link:../server
-      '@abacus-lab/shared':
+      '@runeachai/shared':
         specifier: workspace:*
         version: link:../packages/shared
       '@clack/prompts':
@@ -102,7 +102,7 @@ importers:
 
   packages/adapters/claude-local:
     dependencies:
-      '@abacus-lab/adapter-utils':
+      '@runeachai/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -118,7 +118,7 @@ importers:
 
   packages/adapters/codebuddy-local:
     dependencies:
-      '@abacus-lab/adapter-utils':
+      '@runeachai/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -134,7 +134,7 @@ importers:
 
   packages/adapters/codex-local:
     dependencies:
-      '@abacus-lab/adapter-utils':
+      '@runeachai/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -150,7 +150,7 @@ importers:
 
   packages/adapters/cursor-local:
     dependencies:
-      '@abacus-lab/adapter-utils':
+      '@runeachai/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -166,7 +166,7 @@ importers:
 
   packages/adapters/gemini-local:
     dependencies:
-      '@abacus-lab/adapter-utils':
+      '@runeachai/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -182,7 +182,7 @@ importers:
 
   packages/adapters/openclaw-gateway:
     dependencies:
-      '@abacus-lab/adapter-utils':
+      '@runeachai/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -204,7 +204,7 @@ importers:
 
   packages/adapters/opencode-local:
     dependencies:
-      '@abacus-lab/adapter-utils':
+      '@runeachai/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -220,7 +220,7 @@ importers:
 
   packages/adapters/pi-local:
     dependencies:
-      '@abacus-lab/adapter-utils':
+      '@runeachai/adapter-utils':
         specifier: workspace:*
         version: link:../../adapter-utils
       picocolors:
@@ -236,7 +236,7 @@ importers:
 
   packages/db:
     dependencies:
-      '@abacus-lab/shared':
+      '@runeachai/shared':
         specifier: workspace:*
         version: link:../shared
       drizzle-orm:
@@ -267,7 +267,7 @@ importers:
 
   packages/desktop-electron:
     dependencies:
-      '@abacus-lab/server':
+      '@runeachai/server':
         specifier: workspace:*
         version: link:../../server
     devDependencies:
@@ -293,9 +293,9 @@ importers:
         specifier: ^5.7.3
         version: 5.9.3
 
-  packages/plugins/create-abacus-plugin:
+  packages/plugins/create-runeach-plugin:
     dependencies:
-      '@abacus-lab/plugin-sdk':
+      '@runeachai/plugin-sdk':
         specifier: workspace:*
         version: link:../sdk
     devDependencies:
@@ -308,7 +308,7 @@ importers:
 
   packages/plugins/examples/plugin-authoring-smoke-example:
     dependencies:
-      '@abacus-lab/plugin-sdk':
+      '@runeachai/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
       react:
@@ -345,7 +345,7 @@ importers:
 
   packages/plugins/examples/plugin-file-browser-example:
     dependencies:
-      '@abacus-lab/plugin-sdk':
+      '@runeachai/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
       '@codemirror/lang-javascript':
@@ -391,7 +391,7 @@ importers:
 
   packages/plugins/examples/plugin-hello-world-example:
     dependencies:
-      '@abacus-lab/plugin-sdk':
+      '@runeachai/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
     devDependencies:
@@ -416,10 +416,10 @@ importers:
 
   packages/plugins/examples/plugin-kitchen-sink-example:
     dependencies:
-      '@abacus-lab/plugin-sdk':
+      '@runeachai/plugin-sdk':
         specifier: workspace:*
         version: link:../../sdk
-      '@abacus-lab/shared':
+      '@runeachai/shared':
         specifier: workspace:*
         version: link:../../../shared
     devDependencies:
@@ -447,7 +447,7 @@ importers:
 
   packages/plugins/sdk:
     dependencies:
-      '@abacus-lab/shared':
+      '@runeachai/shared':
         specifier: workspace:*
         version: link:../../shared
       react:
@@ -479,40 +479,40 @@ importers:
 
   server:
     dependencies:
-      '@abacus-lab/adapter-claude-local':
+      '@runeachai/adapter-claude-local':
         specifier: workspace:*
         version: link:../packages/adapters/claude-local
-      '@abacus-lab/adapter-codebuddy-local':
+      '@runeachai/adapter-codebuddy-local':
         specifier: workspace:*
         version: link:../packages/adapters/codebuddy-local
-      '@abacus-lab/adapter-codex-local':
+      '@runeachai/adapter-codex-local':
         specifier: workspace:*
         version: link:../packages/adapters/codex-local
-      '@abacus-lab/adapter-cursor-local':
+      '@runeachai/adapter-cursor-local':
         specifier: workspace:*
         version: link:../packages/adapters/cursor-local
-      '@abacus-lab/adapter-gemini-local':
+      '@runeachai/adapter-gemini-local':
         specifier: workspace:*
         version: link:../packages/adapters/gemini-local
-      '@abacus-lab/adapter-openclaw-gateway':
+      '@runeachai/adapter-openclaw-gateway':
         specifier: workspace:*
         version: link:../packages/adapters/openclaw-gateway
-      '@abacus-lab/adapter-opencode-local':
+      '@runeachai/adapter-opencode-local':
         specifier: workspace:*
         version: link:../packages/adapters/opencode-local
-      '@abacus-lab/adapter-pi-local':
+      '@runeachai/adapter-pi-local':
         specifier: workspace:*
         version: link:../packages/adapters/pi-local
-      '@abacus-lab/adapter-utils':
+      '@runeachai/adapter-utils':
         specifier: workspace:*
         version: link:../packages/adapter-utils
-      '@abacus-lab/db':
+      '@runeachai/db':
         specifier: workspace:*
         version: link:../packages/db
-      '@abacus-lab/plugin-sdk':
+      '@runeachai/plugin-sdk':
         specifier: workspace:*
         version: link:../packages/plugins/sdk
-      '@abacus-lab/shared':
+      '@runeachai/shared':
         specifier: workspace:*
         version: link:../packages/shared
       '@aws-sdk/client-s3':
@@ -624,34 +624,34 @@ importers:
 
   ui:
     dependencies:
-      '@abacus-lab/adapter-claude-local':
+      '@runeachai/adapter-claude-local':
         specifier: workspace:*
         version: link:../packages/adapters/claude-local
-      '@abacus-lab/adapter-codebuddy-local':
+      '@runeachai/adapter-codebuddy-local':
         specifier: workspace:*
         version: link:../packages/adapters/codebuddy-local
-      '@abacus-lab/adapter-codex-local':
+      '@runeachai/adapter-codex-local':
         specifier: workspace:*
         version: link:../packages/adapters/codex-local
-      '@abacus-lab/adapter-cursor-local':
+      '@runeachai/adapter-cursor-local':
         specifier: workspace:*
         version: link:../packages/adapters/cursor-local
-      '@abacus-lab/adapter-gemini-local':
+      '@runeachai/adapter-gemini-local':
         specifier: workspace:*
         version: link:../packages/adapters/gemini-local
-      '@abacus-lab/adapter-openclaw-gateway':
+      '@runeachai/adapter-openclaw-gateway':
         specifier: workspace:*
         version: link:../packages/adapters/openclaw-gateway
-      '@abacus-lab/adapter-opencode-local':
+      '@runeachai/adapter-opencode-local':
         specifier: workspace:*
         version: link:../packages/adapters/opencode-local
-      '@abacus-lab/adapter-pi-local':
+      '@runeachai/adapter-pi-local':
         specifier: workspace:*
         version: link:../packages/adapters/pi-local
-      '@abacus-lab/adapter-utils':
+      '@runeachai/adapter-utils':
         specifier: workspace:*
         version: link:../packages/adapter-utils
-      '@abacus-lab/shared':
+      '@runeachai/shared':
         specifier: workspace:*
         version: link:../packages/shared
       '@dnd-kit/core':

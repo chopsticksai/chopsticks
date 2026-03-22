@@ -1,14 +1,14 @@
 #!/bin/bash -ex
-export PC_TEST_ROOT="$(mktemp -d /tmp/abacus-clean.XXXXXX)"
+export PC_TEST_ROOT="$(mktemp -d /tmp/runeach-clean.XXXXXX)"
 export PC_HOME="$PC_TEST_ROOT/home"
 export PC_CACHE="$PC_TEST_ROOT/npm-cache"
-export PC_DATA="$PC_TEST_ROOT/abacus-data"
+export PC_DATA="$PC_TEST_ROOT/runeach-data"
 mkdir -p "$PC_HOME" "$PC_CACHE" "$PC_DATA"
 echo "PC_TEST_ROOT: $PC_TEST_ROOT"
 echo "PC_HOME: $PC_HOME"
 cd $PC_TEST_ROOT
-git clone https://github.com/abacus-lab/abacus.git repo
+git clone https://github.com/runeachai/runeach.git repo
 cd repo
 pnpm install
 env HOME="$PC_HOME" npm_config_cache="$PC_CACHE" npm_config_userconfig="$PC_HOME/.npmrc" \
-  pnpm abacus onboard --yes --data-dir "$PC_DATA"
+  pnpm runeach onboard --yes --data-dir "$PC_DATA"

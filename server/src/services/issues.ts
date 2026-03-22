@@ -1,5 +1,5 @@
 import { and, asc, desc, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
 import {
   agents,
   assets,
@@ -18,8 +18,8 @@ import {
   labels,
   projectWorkspaces,
   projects,
-} from "@abacus-lab/db";
-import { extractProjectMentionIds } from "@abacus-lab/shared";
+} from "@runeachai/db";
+import { extractProjectMentionIds } from "@runeachai/shared";
 import { conflict, notFound, unprocessable } from "../errors.js";
 import {
   defaultIssueExecutionWorkspaceSettingsForProject,

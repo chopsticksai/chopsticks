@@ -8,16 +8,16 @@ import { resolveCommandContext } from "../commands/client/common.js";
 const ORIGINAL_ENV = { ...process.env };
 
 function createTempPath(name: string): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-cli-common-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-cli-common-"));
   return path.join(dir, name);
 }
 
 describe("resolveCommandContext", () => {
   beforeEach(() => {
     process.env = { ...ORIGINAL_ENV };
-    delete process.env.ABACUS_API_URL;
-    delete process.env.ABACUS_API_KEY;
-    delete process.env.ABACUS_COMPANY_ID;
+    delete process.env.RUNEACH_API_URL;
+    delete process.env.RUNEACH_API_KEY;
+    delete process.env.RUNEACH_COMPANY_ID;
   });
 
   afterEach(() => {

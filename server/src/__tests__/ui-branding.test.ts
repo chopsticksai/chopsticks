@@ -3,19 +3,19 @@ import { applyUiBranding, isWorktreeUiBrandingEnabled, renderFaviconLinks } from
 
 const TEMPLATE = `<!doctype html>
 <head>
-    <!-- ABACUS_FAVICON_START -->
+    <!-- RUNEACH_FAVICON_START -->
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <!-- ABACUS_FAVICON_END -->
+    <!-- RUNEACH_FAVICON_END -->
 </head>`;
 
 describe("ui branding", () => {
-  it("detects worktree mode from ABACUS_IN_WORKTREE", () => {
-    expect(isWorktreeUiBrandingEnabled({ ABACUS_IN_WORKTREE: "true" })).toBe(true);
-    expect(isWorktreeUiBrandingEnabled({ ABACUS_IN_WORKTREE: "1" })).toBe(true);
-    expect(isWorktreeUiBrandingEnabled({ ABACUS_IN_WORKTREE: "false" })).toBe(false);
+  it("detects worktree mode from RUNEACH_IN_WORKTREE", () => {
+    expect(isWorktreeUiBrandingEnabled({ RUNEACH_IN_WORKTREE: "true" })).toBe(true);
+    expect(isWorktreeUiBrandingEnabled({ RUNEACH_IN_WORKTREE: "1" })).toBe(true);
+    expect(isWorktreeUiBrandingEnabled({ RUNEACH_IN_WORKTREE: "false" })).toBe(false);
   });
 
   it("renders the worktree favicon asset set when enabled", () => {
@@ -27,7 +27,7 @@ describe("ui branding", () => {
   });
 
   it("rewrites the favicon block for worktree instances only", () => {
-    const branded = applyUiBranding(TEMPLATE, { ABACUS_IN_WORKTREE: "true" });
+    const branded = applyUiBranding(TEMPLATE, { RUNEACH_IN_WORKTREE: "true" });
     expect(branded).toContain("/worktree-favicon.svg");
     expect(branded).not.toContain('href="/favicon.svg"');
 

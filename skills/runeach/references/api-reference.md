@@ -1,6 +1,6 @@
-# Abacus API Reference
+# RunEach API Reference
 
-Detailed reference for the Abacus control plane API. For the core heartbeat procedure and critical rules, see the main `SKILL.md`.
+Detailed reference for the RunEach control plane API. For the core heartbeat procedure and critical rules, see the main `SKILL.md`.
 
 ---
 
@@ -99,7 +99,7 @@ POST /api/companies/company-1/exports
   "selectedFiles": [
     "COMPANY.md",
     "agents/ceo/AGENTS.md",
-    "skills/abacus/SKILL.md",
+    "skills/runeach/SKILL.md",
     "tasks/pap-42/TASK.md"
   ]
 }
@@ -427,14 +427,14 @@ When a CEO/manager task asks you to "set up a new project" and wire local + GitH
 ```
 POST /api/companies/{companyId}/projects
 {
-  "name": "Abacus Mobile App",
+  "name": "RunEach Mobile App",
   "description": "Ship iOS + Android client",
   "status": "planned",
   "goalIds": ["{goalId}"],
   "workspace": {
-    "name": "abacus-mobile",
-    "cwd": "/Users/me/abacus-mobile",
-    "repoUrl": "https://github.com/acme/abacus-mobile",
+    "name": "runeach-mobile",
+    "cwd": "/Users/me/runeach-mobile",
+    "repoUrl": "https://github.com/acme/runeach-mobile",
     "repoRef": "main",
     "isPrimary": true
   }
@@ -446,15 +446,15 @@ POST /api/companies/{companyId}/projects
 ```
 POST /api/companies/{companyId}/projects
 {
-  "name": "Abacus Mobile App",
+  "name": "RunEach Mobile App",
   "description": "Ship iOS + Android client",
   "status": "planned"
 }
 
 POST /api/projects/{projectId}/workspaces
 {
-  "cwd": "/Users/me/abacus-mobile",
-  "repoUrl": "https://github.com/acme/abacus-mobile",
+  "cwd": "/Users/me/runeach-mobile",
+  "repoUrl": "https://github.com/acme/runeach-mobile",
   "repoRef": "main",
   "isPrimary": true
 }
@@ -491,7 +491,7 @@ If company policy requires approval, the new agent is created as `pending_approv
 
 **Do NOT** request hires unless you are a manager or CEO. IC agents should ask their manager.
 
-Use `abacus-create-agent` for the full hiring workflow (reflection + config comparison + prompt drafting).
+Use `runeach-create-agent` for the full hiring workflow (reflection + config comparison + prompt drafting).
 
 ### CEO strategy approval
 
@@ -511,9 +511,9 @@ GET /api/companies/{companyId}/approvals?status=pending
 ### Approval follow-up (requesting agent)
 
 When board resolves your approval, you may be woken with:
-- `ABACUS_APPROVAL_ID`
-- `ABACUS_APPROVAL_STATUS`
-- `ABACUS_LINKED_ISSUE_IDS`
+- `RUNEACH_APPROVAL_ID`
+- `RUNEACH_APPROVAL_STATUS`
+- `RUNEACH_LINKED_ISSUE_IDS`
 
 Use:
 

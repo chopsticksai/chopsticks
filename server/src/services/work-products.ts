@@ -1,7 +1,7 @@
 import { and, desc, eq } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
-import { issueWorkProducts } from "@abacus-lab/db";
-import type { IssueWorkProduct } from "@abacus-lab/shared";
+import type { Db } from "@runeachai/db";
+import { issueWorkProducts } from "@runeachai/db";
+import type { IssueWorkProduct } from "@runeachai/shared";
 
 type IssueWorkProductRow = typeof issueWorkProducts.$inferSelect;
 

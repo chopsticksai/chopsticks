@@ -1,20 +1,20 @@
 FROM ubuntu:24.04
 
 ARG NODE_MAJOR=20
-ARG ABACUS_VERSION=latest
+ARG RUNEACH_VERSION=latest
 ARG HOST_UID=10001
 
 ENV DEBIAN_FRONTEND=noninteractive \
-  ABACUS_HOME=/abacus \
-  ABACUS_OPEN_ON_LISTEN=false \
+  RUNEACH_HOME=/runeach \
+  RUNEACH_OPEN_ON_LISTEN=false \
   HOST=0.0.0.0 \
   PORT=3100 \
-  HOME=/home/abacus \
+  HOME=/home/runeach \
   LANG=en_US.UTF-8 \
   LC_ALL=en_US.UTF-8 \
   NPM_CONFIG_UPDATE_NOTIFIER=false \
   NODE_MAJOR=${NODE_MAJOR} \
-  ABACUS_VERSION=${ABACUS_VERSION}
+  RUNEACH_VERSION=${RUNEACH_VERSION}
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends ca-certificates curl gnupg locales \
@@ -26,15 +26,15 @@ RUN apt-get update \
   && apt-get update \
   && apt-get install -y --no-install-recommends nodejs \
   && locale-gen en_US.UTF-8 \
-  && groupadd --gid 10001 abacus \
-  && useradd --create-home --shell /bin/bash --uid "${HOST_UID}" --gid 10001 abacus \
-  && mkdir -p /abacus /home/abacus/workspace \
-  && chown -R abacus:abacus /abacus /home/abacus \
+  && groupadd --gid 10001 runeach \
+  && useradd --create-home --shell /bin/bash --uid "${HOST_UID}" --gid 10001 runeach \
+  && mkdir -p /runeach /home/runeach/workspace \
+  && chown -R runeach:runeach /runeach /home/runeach \
   && rm -rf /var/lib/apt/lists/*
 
-VOLUME ["/abacus"]
-WORKDIR /home/abacus/workspace
+VOLUME ["/runeach"]
+WORKDIR /home/runeach/workspace
 EXPOSE 3100
-USER abacus
+USER runeach
 
-CMD ["bash", "-lc", "set -euo pipefail; mkdir -p \"$ABACUS_HOME\"; npx --yes \"@abacus-lab/abacus@${ABACUS_VERSION}\" onboard --yes --data-dir \"$ABACUS_HOME\""]
+CMD ["bash", "-lc", "set -euo pipefail; mkdir -p \"$RUNEACH_HOME\"; npx --yes \"@runeachai/runeach@${RUNEACH_VERSION}\" onboard --yes --data-dir \"$RUNEACH_HOME\""]

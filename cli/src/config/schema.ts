@@ -1,5 +1,5 @@
 export {
-  abacusConfigSchema,
+  runeachConfigSchema,
   configMetaSchema,
   llmConfigSchema,
   databaseBackupConfigSchema,
@@ -12,7 +12,7 @@ export {
   storageS3ConfigSchema,
   secretsConfigSchema,
   secretsLocalEncryptedConfigSchema,
-  type AbacusConfig,
+  type RunEachConfig,
   type LlmConfig,
   type DatabaseBackupConfig,
   type DatabaseConfig,
@@ -25,4 +25,4 @@ export {
   type SecretsConfig,
   type SecretsLocalEncryptedConfig,
   type ConfigMeta,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";

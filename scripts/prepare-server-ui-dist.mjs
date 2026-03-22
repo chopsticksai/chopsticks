@@ -10,8 +10,8 @@ const uiDist = path.resolve(repoRoot, "ui", "dist");
 const serverUiDist = path.resolve(repoRoot, "server", "ui-dist");
 const uiIndexHtml = path.resolve(uiDist, "index.html");
 
-console.log("  -> Building @abacus-lab/ui...");
-runPnpm(["--dir", repoRoot, "--filter", "@abacus-lab/ui", "build"], { cwd: repoRoot });
+console.log("  -> Building @runeachai/ui...");
+runPnpm(["--dir", repoRoot, "--filter", "@runeachai/ui", "build"], { cwd: repoRoot });
 
 if (!existsSync(uiIndexHtml)) {
   throw new Error(`UI build output missing at ${uiIndexHtml}`);

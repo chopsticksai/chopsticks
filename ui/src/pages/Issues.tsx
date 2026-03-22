@@ -113,7 +113,7 @@ export function Issues() {
       agents={agents}
       projects={projects}
       liveIssueIds={liveIssueIds}
-      viewStateKey="abacus:issues-view"
+      viewStateKey="runeach:issues-view"
       issueLinkState={issueLinkState}
       initialAssignees={searchParams.get("assignee") ? [searchParams.get("assignee")!] : undefined}
       initialSearch={initialSearch}

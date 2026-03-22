@@ -2,8 +2,8 @@ import type {
   AdapterExecutionContext,
   AdapterExecutionResult,
   AdapterRuntimeServiceReport,
-} from "@abacus-lab/adapter-utils";
-import { asNumber, asString, buildAbacusEnv, parseObject } from "@abacus-lab/adapter-utils/server-utils";
+} from "@runeachai/adapter-utils";
+import { asNumber, asString, buildRunEachEnv, parseObject } from "@runeachai/adapter-utils/server-utils";
 import crypto, { randomUUID } from "node:crypto";
 import { WebSocket } from "ws";
 
@@ -82,7 +82,7 @@ const PROTOCOL_VERSION = 3;
 const DEFAULT_SCOPES = ["operator.admin"];
 const DEFAULT_CLIENT_ID = "gateway-client";
 const DEFAULT_CLIENT_MODE = "backend";
-const DEFAULT_CLIENT_VERSION = "abacus";
+const DEFAULT_CLIENT_VERSION = "runeach";
 const DEFAULT_ROLE = "operator";
 
 const SENSITIVE_LOG_KEY_PATTERN =
@@ -132,9 +132,9 @@ function resolveSessionKey(input: {
   runId: string;
   issueId: string | null;
 }): string {
-  const fallback = input.configuredSessionKey ?? "abacus";
-  if (input.strategy === "run") return `abacus:run:${input.runId}`;
-  if (input.strategy === "issue" && input.issueId) return `abacus:issue:${input.issueId}`;
+  const fallback = input.configuredSessionKey ?? "runeach";
+  if (input.strategy === "run") return `runeach:run:${input.runId}`;
+  if (input.strategy === "issue" && input.issueId) return `runeach:issue:${input.issueId}`;
   return fallback;
 }
 
@@ -301,7 +301,7 @@ function buildWakePayload(ctx: AdapterExecutionContext): WakePayload {
   };
 }
 
-function resolveAbacusApiUrlOverride(value: unknown): string | null {
+function resolveRunEachApiUrlOverride(value: unknown): string | null {
   const raw = nonEmpty(value);
   if (!raw) return null;
   try {
@@ -313,63 +313,63 @@ function resolveAbacusApiUrlOverride(value: unknown): string | null {
   }
 }
 
-function buildAbacusEnvForWake(ctx: AdapterExecutionContext, wakePayload: WakePayload): Record<string, string> {
-  const abacusApiUrlOverride = resolveAbacusApiUrlOverride(ctx.config.abacusApiUrl);
-  const abacusEnv: Record<string, string> = {
-    ...buildAbacusEnv(ctx.agent),
-    ABACUS_RUN_ID: ctx.runId,
+function buildRunEachEnvForWake(ctx: AdapterExecutionContext, wakePayload: WakePayload): Record<string, string> {
+  const runeachApiUrlOverride = resolveRunEachApiUrlOverride(ctx.config.runeachApiUrl);
+  const runeachEnv: Record<string, string> = {
+    ...buildRunEachEnv(ctx.agent),
+    RUNEACH_RUN_ID: ctx.runId,
   };
 
-  if (abacusApiUrlOverride) {
-    abacusEnv.ABACUS_API_URL = abacusApiUrlOverride;
+  if (runeachApiUrlOverride) {
+    runeachEnv.RUNEACH_API_URL = runeachApiUrlOverride;
   }
-  if (wakePayload.taskId) abacusEnv.ABACUS_TASK_ID = wakePayload.taskId;
-  if (wakePayload.wakeReason) abacusEnv.ABACUS_WAKE_REASON = wakePayload.wakeReason;
-  if (wakePayload.wakeCommentId) abacusEnv.ABACUS_WAKE_COMMENT_ID = wakePayload.wakeCommentId;
-  if (wakePayload.approvalId) abacusEnv.ABACUS_APPROVAL_ID = wakePayload.approvalId;
-  if (wakePayload.approvalStatus) abacusEnv.ABACUS_APPROVAL_STATUS = wakePayload.approvalStatus;
+  if (wakePayload.taskId) runeachEnv.RUNEACH_TASK_ID = wakePayload.taskId;
+  if (wakePayload.wakeReason) runeachEnv.RUNEACH_WAKE_REASON = wakePayload.wakeReason;
+  if (wakePayload.wakeCommentId) runeachEnv.RUNEACH_WAKE_COMMENT_ID = wakePayload.wakeCommentId;
+  if (wakePayload.approvalId) runeachEnv.RUNEACH_APPROVAL_ID = wakePayload.approvalId;
+  if (wakePayload.approvalStatus) runeachEnv.RUNEACH_APPROVAL_STATUS = wakePayload.approvalStatus;
   if (wakePayload.issueIds.length > 0) {
-    abacusEnv.ABACUS_LINKED_ISSUE_IDS = wakePayload.issueIds.join(",");
+    runeachEnv.RUNEACH_LINKED_ISSUE_IDS = wakePayload.issueIds.join(",");
   }
 
-  return abacusEnv;
+  return runeachEnv;
 }
 
-function buildWakeText(payload: WakePayload, abacusEnv: Record<string, string>): string {
-  const claimedApiKeyPath = "~/.openclaw/workspace/abacus-claimed-api-key.json";
+function buildWakeText(payload: WakePayload, runeachEnv: Record<string, string>): string {
+  const claimedApiKeyPath = "~/.openclaw/workspace/runeach-claimed-api-key.json";
   const orderedKeys = [
-    "ABACUS_RUN_ID",
-    "ABACUS_AGENT_ID",
-    "ABACUS_COMPANY_ID",
-    "ABACUS_API_URL",
-    "ABACUS_TASK_ID",
-    "ABACUS_WAKE_REASON",
-    "ABACUS_WAKE_COMMENT_ID",
-    "ABACUS_APPROVAL_ID",
-    "ABACUS_APPROVAL_STATUS",
-    "ABACUS_LINKED_ISSUE_IDS",
+    "RUNEACH_RUN_ID",
+    "RUNEACH_AGENT_ID",
+    "RUNEACH_COMPANY_ID",
+    "RUNEACH_API_URL",
+    "RUNEACH_TASK_ID",
+    "RUNEACH_WAKE_REASON",
+    "RUNEACH_WAKE_COMMENT_ID",
+    "RUNEACH_APPROVAL_ID",
+    "RUNEACH_APPROVAL_STATUS",
+    "RUNEACH_LINKED_ISSUE_IDS",
   ];
 
   const envLines: string[] = [];
   for (const key of orderedKeys) {
-    const value = abacusEnv[key];
+    const value = runeachEnv[key];
     if (!value) continue;
     envLines.push(`${key}=${value}`);
   }
 
   const issueIdHint = payload.taskId ?? payload.issueId ?? "";
-  const apiBaseHint = abacusEnv.ABACUS_API_URL ?? "<set ABACUS_API_URL>";
+  const apiBaseHint = runeachEnv.RUNEACH_API_URL ?? "<set RUNEACH_API_URL>";
 
   const lines = [
-    "Abacus wake event for a cloud adapter.",
+    "RunEach wake event for a cloud adapter.",
     "",
     "Run this procedure now. Do not guess undocumented endpoints and do not ask for additional heartbeat docs.",
     "",
     "Set these values in your run context:",
     ...envLines,
-    `ABACUS_API_KEY=<token from ${claimedApiKeyPath}>`,
+    `RUNEACH_API_KEY=<token from ${claimedApiKeyPath}>`,
     "",
-    `Load ABACUS_API_KEY from ${claimedApiKeyPath} (the token you saved after claim-api-key).`,
+    `Load RUNEACH_API_KEY from ${claimedApiKeyPath} (the token you saved after claim-api-key).`,
     "",
     `api_base=${apiBaseHint}`,
     `task_id=${payload.taskId ?? ""}`,
@@ -381,23 +381,23 @@ function buildWakeText(payload: WakePayload, abacusEnv: Record<string, string>):
     `linked_issue_ids=${payload.issueIds.join(",")}`,
     "",
     "HTTP rules:",
-    "- Use Authorization: Bearer $ABACUS_API_KEY on every API call.",
-    "- Use X-Abacus-Run-Id: $ABACUS_RUN_ID on every mutating API call.",
+    "- Use Authorization: Bearer $RUNEACH_API_KEY on every API call.",
+    "- Use X-RunEach-Run-Id: $RUNEACH_RUN_ID on every mutating API call.",
     "- Use only /api endpoints listed below.",
     "- Do NOT call guessed endpoints like /api/cloud-adapter/*, /api/cloud-adapters/*, /api/adapters/cloud/*, or /api/heartbeat.",
     "",
     "Workflow:",
     "1) GET /api/agents/me",
-    `2) Determine issueId: ABACUS_TASK_ID if present, otherwise issue_id (${issueIdHint}).`,
+    `2) Determine issueId: RUNEACH_TASK_ID if present, otherwise issue_id (${issueIdHint}).`,
     "3) If issueId exists:",
-    "   - POST /api/issues/{issueId}/checkout with {\"agentId\":\"$ABACUS_AGENT_ID\",\"expectedStatuses\":[\"todo\",\"backlog\",\"blocked\"]}",
+    "   - POST /api/issues/{issueId}/checkout with {\"agentId\":\"$RUNEACH_AGENT_ID\",\"expectedStatuses\":[\"todo\",\"backlog\",\"blocked\"]}",
     "   - GET /api/issues/{issueId}",
     "   - GET /api/issues/{issueId}/comments",
     "   - Execute the issue instructions exactly.",
     "   - If instructions require a comment, POST /api/issues/{issueId}/comments with {\"body\":\"...\"}.",
     "   - PATCH /api/issues/{issueId} with {\"status\":\"done\",\"comment\":\"what changed and why\"}.",
     "4) If issueId does not exist:",
-    "   - GET /api/companies/$ABACUS_COMPANY_ID/issues?assigneeAgentId=$ABACUS_AGENT_ID&status=todo,in_progress,blocked",
+    "   - GET /api/companies/$RUNEACH_COMPANY_ID/issues?assigneeAgentId=$RUNEACH_AGENT_ID&status=todo,in_progress,blocked",
     "   - Pick in_progress first, then todo, then blocked, then execute step 3.",
     "",
     "Useful endpoints for issue work:",
@@ -415,25 +415,25 @@ function appendWakeText(baseText: string, wakeText: string): string {
   return trimmedBase.length > 0 ? `${trimmedBase}\n\n${wakeText}` : wakeText;
 }
 
-function buildStandardAbacusPayload(
+function buildStandardRunEachPayload(
   ctx: AdapterExecutionContext,
   wakePayload: WakePayload,
-  abacusEnv: Record<string, string>,
+  runeachEnv: Record<string, string>,
   payloadTemplate: Record<string, unknown>,
 ): Record<string, unknown> {
-  const templateAbacus = parseObject(payloadTemplate.abacus);
-  const workspace = asRecord(ctx.context.abacusWorkspace);
-  const workspaces = Array.isArray(ctx.context.abacusWorkspaces)
-    ? ctx.context.abacusWorkspaces.filter((entry): entry is Record<string, unknown> => Boolean(asRecord(entry)))
+  const templateRunEach = parseObject(payloadTemplate.runeach);
+  const workspace = asRecord(ctx.context.runeachWorkspace);
+  const workspaces = Array.isArray(ctx.context.runeachWorkspaces)
+    ? ctx.context.runeachWorkspaces.filter((entry): entry is Record<string, unknown> => Boolean(asRecord(entry)))
     : [];
   const configuredWorkspaceRuntime = parseObject(ctx.config.workspaceRuntime);
-  const runtimeServiceIntents = Array.isArray(ctx.context.abacusRuntimeServiceIntents)
-    ? ctx.context.abacusRuntimeServiceIntents.filter(
+  const runtimeServiceIntents = Array.isArray(ctx.context.runeachRuntimeServiceIntents)
+    ? ctx.context.runeachRuntimeServiceIntents.filter(
       (entry): entry is Record<string, unknown> => Boolean(asRecord(entry)),
     )
     : [];
 
-  const standardAbacus: Record<string, unknown> = {
+  const standardRunEach: Record<string, unknown> = {
     runId: ctx.runId,
     companyId: ctx.agent.companyId,
     agentId: ctx.agent.id,
@@ -445,25 +445,25 @@ function buildStandardAbacusPayload(
     wakeCommentId: wakePayload.wakeCommentId,
     approvalId: wakePayload.approvalId,
     approvalStatus: wakePayload.approvalStatus,
-    apiUrl: abacusEnv.ABACUS_API_URL ?? null,
+    apiUrl: runeachEnv.RUNEACH_API_URL ?? null,
   };
 
   if (workspace) {
-    standardAbacus.workspace = workspace;
+    standardRunEach.workspace = workspace;
   }
   if (workspaces.length > 0) {
-    standardAbacus.workspaces = workspaces;
+    standardRunEach.workspaces = workspaces;
   }
   if (runtimeServiceIntents.length > 0 || Object.keys(configuredWorkspaceRuntime).length > 0) {
-    standardAbacus.workspaceRuntime = {
+    standardRunEach.workspaceRuntime = {
       ...configuredWorkspaceRuntime,
       ...(runtimeServiceIntents.length > 0 ? { services: runtimeServiceIntents } : {}),
     };
   }
 
   return {
-    ...templateAbacus,
-    ...standardAbacus,
+    ...templateRunEach,
+    ...standardRunEach,
   };
 }
 
@@ -713,7 +713,7 @@ class GatewayWsClient {
 
   close() {
     if (!this.ws) return;
-    this.ws.close(1000, "abacus-complete");
+    this.ws.close(1000, "runeach-complete");
     this.ws = null;
   }
 
@@ -1052,8 +1052,8 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const disableDeviceAuth = parseBoolean(ctx.config.disableDeviceAuth, false);
 
   const wakePayload = buildWakePayload(ctx);
-  const abacusEnv = buildAbacusEnvForWake(ctx, wakePayload);
-  const wakeText = buildWakeText(wakePayload, abacusEnv);
+  const runeachEnv = buildRunEachEnvForWake(ctx, wakePayload);
+  const wakeText = buildWakeText(wakePayload, runeachEnv);
 
   const sessionKeyStrategy = normalizeSessionKeyStrategy(ctx.config.sessionKeyStrategy);
   const configuredSessionKey = nonEmpty(ctx.config.sessionKey);
@@ -1066,7 +1066,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const templateMessage = nonEmpty(payloadTemplate.message) ?? nonEmpty(payloadTemplate.text);
   const message = templateMessage ? appendWakeText(templateMessage, wakeText) : wakeText;
-  const abacusPayload = buildStandardAbacusPayload(ctx, wakePayload, abacusEnv, payloadTemplate);
+  const runeachPayload = buildStandardRunEachPayload(ctx, wakePayload, runeachEnv, payloadTemplate);
 
   const agentParams: Record<string, unknown> = {
     ...payloadTemplate,

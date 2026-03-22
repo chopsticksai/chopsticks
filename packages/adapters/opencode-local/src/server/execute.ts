@@ -2,27 +2,27 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { inferOpenAiCompatibleBiller, type AdapterExecutionContext, type AdapterExecutionResult } from "@abacus-lab/adapter-utils";
+import { inferOpenAiCompatibleBiller, type AdapterExecutionContext, type AdapterExecutionResult } from "@runeachai/adapter-utils";
 import {
   asString,
   asNumber,
   asStringArray,
   parseObject,
-  buildAbacusEnv,
+  buildRunEachEnv,
   joinPromptSections,
   redactEnvForLogs,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
-  ensureAbacusSkillSymlink,
+  ensureRunEachSkillSymlink,
   ensurePathInEnv,
   renderTemplate,
   runChildProcess,
-  readAbacusRuntimeSkillEntries,
-  resolveAbacusDesiredSkillNames,
-} from "@abacus-lab/adapter-utils/server-utils";
+  readRunEachRuntimeSkillEntries,
+  resolveRunEachDesiredSkillNames,
+} from "@runeachai/adapter-utils/server-utils";
 import { isOpenCodeUnknownSessionError, parseOpenCodeJsonl } from "./parse.js";
 import { ensureOpenCodeModelConfiguredAndAvailable } from "./models.js";
-import { removeMaintainerOnlySkillSymlinks } from "@abacus-lab/adapter-utils/server-utils";
+import { removeMaintainerOnlySkillSymlinks } from "@runeachai/adapter-utils/server-utils";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -66,23 +66,23 @@ async function ensureOpenCodeSkillsInjected(
   for (const skillName of removedSkills) {
     await onLog(
       "stderr",
-      `[abacus] Removed maintainer-only OpenCode skill "${skillName}" from ${skillsHome}\n`,
+      `[runeach] Removed maintainer-only OpenCode skill "${skillName}" from ${skillsHome}\n`,
     );
   }
   for (const entry of selectedEntries) {
     const target = path.join(skillsHome, entry.runtimeName);
 
     try {
-      const result = await ensureAbacusSkillSymlink(entry.source, target);
+      const result = await ensureRunEachSkillSymlink(entry.source, target);
       if (result === "skipped") continue;
       await onLog(
         "stderr",
-        `[abacus] ${result === "repaired" ? "Repaired" : "Injected"} OpenCode skill "${entry.key}" into ${skillsHome}\n`,
+        `[runeach] ${result === "repaired" ? "Repaired" : "Injected"} OpenCode skill "${entry.key}" into ${skillsHome}\n`,
       );
     } catch (err) {
       await onLog(
         "stderr",
-        `[abacus] Failed to inject OpenCode skill "${entry.key}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
+        `[runeach] Failed to inject OpenCode skill "${entry.key}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
       );
     }
   }
@@ -93,21 +93,21 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Abacus work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your RunEach work.",
   );
   const command = asString(config.command, "opencode");
   const model = asString(config.model, "").trim();
   const variant = asString(config.variant, "").trim();
 
-  const workspaceContext = parseObject(context.abacusWorkspace);
+  const workspaceContext = parseObject(context.runeachWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceId = asString(workspaceContext.workspaceId, "");
   const workspaceRepoUrl = asString(workspaceContext.repoUrl, "");
   const workspaceRepoRef = asString(workspaceContext.repoRef, "");
   const agentHome = asString(workspaceContext.agentHome, "");
-  const workspaceHints = Array.isArray(context.abacusWorkspaces)
-    ? context.abacusWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.runeachWorkspaces)
+    ? context.runeachWorkspaces.filter(
         (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
       )
     : [];
@@ -116,8 +116,8 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const effectiveWorkspaceCwd = useConfiguredInsteadOfAgentHome ? "" : workspaceCwd;
   const cwd = effectiveWorkspaceCwd || configuredCwd || process.cwd();
   await ensureAbsoluteDirectory(cwd, { createIfMissing: true });
-  const openCodeSkillEntries = await readAbacusRuntimeSkillEntries(config, __moduleDir);
-  const desiredOpenCodeSkillNames = resolveAbacusDesiredSkillNames(config, openCodeSkillEntries);
+  const openCodeSkillEntries = await readRunEachRuntimeSkillEntries(config, __moduleDir);
+  const desiredOpenCodeSkillNames = resolveRunEachDesiredSkillNames(config, openCodeSkillEntries);
   await ensureOpenCodeSkillsInjected(
     onLog,
     openCodeSkillEntries,
@@ -126,9 +126,9 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const envConfig = parseObject(config.env);
   const hasExplicitApiKey =
-    typeof envConfig.ABACUS_API_KEY === "string" && envConfig.ABACUS_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildAbacusEnv(agent) };
-  env.ABACUS_RUN_ID = runId;
+    typeof envConfig.RUNEACH_API_KEY === "string" && envConfig.RUNEACH_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildRunEachEnv(agent) };
+  env.RUNEACH_RUN_ID = runId;
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
     (typeof context.issueId === "string" && context.issueId.trim().length > 0 && context.issueId.trim()) ||
@@ -152,25 +152,25 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const linkedIssueIds = Array.isArray(context.issueIds)
     ? context.issueIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     : [];
-  if (wakeTaskId) env.ABACUS_TASK_ID = wakeTaskId;
-  if (wakeReason) env.ABACUS_WAKE_REASON = wakeReason;
-  if (wakeCommentId) env.ABACUS_WAKE_COMMENT_ID = wakeCommentId;
-  if (approvalId) env.ABACUS_APPROVAL_ID = approvalId;
-  if (approvalStatus) env.ABACUS_APPROVAL_STATUS = approvalStatus;
-  if (linkedIssueIds.length > 0) env.ABACUS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
-  if (effectiveWorkspaceCwd) env.ABACUS_WORKSPACE_CWD = effectiveWorkspaceCwd;
-  if (workspaceSource) env.ABACUS_WORKSPACE_SOURCE = workspaceSource;
-  if (workspaceId) env.ABACUS_WORKSPACE_ID = workspaceId;
-  if (workspaceRepoUrl) env.ABACUS_WORKSPACE_REPO_URL = workspaceRepoUrl;
-  if (workspaceRepoRef) env.ABACUS_WORKSPACE_REPO_REF = workspaceRepoRef;
+  if (wakeTaskId) env.RUNEACH_TASK_ID = wakeTaskId;
+  if (wakeReason) env.RUNEACH_WAKE_REASON = wakeReason;
+  if (wakeCommentId) env.RUNEACH_WAKE_COMMENT_ID = wakeCommentId;
+  if (approvalId) env.RUNEACH_APPROVAL_ID = approvalId;
+  if (approvalStatus) env.RUNEACH_APPROVAL_STATUS = approvalStatus;
+  if (linkedIssueIds.length > 0) env.RUNEACH_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+  if (effectiveWorkspaceCwd) env.RUNEACH_WORKSPACE_CWD = effectiveWorkspaceCwd;
+  if (workspaceSource) env.RUNEACH_WORKSPACE_SOURCE = workspaceSource;
+  if (workspaceId) env.RUNEACH_WORKSPACE_ID = workspaceId;
+  if (workspaceRepoUrl) env.RUNEACH_WORKSPACE_REPO_URL = workspaceRepoUrl;
+  if (workspaceRepoRef) env.RUNEACH_WORKSPACE_REPO_REF = workspaceRepoRef;
   if (agentHome) env.AGENT_HOME = agentHome;
-  if (workspaceHints.length > 0) env.ABACUS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+  if (workspaceHints.length > 0) env.RUNEACH_WORKSPACES_JSON = JSON.stringify(workspaceHints);
 
   for (const [key, value] of Object.entries(envConfig)) {
     if (typeof value === "string") env[key] = value;
   }
   if (!hasExplicitApiKey && authToken) {
-    env.ABACUS_API_KEY = authToken;
+    env.RUNEACH_API_KEY = authToken;
   }
   const runtimeEnv = Object.fromEntries(
     Object.entries(ensurePathInEnv({ ...process.env, ...env })).filter(
@@ -204,7 +204,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   if (runtimeSessionId && !canResumeSession) {
     await onLog(
       "stdout",
-      `[abacus] OpenCode session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[runeach] OpenCode session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
 
@@ -223,13 +223,13 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
         `Resolve any relative file references from ${instructionsDir}.\n\n`;
       await onLog(
         "stdout",
-        `[abacus] Loaded agent instructions file: ${resolvedInstructionsFilePath}\n`,
+        `[runeach] Loaded agent instructions file: ${resolvedInstructionsFilePath}\n`,
       );
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
       await onLog(
         "stdout",
-        `[abacus] Warning: could not read agent instructions file "${resolvedInstructionsFilePath}": ${reason}\n`,
+        `[runeach] Warning: could not read agent instructions file "${resolvedInstructionsFilePath}": ${reason}\n`,
       );
     }
   }
@@ -262,7 +262,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     !sessionId && bootstrapPromptTemplate.trim().length > 0
       ? renderTemplate(bootstrapPromptTemplate, templateData).trim()
       : "";
-  const sessionHandoffNote = asString(context.abacusSessionHandoffMarkdown, "").trim();
+  const sessionHandoffNote = asString(context.runeachSessionHandoffMarkdown, "").trim();
   const prompt = joinPromptSections([
     instructionsPrefix,
     renderedBootstrapPrompt,
@@ -396,7 +396,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stdout",
-      `[abacus] OpenCode session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
+      `[runeach] OpenCode session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
     );
     const retry = await runAttempt(null);
     return toResult(retry, true);

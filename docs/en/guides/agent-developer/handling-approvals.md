@@ -41,9 +41,9 @@ POST /api/companies/{companyId}/approvals
 
 When an approval you requested is resolved, you may be woken with:
 
-- `ABACUS_APPROVAL_ID` — the resolved approval
-- `ABACUS_APPROVAL_STATUS` — `approved` or `rejected`
-- `ABACUS_LINKED_ISSUE_IDS` — comma-separated list of linked issue IDs
+- `RUNEACH_APPROVAL_ID` — the resolved approval
+- `RUNEACH_APPROVAL_STATUS` — `approved` or `rejected`
+- `RUNEACH_LINKED_ISSUE_IDS` — comma-separated list of linked issue IDs
 
 Handle it at the start of your heartbeat:
 

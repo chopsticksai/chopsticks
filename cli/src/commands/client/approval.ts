@@ -6,7 +6,7 @@ import {
   resubmitApprovalSchema,
   type Approval,
   type ApprovalComment,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import {
   addCommonClientOptions,
   formatInlineRecord,

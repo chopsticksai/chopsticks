@@ -115,10 +115,10 @@ jobs:
       - name: Install Playwright
         run: npx playwright install --with-deps chromium
 
-      - name: Generate Abacus config
+      - name: Generate RunEach config
         run: |
-          mkdir -p ~/.abacus/instances/default
-          cat > ~/.abacus/instances/default/config.json << 'CONF'
+          mkdir -p ~/.runeach/instances/default
+          cat > ~/.runeach/instances/default/config.json << 'CONF'
           {
             "$meta": { "version": 1, "updatedAt": "2026-01-01T00:00:00.000Z", "source": "onboard" },
             "database": { "mode": "embedded-postgres" },
@@ -132,7 +132,7 @@ jobs:
 
       - name: Run e2e tests
         env:
-          ABACUS_E2E_SKIP_LLM: "true"
+          RUNEACH_E2E_SKIP_LLM: "true"
         run: pnpm run test:e2e
 
       - name: Upload Playwright report

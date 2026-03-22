@@ -4,9 +4,9 @@ import net from "node:net";
 import { createHash, randomUUID } from "node:crypto";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
-import type { AdapterRuntimeServiceReport } from "@abacus-lab/adapter-utils";
-import type { Db } from "@abacus-lab/db";
-import { workspaceRuntimeServices } from "@abacus-lab/db";
+import type { AdapterRuntimeServiceReport } from "@runeachai/adapter-utils";
+import type { Db } from "@runeachai/db";
+import { workspaceRuntimeServices } from "@runeachai/db";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { asNumber, asString, parseObject, renderTemplate } from "../adapters/utils.js";
 import { resolveHomeAwarePath } from "../home-paths.js";
@@ -97,7 +97,7 @@ function stableStringify(value: unknown): string {
 export function sanitizeRuntimeServiceBaseEnv(baseEnv: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = { ...baseEnv };
   for (const key of Object.keys(env)) {
-    if (key.startsWith("ABACUS_")) {
+    if (key.startsWith("RUNEACH_")) {
       delete env[key];
     }
   }
@@ -208,7 +208,7 @@ function sanitizeBranchName(value: string): string {
     .replace(/[^A-Za-z0-9._/-]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^[-/.]+|[-/.]+$/g, "")
-    .slice(0, 120) || "abacus-work";
+    .slice(0, 120) || "runeach-work";
 }
 
 function isAbsolutePath(value: string) {
@@ -379,24 +379,24 @@ function buildWorkspaceCommandEnv(input: {
   created: boolean;
 }) {
   const env: NodeJS.ProcessEnv = { ...process.env };
-  env.ABACUS_WORKSPACE_CWD = input.worktreePath;
-  env.ABACUS_WORKSPACE_PATH = input.worktreePath;
-  env.ABACUS_WORKSPACE_WORKTREE_PATH = input.worktreePath;
-  env.ABACUS_WORKSPACE_BRANCH = input.branchName;
-  env.ABACUS_WORKSPACE_BASE_CWD = input.base.baseCwd;
-  env.ABACUS_WORKSPACE_REPO_ROOT = input.repoRoot;
-  env.ABACUS_WORKSPACE_SOURCE = input.base.source;
-  env.ABACUS_WORKSPACE_REPO_REF = input.base.repoRef ?? "";
-  env.ABACUS_WORKSPACE_REPO_URL = input.base.repoUrl ?? "";
-  env.ABACUS_WORKSPACE_CREATED = input.created ? "true" : "false";
-  env.ABACUS_PROJECT_ID = input.base.projectId ?? "";
-  env.ABACUS_PROJECT_WORKSPACE_ID = input.base.workspaceId ?? "";
-  env.ABACUS_AGENT_ID = input.agent.id;
-  env.ABACUS_AGENT_NAME = input.agent.name;
-  env.ABACUS_COMPANY_ID = input.agent.companyId;
-  env.ABACUS_ISSUE_ID = input.issue?.id ?? "";
-  env.ABACUS_ISSUE_IDENTIFIER = input.issue?.identifier ?? "";
-  env.ABACUS_ISSUE_TITLE = input.issue?.title ?? "";
+  env.RUNEACH_WORKSPACE_CWD = input.worktreePath;
+  env.RUNEACH_WORKSPACE_PATH = input.worktreePath;
+  env.RUNEACH_WORKSPACE_WORKTREE_PATH = input.worktreePath;
+  env.RUNEACH_WORKSPACE_BRANCH = input.branchName;
+  env.RUNEACH_WORKSPACE_BASE_CWD = input.base.baseCwd;
+  env.RUNEACH_WORKSPACE_REPO_ROOT = input.repoRoot;
+  env.RUNEACH_WORKSPACE_SOURCE = input.base.source;
+  env.RUNEACH_WORKSPACE_REPO_REF = input.base.repoRef ?? "";
+  env.RUNEACH_WORKSPACE_REPO_URL = input.base.repoUrl ?? "";
+  env.RUNEACH_WORKSPACE_CREATED = input.created ? "true" : "false";
+  env.RUNEACH_PROJECT_ID = input.base.projectId ?? "";
+  env.RUNEACH_PROJECT_WORKSPACE_ID = input.base.workspaceId ?? "";
+  env.RUNEACH_AGENT_ID = input.agent.id;
+  env.RUNEACH_AGENT_NAME = input.agent.name;
+  env.RUNEACH_COMPANY_ID = input.agent.companyId;
+  env.RUNEACH_ISSUE_ID = input.issue?.id ?? "";
+  env.RUNEACH_ISSUE_IDENTIFIER = input.issue?.identifier ?? "";
+  env.RUNEACH_ISSUE_TITLE = input.issue?.title ?? "";
   return env;
 }
 
@@ -600,18 +600,18 @@ function buildExecutionWorkspaceCleanupEnv(input: {
   projectWorkspaceCwd?: string | null;
 }) {
   const env: NodeJS.ProcessEnv = sanitizeRuntimeServiceBaseEnv(process.env);
-  env.ABACUS_WORKSPACE_CWD = input.workspace.cwd ?? "";
-  env.ABACUS_WORKSPACE_PATH = input.workspace.cwd ?? "";
-  env.ABACUS_WORKSPACE_WORKTREE_PATH =
+  env.RUNEACH_WORKSPACE_CWD = input.workspace.cwd ?? "";
+  env.RUNEACH_WORKSPACE_PATH = input.workspace.cwd ?? "";
+  env.RUNEACH_WORKSPACE_WORKTREE_PATH =
     input.workspace.providerRef ?? input.workspace.cwd ?? "";
-  env.ABACUS_WORKSPACE_BRANCH = input.workspace.branchName ?? "";
-  env.ABACUS_WORKSPACE_BASE_CWD = input.projectWorkspaceCwd ?? "";
-  env.ABACUS_WORKSPACE_REPO_ROOT = input.projectWorkspaceCwd ?? "";
-  env.ABACUS_WORKSPACE_REPO_URL = input.workspace.repoUrl ?? "";
-  env.ABACUS_WORKSPACE_REPO_REF = input.workspace.baseRef ?? "";
-  env.ABACUS_PROJECT_ID = input.workspace.projectId ?? "";
-  env.ABACUS_PROJECT_WORKSPACE_ID = input.workspace.projectWorkspaceId ?? "";
-  env.ABACUS_ISSUE_ID = input.workspace.sourceIssueId ?? "";
+  env.RUNEACH_WORKSPACE_BRANCH = input.workspace.branchName ?? "";
+  env.RUNEACH_WORKSPACE_BASE_CWD = input.projectWorkspaceCwd ?? "";
+  env.RUNEACH_WORKSPACE_REPO_ROOT = input.projectWorkspaceCwd ?? "";
+  env.RUNEACH_WORKSPACE_REPO_URL = input.workspace.repoUrl ?? "";
+  env.RUNEACH_WORKSPACE_REPO_REF = input.workspace.baseRef ?? "";
+  env.RUNEACH_PROJECT_ID = input.workspace.projectId ?? "";
+  env.RUNEACH_PROJECT_WORKSPACE_ID = input.workspace.projectWorkspaceId ?? "";
+  env.RUNEACH_ISSUE_ID = input.workspace.sourceIssueId ?? "";
   return env;
 }
 
@@ -668,10 +668,10 @@ export async function realizeExecutionWorkspace(input: {
   const configuredParentDir = asString(rawStrategy.worktreeParentDir, "");
   const worktreeParentDir = configuredParentDir
     ? resolveConfiguredPath(configuredParentDir, repoRoot)
-    : path.join(repoRoot, ".abacus", "worktrees");
+    : path.join(repoRoot, ".runeach", "worktrees");
   const worktreePath = path.join(worktreeParentDir, branchName);
   const baseRef = asString(rawStrategy.baseRef, input.base.repoRef ?? "HEAD");
-  const defaultWorktreeParentDir = path.join(repoRoot, ".abacus", "worktrees");
+  const defaultWorktreeParentDir = path.join(repoRoot, ".runeach", "worktrees");
 
   await fs.mkdir(worktreeParentDir, { recursive: true });
 
@@ -731,7 +731,7 @@ export async function realizeExecutionWorkspace(input: {
     if (!configuredParentDir) {
       throw new Error(
         `Execution worktree branch "${branchName}" is already checked out at ${conflictingWorktreePath}. ` +
-        `Abacus now uses ${defaultWorktreeParentDir} as the default worktree root; remove or migrate ` +
+        `RunEach now uses ${defaultWorktreeParentDir} as the default worktree root; remove or migrate ` +
         `the existing worktree before retrying, or set workspaceStrategy.worktreeParentDir explicitly.`,
       );
     }

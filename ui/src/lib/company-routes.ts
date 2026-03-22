@@ -1,4 +1,4 @@
-import type { Company } from "@abacus-lab/shared";
+import type { Company } from "@runeachai/shared";
 
 const BOARD_ROUTE_ROOTS = new Set([
   "dashboard",

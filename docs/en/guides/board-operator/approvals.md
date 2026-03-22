@@ -3,7 +3,7 @@ title: Approvals
 summary: Governance flows for hiring and strategy
 ---
 
-Abacus includes approval gates that keep the human board operator in control of key decisions.
+RunEach includes approval gates that keep the human board operator in control of key decisions.
 
 ## Approval Types
 

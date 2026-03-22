@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { agents } from "@abacus-lab/db";
+import type { agents } from "@runeachai/db";
 import { resolveDefaultAgentWorkspaceDir } from "../home-paths.js";
 import {
   formatRuntimeWorkspaceWarningLog,
@@ -186,7 +186,7 @@ describe("formatRuntimeWorkspaceWarningLog", () => {
   it("emits informational workspace warnings on stdout", () => {
     expect(formatRuntimeWorkspaceWarningLog("Using fallback workspace")).toEqual({
       stream: "stdout",
-      chunk: "[abacus] Using fallback workspace\n",
+      chunk: "[runeach] Using fallback workspace\n",
     });
   });
 });
@@ -228,7 +228,7 @@ describe("prioritizeProjectWorkspaceCandidatesForRun", () => {
 });
 
 describe("parseSessionCompactionPolicy", () => {
-  it("disables Abacus-managed rotation by default for codex and claude local", () => {
+  it("disables RunEach-managed rotation by default for codex and claude local", () => {
     expect(parseSessionCompactionPolicy(buildAgent("codex_local"))).toEqual({
       enabled: true,
       maxSessionRuns: 0,

@@ -92,7 +92,7 @@ function replaceWorkspaceDeps(deps, version) {
   const next = { ...deps };
 
   for (const [name, value] of Object.entries(next)) {
-    if (!name.startsWith("@abacus-lab/")) continue;
+    if (!name.startsWith("@runeachai/")) continue;
     if (typeof value !== "string" || !value.startsWith("workspace:")) continue;
     next[name] = version;
   }

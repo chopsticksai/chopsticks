@@ -7,7 +7,7 @@ Scope: Agent execution runtime, adapter protocol, wakeup orchestration, and live
 
 ## 1. Document Role
 
-This spec defines how Abacus actually runs agents while staying runtime-agnostic.
+This spec defines how RunEach actually runs agents while staying runtime-agnostic.
 
 - `doc/SPEC-implementation.md` remains the V1 baseline contract.
 - This document adds concrete subsystem detail for agent execution, including local CLI adapters, runtime state persistence, wakeup scheduling, and browser live updates.
@@ -17,12 +17,12 @@ This spec defines how Abacus actually runs agents while staying runtime-agnostic
 
 The following intentions are explicitly preserved in this spec:
 
-1. Abacus is adapter-agnostic. The key is a protocol, not a specific runtime.
+1. RunEach is adapter-agnostic. The key is a protocol, not a specific runtime.
 2. We still need default built-ins to make the system useful immediately.
 3. First two built-ins are `claude-local` and `codex-local`.
 4. Those adapters run local CLIs directly on the host machine, unsandboxed.
 5. Agent config includes working directory and initial/default prompt.
-6. Heartbeats run the configured adapter process, Abacus manages lifecycle, and on exit Abacus parses JSON output and updates state.
+6. Heartbeats run the configured adapter process, RunEach manages lifecycle, and on exit RunEach parses JSON output and updates state.
 7. Session IDs and token usage must be persisted so later heartbeats can resume.
 8. Adapters should support status updates (short message + color) and optional streaming logs.
 9. UI should support prompt template "pills" for variable insertion.
@@ -527,7 +527,7 @@ Runtime log storage is deployment-configured (not per-agent by default).
   "runLogStore": {
     "type": "local_file | object_store | postgres",
     "basePath": "./data/run-logs",
-    "bucket": "abacus-run-logs",
+    "bucket": "runeach-run-logs",
     "prefix": "runs/",
     "compress": true,
     "maxInlineExcerptBytes": 32768
@@ -561,7 +561,7 @@ Rules:
 - `run.source`
 - `run.startedAt`
 - `heartbeat.reason`
-- `abacus.skill` (shared Abacus skill text block)
+- `runeach.skill` (shared RunEach skill text block)
 - `credentials.apiBaseUrl`
 - `credentials.apiKey` (optional, sensitive)
 
@@ -581,7 +581,7 @@ Rules:
 ## 10.5 Security notes for credentials
 
 1. Credentials in prompt are allowed for initial simplicity but discouraged.
-2. Preferred transport is env vars (`ABACUS_*`) injected at runtime.
+2. Preferred transport is env vars (`RUNEACH_*`) injected at runtime.
 3. Prompt preview and logs must redact sensitive values.
 
 ## 11. Realtime Status Delivery

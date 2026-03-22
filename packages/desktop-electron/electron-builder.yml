@@ -1,6 +1,6 @@
-appId: ai.abacus.desktop
-productName: Abacus
-artifactName: "Abacus-${version}-${arch}.${ext}"
+appId: ai.runeach.desktop
+productName: RunEach
+artifactName: "RunEach-${version}-${arch}.${ext}"
 asar: false
 
 directories:

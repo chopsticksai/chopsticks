@@ -8,12 +8,12 @@ export const agentConfigurationDoc = `# openclaw_gateway agent configuration
 Adapter: openclaw_gateway
 
 Use when:
-- You want Abacus to invoke OpenClaw over the Gateway WebSocket protocol.
+- You want RunEach to invoke OpenClaw over the Gateway WebSocket protocol.
 - You want native gateway auth/connect semantics instead of HTTP /v1/responses or /hooks/*.
 
 Don't use when:
 - You only expose OpenClaw HTTP endpoints.
-- Your deployment does not permit outbound WebSocket access from the Abacus server.
+- Your deployment does not permit outbound WebSocket access from the RunEach server.
 
 Core fields:
 - url (string, required): OpenClaw gateway WebSocket URL (ws:// or wss://)
@@ -31,21 +31,21 @@ Gateway connect identity fields:
 
 Request behavior fields:
 - payloadTemplate (object, optional): additional fields merged into gateway agent params
-- workspaceRuntime (object, optional): desired runtime service intents; Abacus forwards these in a standardized abacus.workspaceRuntime block for remote execution environments
+- workspaceRuntime (object, optional): desired runtime service intents; RunEach forwards these in a standardized runeach.workspaceRuntime block for remote execution environments
 - timeoutSec (number, optional): adapter timeout in seconds (default 120)
 - waitTimeoutMs (number, optional): agent.wait timeout override (default timeoutSec * 1000)
 - autoPairOnFirstConnect (boolean, optional): on first "pairing required", attempt device.pair.list/device.pair.approve via shared auth, then retry once (default true)
-- abacusApiUrl (string, optional): absolute Abacus base URL advertised in wake text
+- runeachApiUrl (string, optional): absolute RunEach base URL advertised in wake text
 
 Session routing fields:
 - sessionKeyStrategy (string, optional): issue (default), fixed, or run
-- sessionKey (string, optional): fixed session key when strategy=fixed (default abacus)
+- sessionKey (string, optional): fixed session key when strategy=fixed (default runeach)
 
 Standard outbound payload additions:
-- abacus (object): standardized Abacus context added to every gateway agent request
-- abacus.workspace (object, optional): resolved execution workspace for this run
-- abacus.workspaces (array, optional): additional workspace hints Abacus exposed to the run
-- abacus.workspaceRuntime (object, optional): normalized runtime service intent config for the workspace
+- runeach (object): standardized RunEach context added to every gateway agent request
+- runeach.workspace (object, optional): resolved execution workspace for this run
+- runeach.workspaces (array, optional): additional workspace hints RunEach exposed to the run
+- runeach.workspaceRuntime (object, optional): normalized runtime service intent config for the workspace
 
 Standard result metadata supported:
 - meta.runtimeServices (array, optional): normalized adapter-managed runtime service reports

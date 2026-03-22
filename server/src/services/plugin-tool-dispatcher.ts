@@ -22,12 +22,12 @@
  * @see PLUGIN_SPEC.md §13.10 — `executeTool`
  */
 
-import type { Db } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
 import type {
-  AbacusPluginManifestV1,
+  RunEachPluginManifestV1,
   PluginRecord,
-} from "@abacus-lab/shared";
-import type { ToolRunContext, ToolResult } from "@abacus-lab/plugin-sdk";
+} from "@runeachai/shared";
+import type { ToolRunContext, ToolResult } from "@runeachai/plugin-sdk";
 import type { PluginWorkerManager } from "./plugin-worker-manager.js";
 import type { PluginLifecycleManager } from "./plugin-lifecycle.js";
 import {
@@ -155,7 +155,7 @@ export interface PluginToolDispatcher {
    */
   registerPluginTools(
     pluginId: string,
-    manifest: AbacusPluginManifestV1,
+    manifest: RunEachPluginManifestV1,
   ): void;
 
   /**
@@ -428,7 +428,7 @@ export function createPluginToolDispatcher(
 
     registerPluginTools(
       pluginId: string,
-      manifest: AbacusPluginManifestV1,
+      manifest: RunEachPluginManifestV1,
     ): void {
       registry.registerPlugin(pluginId, manifest);
     },

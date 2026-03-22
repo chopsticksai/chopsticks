@@ -6,7 +6,7 @@ import {
   updateIssueSchema,
   type Issue,
   type IssueComment,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import {
   addCommonClientOptions,
   formatInlineRecord,

@@ -1,5 +1,5 @@
 /**
- * `definePlugin` — the top-level helper for authoring a Abacus plugin.
+ * `definePlugin` — the top-level helper for authoring a RunEach plugin.
  *
  * Plugin authors call `definePlugin()` and export the result as the default
  * export from their worker entrypoint. The host imports the worker module,
@@ -11,7 +11,7 @@
  * @example
  * ```ts
  * // dist/worker.ts
- * import { definePlugin } from "@abacus-lab/plugin-sdk";
+ * import { definePlugin } from "@runeachai/plugin-sdk";
  *
  * export default definePlugin({
  *   async setup(ctx) {
@@ -200,7 +200,7 @@ export interface PluginDefinition {
 }
 
 // ---------------------------------------------------------------------------
-// AbacusPlugin — the sealed object returned by definePlugin()
+// RunEachPlugin — the sealed object returned by definePlugin()
 // ---------------------------------------------------------------------------
 
 /**
@@ -211,7 +211,7 @@ export interface PluginDefinition {
  *
  * @see PLUGIN_SPEC.md §14 — SDK Surface
  */
-export interface AbacusPlugin {
+export interface RunEachPlugin {
   /** The original plugin definition passed to `definePlugin()`. */
   readonly definition: PluginDefinition;
 }
@@ -221,18 +221,18 @@ export interface AbacusPlugin {
 // ---------------------------------------------------------------------------
 
 /**
- * Define a Abacus plugin.
+ * Define a RunEach plugin.
  *
  * Call this function in your worker entrypoint and export the result as the
  * default export. The host will import the module and call lifecycle methods
  * on the returned object.
  *
  * @param definition - Plugin lifecycle handlers
- * @returns A sealed `AbacusPlugin` object for the host to consume
+ * @returns A sealed `RunEachPlugin` object for the host to consume
  *
  * @example
  * ```ts
- * import { definePlugin } from "@abacus-lab/plugin-sdk";
+ * import { definePlugin } from "@runeachai/plugin-sdk";
  *
  * export default definePlugin({
  *   async setup(ctx) {
@@ -250,6 +250,6 @@ export interface AbacusPlugin {
  *
  * @see PLUGIN_SPEC.md §14.1 — Example SDK Shape
  */
-export function definePlugin(definition: PluginDefinition): AbacusPlugin {
+export function definePlugin(definition: PluginDefinition): RunEachPlugin {
   return Object.freeze({ definition });
 }

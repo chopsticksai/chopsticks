@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { testEnvironment } from "@abacus-lab/adapter-cursor-local/server";
+import { testEnvironment } from "@runeachai/adapter-cursor-local/server";
 
 async function writeFakeAgentCommand(binDir: string, argsCapturePath: string): Promise<string> {
   const basePath = path.join(binDir, "agent");
   const script = `
 const fs = require("node:fs");
-const outPath = process.env.ABACUS_TEST_ARGS_PATH;
+const outPath = process.env.RUNEACH_TEST_ARGS_PATH;
 if (outPath) {
   fs.writeFileSync(outPath, JSON.stringify(process.argv.slice(2)), "utf8");
 }
@@ -43,7 +43,7 @@ describe("cursor environment diagnostics", () => {
   it("creates a missing working directory when cwd is absolute", async () => {
     const cwd = path.join(
       os.tmpdir(),
-      `abacus-cursor-local-cwd-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      `runeach-cursor-local-cwd-${Date.now()}-${Math.random().toString(16).slice(2)}`,
       "workspace",
     );
 
@@ -68,7 +68,7 @@ describe("cursor environment diagnostics", () => {
   it("adds --yolo to hello probe args by default", async () => {
     const root = path.join(
       os.tmpdir(),
-      `abacus-cursor-local-probe-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      `runeach-cursor-local-probe-${Date.now()}-${Math.random().toString(16).slice(2)}`,
     );
     const binDir = path.join(root, "bin");
     const cwd = path.join(root, "workspace");
@@ -84,7 +84,7 @@ describe("cursor environment diagnostics", () => {
         cwd,
         env: {
           CURSOR_API_KEY: "test-key",
-          ABACUS_TEST_ARGS_PATH: argsCapturePath,
+          RUNEACH_TEST_ARGS_PATH: argsCapturePath,
           PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
         },
       },
@@ -99,7 +99,7 @@ describe("cursor environment diagnostics", () => {
   it("does not auto-add --yolo when extraArgs already bypass trust", async () => {
     const root = path.join(
       os.tmpdir(),
-      `abacus-cursor-local-probe-extra-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      `runeach-cursor-local-probe-extra-${Date.now()}-${Math.random().toString(16).slice(2)}`,
     );
     const binDir = path.join(root, "bin");
     const cwd = path.join(root, "workspace");
@@ -116,7 +116,7 @@ describe("cursor environment diagnostics", () => {
         extraArgs: ["--yolo"],
         env: {
           CURSOR_API_KEY: "test-key",
-          ABACUS_TEST_ARGS_PATH: argsCapturePath,
+          RUNEACH_TEST_ARGS_PATH: argsCapturePath,
           PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
         },
       },

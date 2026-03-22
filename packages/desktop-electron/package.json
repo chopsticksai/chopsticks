@@ -1,10 +1,10 @@
 {
-  "name": "@abacus-lab/desktop-electron",
+  "name": "@runeachai/desktop-electron",
   "version": "0.0.1",
   "private": true,
-  "description": "Windows-first Electron wrapper for the Abacus control plane",
-  "author": "Abacus AI",
-  "homepage": "https://github.com/abacus-lab/abacus",
+  "description": "Windows-first Electron wrapper for the RunEach control plane",
+  "author": "RunEach AI",
+  "homepage": "https://github.com/runeachai/runeach",
   "type": "module",
   "main": "dist/main.js",
   "files": [
@@ -21,7 +21,7 @@
     "dist:win": "node scripts/prepare-stage.mjs && electron-builder --config electron-builder.yml --win"
   },
   "dependencies": {
-    "@abacus-lab/server": "workspace:*"
+    "@runeachai/server": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.6.0",

@@ -16,12 +16,12 @@ against the change summary from git history.
 - [ ] Items reflect current priorities (cross-check with recent PRs)
 
 ### Quickstart
-- [ ] `npx @abacus-lab/abacus onboard` command is correct
+- [ ] `npx @runeachai/runeach onboard` command is correct
 - [ ] Manual install steps are accurate (clone URL, commands)
 - [ ] Prerequisites (Node version, pnpm version) are current
 - [ ] Server URL and port are correct
 
-### "What is abacus" section
+### "What is runeach" section
 - [ ] High-level description is accurate
 - [ ] Step table (Define goal / Hire team / Approve and run) is correct
 
@@ -30,11 +30,11 @@ against the change summary from git history.
 - [ ] No removed adapters still listed
 - [ ] Logos and labels match current adapter names
 
-### "abacus is right for you if"
+### "runeach is right for you if"
 - [ ] Use cases are still accurate
 - [ ] No claims about capabilities that don't exist
 
-### "Why abacus is special"
+### "Why runeach is special"
 - [ ] Technical claims are accurate (atomic execution, governance, etc.)
 - [ ] No features listed that were removed or significantly changed
 

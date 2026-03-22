@@ -48,7 +48,7 @@ export function AccountingModelCard() {
           {t("Accounting model")}
         </CardTitle>
         <CardDescription className="max-w-2xl text-sm leading-6">
-          {t("Abacus now separates request-level inference usage from account-level finance events.")}
+          {t("RunEach now separates request-level inference usage from account-level finance events.")}
           {" "}
           {t("That keeps provider reporting honest when the biller is OpenRouter, Cloudflare, Bedrock, or another intermediary.")}
         </CardDescription>

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-base_cwd="${ABACUS_WORKSPACE_BASE_CWD:?ABACUS_WORKSPACE_BASE_CWD is required}"
-worktree_cwd="${ABACUS_WORKSPACE_CWD:?ABACUS_WORKSPACE_CWD is required}"
+base_cwd="${RUNEACH_WORKSPACE_BASE_CWD:?RUNEACH_WORKSPACE_BASE_CWD is required}"
+worktree_cwd="${RUNEACH_WORKSPACE_CWD:?RUNEACH_WORKSPACE_CWD is required}"
 
 if [[ ! -d "$base_cwd" ]]; then
   echo "Base workspace does not exist: $base_cwd" >&2
@@ -32,6 +32,6 @@ done < <(
       -type d \
       -name node_modules \
       ! -path './.git/*' \
-      ! -path './.abacus/*' \
+      ! -path './.runeach/*' \
       | sed 's#^\./##'
 )

@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
-import { resolveAbacusConfigPath, resolveAbacusEnvPath } from "./paths.js";
-import type { DeploymentExposure, DeploymentMode } from "@abacus-lab/shared";
+import { resolveRunEachConfigPath, resolveRunEachEnvPath } from "./paths.js";
+import type { DeploymentExposure, DeploymentMode } from "@runeachai/shared";
 
 import { parse as parseEnvFileContents } from "dotenv";
 
@@ -71,7 +71,7 @@ function resolveAgentJwtSecretStatus(
   status: "pass" | "warn";
   message: string;
 } {
-  const envValue = process.env.ABACUS_AGENT_JWT_SECRET?.trim();
+  const envValue = process.env.RUNEACH_AGENT_JWT_SECRET?.trim();
   if (envValue) {
     return {
       status: "pass",
@@ -81,7 +81,7 @@ function resolveAgentJwtSecretStatus(
 
   if (existsSync(envFilePath)) {
     const parsed = parseEnvFileContents(readFileSync(envFilePath, "utf-8"));
-    const fileValue = typeof parsed.ABACUS_AGENT_JWT_SECRET === "string" ? parsed.ABACUS_AGENT_JWT_SECRET.trim() : "";
+    const fileValue = typeof parsed.RUNEACH_AGENT_JWT_SECRET === "string" ? parsed.RUNEACH_AGENT_JWT_SECRET.trim() : "";
     if (fileValue) {
       return {
         status: "warn",
@@ -92,7 +92,7 @@ function resolveAgentJwtSecretStatus(
 
   return {
     status: "warn",
-    message: "missing (run `pnpm abacus onboard`)",
+    message: "missing (run `pnpm runeach onboard`)",
   };
 }
 
@@ -101,8 +101,8 @@ export function printStartupBanner(opts: StartupBannerOptions): void {
   const baseUrl = `http://${baseHost}:${opts.listenPort}`;
   const apiUrl = `${baseUrl}/api`;
   const uiUrl = opts.uiMode === "none" ? "disabled" : baseUrl;
-  const configPath = resolveAbacusConfigPath();
-  const envFilePath = resolveAbacusEnvPath();
+  const configPath = resolveRunEachConfigPath();
+  const envFilePath = resolveRunEachEnvPath();
   const agentJwtSecret = resolveAgentJwtSecretStatus(envFilePath);
 
   const dbMode =
@@ -134,11 +134,12 @@ export function printStartupBanner(opts: StartupBannerOptions): void {
     : color("disabled", "yellow");
 
   const art = [
-    color("    _    ____    _    ____ _   _ ____  ", "cyan"),
-    color("   / \\  | __ )  / \\  / ___| | | / ___| ", "cyan"),
-    color("  / _ \\ |  _ \\ / _ \\| |   | | | \\___ \\ ", "cyan"),
-    color(" / ___ \\| |_) / ___ \\ |___| |_| |___) |", "cyan"),
-    color("/_/   \\_\\____/_/   \\_\\____|\\___/|____/ ", "cyan"),
+    color("██████╗ ██╗   ██╗███╗   ██╗███████╗ █████╗  ██████╗██╗  ██╗", "cyan"),
+    color("██╔══██╗██║   ██║████╗  ██║██╔════╝██╔══██╗██╔════╝██║  ██║", "cyan"),
+    color("██████╔╝██║   ██║██╔██╗ ██║█████╗  ███████║██║     ███████║", "cyan"),
+    color("██╔══██╗██║   ██║██║╚██╗██║██╔══╝  ██╔══██║██║     ██╔══██║", "cyan"),
+    color("██║  ██║╚██████╔╝██║ ╚████║███████╗██║  ██║╚██████╗██║  ██║", "cyan"),
+    color("╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝", "cyan"),
   ];
 
   const lines = [

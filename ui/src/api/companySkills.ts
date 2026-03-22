@@ -8,7 +8,7 @@ import type {
   CompanySkillProjectScanRequest,
   CompanySkillProjectScanResult,
   CompanySkillUpdateStatus,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { api } from "./client";
 
 export const companySkillsApi = {

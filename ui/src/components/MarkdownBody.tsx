@@ -1,7 +1,7 @@
 import { isValidElement, useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
 import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { parseProjectMentionHref } from "@abacus-lab/shared";
+import { parseProjectMentionHref } from "@runeachai/shared";
 import { cn } from "../lib/utils";
 import { useTheme } from "../context/ThemeContext";
 
@@ -77,7 +77,7 @@ function MermaidDiagramBlock({ source, darkMode }: { source: string; darkMode: b
           fontFamily: "inherit",
           suppressErrorRendering: true,
         });
-        const rendered = await mermaid.render(`abacus-mermaid-${renderId}`, source);
+        const rendered = await mermaid.render(`runeach-mermaid-${renderId}`, source);
         if (!active) return;
         setSvg(rendered.svg);
       })
@@ -96,15 +96,15 @@ function MermaidDiagramBlock({ source, darkMode }: { source: string; darkMode: b
   }, [darkMode, renderId, source]);
 
   return (
-    <div className="abacus-mermaid">
+    <div className="runeach-mermaid">
       {svg ? (
         <div dangerouslySetInnerHTML={{ __html: svg }} />
       ) : (
         <>
-          <p className={cn("abacus-mermaid-status", error && "abacus-mermaid-status-error")}>
+          <p className={cn("runeach-mermaid-status", error && "runeach-mermaid-status-error")}>
             {error ? `Unable to render Mermaid diagram: ${error}` : "Rendering Mermaid diagram..."}
           </p>
-          <pre className="abacus-mermaid-source">
+          <pre className="runeach-mermaid-source">
             <code className="language-mermaid">{source}</code>
           </pre>
         </>
@@ -130,7 +130,7 @@ export function MarkdownBody({ children, className, resolveImageSrc }: MarkdownB
         return (
           <a
             href={`/projects/${parsed.projectId}`}
-            className="abacus-project-mention-chip"
+            className="runeach-project-mention-chip"
             style={mentionChipStyle(parsed.color)}
           >
             {label}
@@ -155,7 +155,7 @@ export function MarkdownBody({ children, className, resolveImageSrc }: MarkdownB
   return (
     <div
       className={cn(
-        "abacus-markdown prose prose-sm max-w-none break-words overflow-hidden prose-pre:whitespace-pre-wrap prose-pre:break-words prose-code:break-all",
+        "runeach-markdown prose prose-sm max-w-none break-words overflow-hidden prose-pre:whitespace-pre-wrap prose-pre:break-words prose-code:break-all",
         theme === "dark" && "prose-invert",
         className,
       )}

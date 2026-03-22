@@ -1,25 +1,25 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { inferOpenAiCompatibleBiller, type AdapterExecutionContext, type AdapterExecutionResult } from "@abacus-lab/adapter-utils";
+import { inferOpenAiCompatibleBiller, type AdapterExecutionContext, type AdapterExecutionResult } from "@runeachai/adapter-utils";
 import {
   asString,
   asNumber,
   asBoolean,
   asStringArray,
   parseObject,
-  buildAbacusEnv,
+  buildRunEachEnv,
   redactEnvForLogs,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
-  ensureAbacusSkillSymlink,
+  ensureRunEachSkillSymlink,
   ensurePathInEnv,
-  readAbacusRuntimeSkillEntries,
-  resolveAbacusDesiredSkillNames,
+  readRunEachRuntimeSkillEntries,
+  resolveRunEachDesiredSkillNames,
   renderTemplate,
   joinPromptSections,
   runChildProcess,
-} from "@abacus-lab/adapter-utils/server-utils";
+} from "@runeachai/adapter-utils/server-utils";
 import { parseCodexJsonl, isCodexUnknownSessionError } from "./parse.js";
 import { pathExists, prepareManagedCodexHome, resolveManagedCodexHomeDir } from "./codex-home.js";
 import { resolveCodexDesiredSkillNames } from "./skills.js";
@@ -68,7 +68,7 @@ function resolveCodexBiller(env: Record<string, string>, billingType: "api" | "s
   return billingType === "subscription" ? "chatgpt" : openAiCompatibleBiller ?? "openai";
 }
 
-async function isLikelyAbacusRepoRoot(candidate: string): Promise<boolean> {
+async function isLikelyRunEachRepoRoot(candidate: string): Promise<boolean> {
   const [hasWorkspace, hasPackageJson, hasServerDir, hasAdapterUtilsDir] = await Promise.all([
     pathExists(path.join(candidate, "pnpm-workspace.yaml")),
     pathExists(path.join(candidate, "package.json")),
@@ -79,7 +79,7 @@ async function isLikelyAbacusRepoRoot(candidate: string): Promise<boolean> {
   return hasWorkspace && hasPackageJson && hasServerDir && hasAdapterUtilsDir;
 }
 
-async function isLikelyAbacusRuntimeSkillPath(
+async function isLikelyRunEachRuntimeSkillPath(
   candidate: string,
   skillName: string,
   options: { requireSkillMarkdown?: boolean } = {},
@@ -93,7 +93,7 @@ async function isLikelyAbacusRuntimeSkillPath(
 
   let cursor = path.dirname(skillsRoot);
   for (let depth = 0; depth < 6; depth += 1) {
-    if (await isLikelyAbacusRepoRoot(cursor)) return true;
+    if (await isLikelyRunEachRepoRoot(cursor)) return true;
     const parent = path.dirname(cursor);
     if (parent === cursor) break;
     cursor = parent;
@@ -102,7 +102,7 @@ async function isLikelyAbacusRuntimeSkillPath(
   return false;
 }
 
-async function pruneBrokenUnavailableAbacusSkillSymlinks(
+async function pruneBrokenUnavailableRunEachSkillSymlinks(
   skillsHome: string,
   allowedSkillNames: Iterable<string>,
   onLog: AdapterExecutionContext["onLog"],
@@ -120,7 +120,7 @@ async function pruneBrokenUnavailableAbacusSkillSymlinks(
     const resolvedLinkedPath = path.resolve(path.dirname(target), linkedPath);
     if (await pathExists(resolvedLinkedPath)) continue;
     if (
-      !(await isLikelyAbacusRuntimeSkillPath(resolvedLinkedPath, entry.name, {
+      !(await isLikelyRunEachRuntimeSkillPath(resolvedLinkedPath, entry.name, {
         requireSkillMarkdown: false,
       }))
     ) {
@@ -130,7 +130,7 @@ async function pruneBrokenUnavailableAbacusSkillSymlinks(
     await fs.unlink(target).catch(() => {});
     await onLog(
       "stdout",
-      `[abacus] Removed stale Codex skill "${entry.name}" from ${skillsHome}\n`,
+      `[runeach] Removed stale Codex skill "${entry.name}" from ${skillsHome}\n`,
     );
   }
 }
@@ -150,7 +150,7 @@ export async function ensureCodexSkillsInjected(
   onLog: AdapterExecutionContext["onLog"],
   options: EnsureCodexSkillsInjectedOptions = {},
 ) {
-  const allSkillsEntries = options.skillsEntries ?? await readAbacusRuntimeSkillEntries({}, __moduleDir);
+  const allSkillsEntries = options.skillsEntries ?? await readRunEachRuntimeSkillEntries({}, __moduleDir);
   const desiredSkillNames =
     options.desiredSkillNames ?? allSkillsEntries.map((entry) => entry.key);
   const desiredSet = new Set(desiredSkillNames);
@@ -173,7 +173,7 @@ export async function ensureCodexSkillsInjected(
         if (
           resolvedLinkedPath &&
           resolvedLinkedPath !== entry.source &&
-          (await isLikelyAbacusRuntimeSkillPath(resolvedLinkedPath, entry.runtimeName))
+          (await isLikelyRunEachRuntimeSkillPath(resolvedLinkedPath, entry.runtimeName))
         ) {
           await fs.unlink(target);
           if (linkSkill) {
@@ -183,28 +183,28 @@ export async function ensureCodexSkillsInjected(
           }
           await onLog(
             "stdout",
-            `[abacus] Repaired Codex skill "${entry.runtimeName}" into ${skillsHome}\n`,
+            `[runeach] Repaired Codex skill "${entry.runtimeName}" into ${skillsHome}\n`,
           );
           continue;
         }
       }
 
-      const result = await ensureAbacusSkillSymlink(entry.source, target, linkSkill);
+      const result = await ensureRunEachSkillSymlink(entry.source, target, linkSkill);
       if (result === "skipped") continue;
 
       await onLog(
         "stdout",
-        `[abacus] ${result === "repaired" ? "Repaired" : "Injected"} Codex skill "${entry.runtimeName}" into ${skillsHome}\n`,
+        `[runeach] ${result === "repaired" ? "Repaired" : "Injected"} Codex skill "${entry.runtimeName}" into ${skillsHome}\n`,
       );
     } catch (err) {
       await onLog(
         "stderr",
-        `[abacus] Failed to inject Codex skill "${entry.key}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
+        `[runeach] Failed to inject Codex skill "${entry.key}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
       );
     }
   }
 
-  await pruneBrokenUnavailableAbacusSkillSymlinks(
+  await pruneBrokenUnavailableRunEachSkillSymlinks(
     skillsHome,
     skillsEntries.map((entry) => entry.runtimeName),
     onLog,
@@ -216,7 +216,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Abacus work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your RunEach work.",
   );
   const command = asString(config.command, "codex");
   const model = asString(config.model, "");
@@ -230,7 +230,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     asBoolean(config.dangerouslyBypassSandbox, false),
   );
 
-  const workspaceContext = parseObject(context.abacusWorkspace);
+  const workspaceContext = parseObject(context.runeachWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceStrategy = asString(workspaceContext.strategy, "");
@@ -240,22 +240,22 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const workspaceBranch = asString(workspaceContext.branchName, "");
   const workspaceWorktreePath = asString(workspaceContext.worktreePath, "");
   const agentHome = asString(workspaceContext.agentHome, "");
-  const workspaceHints = Array.isArray(context.abacusWorkspaces)
-    ? context.abacusWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.runeachWorkspaces)
+    ? context.runeachWorkspaces.filter(
         (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
       )
     : [];
-  const runtimeServiceIntents = Array.isArray(context.abacusRuntimeServiceIntents)
-    ? context.abacusRuntimeServiceIntents.filter(
+  const runtimeServiceIntents = Array.isArray(context.runeachRuntimeServiceIntents)
+    ? context.runeachRuntimeServiceIntents.filter(
         (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
       )
     : [];
-  const runtimeServices = Array.isArray(context.abacusRuntimeServices)
-    ? context.abacusRuntimeServices.filter(
+  const runtimeServices = Array.isArray(context.runeachRuntimeServices)
+    ? context.runeachRuntimeServices.filter(
         (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
       )
     : [];
-  const runtimePrimaryUrl = asString(context.abacusRuntimePrimaryUrl, "");
+  const runtimePrimaryUrl = asString(context.runeachRuntimePrimaryUrl, "");
   const configuredCwd = asString(config.cwd, "");
   const useConfiguredInsteadOfAgentHome = workspaceSource === "agent_home" && configuredCwd.length > 0;
   const effectiveWorkspaceCwd = useConfiguredInsteadOfAgentHome ? "" : workspaceCwd;
@@ -265,7 +265,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     typeof envConfig.CODEX_HOME === "string" && envConfig.CODEX_HOME.trim().length > 0
       ? path.resolve(envConfig.CODEX_HOME.trim())
       : null;
-  const codexSkillEntries = await readAbacusRuntimeSkillEntries(config, __moduleDir);
+  const codexSkillEntries = await readRunEachRuntimeSkillEntries(config, __moduleDir);
   const desiredSkillNames = resolveCodexDesiredSkillNames(config, codexSkillEntries);
   await ensureAbsoluteDirectory(cwd, { createIfMissing: true });
   const preparedManagedCodexHome =
@@ -283,10 +283,10 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     },
   );
   const hasExplicitApiKey =
-    typeof envConfig.ABACUS_API_KEY === "string" && envConfig.ABACUS_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildAbacusEnv(agent) };
+    typeof envConfig.RUNEACH_API_KEY === "string" && envConfig.RUNEACH_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildRunEachEnv(agent) };
   env.CODEX_HOME = effectiveCodexHome;
-  env.ABACUS_RUN_ID = runId;
+  env.RUNEACH_RUN_ID = runId;
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
     (typeof context.issueId === "string" && context.issueId.trim().length > 0 && context.issueId.trim()) ||
@@ -311,67 +311,67 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     ? context.issueIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     : [];
   if (wakeTaskId) {
-    env.ABACUS_TASK_ID = wakeTaskId;
+    env.RUNEACH_TASK_ID = wakeTaskId;
   }
   if (wakeReason) {
-    env.ABACUS_WAKE_REASON = wakeReason;
+    env.RUNEACH_WAKE_REASON = wakeReason;
   }
   if (wakeCommentId) {
-    env.ABACUS_WAKE_COMMENT_ID = wakeCommentId;
+    env.RUNEACH_WAKE_COMMENT_ID = wakeCommentId;
   }
   if (approvalId) {
-    env.ABACUS_APPROVAL_ID = approvalId;
+    env.RUNEACH_APPROVAL_ID = approvalId;
   }
   if (approvalStatus) {
-    env.ABACUS_APPROVAL_STATUS = approvalStatus;
+    env.RUNEACH_APPROVAL_STATUS = approvalStatus;
   }
   if (linkedIssueIds.length > 0) {
-    env.ABACUS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+    env.RUNEACH_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
   }
   if (effectiveWorkspaceCwd) {
-    env.ABACUS_WORKSPACE_CWD = effectiveWorkspaceCwd;
+    env.RUNEACH_WORKSPACE_CWD = effectiveWorkspaceCwd;
   }
   if (workspaceSource) {
-    env.ABACUS_WORKSPACE_SOURCE = workspaceSource;
+    env.RUNEACH_WORKSPACE_SOURCE = workspaceSource;
   }
   if (workspaceStrategy) {
-    env.ABACUS_WORKSPACE_STRATEGY = workspaceStrategy;
+    env.RUNEACH_WORKSPACE_STRATEGY = workspaceStrategy;
   }
   if (workspaceId) {
-    env.ABACUS_WORKSPACE_ID = workspaceId;
+    env.RUNEACH_WORKSPACE_ID = workspaceId;
   }
   if (workspaceRepoUrl) {
-    env.ABACUS_WORKSPACE_REPO_URL = workspaceRepoUrl;
+    env.RUNEACH_WORKSPACE_REPO_URL = workspaceRepoUrl;
   }
   if (workspaceRepoRef) {
-    env.ABACUS_WORKSPACE_REPO_REF = workspaceRepoRef;
+    env.RUNEACH_WORKSPACE_REPO_REF = workspaceRepoRef;
   }
   if (workspaceBranch) {
-    env.ABACUS_WORKSPACE_BRANCH = workspaceBranch;
+    env.RUNEACH_WORKSPACE_BRANCH = workspaceBranch;
   }
   if (workspaceWorktreePath) {
-    env.ABACUS_WORKSPACE_WORKTREE_PATH = workspaceWorktreePath;
+    env.RUNEACH_WORKSPACE_WORKTREE_PATH = workspaceWorktreePath;
   }
   if (agentHome) {
     env.AGENT_HOME = agentHome;
   }
   if (workspaceHints.length > 0) {
-    env.ABACUS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+    env.RUNEACH_WORKSPACES_JSON = JSON.stringify(workspaceHints);
   }
   if (runtimeServiceIntents.length > 0) {
-    env.ABACUS_RUNTIME_SERVICE_INTENTS_JSON = JSON.stringify(runtimeServiceIntents);
+    env.RUNEACH_RUNTIME_SERVICE_INTENTS_JSON = JSON.stringify(runtimeServiceIntents);
   }
   if (runtimeServices.length > 0) {
-    env.ABACUS_RUNTIME_SERVICES_JSON = JSON.stringify(runtimeServices);
+    env.RUNEACH_RUNTIME_SERVICES_JSON = JSON.stringify(runtimeServices);
   }
   if (runtimePrimaryUrl) {
-    env.ABACUS_RUNTIME_PRIMARY_URL = runtimePrimaryUrl;
+    env.RUNEACH_RUNTIME_PRIMARY_URL = runtimePrimaryUrl;
   }
   for (const [k, v] of Object.entries(envConfig)) {
     if (typeof v === "string") env[k] = v;
   }
   if (!hasExplicitApiKey && authToken) {
-    env.ABACUS_API_KEY = authToken;
+    env.RUNEACH_API_KEY = authToken;
   }
   const effectiveEnv = Object.fromEntries(
     Object.entries({ ...process.env, ...env }).filter(
@@ -400,7 +400,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   if (runtimeSessionId && !canResumeSession) {
     await onLog(
       "stdout",
-      `[abacus] Codex session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[runeach] Codex session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
   const instructionsFilePath = asString(config.instructionsFilePath, "").trim();
@@ -417,13 +417,13 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
       instructionsChars = instructionsPrefix.length;
       await onLog(
         "stdout",
-        `[abacus] Loaded agent instructions file: ${instructionsFilePath}\n`,
+        `[runeach] Loaded agent instructions file: ${instructionsFilePath}\n`,
       );
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
       await onLog(
         "stdout",
-        `[abacus] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
+        `[runeach] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
       );
     }
   }
@@ -454,7 +454,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     !sessionId && bootstrapPromptTemplate.trim().length > 0
       ? renderTemplate(bootstrapPromptTemplate, templateData).trim()
       : "";
-  const sessionHandoffNote = asString(context.abacusSessionHandoffMarkdown, "").trim();
+  const sessionHandoffNote = asString(context.runeachSessionHandoffMarkdown, "").trim();
   const prompt = joinPromptSections([
     instructionsPrefix,
     renderedBootstrapPrompt,
@@ -594,7 +594,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stdout",
-      `[abacus] Codex resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
+      `[runeach] Codex resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
     );
     const retry = await runAttempt(null);
     return toResult(retry, true);

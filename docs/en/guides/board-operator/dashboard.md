@@ -1,6 +1,6 @@
 ---
 title: Dashboard
-summary: Understanding the Abacus dashboard
+summary: Understanding the RunEach dashboard
 ---
 
 The dashboard gives you a real-time overview of your autonomous company's health.

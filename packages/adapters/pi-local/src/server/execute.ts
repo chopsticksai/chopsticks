@@ -2,31 +2,31 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { inferOpenAiCompatibleBiller, type AdapterExecutionContext, type AdapterExecutionResult } from "@abacus-lab/adapter-utils";
+import { inferOpenAiCompatibleBiller, type AdapterExecutionContext, type AdapterExecutionResult } from "@runeachai/adapter-utils";
 import {
   asString,
   asNumber,
   asStringArray,
   parseObject,
-  buildAbacusEnv,
+  buildRunEachEnv,
   joinPromptSections,
   redactEnvForLogs,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
-  ensureAbacusSkillSymlink,
+  ensureRunEachSkillSymlink,
   ensurePathInEnv,
-  readAbacusRuntimeSkillEntries,
-  resolveAbacusDesiredSkillNames,
+  readRunEachRuntimeSkillEntries,
+  resolveRunEachDesiredSkillNames,
   removeMaintainerOnlySkillSymlinks,
   renderTemplate,
   runChildProcess,
-} from "@abacus-lab/adapter-utils/server-utils";
+} from "@runeachai/adapter-utils/server-utils";
 import { isPiUnknownSessionError, parsePiJsonl } from "./parse.js";
 import { ensurePiModelConfiguredAndAvailable } from "./models.js";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
-const ABACUS_SESSIONS_DIR = path.join(os.homedir(), ".pi", "abacuss");
+const RUNEACH_SESSIONS_DIR = path.join(os.homedir(), ".pi", "runeachs");
 const PI_AGENT_SKILLS_DIR = path.join(os.homedir(), ".pi", "agent", "skills");
 
 function firstNonEmptyLine(text: string): string {
@@ -68,7 +68,7 @@ async function ensurePiSkillsInjected(
   for (const skillName of removedSkills) {
     await onLog(
       "stderr",
-      `[abacus] Removed maintainer-only Pi skill "${skillName}" from ${PI_AGENT_SKILLS_DIR}\n`,
+      `[runeach] Removed maintainer-only Pi skill "${skillName}" from ${PI_AGENT_SKILLS_DIR}\n`,
     );
   }
 
@@ -76,16 +76,16 @@ async function ensurePiSkillsInjected(
     const target = path.join(PI_AGENT_SKILLS_DIR, entry.runtimeName);
 
     try {
-      const result = await ensureAbacusSkillSymlink(entry.source, target);
+      const result = await ensureRunEachSkillSymlink(entry.source, target);
       if (result === "skipped") continue;
       await onLog(
         "stderr",
-        `[abacus] ${result === "repaired" ? "Repaired" : "Injected"} Pi skill "${entry.runtimeName}" into ${PI_AGENT_SKILLS_DIR}\n`,
+        `[runeach] ${result === "repaired" ? "Repaired" : "Injected"} Pi skill "${entry.runtimeName}" into ${PI_AGENT_SKILLS_DIR}\n`,
       );
     } catch (err) {
       await onLog(
         "stderr",
-        `[abacus] Failed to inject Pi skill "${entry.runtimeName}" into ${PI_AGENT_SKILLS_DIR}: ${err instanceof Error ? err.message : String(err)}\n`,
+        `[runeach] Failed to inject Pi skill "${entry.runtimeName}" into ${PI_AGENT_SKILLS_DIR}: ${err instanceof Error ? err.message : String(err)}\n`,
       );
     }
   }
@@ -96,13 +96,13 @@ function resolvePiBiller(env: Record<string, string>, provider: string | null): 
 }
 
 async function ensureSessionsDir(): Promise<string> {
-  await fs.mkdir(ABACUS_SESSIONS_DIR, { recursive: true });
-  return ABACUS_SESSIONS_DIR;
+  await fs.mkdir(RUNEACH_SESSIONS_DIR, { recursive: true });
+  return RUNEACH_SESSIONS_DIR;
 }
 
 function buildSessionPath(agentId: string, timestamp: string): string {
   const safeTimestamp = timestamp.replace(/[:.]/g, "-");
-  return path.join(ABACUS_SESSIONS_DIR, `${safeTimestamp}-${agentId}.jsonl`);
+  return path.join(RUNEACH_SESSIONS_DIR, `${safeTimestamp}-${agentId}.jsonl`);
 }
 
 export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExecutionResult> {
@@ -110,7 +110,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Abacus work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your RunEach work.",
   );
   const command = asString(config.command, "pi");
   const model = asString(config.model, "").trim();
@@ -120,15 +120,15 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const provider = parseModelProvider(model);
   const modelId = parseModelId(model);
 
-  const workspaceContext = parseObject(context.abacusWorkspace);
+  const workspaceContext = parseObject(context.runeachWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceId = asString(workspaceContext.workspaceId, "");
   const workspaceRepoUrl = asString(workspaceContext.repoUrl, "");
   const workspaceRepoRef = asString(workspaceContext.repoRef, "");
   const agentHome = asString(workspaceContext.agentHome, "");
-  const workspaceHints = Array.isArray(context.abacusWorkspaces)
-    ? context.abacusWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.runeachWorkspaces)
+    ? context.runeachWorkspaces.filter(
         (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
       )
     : [];
@@ -142,16 +142,16 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   await ensureSessionsDir();
 
   // Inject skills
-  const piSkillEntries = await readAbacusRuntimeSkillEntries(config, __moduleDir);
-  const desiredPiSkillNames = resolveAbacusDesiredSkillNames(config, piSkillEntries);
+  const piSkillEntries = await readRunEachRuntimeSkillEntries(config, __moduleDir);
+  const desiredPiSkillNames = resolveRunEachDesiredSkillNames(config, piSkillEntries);
   await ensurePiSkillsInjected(onLog, piSkillEntries, desiredPiSkillNames);
 
   // Build environment
   const envConfig = parseObject(config.env);
   const hasExplicitApiKey =
-    typeof envConfig.ABACUS_API_KEY === "string" && envConfig.ABACUS_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildAbacusEnv(agent) };
-  env.ABACUS_RUN_ID = runId;
+    typeof envConfig.RUNEACH_API_KEY === "string" && envConfig.RUNEACH_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildRunEachEnv(agent) };
+  env.RUNEACH_RUN_ID = runId;
 
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
@@ -177,25 +177,25 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     ? context.issueIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     : [];
 
-  if (wakeTaskId) env.ABACUS_TASK_ID = wakeTaskId;
-  if (wakeReason) env.ABACUS_WAKE_REASON = wakeReason;
-  if (wakeCommentId) env.ABACUS_WAKE_COMMENT_ID = wakeCommentId;
-  if (approvalId) env.ABACUS_APPROVAL_ID = approvalId;
-  if (approvalStatus) env.ABACUS_APPROVAL_STATUS = approvalStatus;
-  if (linkedIssueIds.length > 0) env.ABACUS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
-  if (workspaceCwd) env.ABACUS_WORKSPACE_CWD = workspaceCwd;
-  if (workspaceSource) env.ABACUS_WORKSPACE_SOURCE = workspaceSource;
-  if (workspaceId) env.ABACUS_WORKSPACE_ID = workspaceId;
-  if (workspaceRepoUrl) env.ABACUS_WORKSPACE_REPO_URL = workspaceRepoUrl;
-  if (workspaceRepoRef) env.ABACUS_WORKSPACE_REPO_REF = workspaceRepoRef;
+  if (wakeTaskId) env.RUNEACH_TASK_ID = wakeTaskId;
+  if (wakeReason) env.RUNEACH_WAKE_REASON = wakeReason;
+  if (wakeCommentId) env.RUNEACH_WAKE_COMMENT_ID = wakeCommentId;
+  if (approvalId) env.RUNEACH_APPROVAL_ID = approvalId;
+  if (approvalStatus) env.RUNEACH_APPROVAL_STATUS = approvalStatus;
+  if (linkedIssueIds.length > 0) env.RUNEACH_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+  if (workspaceCwd) env.RUNEACH_WORKSPACE_CWD = workspaceCwd;
+  if (workspaceSource) env.RUNEACH_WORKSPACE_SOURCE = workspaceSource;
+  if (workspaceId) env.RUNEACH_WORKSPACE_ID = workspaceId;
+  if (workspaceRepoUrl) env.RUNEACH_WORKSPACE_REPO_URL = workspaceRepoUrl;
+  if (workspaceRepoRef) env.RUNEACH_WORKSPACE_REPO_REF = workspaceRepoRef;
   if (agentHome) env.AGENT_HOME = agentHome;
-  if (workspaceHints.length > 0) env.ABACUS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+  if (workspaceHints.length > 0) env.RUNEACH_WORKSPACES_JSON = JSON.stringify(workspaceHints);
 
   for (const [key, value] of Object.entries(envConfig)) {
     if (typeof value === "string") env[key] = value;
   }
   if (!hasExplicitApiKey && authToken) {
-    env.ABACUS_API_KEY = authToken;
+    env.RUNEACH_API_KEY = authToken;
   }
 
   const runtimeEnv = Object.fromEntries(
@@ -233,7 +233,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   if (runtimeSessionId && !canResumeSession) {
     await onLog(
       "stdout",
-      `[abacus] Pi session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[runeach] Pi session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
 
@@ -265,17 +265,17 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
         `${instructionsContents}\n\n` +
         `The above agent instructions were loaded from ${resolvedInstructionsFilePath}. ` +
         `Resolve any relative file references from ${instructionsFileDir}.\n\n` +
-        `You are agent {{agent.id}} ({{agent.name}}). Continue your Abacus work.`;
+        `You are agent {{agent.id}} ({{agent.name}}). Continue your RunEach work.`;
       await onLog(
         "stdout",
-        `[abacus] Loaded agent instructions file: ${resolvedInstructionsFilePath}\n`,
+        `[runeach] Loaded agent instructions file: ${resolvedInstructionsFilePath}\n`,
       );
     } catch (err) {
       instructionsReadFailed = true;
       const reason = err instanceof Error ? err.message : String(err);
       await onLog(
         "stdout",
-        `[abacus] Warning: could not read agent instructions file "${resolvedInstructionsFilePath}": ${reason}\n`,
+        `[runeach] Warning: could not read agent instructions file "${resolvedInstructionsFilePath}": ${reason}\n`,
       );
       // Fall back to base prompt template
       systemPromptExtension = promptTemplate;
@@ -300,7 +300,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     !canResumeSession && bootstrapPromptTemplate.trim().length > 0
       ? renderTemplate(bootstrapPromptTemplate, templateData).trim()
       : "";
-  const sessionHandoffNote = asString(context.abacusSessionHandoffMarkdown, "").trim();
+  const sessionHandoffNote = asString(context.runeachSessionHandoffMarkdown, "").trim();
   const userPrompt = joinPromptSections([
     renderedBootstrapPrompt,
     sessionHandoffNote,
@@ -343,7 +343,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     args.push("--tools", "read,bash,edit,write,grep,find,ls");
     args.push("--session", sessionFile);
 
-    // Add Abacus skills directory so Pi can load the abacus skill
+    // Add RunEach skills directory so Pi can load the runeach skill
     args.push("--skill", PI_AGENT_SKILLS_DIR);
 
     if (extraArgs.length > 0) args.push(...extraArgs);
@@ -486,7 +486,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stdout",
-      `[abacus] Pi session "${runtimeSessionId}" is unavailable; retrying with a fresh session.\n`,
+      `[runeach] Pi session "${runtimeSessionId}" is unavailable; retrying with a fresh session.\n`,
     );
     const newSessionPath = buildSessionPath(agent.id, new Date().toISOString());
     try {

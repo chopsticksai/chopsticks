@@ -2,19 +2,19 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@abacus-lab/adapter-codex-local/server";
+import { execute } from "@runeachai/adapter-codex-local/server";
 
 async function writeFakeCodexCommand(commandPath: string): Promise<void> {
   const script = `#!/usr/bin/env node
 const fs = require("node:fs");
 
-const capturePath = process.env.ABACUS_TEST_CAPTURE_PATH;
+const capturePath = process.env.RUNEACH_TEST_CAPTURE_PATH;
 const payload = {
   argv: process.argv.slice(2),
   prompt: fs.readFileSync(0, "utf8"),
   codexHome: process.env.CODEX_HOME || null,
-  abacusEnvKeys: Object.keys(process.env)
-    .filter((key) => key.startsWith("ABACUS_"))
+  runeachEnvKeys: Object.keys(process.env)
+    .filter((key) => key.startsWith("RUNEACH_"))
     .sort(),
 };
 if (capturePath) {
@@ -32,7 +32,7 @@ type CapturePayload = {
   argv: string[];
   prompt: string;
   codexHome: string | null;
-  abacusEnvKeys: string[];
+  runeachEnvKeys: string[];
 };
 
 type LogEntry = {
@@ -41,15 +41,15 @@ type LogEntry = {
 };
 
 describe("codex execute", () => {
-  it("uses a Abacus-managed CODEX_HOME outside worktree mode while preserving shared auth and config", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-codex-execute-default-"));
+  it("uses a RunEach-managed CODEX_HOME outside worktree mode while preserving shared auth and config", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "runeach-codex-execute-default-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "codex");
     const capturePath = path.join(root, "capture.json");
     const sharedCodexHome = path.join(root, "shared-codex-home");
-    const abacusHome = path.join(root, "abacus-home");
+    const runeachHome = path.join(root, "runeach-home");
     const managedCodexHome = path.join(
-      abacusHome,
+      runeachHome,
       "instances",
       "default",
       "companies",
@@ -63,14 +63,14 @@ describe("codex execute", () => {
     await writeFakeCodexCommand(commandPath);
 
     const previousHome = process.env.HOME;
-    const previousAbacusHome = process.env.ABACUS_HOME;
-    const previousAbacusInstanceId = process.env.ABACUS_INSTANCE_ID;
-    const previousAbacusInWorktree = process.env.ABACUS_IN_WORKTREE;
+    const previousRunEachHome = process.env.RUNEACH_HOME;
+    const previousRunEachInstanceId = process.env.RUNEACH_INSTANCE_ID;
+    const previousRunEachInWorktree = process.env.RUNEACH_IN_WORKTREE;
     const previousCodexHome = process.env.CODEX_HOME;
     process.env.HOME = root;
-    process.env.ABACUS_HOME = abacusHome;
-    delete process.env.ABACUS_INSTANCE_ID;
-    delete process.env.ABACUS_IN_WORKTREE;
+    process.env.RUNEACH_HOME = runeachHome;
+    delete process.env.RUNEACH_INSTANCE_ID;
+    delete process.env.RUNEACH_IN_WORKTREE;
     process.env.CODEX_HOME = sharedCodexHome;
 
     try {
@@ -94,9 +94,9 @@ describe("codex execute", () => {
           command: commandPath,
           cwd: workspace,
           env: {
-            ABACUS_TEST_CAPTURE_PATH: capturePath,
+            RUNEACH_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the abacus heartbeat.",
+          promptTemplate: "Follow the runeach heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -121,18 +121,18 @@ describe("codex execute", () => {
       expect(logs).toContainEqual(
         expect.objectContaining({
           stream: "stdout",
-          chunk: expect.stringContaining("Using Abacus-managed Codex home"),
+          chunk: expect.stringContaining("Using RunEach-managed Codex home"),
         }),
       );
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
-      if (previousAbacusHome === undefined) delete process.env.ABACUS_HOME;
-      else process.env.ABACUS_HOME = previousAbacusHome;
-      if (previousAbacusInstanceId === undefined) delete process.env.ABACUS_INSTANCE_ID;
-      else process.env.ABACUS_INSTANCE_ID = previousAbacusInstanceId;
-      if (previousAbacusInWorktree === undefined) delete process.env.ABACUS_IN_WORKTREE;
-      else process.env.ABACUS_IN_WORKTREE = previousAbacusInWorktree;
+      if (previousRunEachHome === undefined) delete process.env.RUNEACH_HOME;
+      else process.env.RUNEACH_HOME = previousRunEachHome;
+      if (previousRunEachInstanceId === undefined) delete process.env.RUNEACH_INSTANCE_ID;
+      else process.env.RUNEACH_INSTANCE_ID = previousRunEachInstanceId;
+      if (previousRunEachInWorktree === undefined) delete process.env.RUNEACH_IN_WORKTREE;
+      else process.env.RUNEACH_IN_WORKTREE = previousRunEachInWorktree;
       if (previousCodexHome === undefined) delete process.env.CODEX_HOME;
       else process.env.CODEX_HOME = previousCodexHome;
       await fs.rm(root, { recursive: true, force: true });
@@ -140,21 +140,21 @@ describe("codex execute", () => {
   });
 
   it("uses a worktree-isolated CODEX_HOME while preserving shared auth and config", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-codex-execute-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "runeach-codex-execute-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "codex");
     const capturePath = path.join(root, "capture.json");
     const sharedCodexHome = path.join(root, "shared-codex-home");
-    const abacusHome = path.join(root, "abacus-home");
+    const runeachHome = path.join(root, "runeach-home");
     const isolatedCodexHome = path.join(
-      abacusHome,
+      runeachHome,
       "instances",
       "worktree-1",
       "companies",
       "company-1",
       "codex-home",
     );
-    const workspaceSkill = path.join(workspace, ".agents", "skills", "abacus");
+    const workspaceSkill = path.join(workspace, ".agents", "skills", "runeach");
     await fs.mkdir(workspace, { recursive: true });
     await fs.mkdir(sharedCodexHome, { recursive: true });
     await fs.writeFile(path.join(sharedCodexHome, "auth.json"), '{"token":"shared"}\n', "utf8");
@@ -162,14 +162,14 @@ describe("codex execute", () => {
     await writeFakeCodexCommand(commandPath);
 
     const previousHome = process.env.HOME;
-    const previousAbacusHome = process.env.ABACUS_HOME;
-    const previousAbacusInstanceId = process.env.ABACUS_INSTANCE_ID;
-    const previousAbacusInWorktree = process.env.ABACUS_IN_WORKTREE;
+    const previousRunEachHome = process.env.RUNEACH_HOME;
+    const previousRunEachInstanceId = process.env.RUNEACH_INSTANCE_ID;
+    const previousRunEachInWorktree = process.env.RUNEACH_IN_WORKTREE;
     const previousCodexHome = process.env.CODEX_HOME;
     process.env.HOME = root;
-    process.env.ABACUS_HOME = abacusHome;
-    process.env.ABACUS_INSTANCE_ID = "worktree-1";
-    process.env.ABACUS_IN_WORKTREE = "true";
+    process.env.RUNEACH_HOME = runeachHome;
+    process.env.RUNEACH_INSTANCE_ID = "worktree-1";
+    process.env.RUNEACH_IN_WORKTREE = "true";
     process.env.CODEX_HOME = sharedCodexHome;
 
     try {
@@ -193,9 +193,9 @@ describe("codex execute", () => {
           command: commandPath,
           cwd: workspace,
           env: {
-            ABACUS_TEST_CAPTURE_PATH: capturePath,
+            RUNEACH_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the abacus heartbeat.",
+          promptTemplate: "Follow the runeach heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -210,14 +210,14 @@ describe("codex execute", () => {
       const capture = JSON.parse(await fs.readFile(capturePath, "utf8")) as CapturePayload;
       expect(capture.codexHome).toBe(isolatedCodexHome);
       expect(capture.argv).toEqual(expect.arrayContaining(["exec", "--json", "-"]));
-      expect(capture.prompt).toContain("Follow the abacus heartbeat.");
-      expect(capture.abacusEnvKeys).toEqual(
+      expect(capture.prompt).toContain("Follow the runeach heartbeat.");
+      expect(capture.runeachEnvKeys).toEqual(
         expect.arrayContaining([
-          "ABACUS_AGENT_ID",
-          "ABACUS_API_KEY",
-          "ABACUS_API_URL",
-          "ABACUS_COMPANY_ID",
-          "ABACUS_RUN_ID",
+          "RUNEACH_AGENT_ID",
+          "RUNEACH_API_KEY",
+          "RUNEACH_API_URL",
+          "RUNEACH_COMPANY_ID",
+          "RUNEACH_RUN_ID",
         ]),
       );
 
@@ -238,18 +238,18 @@ describe("codex execute", () => {
       expect(logs).toContainEqual(
         expect.objectContaining({
           stream: "stdout",
-          chunk: expect.stringContaining('Injected Codex skill "abacus"'),
+          chunk: expect.stringContaining('Injected Codex skill "runeach"'),
         }),
       );
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
-      if (previousAbacusHome === undefined) delete process.env.ABACUS_HOME;
-      else process.env.ABACUS_HOME = previousAbacusHome;
-      if (previousAbacusInstanceId === undefined) delete process.env.ABACUS_INSTANCE_ID;
-      else process.env.ABACUS_INSTANCE_ID = previousAbacusInstanceId;
-      if (previousAbacusInWorktree === undefined) delete process.env.ABACUS_IN_WORKTREE;
-      else process.env.ABACUS_IN_WORKTREE = previousAbacusInWorktree;
+      if (previousRunEachHome === undefined) delete process.env.RUNEACH_HOME;
+      else process.env.RUNEACH_HOME = previousRunEachHome;
+      if (previousRunEachInstanceId === undefined) delete process.env.RUNEACH_INSTANCE_ID;
+      else process.env.RUNEACH_INSTANCE_ID = previousRunEachInstanceId;
+      if (previousRunEachInWorktree === undefined) delete process.env.RUNEACH_IN_WORKTREE;
+      else process.env.RUNEACH_IN_WORKTREE = previousRunEachInWorktree;
       if (previousCodexHome === undefined) delete process.env.CODEX_HOME;
       else process.env.CODEX_HOME = previousCodexHome;
       await fs.rm(root, { recursive: true, force: true });
@@ -257,27 +257,27 @@ describe("codex execute", () => {
   });
 
   it("respects an explicit CODEX_HOME config override even in worktree mode", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-codex-execute-explicit-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "runeach-codex-execute-explicit-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "codex");
     const capturePath = path.join(root, "capture.json");
     const sharedCodexHome = path.join(root, "shared-codex-home");
     const explicitCodexHome = path.join(root, "explicit-codex-home");
-    const abacusHome = path.join(root, "abacus-home");
+    const runeachHome = path.join(root, "runeach-home");
     await fs.mkdir(workspace, { recursive: true });
     await fs.mkdir(sharedCodexHome, { recursive: true });
     await fs.writeFile(path.join(sharedCodexHome, "auth.json"), '{"token":"shared"}\n', "utf8");
     await writeFakeCodexCommand(commandPath);
 
     const previousHome = process.env.HOME;
-    const previousAbacusHome = process.env.ABACUS_HOME;
-    const previousAbacusInstanceId = process.env.ABACUS_INSTANCE_ID;
-    const previousAbacusInWorktree = process.env.ABACUS_IN_WORKTREE;
+    const previousRunEachHome = process.env.RUNEACH_HOME;
+    const previousRunEachInstanceId = process.env.RUNEACH_INSTANCE_ID;
+    const previousRunEachInWorktree = process.env.RUNEACH_IN_WORKTREE;
     const previousCodexHome = process.env.CODEX_HOME;
     process.env.HOME = root;
-    process.env.ABACUS_HOME = abacusHome;
-    process.env.ABACUS_INSTANCE_ID = "worktree-1";
-    process.env.ABACUS_IN_WORKTREE = "true";
+    process.env.RUNEACH_HOME = runeachHome;
+    process.env.RUNEACH_INSTANCE_ID = "worktree-1";
+    process.env.RUNEACH_IN_WORKTREE = "true";
     process.env.CODEX_HOME = sharedCodexHome;
 
     try {
@@ -300,10 +300,10 @@ describe("codex execute", () => {
           command: commandPath,
           cwd: workspace,
           env: {
-            ABACUS_TEST_CAPTURE_PATH: capturePath,
+            RUNEACH_TEST_CAPTURE_PATH: capturePath,
             CODEX_HOME: explicitCodexHome,
           },
-          promptTemplate: "Follow the abacus heartbeat.",
+          promptTemplate: "Follow the runeach heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -315,17 +315,17 @@ describe("codex execute", () => {
 
       const capture = JSON.parse(await fs.readFile(capturePath, "utf8")) as CapturePayload;
       expect(capture.codexHome).toBe(explicitCodexHome);
-      expect((await fs.lstat(path.join(workspace, ".agents", "skills", "abacus"))).isSymbolicLink()).toBe(true);
-      await expect(fs.lstat(path.join(abacusHome, "instances", "worktree-1", "codex-home"))).rejects.toThrow();
+      expect((await fs.lstat(path.join(workspace, ".agents", "skills", "runeach"))).isSymbolicLink()).toBe(true);
+      await expect(fs.lstat(path.join(runeachHome, "instances", "worktree-1", "codex-home"))).rejects.toThrow();
     } finally {
       if (previousHome === undefined) delete process.env.HOME;
       else process.env.HOME = previousHome;
-      if (previousAbacusHome === undefined) delete process.env.ABACUS_HOME;
-      else process.env.ABACUS_HOME = previousAbacusHome;
-      if (previousAbacusInstanceId === undefined) delete process.env.ABACUS_INSTANCE_ID;
-      else process.env.ABACUS_INSTANCE_ID = previousAbacusInstanceId;
-      if (previousAbacusInWorktree === undefined) delete process.env.ABACUS_IN_WORKTREE;
-      else process.env.ABACUS_IN_WORKTREE = previousAbacusInWorktree;
+      if (previousRunEachHome === undefined) delete process.env.RUNEACH_HOME;
+      else process.env.RUNEACH_HOME = previousRunEachHome;
+      if (previousRunEachInstanceId === undefined) delete process.env.RUNEACH_INSTANCE_ID;
+      else process.env.RUNEACH_INSTANCE_ID = previousRunEachInstanceId;
+      if (previousRunEachInWorktree === undefined) delete process.env.RUNEACH_IN_WORKTREE;
+      else process.env.RUNEACH_IN_WORKTREE = previousRunEachInWorktree;
       if (previousCodexHome === undefined) delete process.env.CODEX_HOME;
       else process.env.CODEX_HOME = previousCodexHome;
       await fs.rm(root, { recursive: true, force: true });

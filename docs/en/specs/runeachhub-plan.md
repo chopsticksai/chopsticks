@@ -1,21 +1,21 @@
 ---
-title: AbacusHub Plan
-summary: Marketplace concept for Abacus team blueprints, skills, and governance bundles
+title: RunEachHub Plan
+summary: Marketplace concept for RunEach team blueprints, skills, and governance bundles
 ---
 
-# AbacusHub: Marketplace for Abacus Team Configurations
+# RunEachHub: Marketplace for RunEach Team Configurations
 
-> The "app store" for whole-company AI teams — pre-built Abacus configurations, agent blueprints, skills, and governance templates that ship real work from day one.
+> The "app store" for whole-company AI teams — pre-built RunEach configurations, agent blueprints, skills, and governance templates that ship real work from day one.
 
 ## 1. Vision & Positioning
 
-**AbacusHub** sells **entire team configurations** — org charts, agent roles, inter-agent workflows, governance rules, and project templates — for Abacus-managed companies.
+**RunEachHub** sells **entire team configurations** — org charts, agent roles, inter-agent workflows, governance rules, and project templates — for RunEach-managed companies.
 
-| Dimension | AbacusHub |
+| Dimension | RunEachHub |
 |---|---|
 | Unit of sale | Team blueprint (multi-agent org) |
 | Buyer | Founder / team lead spinning up an AI company |
-| Install target | Abacus company (agents, projects, governance) |
+| Install target | RunEach company (agents, projects, governance) |
 | Value prop | "Skip org design — get a shipping team in minutes" |
 | Price range | $0–$499 per blueprint (+ individual add-ons) |
 
@@ -25,7 +25,7 @@ summary: Marketplace concept for Abacus team blueprints, skills, and governance 
 
 ### 2.1 Team Blueprints (primary product)
 
-A complete Abacus company configuration:
+A complete RunEach company configuration:
 
 - **Org chart**: Agents with roles, titles, reporting chains, capabilities
 - **Agent configs**: Adapter type, model, prompt templates, instructions paths
@@ -41,7 +41,7 @@ A complete Abacus company configuration:
 
 ### 2.2 Agent Blueprints (individual agents within a team context)
 
-Single-agent configurations designed to plug into a Abacus org:
+Single-agent configurations designed to plug into a RunEach org:
 
 - Role definition, prompt template, adapter config
 - Reporting chain expectations (who they report to)
@@ -55,11 +55,11 @@ Single-agent configurations designed to plug into a Abacus org:
 
 ### 2.3 Skills (modular capabilities)
 
-Portable skill files that any Abacus agent can use:
+Portable skill files that any RunEach agent can use:
 
 - Markdown skill files with instructions
 - Tool configurations and shell scripts
-- Compatible with Abacus's skill loading system
+- Compatible with RunEach's skill loading system
 
 **Examples:**
 - "Git PR Workflow" — standardized PR creation and review (Free)
@@ -116,7 +116,7 @@ interface Listing {
   // Compatibility
   compatibleAdapters: string[];    // ['claude_local', 'codex_local', ...]
   requiredModels: string[];        // ['claude-opus-4-6', 'claude-sonnet-4-6']
-  abacusVersionMin: string;     // Minimum Abacus version
+  runeachVersionMin: string;     // Minimum RunEach version
 
   // Social proof
   installCount: number;
@@ -221,7 +221,7 @@ interface Purchase {
   id: string;
   listingId: string;
   buyerUserId: string;
-  buyerCompanyId: string | null;    // Target Abacus company
+  buyerCompanyId: string | null;    // Target RunEach company
   pricePaidCents: number;
   paymentIntentId: string | null;   // Stripe
   installedAt: string | null;       // When deployed to company
@@ -263,7 +263,7 @@ interface Review {
 | `/browse?type=governance_template` | Governance | Policy templates |
 | `/listings/:slug` | Listing detail | Full product page |
 | `/creators/:slug` | Creator profile | Bio, all listings, stats |
-| `/about` | About AbacusHub | Mission, how it works |
+| `/about` | About RunEachHub | Mission, how it works |
 | `/pricing` | Pricing & fees | Creator revenue share, buyer info |
 
 ### 4.2 Authenticated Pages
@@ -289,7 +289,7 @@ interface Review {
 | `PATCH` | `/api/listings/:id` | Update listing |
 | `DELETE` | `/api/listings/:id` | Archive listing |
 | `POST` | `/api/listings/:id/purchase` | Purchase listing (Stripe checkout) |
-| `POST` | `/api/listings/:id/install` | Install to Abacus company |
+| `POST` | `/api/listings/:id/install` | Install to RunEach company |
 | `GET` | `/api/listings/:id/reviews` | Get reviews |
 | `POST` | `/api/listings/:id/reviews` | Submit review |
 | `GET` | `/api/creators/:slug` | Creator profile |
@@ -309,14 +309,14 @@ Homepage → Browse marketplace → Filter by type/category
   → Click listing → Read details, reviews, preview org chart
   → Click "Buy" → Stripe checkout (or free install)
   → Post-purchase: "Install to Company" button
-  → Select target Abacus company (or create new)
-  → AbacusHub API calls Abacus API to:
+  → Select target RunEach company (or create new)
+  → RunEachHub API calls RunEach API to:
       1. Create agents with configs from blueprint
       2. Set up reporting chains
       3. Create projects with workspace configs
       4. Apply governance rules
       5. Deploy skill files to agent instruction paths
-  → Redirect to Abacus dashboard with new team running
+  → Redirect to RunEach dashboard with new team running
 ```
 
 ### 5.2 Creator: Build → Publish → Earn
@@ -334,17 +334,17 @@ Sign up as creator → Connect Stripe
   → Track installs, revenue, reviews on creator dashboard
 ```
 
-### 5.3 Creator: Export from Abacus → Publish
+### 5.3 Creator: Export from RunEach → Publish
 
 ```
-Running Abacus company → "Export as Blueprint" (CLI or UI)
-  → Abacus exports:
+Running RunEach company → "Export as Blueprint" (CLI or UI)
+  → RunEach exports:
       - Agent configs (sanitized — no secrets)
       - Org chart / reporting chains
       - Governance rules
       - Project templates
       - Skill files
-  → Upload to AbacusHub as new listing
+  → Upload to RunEachHub as new listing
   → Edit details, set price, publish
 ```
 
@@ -354,18 +354,18 @@ Running Abacus company → "Export as Blueprint" (CLI or UI)
 
 ### 6.1 Visual Language
 
-- **Color palette**: Dark ink primary, warm sand backgrounds, accent color for CTAs (Abacus brand blue/purple)
+- **Color palette**: Dark ink primary, warm sand backgrounds, accent color for CTAs (RunEach brand blue/purple)
 - **Typography**: Clean sans-serif, strong hierarchy, monospace for technical details
 - **Cards**: Rounded corners, subtle shadows, clear pricing badges
 - **Org chart visuals**: Interactive tree/graph showing agent relationships in team blueprints
 
 ### 6.2 Key Design Elements
 
-| Element | AbacusHub |
+| Element | RunEachHub |
 |---|---|
 | Product card | Org chart mini-preview + agent count badge |
 | Detail page | Interactive org chart + per-agent breakdown |
-| Install flow | One-click deploy to Abacus company |
+| Install flow | One-click deploy to RunEach company |
 | Social proof | "X companies running this blueprint" |
 | Preview | Live demo sandbox (stretch goal) |
 
@@ -412,7 +412,7 @@ When a buyer clicks "Install to Company":
 ```
 POST /api/listings/:id/install
 {
-  "targetCompanyId": "uuid",         // Existing Abacus company
+  "targetCompanyId": "uuid",         // Existing RunEach company
   "overrides": {                      // Optional customization
     "agentModel": "claude-sonnet-4-6", // Override default model
     "budgetScale": 0.5,               // Scale budgets
@@ -426,7 +426,7 @@ The install handler:
 1. Validates buyer owns the purchase
 2. Validates target company access
 3. For each agent in blueprint:
-   - `POST /api/companies/:id/agents` (if `abacus-create-agent` supports it, or via approval flow)
+   - `POST /api/companies/:id/agents` (if `runeach-create-agent` supports it, or via approval flow)
    - Sets adapter config, prompt template, instructions path
 4. Sets reporting chains
 5. Creates projects and workspaces
@@ -448,7 +448,7 @@ The install handler:
 | Fee | Amount | Notes |
 |---|---|---|
 | Creator revenue share | 90% of sale price | Minus Stripe processing (~2.9% + $0.30) |
-| Platform fee | 10% of sale price | AbacusHub's cut |
+| Platform fee | 10% of sale price | RunEachHub's cut |
 | Free listings | $0 | No fees for free listings |
 | Stripe Connect | Standard rates | Handled by Stripe |
 
@@ -458,20 +458,20 @@ The install handler:
 
 ### 9.1 Stack
 
-- **Frontend**: Next.js (React), Tailwind CSS, same UI framework as Abacus
-- **Backend**: Node.js API (or extend Abacus server)
-- **Database**: Postgres (can share Abacus's DB or separate)
+- **Frontend**: Next.js (React), Tailwind CSS, same UI framework as RunEach
+- **Backend**: Node.js API (or extend RunEach server)
+- **Database**: Postgres (can share RunEach's DB or separate)
 - **Payments**: Stripe Connect (marketplace mode)
 - **Storage**: S3/R2 for listing bundles and images
-- **Auth**: Shared with Abacus auth (or OAuth2)
+- **Auth**: Shared with RunEach auth (or OAuth2)
 
-### 9.2 Integration with Abacus
+### 9.2 Integration with RunEach
 
-AbacusHub can be:
-- **Option A**: A separate app that calls Abacus's API to install blueprints
-- **Option B**: A built-in section of the Abacus UI (`/marketplace` route)
+RunEachHub can be:
+- **Option A**: A separate app that calls RunEach's API to install blueprints
+- **Option B**: A built-in section of the RunEach UI (`/marketplace` route)
 
-Option B is simpler for MVP — adds routes to the existing Abacus UI and API.
+Option B is simpler for MVP — adds routes to the existing RunEach UI and API.
 
 ### 9.3 Bundle Format
 
@@ -511,14 +511,14 @@ blueprint/
 - [ ] Listing detail page with org chart visualization
 - [ ] Creator registration and listing creation wizard
 - [ ] Free installs only (no payments yet)
-- [ ] Install flow: blueprint → Abacus company
+- [ ] Install flow: blueprint → RunEach company
 
 ### Phase 2: Payments & Social
 - [ ] Stripe Connect integration
 - [ ] Purchase flow
 - [ ] Review system
 - [ ] Creator analytics dashboard
-- [ ] "Export from Abacus" CLI command
+- [ ] "Export from RunEach" CLI command
 
 ### Phase 3: Growth
 - [ ] Search with relevance ranking

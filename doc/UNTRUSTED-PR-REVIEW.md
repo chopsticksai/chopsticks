@@ -2,7 +2,7 @@
 
 Use this workflow when you want Codex or Claude to inspect a pull request that you do not want touching your host machine directly.
 
-This is intentionally separate from the normal abacus dev image.
+This is intentionally separate from the normal runeach dev image.
 
 ## What this container isolates
 
@@ -55,8 +55,8 @@ OPENAI_API_KEY=... ANTHROPIC_API_KEY=... docker compose -f docker-compose.untrus
 Inside the container:
 
 ```sh
-review-checkout-pr abacus-lab/abacus 432
-cd /work/checkouts/abacus-lab-abacus/pr-432
+review-checkout-pr runeachai/runeach 432
+cd /work/checkouts/runeachai-runeach/pr-432
 ```
 
 What this does:
@@ -87,7 +87,7 @@ Or with Claude:
 claude
 ```
 
-## Preview the abacus app from the PR
+## Preview the runeach app from the PR
 
 Only do this when you intentionally want to execute the PR's code inside the container.
 
@@ -110,7 +110,7 @@ Notes:
 
 - `pnpm install` can run untrusted lifecycle scripts from the PR. That is why this happens inside the isolated container instead of on your host.
 - If you only want static inspection, do not run install/dev commands.
-- abacus's embedded PostgreSQL and local storage stay inside the container home volume via `ABACUS_HOME=/home/reviewer/.abacus-review`.
+- runeach's embedded PostgreSQL and local storage stay inside the container home volume via `RUNEACH_HOME=/home/reviewer/.runeach-review`.
 
 ## Reset state
 

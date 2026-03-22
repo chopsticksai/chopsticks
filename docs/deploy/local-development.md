@@ -1,9 +1,9 @@
 ---
 title: 本地开发
-summary: 为本地开发配置 Abacus
+summary: 为本地开发配置 RunEach
 ---
 
-在几乎零外部依赖的前提下本地运行 Abacus。
+在几乎零外部依赖的前提下本地运行 RunEach。
 
 ## 前置条件
 
@@ -22,20 +22,20 @@ pnpm dev
 - **API 服务**：`http://localhost:3100`
 - **UI**：由 API 服务以 dev middleware 模式托管（同源）
 
-不需要 Docker，也不需要外部数据库。Abacus 会自动启用内嵌 PostgreSQL。
+不需要 Docker，也不需要外部数据库。RunEach 会自动启用内嵌 PostgreSQL。
 
 ## 单命令引导
 
 首次安装时可以执行：
 
 ```sh
-pnpm abacus run
+pnpm runeach run
 ```
 
 这个命令会：
 
 1. 在缺少配置时自动完成引导
-2. 运行带修复能力的 `abacus doctor`
+2. 运行带修复能力的 `runeach doctor`
 3. 在检查通过后启动服务
 
 ## Tailscale / 私网认证开发模式
@@ -57,7 +57,7 @@ pnpm dev --authenticated-private
 允许额外的私有主机名：
 
 ```sh
-pnpm abacus allowed-hostname dotta-macbook-pro
+pnpm runeach allowed-hostname dotta-macbook-pro
 ```
 
 完整配置和排障见 [Tailscale 私网访问](/deploy/tailscale-private-access)。
@@ -77,7 +77,7 @@ curl http://localhost:3100/api/companies
 如果要清空本地数据并重新开始：
 
 ```sh
-rm -rf ~/.abacus/instances/default/db
+rm -rf ~/.runeach/instances/default/db
 pnpm dev
 ```
 
@@ -85,16 +85,16 @@ pnpm dev
 
 | Data | Path |
 |------|------|
-| 配置 | `~/.abacus/instances/default/config.json` |
-| 数据库 | `~/.abacus/instances/default/db` |
-| 存储 | `~/.abacus/instances/default/data/storage` |
-| Secrets key | `~/.abacus/instances/default/secrets/master.key` |
-| 日志 | `~/.abacus/instances/default/logs` |
+| 配置 | `~/.runeach/instances/default/config.json` |
+| 数据库 | `~/.runeach/instances/default/db` |
+| 存储 | `~/.runeach/instances/default/data/storage` |
+| Secrets key | `~/.runeach/instances/default/secrets/master.key` |
+| 日志 | `~/.runeach/instances/default/logs` |
 
 可以通过环境变量覆盖：
 
 ```sh
-ABACUS_HOME=/custom/path ABACUS_INSTANCE_ID=dev pnpm abacus run
+RUNEACH_HOME=/custom/path RUNEACH_INSTANCE_ID=dev pnpm runeach run
 ```
 
-兼容性说明：`~/.abacus` 现在是唯一默认的本地 home。旧路径不会再被自动探测；迁移时请把目录移动到 `~/.abacus`，或者显式设置 `ABACUS_HOME`。
+兼容性说明：`~/.runeach` 现在是唯一默认的本地 home。旧路径不会再被自动探测；迁移时请把目录移动到 `~/.runeach`，或者显式设置 `RUNEACH_HOME`。

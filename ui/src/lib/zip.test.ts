@@ -189,14 +189,14 @@ describe("createZipArchive", () => {
         "COMPANY.md": "# Company\n",
         "agents/ceo/AGENTS.md": "# CEO\n",
       },
-      "abacus-demo",
+      "runeach-demo",
     );
 
     expect(readUint32(archive, 0)).toBe(0x04034b50);
 
     const firstNameLength = readUint16(archive, 26);
     const firstBodyLength = readUint32(archive, 18);
-    expect(readString(archive, 30, firstNameLength)).toBe("abacus-demo/agents/ceo/AGENTS.md");
+    expect(readString(archive, 30, firstNameLength)).toBe("runeach-demo/agents/ceo/AGENTS.md");
     expect(readString(archive, 30 + firstNameLength, firstBodyLength)).toBe("# CEO\n");
 
     const secondOffset = 30 + firstNameLength + firstBodyLength;
@@ -204,7 +204,7 @@ describe("createZipArchive", () => {
 
     const secondNameLength = readUint16(archive, secondOffset + 26);
     const secondBodyLength = readUint32(archive, secondOffset + 18);
-    expect(readString(archive, secondOffset + 30, secondNameLength)).toBe("abacus-demo/COMPANY.md");
+    expect(readString(archive, secondOffset + 30, secondNameLength)).toBe("runeach-demo/COMPANY.md");
     expect(readString(archive, secondOffset + 30 + secondNameLength, secondBodyLength)).toBe("# Company\n");
 
     const endOffset = archive.length - 22;
@@ -213,22 +213,22 @@ describe("createZipArchive", () => {
     expect(readUint16(archive, endOffset + 10)).toBe(2);
   });
 
-  it("reads a Abacus zip archive back into rootPath and file contents", async () => {
+  it("reads a RunEach zip archive back into rootPath and file contents", async () => {
     const archive = createZipArchive(
       {
         "COMPANY.md": "# Company\n",
         "agents/ceo/AGENTS.md": "# CEO\n",
-        ".abacus.yaml": "schema: abacus/v1\n",
+        ".runeach.yaml": "schema: runeach/v1\n",
       },
-      "abacus-demo",
+      "runeach-demo",
     );
 
     await expect(readZipArchive(archive)).resolves.toEqual({
-      rootPath: "abacus-demo",
+      rootPath: "runeach-demo",
       files: {
         "COMPANY.md": "# Company\n",
         "agents/ceo/AGENTS.md": "# CEO\n",
-        ".abacus.yaml": "schema: abacus/v1\n",
+        ".runeach.yaml": "schema: runeach/v1\n",
       },
     });
   });
@@ -242,11 +242,11 @@ describe("createZipArchive", () => {
           contentType: "image/png",
         },
       },
-      "abacus-demo",
+      "runeach-demo",
     );
 
     await expect(readZipArchive(archive)).resolves.toEqual({
-      rootPath: "abacus-demo",
+      rootPath: "runeach-demo",
       files: {
         "images/company-logo.png": {
           encoding: "base64",
@@ -257,17 +257,17 @@ describe("createZipArchive", () => {
     });
   });
 
-  it("reads standard DEFLATE zip archives created outside Abacus", async () => {
+  it("reads standard DEFLATE zip archives created outside RunEach", async () => {
     const archive = createDeflatedZipArchive(
       {
         "COMPANY.md": "# Company\n",
         "agents/ceo/AGENTS.md": "# CEO\n",
       },
-      "abacus-demo",
+      "runeach-demo",
     );
 
     await expect(readZipArchive(archive)).resolves.toEqual({
-      rootPath: "abacus-demo",
+      rootPath: "runeach-demo",
       files: {
         "COMPANY.md": "# Company\n",
         "agents/ceo/AGENTS.md": "# CEO\n",
@@ -276,10 +276,10 @@ describe("createZipArchive", () => {
   });
 
   it("ignores directory entries from standard zip archives", async () => {
-    const archive = createZipArchiveWithDirectoryEntries("abacus-demo");
+    const archive = createZipArchiveWithDirectoryEntries("runeach-demo");
 
     await expect(readZipArchive(archive)).resolves.toEqual({
-      rootPath: "abacus-demo",
+      rootPath: "runeach-demo",
       files: {
         "COMPANY.md": "# Company\n",
         "agents/ceo/AGENTS.md": "# CEO\n",

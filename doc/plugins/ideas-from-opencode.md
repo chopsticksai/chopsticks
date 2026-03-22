@@ -2,9 +2,9 @@
 
 Status: design report, not a V1 commitment
 
-Abacus V1 explicitly excludes a plugin framework in [doc/SPEC-implementation.md](../SPEC-implementation.md), but the long-horizon spec says the architecture should leave room for extensions. This report studies the `opencode` plugin system and translates the useful patterns into a Abacus-shaped design.
+RunEach V1 explicitly excludes a plugin framework in [doc/SPEC-implementation.md](../SPEC-implementation.md), but the long-horizon spec says the architecture should leave room for extensions. This report studies the `opencode` plugin system and translates the useful patterns into a RunEach-shaped design.
 
-Assumption for this document: Abacus is a single-tenant operator-controlled instance. Plugin installation should therefore be global across the instance. "Companies" are still first-class Abacus objects, but they are organizational records, not tenant-isolation boundaries for plugin trust or installation.
+Assumption for this document: RunEach is a single-tenant operator-controlled instance. Plugin installation should therefore be global across the instance. "Companies" are still first-class RunEach objects, but they are organizational records, not tenant-isolation boundaries for plugin trust or installation.
 
 ## Executive Summary
 
@@ -17,20 +17,20 @@ Assumption for this document: Abacus is a single-tenant operator-controlled inst
 - they can extend provider auth flows
 - they run in-process and can mutate runtime behavior directly
 
-That model works well for a local coding tool. It should not be copied literally into Abacus.
+That model works well for a local coding tool. It should not be copied literally into RunEach.
 
 The main conclusion is:
 
-- Abacus should copy `opencode`'s typed SDK, deterministic loading, low authoring friction, and clear extension surfaces.
-- Abacus should not copy `opencode`'s trust model, project-local plugin loading, "override by name collision" behavior, or arbitrary in-process mutation hooks for core business logic.
-- Abacus should use multiple extension classes instead of one generic plugin bag:
+- RunEach should copy `opencode`'s typed SDK, deterministic loading, low authoring friction, and clear extension surfaces.
+- RunEach should not copy `opencode`'s trust model, project-local plugin loading, "override by name collision" behavior, or arbitrary in-process mutation hooks for core business logic.
+- RunEach should use multiple extension classes instead of one generic plugin bag:
   - trusted in-process modules for low-level platform concerns like agent adapters, storage providers, secret providers, and possibly run-log backends
   - out-of-process plugins for most third-party integrations like Linear, GitHub Issues, Grafana, Stripe, and schedulers
   - plugin-contributed agent tools (namespaced, not override-by-collision)
   - plugin-shipped React UI loaded into host extension slots via a typed bridge
   - a typed event bus with server-side filtering and plugin-to-plugin events, plus scheduled jobs for automation
 
-If Abacus does this well, the examples you listed become straightforward:
+If RunEach does this well, the examples you listed become straightforward:
 
 - file browser / terminal / git workflow / child process tracking become workspace plugins that resolve paths from the host and handle OS operations directly
 - Linear / GitHub / Grafana / Stripe become connector plugins
@@ -54,7 +54,7 @@ Primary files reviewed:
 - `https://github.com/anomalyco/opencode/blob/a965a062595403a8e0083e85770315d5dc9628ab/packages/web/src/content/docs/custom-tools.mdx`
 - `https://github.com/anomalyco/opencode/blob/a965a062595403a8e0083e85770315d5dc9628ab/packages/web/src/content/docs/ecosystem.mdx`
 
-Relevant Abacus files reviewed for current extension seams:
+Relevant RunEach files reviewed for current extension seams:
 
 - [server/src/adapters/registry.ts](../../server/src/adapters/registry.ts)
 - [ui/src/adapters/registry.ts](../../ui/src/adapters/registry.ts)
@@ -192,9 +192,9 @@ The most aggressive part of the design:
 - custom tools can override built-in tools by name
 
 That is very powerful for a local coding assistant.
-It is too dangerous for Abacus core actions.
+It is too dangerous for RunEach core actions.
 
-However, the concept of plugins contributing agent-usable tools is very valuable for Abacus — as long as plugin tools are namespaced (cannot shadow core tools) and capability-gated.
+However, the concept of plugins contributing agent-usable tools is very valuable for RunEach — as long as plugin tools are namespaced (cannot shadow core tools) and capability-gated.
 
 ## 7. Auth is also a plugin surface
 
@@ -237,7 +237,7 @@ This is one of the best parts of the design.
 - host internals can evolve behind the loader
 - runtime code and plugin code have a clean contract boundary
 
-Abacus should absolutely do this.
+RunEach should absolutely do this.
 
 ## 2. Deterministic loading and precedence
 
@@ -247,7 +247,7 @@ Abacus should absolutely do this.
 - how config merges
 - what order wins
 
-Abacus should copy this discipline.
+RunEach should copy this discipline.
 
 ## 3. Low-ceremony authoring
 
@@ -268,29 +268,29 @@ The `tool()` helper is excellent:
 - easy to document
 - easy for runtime validation
 
-Abacus should adopt this style for plugin actions, automations, and UI schemas.
+RunEach should adopt this style for plugin actions, automations, and UI schemas.
 
 ## 5. Built-in features and plugins use similar shapes
 
 `opencode` uses the same hook system for internal and external plugin-style behavior in several places.
 That reduces special cases.
 
-Abacus can benefit from that with adapters, secret backends, storage providers, and connector modules.
+RunEach can benefit from that with adapters, secret backends, storage providers, and connector modules.
 
 ## 6. Incremental extension, not giant abstraction upfront
 
 `opencode` did not design a giant marketplace platform first.
 It added concrete extension points that real features needed.
 
-That is the correct mindset for Abacus too.
+That is the correct mindset for RunEach too.
 
-## What Abacus Should Not Copy Directly
+## What RunEach Should Not Copy Directly
 
 ## 1. In-process arbitrary plugin code as the default
 
 `opencode` is basically a local agent runtime, so unsandboxed plugin execution is acceptable for its audience.
 
-Abacus is a control plane for an operator-managed instance with company objects.
+RunEach is a control plane for an operator-managed instance with company objects.
 The risk profile is different:
 
 - secrets matter
@@ -304,12 +304,12 @@ Default third-party plugins should not run with unrestricted in-process access t
 
 `opencode` has project-local plugin folders because the tool is centered around a codebase.
 
-Abacus is not project-scoped. It is instance-scoped.
+RunEach is not project-scoped. It is instance-scoped.
 The comparable unit is:
 
 - instance-installed plugin package
 
-Abacus should not auto-load arbitrary code from a workspace repo like `.abacus/plugins` or project directories.
+RunEach should not auto-load arbitrary code from a workspace repo like `.runeach/plugins` or project directories.
 
 ## 3. Arbitrary mutation hooks on core business decisions
 
@@ -322,7 +322,7 @@ Hooks like:
 
 make sense in `opencode`.
 
-For Abacus, equivalent hooks into:
+For RunEach, equivalent hooks into:
 
 - approval decisions
 - issue checkout semantics
@@ -337,7 +337,7 @@ Core invariants should stay in core code, not become hook-rewritable.
 
 Allowing a plugin to replace a built-in tool by name is useful in a local agent product.
 
-Abacus should not allow plugins to silently replace:
+RunEach should not allow plugins to silently replace:
 
 - core routes
 - core mutating actions
@@ -351,7 +351,7 @@ Extension should be additive or explicitly delegated, never accidental shadowing
 ## 5. Auto-install and execute from user config
 
 `opencode`'s "install dependencies at startup" flow is ergonomic.
-For Abacus it would be risky because it combines:
+For RunEach it would be risky because it combines:
 
 - package installation
 - code loading
@@ -359,26 +359,26 @@ For Abacus it would be risky because it combines:
 
 inside the control-plane server startup path.
 
-Abacus should require an explicit operator install step.
+RunEach should require an explicit operator install step.
 
-## Why Abacus Needs A Different Shape
+## Why RunEach Needs A Different Shape
 
 The products are solving different problems.
 
-| Topic | OpenCode | Abacus |
+| Topic | OpenCode | RunEach |
 |---|---|---|
 | Primary unit | local project/worktree | single-tenant operator instance with company objects |
-| Trust assumption | local power user on own machine | operator managing one trusted Abacus instance |
+| Trust assumption | local power user on own machine | operator managing one trusted RunEach instance |
 | Failure blast radius | local session/runtime | entire company control plane |
 | Extension style | mutate runtime behavior freely | preserve governance and auditability |
 | UI model | local app can load local behavior | board UI must stay coherent and safe |
 | Security model | host-trusted local plugins | needs capability boundaries and auditability |
 
-That means Abacus should borrow the good ideas from `opencode` but use a stricter architecture.
+That means RunEach should borrow the good ideas from `opencode` but use a stricter architecture.
 
-## Abacus Already Has Useful Pre-Plugin Seams
+## RunEach Already Has Useful Pre-Plugin Seams
 
-Abacus has several extension-like seams already:
+RunEach has several extension-like seams already:
 
 - server adapter registry: [server/src/adapters/registry.ts](../../server/src/adapters/registry.ts)
 - UI adapter registry: [ui/src/adapters/registry.ts](../../ui/src/adapters/registry.ts)
@@ -388,10 +388,10 @@ Abacus has several extension-like seams already:
 - activity log and live event emission: [server/src/services/activity-log.ts](../../server/src/services/activity-log.ts)
 
 This is good news.
-Abacus does not need to invent extensibility from scratch.
+RunEach does not need to invent extensibility from scratch.
 It needs to unify and harden existing seams.
 
-## Recommended Abacus Plugin Model
+## Recommended RunEach Plugin Model
 
 ## 1. Use multiple extension classes
 
@@ -411,7 +411,7 @@ This split is the most important design recommendation in this report.
 
 ## 2. Keep low-level modules separate from third-party plugins
 
-Abacus already has this pattern implicitly:
+RunEach already has this pattern implicitly:
 
 - adapters are one thing
 - storage providers are another
@@ -422,7 +422,7 @@ Keep that separation.
 I would formalize it like this:
 
 - `module` means trusted code loaded by the host for low-level runtime services
-- `plugin` means integration code that talks to Abacus through a typed plugin protocol and capability model
+- `plugin` means integration code that talks to RunEach through a typed plugin protocol and capability model
 
 This avoids trying to force Stripe, a PTY terminal, and a new agent adapter into the same abstraction.
 
@@ -438,7 +438,7 @@ For third-party plugins, the primary API should be:
 - contribute tools that agents can use during runs
 - write plugin-owned state
 - add additive UI surfaces
-- invoke explicit Abacus actions through the API
+- invoke explicit RunEach actions through the API
 
 Do not make third-party plugins responsible for:
 
@@ -460,7 +460,7 @@ Plugins ship their own React UI as a bundled module inside `dist/ui/`. The host 
 3. The plugin component fetches data from its own worker via the bridge and renders it however it wants.
 4. The host enforces capability gates through the bridge — if the worker doesn't have a capability, the bridge rejects the call.
 
-**What the host controls:** where plugin components appear, the bridge API, capability enforcement, and shared UI primitives (`@abacus-lab/plugin-sdk/ui`) with design tokens and common components.
+**What the host controls:** where plugin components appear, the bridge API, capability enforcement, and shared UI primitives (`@runeachai/plugin-sdk/ui`) with design tokens and common components.
 
 **What the plugin controls:** how to render its data, what data to fetch, what actions to expose, and whether to use the host's shared components or build entirely custom UI.
 
@@ -479,17 +479,17 @@ Later, if untrusted third-party plugins become common, the host can move to ifra
 ## 5. Make installation global and keep mappings/config separate
 
 `opencode` is mostly user-level local config.
-Abacus should treat plugin installation as a global instance-level action.
+RunEach should treat plugin installation as a global instance-level action.
 
 Examples:
 
-- install `@abacus-lab/plugin-linear` once
+- install `@runeachai/plugin-linear` once
 - make it available everywhere immediately
-- optionally store mappings over Abacus objects if one company maps to a different Linear team than another
+- optionally store mappings over RunEach objects if one company maps to a different Linear team than another
 
 ## 6. Use project workspaces as the primary anchor for local tooling
 
-Abacus already has a concrete workspace model for projects:
+RunEach already has a concrete workspace model for projects:
 
 - projects expose `workspaces` and `primaryWorkspace`
 - the database already has `project_workspaces`
@@ -514,7 +514,7 @@ In other words:
 
 ## 7. Let plugins contribute agent tools
 
-`opencode` makes tools a first-class extension point. This is one of the highest-value surfaces for Abacus too.
+`opencode` makes tools a first-class extension point. This is one of the highest-value surfaces for RunEach too.
 
 A Linear plugin should be able to contribute a `search-linear-issues` tool that agents use during runs. A git plugin should contribute `create-branch` and `get-diff`. A file browser plugin should contribute `read-file` and `list-directory`.
 
@@ -529,7 +529,7 @@ This is a natural fit — the plugin already has the SDK context, the external A
 
 ## 8. Support plugin-to-plugin events
 
-Plugins should be able to emit custom events that other plugins can subscribe to. For example, the git plugin detects a push and emits `plugin.@abacus-lab/plugin-git.push-detected`. The GitHub Issues plugin subscribes to that event and updates PR links.
+Plugins should be able to emit custom events that other plugins can subscribe to. For example, the git plugin detects a push and emits `plugin.@runeachai/plugin-git.push-detected`. The GitHub Issues plugin subscribes to that event and updates PR links.
 
 This avoids plugins needing to coordinate through shared state or external channels. The host routes plugin events through the same event bus with the same delivery semantics as core events.
 
@@ -572,15 +572,15 @@ This is critical for operators. Without observability, debugging plugin issues r
 
 ## 13. Ship a test harness and starter template
 
-A `@abacus-lab/plugin-test-harness` package should provide a mock host with in-memory stores, synthetic event emission, and `getData`/`performAction`/`executeTool` simulation. Plugin authors should be able to write unit tests without a running Abacus instance.
+A `@runeachai/plugin-test-harness` package should provide a mock host with in-memory stores, synthetic event emission, and `getData`/`performAction`/`executeTool` simulation. Plugin authors should be able to write unit tests without a running RunEach instance.
 
-A `create-abacus-plugin` CLI should scaffold a working plugin with manifest, worker, UI bundle, test file, and build config.
+A `create-runeach-plugin` CLI should scaffold a working plugin with manifest, worker, UI bundle, test file, and build config.
 
-Low authoring friction was called out as one of `opencode`'s best qualities. The test harness and starter template are how Abacus achieves the same.
+Low authoring friction was called out as one of `opencode`'s best qualities. The test harness and starter template are how RunEach achieves the same.
 
 ## 14. Support hot plugin lifecycle
 
-Plugin install, uninstall, upgrade, and config changes should take effect without restarting the Abacus server. This is critical for developer workflow and operator experience.
+Plugin install, uninstall, upgrade, and config changes should take effect without restarting the RunEach server. This is critical for developer workflow and operator experience.
 
 The out-of-process worker architecture makes this natural:
 
@@ -595,12 +595,12 @@ Each worker process is independent — starting, stopping, or replacing one work
 
 ## 15. Define SDK versioning and compatibility
 
-`opencode` does not have a formal SDK versioning story because plugins run in-process and are effectively pinned to the current runtime. Abacus's out-of-process model means plugins may be built against one SDK version and run on a host that has moved forward. This needs explicit rules.
+`opencode` does not have a formal SDK versioning story because plugins run in-process and are effectively pinned to the current runtime. RunEach's out-of-process model means plugins may be built against one SDK version and run on a host that has moved forward. This needs explicit rules.
 
 Recommended approach:
 
-- **Single SDK package**: `@abacus-lab/plugin-sdk` with subpath exports — root for worker code, `/ui` for frontend code. One dependency, one version, one changelog.
-- **SDK major version = API version**: `@abacus-lab/plugin-sdk@2.x` targets `apiVersion: 2`. Plugins built with SDK 1.x declare `apiVersion: 1` and continue to work.
+- **Single SDK package**: `@runeachai/plugin-sdk` with subpath exports — root for worker code, `/ui` for frontend code. One dependency, one version, one changelog.
+- **SDK major version = API version**: `@runeachai/plugin-sdk@2.x` targets `apiVersion: 2`. Plugins built with SDK 1.x declare `apiVersion: 1` and continue to work.
 - **Host multi-version support**: The host supports at least the current and one previous `apiVersion` simultaneously with separate IPC protocol handlers per version.
 - **`sdkVersion` in manifest**: Plugins declare a semver range (e.g. `">=1.4.0 <2.0.0"`). The host validates this at install time.
 - **Deprecation timeline**: Previous API versions get at least 6 months of continued support after a new version ships. The host logs deprecation warnings and shows a banner on the plugin settings page.
@@ -608,15 +608,15 @@ Recommended approach:
 - **UI surface versioned with worker**: Both worker and UI surfaces are in the same package, so they version together. Breaking changes to shared UI components require a major version bump just like worker API changes.
 - **Published compatibility matrix**: The host publishes a matrix of supported API versions and SDK ranges, queryable via API.
 
-## A Concrete SDK Shape For Abacus
+## A Concrete SDK Shape For RunEach
 
 An intentionally narrow first pass could look like this:
 
 ```ts
-import { definePlugin, z } from "@abacus-lab/plugin-sdk";
+import { definePlugin, z } from "@runeachai/plugin-sdk";
 
 export default definePlugin({
-  id: "@abacus-lab/plugin-linear",
+  id: "@runeachai/plugin-linear",
   version: "0.1.0",
   categories: ["connector", "ui"],
   capabilities: [
@@ -639,7 +639,7 @@ export default definePlugin({
   }),
   async register(ctx) {
     ctx.jobs.register("linear-pull", { cron: "*/5 * * * *" }, async (job) => {
-      // sync Linear issues into plugin-owned state or explicit Abacus entities
+      // sync Linear issues into plugin-owned state or explicit RunEach entities
     });
 
     // subscribe with optional server-side filter
@@ -648,7 +648,7 @@ export default definePlugin({
     });
 
     // subscribe to events from another plugin
-    ctx.events.on("plugin.@abacus-lab/plugin-git.push-detected", async (event) => {
+    ctx.events.on("plugin.@runeachai/plugin-git.push-detected", async (event) => {
       // react to the git plugin detecting a push
     });
 
@@ -679,7 +679,7 @@ The plugin's UI bundle (separate from the worker) might look like:
 
 ```tsx
 // dist/ui/index.tsx
-import { usePluginData, usePluginAction, MetricCard, ErrorBoundary } from "@abacus-lab/plugin-sdk/ui";
+import { usePluginData, usePluginAction, MetricCard, ErrorBoundary } from "@runeachai/plugin-sdk/ui";
 
 export function DashboardWidget({ context }: PluginWidgetProps) {
   const { data, loading, error } = usePluginData("sync-health", { companyId: context.companyId });
@@ -762,7 +762,7 @@ The host does not wrap or proxy these operations. This keeps the core lean — n
 
 ## Governance And Safety Requirements
 
-Any Abacus plugin system has to preserve core control-plane invariants from the repo docs.
+Any RunEach plugin system has to preserve core control-plane invariants from the repo docs.
 
 That means:
 
@@ -799,14 +799,14 @@ The board/operator sees this before installation.
 ## 2. Global installation
 
 A plugin is installed once and becomes available across the instance.
-If it needs mappings over specific Abacus objects, those are plugin data, not enable/disable boundaries.
+If it needs mappings over specific RunEach objects, those are plugin data, not enable/disable boundaries.
 
 ## 3. Activity logging
 
 Plugin-originated mutations should flow through the same activity log mechanism, with a dedicated `plugin` actor type:
 
 - `actor_type = plugin`
-- `actor_id = <plugin-id>` (e.g. `@abacus-lab/plugin-linear`)
+- `actor_id = <plugin-id>` (e.g. `@runeachai/plugin-linear`)
 
 ## 4. Health and failure reporting
 
@@ -842,7 +842,7 @@ That is too much power too early.
 
 The right mental model is:
 
-- reuse core tables when the data is clearly part of Abacus itself
+- reuse core tables when the data is clearly part of RunEach itself
 - use generic extension tables for most plugin-owned state
 - only allow plugin-specific tables later, and only for trusted platform modules or a tightly controlled migration workflow
 
@@ -850,11 +850,11 @@ The right mental model is:
 
 ### 1. Core tables stay core
 
-If a concept is becoming part of Abacus's actual product model, it should get a normal first-party table.
+If a concept is becoming part of RunEach's actual product model, it should get a normal first-party table.
 
 Examples:
 
-- `project_workspaces` is already a core table because project workspaces are now part of Abacus itself
+- `project_workspaces` is already a core table because project workspaces are now part of RunEach itself
 - if a future "project git state" becomes a core feature rather than plugin-owned metadata, that should also be a first-party table
 
 ### 2. Most plugins should start in generic extension tables
@@ -869,9 +869,9 @@ This keeps the system manageable:
 - easier operator review
 - fewer chances for plugin schema drift to break the instance
 
-### 3. Scope plugin data to Abacus objects before adding custom schemas
+### 3. Scope plugin data to RunEach objects before adding custom schemas
 
-A lot of plugin data naturally hangs off existing Abacus objects:
+A lot of plugin data naturally hangs off existing RunEach objects:
 
 - project workspace plugin state should often scope to `project` or `project_workspace`
 - issue sync state should scope to `issue`
@@ -882,7 +882,7 @@ That gives a good default keying model before introducing custom tables.
 
 ### 4. Add trusted module migrations later, not arbitrary plugin migrations now
 
-If Abacus eventually needs extension-owned tables, I would only allow that for:
+If RunEach eventually needs extension-owned tables, I would only allow that for:
 
 - trusted first-party packages
 - trusted platform modules
@@ -1017,7 +1017,7 @@ This is a useful middle ground:
 
 ## Workspace File Browser
 
-Package idea: `@abacus-lab/plugin-workspace-files`
+Package idea: `@runeachai/plugin-workspace-files`
 
 This plugin lets the board inspect project workspaces, agent workspaces, generated artifacts, and issue-related files without dropping to the shell. It is useful for:
 
@@ -1094,7 +1094,7 @@ Optional event subscriptions:
 
 ## Workspace Terminal
 
-Package idea: `@abacus-lab/plugin-terminal`
+Package idea: `@runeachai/plugin-terminal`
 
 This plugin gives the board a controlled terminal UI for project workspaces and agent workspaces. It is useful for:
 
@@ -1165,7 +1165,7 @@ Optional event subscriptions:
 
 ## Git Workflow
 
-Package idea: `@abacus-lab/plugin-git`
+Package idea: `@runeachai/plugin-git`
 
 This plugin adds repo-aware workflow tooling around issues and workspaces. It is useful for:
 
@@ -1216,8 +1216,8 @@ Main screens and interactions:
 Core workflows:
 
 - Board creates a branch from an issue and ties it to the project's primary workspace.
-- Board opens a project page and reviews the diff for that project's workspace without leaving Abacus.
-- Board reviews the diff after a run without leaving Abacus.
+- Board opens a project page and reviews the diff for that project's workspace without leaving RunEach.
+- Board reviews the diff after a run without leaving RunEach.
 - Board opens a worktree list to understand parallel branches across agents.
 
 ### Hooks needed
@@ -1232,7 +1232,7 @@ Recommended capabilities and extension points:
 - `projects.read`
 - `project.workspaces.read`
 - optional `agent.tools.register` (e.g. `create-branch`, `get-diff`, `get-status`)
-- optional `events.emit` (e.g. `plugin.@abacus-lab/plugin-git.push-detected`)
+- optional `events.emit` (e.g. `plugin.@runeachai/plugin-git.push-detected`)
 - `activity.log.write`
 
 The plugin resolves workspace paths through `ctx.projects` and handles all git operations (status, diff, log, branch create, commit, worktree create, push) directly using git CLI or a git library.
@@ -1243,18 +1243,18 @@ Optional event subscriptions:
 - `events.subscribe(issue.updated)`
 - `events.subscribe(agent.run.finished)`
 
-The git plugin can emit `plugin.@abacus-lab/plugin-git.push-detected` events that other plugins (e.g. GitHub Issues) subscribe to for cross-plugin coordination.
+The git plugin can emit `plugin.@runeachai/plugin-git.push-detected` events that other plugins (e.g. GitHub Issues) subscribe to for cross-plugin coordination.
 
 Note: GitHub/GitLab PR creation should likely live in a separate connector plugin rather than overloading the local git plugin.
 
 ## Linear Issue Tracking
 
-Package idea: `@abacus-lab/plugin-linear`
+Package idea: `@runeachai/plugin-linear`
 
-This plugin syncs Abacus work with Linear. It is useful for:
+This plugin syncs RunEach work with Linear. It is useful for:
 
 - importing backlog from Linear
-- linking Abacus issues to Linear issues
+- linking RunEach issues to Linear issues
 - syncing status, comments, and assignees
 - mapping company goals/projects to external product planning
 - giving board operators a single place to see sync health
@@ -1272,7 +1272,7 @@ Main screens and interactions:
 - Plugin settings:
   - Linear API token secret ref
   - workspace/team/project mappings
-  - status mapping between Abacus and Linear
+  - status mapping between RunEach and Linear
   - sync direction: import only, export only, bidirectional
   - comment sync toggle
 - Linear overview page:
@@ -1293,8 +1293,8 @@ Main screens and interactions:
 
 Core workflows:
 
-- Board enables the plugin, maps a Linear team, and imports a backlog into Abacus.
-- Abacus issue status changes push to Linear and Linear comments arrive back through webhooks.
+- Board enables the plugin, maps a Linear team, and imports a backlog into RunEach.
+- RunEach issue status changes push to Linear and Linear comments arrive back through webhooks.
 - Board resolves mapping conflicts from the plugin page instead of silently drifting state.
 
 ### Hooks needed
@@ -1329,15 +1329,15 @@ Important constraint:
 
 ## GitHub Issue Tracking
 
-Package idea: `@abacus-lab/plugin-github-issues`
+Package idea: `@runeachai/plugin-github-issues`
 
-This plugin syncs Abacus issues with GitHub Issues and optionally links PRs. It is useful for:
+This plugin syncs RunEach issues with GitHub Issues and optionally links PRs. It is useful for:
 
 - importing repo backlogs
 - mirroring issue status and comments
-- linking PRs to Abacus issues
+- linking PRs to RunEach issues
 - tracking cross-repo work from inside one company view
-- bridging engineering workflow with Abacus task governance
+- bridging engineering workflow with RunEach task governance
 
 ### UX
 
@@ -1354,7 +1354,7 @@ Main screens and interactions:
   - org/repo mappings
   - label/status mapping
   - whether PR linking is enabled
-  - whether new Abacus issues should create GitHub issues automatically
+  - whether new RunEach issues should create GitHub issues automatically
 - GitHub overview page:
   - repo mapping list
   - sync health and recent webhook events
@@ -1365,15 +1365,15 @@ Main screens and interactions:
   - actions: create GitHub issue, link existing issue, unlink, resync
   - comment/status sync timeline
 - Dashboard widget:
-  - open PRs linked to active Abacus issues
+  - open PRs linked to active RunEach issues
   - webhook failures
   - sync lag metrics
 
 Core workflows:
 
-- Board imports GitHub Issues for a repo into Abacus.
-- GitHub webhooks update status/comment state in Abacus.
-- A PR is linked back to the Abacus issue so the board can follow delivery status.
+- Board imports GitHub Issues for a repo into RunEach.
+- GitHub webhooks update status/comment state in RunEach.
+- A PR is linked back to the RunEach issue so the board can follow delivery status.
 
 ### Hooks needed
 
@@ -1387,7 +1387,7 @@ Recommended capabilities and extension points:
 - `events.subscribe(issue.created)`
 - `events.subscribe(issue.updated)`
 - `events.subscribe(issue.comment.created)`
-- `events.subscribe(plugin.@abacus-lab/plugin-git.push-detected)` (cross-plugin coordination)
+- `events.subscribe(plugin.@runeachai/plugin-git.push-detected)` (cross-plugin coordination)
 - `jobs.schedule`
 - `webhooks.receive`
 - `http.outbound`
@@ -1405,14 +1405,14 @@ Important constraint:
 
 ## Grafana Metrics
 
-Package idea: `@abacus-lab/plugin-grafana`
+Package idea: `@runeachai/plugin-grafana`
 
-This plugin surfaces external metrics and dashboards inside Abacus. It is useful for:
+This plugin surfaces external metrics and dashboards inside RunEach. It is useful for:
 
 - company KPI visibility
 - infrastructure/incident monitoring
 - showing deploy, traffic, latency, or revenue charts next to work
-- creating Abacus issues from anomalous metrics
+- creating RunEach issues from anomalous metrics
 
 ### UX
 
@@ -1432,7 +1432,7 @@ Main screens and interactions:
 - Dashboard widgets:
   - one or more metric cards on the main dashboard
   - quick trend view and last refresh time
-  - link out to Grafana and link in to the full Abacus plugin page
+  - link out to Grafana and link in to the full RunEach plugin page
 - Full metrics page:
   - selected dashboard panels embedded or proxied
   - metric selector
@@ -1443,9 +1443,9 @@ Main screens and interactions:
 
 Core workflows:
 
-- Board sees service degradation or business KPI movement directly on the Abacus dashboard.
+- Board sees service degradation or business KPI movement directly on the RunEach dashboard.
 - Board clicks into the full metrics page to inspect the relevant Grafana panels.
-- Board creates a Abacus issue from a threshold breach with a metric snapshot attached.
+- Board creates a RunEach issue from a threshold breach with a metric snapshot attached.
 
 ### Hooks needed
 
@@ -1472,11 +1472,11 @@ Optional event subscriptions:
 Important constraint:
 
 - start read-only first
-- do not make Grafana alerting logic part of Abacus core; keep it as additive signal and issue creation
+- do not make Grafana alerting logic part of RunEach core; keep it as additive signal and issue creation
 
 ## Child Process / Server Tracking
 
-Package idea: `@abacus-lab/plugin-runtime-processes`
+Package idea: `@runeachai/plugin-runtime-processes`
 
 This plugin tracks long-lived local processes and dev servers started in project workspaces. It is useful for:
 
@@ -1549,9 +1549,9 @@ Optional event subscriptions:
 
 ## Stripe Revenue Tracking
 
-Package idea: `@abacus-lab/plugin-stripe`
+Package idea: `@runeachai/plugin-stripe`
 
-This plugin pulls Stripe revenue and subscription data into Abacus. It is useful for:
+This plugin pulls Stripe revenue and subscription data into RunEach. It is useful for:
 
 - showing MRR and churn next to company goals
 - tracking trials, conversions, and failed payments
@@ -1590,7 +1590,7 @@ Core workflows:
 - Board enables the plugin and connects a Stripe account.
 - Webhooks and scheduled reconciliation keep plugin state current.
 - Revenue widgets appear on the main dashboard and can be linked to company goals.
-- Failed payment spikes or churn events can generate Abacus issues for follow-up.
+- Failed payment spikes or churn events can generate RunEach issues for follow-up.
 
 ### Hooks needed
 
@@ -1611,7 +1611,7 @@ Recommended capabilities and extension points:
 
 Important constraint:
 
-- Stripe data should stay additive to Abacus core
+- Stripe data should stay additive to RunEach core
 - it should not leak into core budgeting logic, which is specifically about model/token spend in V1
 
 ## Specific Patterns From OpenCode Worth Adopting
@@ -1667,7 +1667,7 @@ Build:
 - scheduled jobs
 - webhook endpoints
 - activity logging helpers
-- plugin UI bundle loading, host bridge, `@abacus-lab/plugin-sdk/ui`
+- plugin UI bundle loading, host bridge, `@runeachai/plugin-sdk/ui`
 - extension slot mounting for pages, tabs, widgets, sidebar entries
 - auto-generated settings form from `instanceConfigSchema`
 - bridge error propagation (`PluginBridgeError`)
@@ -1677,7 +1677,7 @@ Build:
 - graceful shutdown with configurable deadlines
 - plugin logging and health dashboard
 - uninstall with data retention grace period
-- `@abacus-lab/plugin-test-harness` and `create-abacus-plugin` starter template
+- `@runeachai/plugin-test-harness` and `create-runeach-plugin` starter template
 - hot plugin lifecycle (install, uninstall, upgrade, config change without server restart)
 - SDK versioning with multi-version host support and deprecation policy
 
@@ -1707,8 +1707,8 @@ Only after Phase 1 is stable:
 
 If I had to collapse this report into one architectural decision, it would be:
 
-Abacus should not implement "an OpenCode-style generic in-process hook system."
-Abacus should implement "a plugin platform with multiple trust tiers":
+RunEach should not implement "an OpenCode-style generic in-process hook system."
+RunEach should implement "a plugin platform with multiple trust tiers":
 
 - trusted platform modules for low-level runtime integration
 - typed out-of-process plugins for instance-wide integrations and automation
@@ -1723,7 +1723,7 @@ Abacus should implement "a plugin platform with multiple trust tiers":
 
 That gets the upside of `opencode`'s extensibility without importing the wrong threat model.
 
-## Concrete Next Steps I Would Take In Abacus
+## Concrete Next Steps I Would Take In RunEach
 
 1. Write a short extension architecture RFC that formalizes the distinction between `platform modules` and `plugins`.
 2. Introduce a small plugin manifest type in `packages/shared` and a `plugins` install/config section in the instance config.
@@ -1732,7 +1732,7 @@ That gets the upside of `opencode`'s extensibility without importing the wrong t
 5. Add agent tool contributions — plugins register namespaced tools that agents can call during runs.
 6. Add plugin observability: structured logging via `ctx.logger`, health dashboard, internal health events.
 7. Add graceful shutdown policy and uninstall data lifecycle with retention grace period.
-8. Ship `@abacus-lab/plugin-test-harness` and `create-abacus-plugin` starter template.
+8. Ship `@runeachai/plugin-test-harness` and `create-runeach-plugin` starter template.
 9. Implement hot plugin lifecycle — install, uninstall, upgrade, and config changes without server restart.
 10. Define SDK versioning policy — semver, multi-version host support, deprecation timeline, migration guides, published compatibility matrix.
 11. Build workspace plugins (file browser, terminal, git, process tracking) that resolve workspace paths from the host and handle OS-level operations directly.

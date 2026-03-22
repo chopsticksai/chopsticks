@@ -1,4 +1,4 @@
-# @abacus-lab/adapter-utils
+# @runeachai/adapter-utils
 
 ## 0.3.1
 

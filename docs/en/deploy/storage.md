@@ -3,14 +3,14 @@ title: Storage
 summary: Local disk vs S3-compatible storage
 ---
 
-Abacus stores uploaded files (issue attachments, images) using a configurable storage provider.
+RunEach stores uploaded files (issue attachments, images) using a configurable storage provider.
 
 ## Local Disk (Default)
 
 Files are stored at:
 
 ```
-~/.abacus/instances/default/data/storage
+~/.runeach/instances/default/data/storage
 ```
 
 No configuration required. Suitable for local development and single-machine deployments.
@@ -22,7 +22,7 @@ For production or multi-node deployments, use S3-compatible object storage (AWS 
 Configure via CLI:
 
 ```sh
-pnpm abacus configure --section storage
+pnpm runeach configure --section storage
 ```
 
 ## Configuration
@@ -35,5 +35,5 @@ pnpm abacus configure --section storage
 Storage configuration is stored in the instance config file:
 
 ```
-~/.abacus/instances/default/config.json
+~/.runeach/instances/default/config.json
 ```

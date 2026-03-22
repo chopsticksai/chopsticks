@@ -10,18 +10,18 @@ Related:
 
 ## 1. Purpose
 
-This document defines the rollout plan for adapter-wide skill support in Abacus.
+This document defines the rollout plan for adapter-wide skill support in RunEach.
 
 The goal is not just “show a skills tab.” The goal is:
 
 - every adapter has a deliberate skill-sync truth model
 - the UI tells the truth for that adapter
-- Abacus stores desired skill state consistently even when the adapter cannot fully reconcile it
+- RunEach stores desired skill state consistently even when the adapter cannot fully reconcile it
 - unsupported adapters degrade clearly and safely
 
 ## 2. Current Adapter Matrix
 
-Abacus currently has these adapters:
+RunEach currently has these adapters:
 
 - `claude_local`
 - `codex_local`
@@ -49,7 +49,7 @@ Current implementation state:
 
 ## 3. Product Principles
 
-1. Desired skills live in Abacus for every adapter.
+1. Desired skills live in RunEach for every adapter.
 2. Adapters may expose different truth models, and the UI must reflect that honestly.
 3. Persistent adapters should read and reconcile actual installed state.
 4. Ephemeral adapters should report effective runtime state, not pretend they own a persistent install.
@@ -60,7 +60,7 @@ Current implementation state:
 
 ### 4.1 Persistent local-home adapters
 
-These adapters have a stable local skills directory that Abacus can read and manage.
+These adapters have a stable local skills directory that RunEach can read and manage.
 
 Candidates:
 
@@ -80,7 +80,7 @@ Expected UX:
 
 ### 4.2 Ephemeral mount adapters
 
-These adapters do not have a meaningful Abacus-owned persistent install state.
+These adapters do not have a meaningful RunEach-owned persistent install state.
 
 Current adapter:
 
@@ -88,7 +88,7 @@ Current adapter:
 
 Expected UX:
 
-- show desired Abacus skills
+- show desired RunEach skills
 - show any discoverable external dirs if available
 - say “mounted on next run” instead of “installed”
 - do not imply a persistent adapter-owned install state
@@ -150,7 +150,7 @@ Requirements to finish:
 
 Success criteria:
 
-- desired skills stored in Abacus
+- desired skills stored in RunEach
 - selected skills mounted per run
 - no misleading “installed” language
 
@@ -162,7 +162,7 @@ Target mode:
 
 Technical basis:
 
-- runtime already injects Abacus skills into `~/.cursor/skills`
+- runtime already injects RunEach skills into `~/.cursor/skills`
 
 Implementation work:
 
@@ -170,7 +170,7 @@ Implementation work:
 2. Add `syncSkills` for Cursor.
 3. Reuse the same managed-symlink pattern as Codex.
 4. Distinguish:
-   - managed Abacus skills
+   - managed RunEach skills
    - external skills already present
    - missing desired skills
    - stale managed skills
@@ -194,7 +194,7 @@ Target mode:
 
 Technical basis:
 
-- runtime already injects Abacus skills into `~/.gemini/skills`
+- runtime already injects RunEach skills into `~/.gemini/skills`
 
 Implementation work:
 
@@ -219,7 +219,7 @@ Target mode:
 
 Technical basis:
 
-- runtime already injects Abacus skills into `~/.pi/agent/skills`
+- runtime already injects RunEach skills into `~/.pi/agent/skills`
 
 Implementation work:
 
@@ -231,7 +231,7 @@ Implementation work:
 Success criteria:
 
 - Pi agents expose actual installed skill state
-- Abacus can sync desired skills into Pi’s persistent home
+- RunEach can sync desired skills into Pi’s persistent home
 
 ### 5.6 OpenCode Local
 
@@ -241,12 +241,12 @@ Target mode:
 
 Special case:
 
-- OpenCode currently injects Abacus skills into `~/.claude/skills`
+- OpenCode currently injects RunEach skills into `~/.claude/skills`
 
 This is product-risky because:
 
 - it shares state with Claude
-- Abacus may accidentally imply the skills belong only to OpenCode when the home is shared
+- RunEach may accidentally imply the skills belong only to OpenCode when the home is shared
 
 Plan:
 
@@ -255,7 +255,7 @@ Phase 1:
 - implement `listSkills` and `syncSkills`
 - treat it as `persistent`
 - explicitly label the home as shared in UI copy
-- only remove stale managed Abacus skills that are clearly marked as Abacus-managed
+- only remove stale managed RunEach skills that are clearly marked as RunEach-managed
 
 Phase 2:
 
@@ -281,7 +281,7 @@ Required external work:
 
 Until then:
 
-- Abacus stores desired skills only
+- RunEach stores desired skills only
 - UI shows unsupported actual state
 - no fake sync implementation
 
@@ -325,7 +325,7 @@ The agent-level Skills tab must become adapter-aware by copy and status:
 Additional UI requirement for shared-home adapters:
 
 - show a small warning that the adapter uses a shared user skills home
-- avoid destructive wording unless Abacus can prove a skill is Abacus-managed
+- avoid destructive wording unless RunEach can prove a skill is RunEach-managed
 
 ## 8. Rollout Phases
 
@@ -396,4 +396,4 @@ The recommended immediate order is:
 4. `opencode_local`
 5. defer `openclaw_gateway`
 
-That gets Abacus from “skills work for Codex and Claude” to “skills work for the whole local-adapter family,” which is the meaningful V1 milestone.
+That gets RunEach from “skills work for Codex and Claude” to “skills work for the whole local-adapter family,” which is the meaningful V1 milestone.

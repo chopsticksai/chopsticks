@@ -1,18 +1,18 @@
 services:
-  abacus:
+  runeach:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${ABACUS_PORT:-3100}:3100"
+      - "${RUNEACH_PORT:-3100}:3100"
     environment:
       HOST: "0.0.0.0"
-      ABACUS_HOME: "/abacus"
+      RUNEACH_HOME: "/runeach"
       OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
       ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
-      ABACUS_DEPLOYMENT_MODE: "authenticated"
-      ABACUS_DEPLOYMENT_EXPOSURE: "private"
-      ABACUS_PUBLIC_URL: "${ABACUS_PUBLIC_URL:-http://localhost:3100}"
+      RUNEACH_DEPLOYMENT_MODE: "authenticated"
+      RUNEACH_DEPLOYMENT_EXPOSURE: "private"
+      RUNEACH_PUBLIC_URL: "${RUNEACH_PUBLIC_URL:-http://localhost:3100}"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
     volumes:
-      - "${ABACUS_DATA_DIR:-./data/docker-abacus}:/abacus"
+      - "${RUNEACH_DATA_DIR:-./data/docker-runeach}:/runeach"

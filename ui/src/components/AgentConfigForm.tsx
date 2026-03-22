@@ -1,23 +1,23 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AGENT_ADAPTER_TYPES } from "@abacus-lab/shared";
+import { AGENT_ADAPTER_TYPES } from "@runeachai/shared";
 import type {
   Agent,
   AdapterEnvironmentTestResult,
   CompanySecret,
   EnvBinding,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import type { AdapterModel } from "../api/agents";
 import { agentsApi } from "../api/agents";
 import { secretsApi } from "../api/secrets";
 import { assetsApi } from "../api/assets";
-import { DEFAULT_CODEBUDDY_LOCAL_MODEL } from "@abacus-lab/adapter-codebuddy-local";
+import { DEFAULT_CODEBUDDY_LOCAL_MODEL } from "@runeachai/adapter-codebuddy-local";
 import {
   DEFAULT_CODEX_LOCAL_BYPASS_APPROVALS_AND_SANDBOX,
   DEFAULT_CODEX_LOCAL_MODEL,
-} from "@abacus-lab/adapter-codex-local";
-import { DEFAULT_CURSOR_LOCAL_MODEL } from "@abacus-lab/adapter-cursor-local";
-import { DEFAULT_GEMINI_LOCAL_MODEL } from "@abacus-lab/adapter-gemini-local";
+} from "@runeachai/adapter-codex-local";
+import { DEFAULT_CURSOR_LOCAL_MODEL } from "@runeachai/adapter-cursor-local";
+import { DEFAULT_GEMINI_LOCAL_MODEL } from "@runeachai/adapter-gemini-local";
 import {
   Popover,
   PopoverContent,
@@ -53,10 +53,10 @@ import { shouldShowLegacyWorkingDirectoryField } from "../lib/legacy-agent-confi
 
 /* ---- Create mode values ---- */
 
-// Canonical type lives in @abacus-lab/adapter-utils; re-exported here
+// Canonical type lives in @runeachai/adapter-utils; re-exported here
 // so existing imports from this file keep working.
-export type { CreateConfigValues } from "@abacus-lab/adapter-utils";
-import type { CreateConfigValues } from "@abacus-lab/adapter-utils";
+export type { CreateConfigValues } from "@runeachai/adapter-utils";
+import type { CreateConfigValues } from "@runeachai/adapter-utils";
 
 /* ---- Props ---- */
 
@@ -1269,7 +1269,7 @@ function EnvVarEditor({
       })}
       {sealError && <p className="text-[11px] text-destructive">{sealError}</p>}
       <p className="text-[11px] text-muted-foreground/60">
-        {t("ABACUS_* variables are injected automatically at runtime.")}
+        {t("RUNEACH_* variables are injected automatically at runtime.")}
       </p>
     </div>
   );

@@ -12,9 +12,9 @@ import {
   type DeploymentMode,
   type SecretProvider,
   type StorageProvider,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { configExists, readConfig, resolveConfigPath, writeConfig } from "../config/store.js";
-import type { AbacusConfig } from "../config/schema.js";
+import type { RunEachConfig } from "../config/schema.js";
 import { ensureAgentJwtSecret, resolveAgentJwtEnvFile } from "../config/env.js";
 import { ensureLocalSecretsKeyFile } from "../config/secrets-key.js";
 import { promptDatabase } from "../prompts/database.js";
@@ -29,11 +29,11 @@ import {
   resolveDefaultBackupDir,
   resolveDefaultEmbeddedPostgresDir,
   resolveDefaultLogsDir,
-  resolveAbacusInstanceId,
+  resolveRunEachInstanceId,
 } from "../config/home.js";
 import { publicCliCommand } from "../config/branding.js";
 import { bootstrapCeoInvite } from "./auth-bootstrap-ceo.js";
-import { printAbacusCliBanner } from "../utils/banner.js";
+import { printRunEachCliBanner } from "../utils/banner.js";
 
 type SetupMode = "quickstart" | "advanced";
 
@@ -44,35 +44,35 @@ type OnboardOptions = {
   invokedByRun?: boolean;
 };
 
-type OnboardDefaults = Pick<AbacusConfig, "database" | "logging" | "server" | "auth" | "storage" | "secrets">;
+type OnboardDefaults = Pick<RunEachConfig, "database" | "logging" | "server" | "auth" | "storage" | "secrets">;
 
 const ONBOARD_ENV_KEYS = [
-  "ABACUS_PUBLIC_URL",
+  "RUNEACH_PUBLIC_URL",
   "DATABASE_URL",
-  "ABACUS_DB_BACKUP_ENABLED",
-  "ABACUS_DB_BACKUP_INTERVAL_MINUTES",
-  "ABACUS_DB_BACKUP_RETENTION_DAYS",
-  "ABACUS_DB_BACKUP_DIR",
-  "ABACUS_DEPLOYMENT_MODE",
-  "ABACUS_DEPLOYMENT_EXPOSURE",
+  "RUNEACH_DB_BACKUP_ENABLED",
+  "RUNEACH_DB_BACKUP_INTERVAL_MINUTES",
+  "RUNEACH_DB_BACKUP_RETENTION_DAYS",
+  "RUNEACH_DB_BACKUP_DIR",
+  "RUNEACH_DEPLOYMENT_MODE",
+  "RUNEACH_DEPLOYMENT_EXPOSURE",
   "HOST",
   "PORT",
   "SERVE_UI",
-  "ABACUS_ALLOWED_HOSTNAMES",
-  "ABACUS_AUTH_BASE_URL_MODE",
-  "ABACUS_AUTH_PUBLIC_BASE_URL",
+  "RUNEACH_ALLOWED_HOSTNAMES",
+  "RUNEACH_AUTH_BASE_URL_MODE",
+  "RUNEACH_AUTH_PUBLIC_BASE_URL",
   "BETTER_AUTH_URL",
   "BETTER_AUTH_BASE_URL",
-  "ABACUS_STORAGE_PROVIDER",
-  "ABACUS_STORAGE_LOCAL_DIR",
-  "ABACUS_STORAGE_S3_BUCKET",
-  "ABACUS_STORAGE_S3_REGION",
-  "ABACUS_STORAGE_S3_ENDPOINT",
-  "ABACUS_STORAGE_S3_PREFIX",
-  "ABACUS_STORAGE_S3_FORCE_PATH_STYLE",
-  "ABACUS_SECRETS_PROVIDER",
-  "ABACUS_SECRETS_STRICT_MODE",
-  "ABACUS_SECRETS_MASTER_KEY_FILE",
+  "RUNEACH_STORAGE_PROVIDER",
+  "RUNEACH_STORAGE_LOCAL_DIR",
+  "RUNEACH_STORAGE_S3_BUCKET",
+  "RUNEACH_STORAGE_S3_REGION",
+  "RUNEACH_STORAGE_S3_ENDPOINT",
+  "RUNEACH_STORAGE_S3_PREFIX",
+  "RUNEACH_STORAGE_S3_FORCE_PATH_STYLE",
+  "RUNEACH_SECRETS_PROVIDER",
+  "RUNEACH_SECRETS_STRICT_MODE",
+  "RUNEACH_SECRETS_MASTER_KEY_FILE",
 ] as const;
 
 function parseBooleanFromEnv(rawValue: string | undefined): boolean | null {
@@ -105,32 +105,32 @@ function quickstartDefaultsFromEnv(): {
   usedEnvKeys: string[];
   ignoredEnvKeys: Array<{ key: string; reason: string }>;
 } {
-  const instanceId = resolveAbacusInstanceId();
+  const instanceId = resolveRunEachInstanceId();
   const defaultStorage = defaultStorageConfig();
   const defaultSecrets = defaultSecretsConfig();
   const databaseUrl = process.env.DATABASE_URL?.trim() || undefined;
   const publicUrl =
-    process.env.ABACUS_PUBLIC_URL?.trim() ||
-    process.env.ABACUS_AUTH_PUBLIC_BASE_URL?.trim() ||
+    process.env.RUNEACH_PUBLIC_URL?.trim() ||
+    process.env.RUNEACH_AUTH_PUBLIC_BASE_URL?.trim() ||
     process.env.BETTER_AUTH_URL?.trim() ||
     process.env.BETTER_AUTH_BASE_URL?.trim() ||
     undefined;
   const deploymentMode =
-    parseEnumFromEnv<DeploymentMode>(process.env.ABACUS_DEPLOYMENT_MODE, DEPLOYMENT_MODES) ?? "local_trusted";
+    parseEnumFromEnv<DeploymentMode>(process.env.RUNEACH_DEPLOYMENT_MODE, DEPLOYMENT_MODES) ?? "local_trusted";
   const deploymentExposureFromEnv = parseEnumFromEnv<DeploymentExposure>(
-    process.env.ABACUS_DEPLOYMENT_EXPOSURE,
+    process.env.RUNEACH_DEPLOYMENT_EXPOSURE,
     DEPLOYMENT_EXPOSURES,
   );
   const deploymentExposure =
     deploymentMode === "local_trusted" ? "private" : (deploymentExposureFromEnv ?? "private");
   const authPublicBaseUrl = publicUrl;
   const authBaseUrlModeFromEnv = parseEnumFromEnv<AuthBaseUrlMode>(
-    process.env.ABACUS_AUTH_BASE_URL_MODE,
+    process.env.RUNEACH_AUTH_BASE_URL_MODE,
     AUTH_BASE_URL_MODES,
   );
   const authBaseUrlMode = authBaseUrlModeFromEnv ?? (authPublicBaseUrl ? "explicit" : "auto");
-  const allowedHostnamesFromEnv = process.env.ABACUS_ALLOWED_HOSTNAMES
-    ? process.env.ABACUS_ALLOWED_HOSTNAMES
+  const allowedHostnamesFromEnv = process.env.RUNEACH_ALLOWED_HOSTNAMES
+    ? process.env.RUNEACH_ALLOWED_HOSTNAMES
       .split(",")
       .map((value) => value.trim().toLowerCase())
       .filter((value) => value.length > 0)
@@ -145,19 +145,19 @@ function quickstartDefaultsFromEnv(): {
     })()
     : null;
   const storageProvider =
-    parseEnumFromEnv<StorageProvider>(process.env.ABACUS_STORAGE_PROVIDER, STORAGE_PROVIDERS) ??
+    parseEnumFromEnv<StorageProvider>(process.env.RUNEACH_STORAGE_PROVIDER, STORAGE_PROVIDERS) ??
     defaultStorage.provider;
   const secretsProvider =
-    parseEnumFromEnv<SecretProvider>(process.env.ABACUS_SECRETS_PROVIDER, SECRET_PROVIDERS) ??
+    parseEnumFromEnv<SecretProvider>(process.env.RUNEACH_SECRETS_PROVIDER, SECRET_PROVIDERS) ??
     defaultSecrets.provider;
-  const databaseBackupEnabled = parseBooleanFromEnv(process.env.ABACUS_DB_BACKUP_ENABLED) ?? true;
+  const databaseBackupEnabled = parseBooleanFromEnv(process.env.RUNEACH_DB_BACKUP_ENABLED) ?? true;
   const databaseBackupIntervalMinutes = Math.max(
     1,
-    parseNumberFromEnv(process.env.ABACUS_DB_BACKUP_INTERVAL_MINUTES) ?? 60,
+    parseNumberFromEnv(process.env.RUNEACH_DB_BACKUP_INTERVAL_MINUTES) ?? 60,
   );
   const databaseBackupRetentionDays = Math.max(
     1,
-    parseNumberFromEnv(process.env.ABACUS_DB_BACKUP_RETENTION_DAYS) ?? 30,
+    parseNumberFromEnv(process.env.RUNEACH_DB_BACKUP_RETENTION_DAYS) ?? 30,
   );
   const defaults: OnboardDefaults = {
     database: {
@@ -169,7 +169,7 @@ function quickstartDefaultsFromEnv(): {
         enabled: databaseBackupEnabled,
         intervalMinutes: databaseBackupIntervalMinutes,
         retentionDays: databaseBackupRetentionDays,
-        dir: resolvePathFromEnv(process.env.ABACUS_DB_BACKUP_DIR) ?? resolveDefaultBackupDir(instanceId),
+        dir: resolvePathFromEnv(process.env.RUNEACH_DB_BACKUP_DIR) ?? resolveDefaultBackupDir(instanceId),
       },
     },
     logging: {
@@ -193,32 +193,32 @@ function quickstartDefaultsFromEnv(): {
       provider: storageProvider,
       localDisk: {
         baseDir:
-          resolvePathFromEnv(process.env.ABACUS_STORAGE_LOCAL_DIR) ?? defaultStorage.localDisk.baseDir,
+          resolvePathFromEnv(process.env.RUNEACH_STORAGE_LOCAL_DIR) ?? defaultStorage.localDisk.baseDir,
       },
       s3: {
-        bucket: process.env.ABACUS_STORAGE_S3_BUCKET ?? defaultStorage.s3.bucket,
-        region: process.env.ABACUS_STORAGE_S3_REGION ?? defaultStorage.s3.region,
-        endpoint: process.env.ABACUS_STORAGE_S3_ENDPOINT ?? defaultStorage.s3.endpoint,
-        prefix: process.env.ABACUS_STORAGE_S3_PREFIX ?? defaultStorage.s3.prefix,
+        bucket: process.env.RUNEACH_STORAGE_S3_BUCKET ?? defaultStorage.s3.bucket,
+        region: process.env.RUNEACH_STORAGE_S3_REGION ?? defaultStorage.s3.region,
+        endpoint: process.env.RUNEACH_STORAGE_S3_ENDPOINT ?? defaultStorage.s3.endpoint,
+        prefix: process.env.RUNEACH_STORAGE_S3_PREFIX ?? defaultStorage.s3.prefix,
         forcePathStyle:
-          parseBooleanFromEnv(process.env.ABACUS_STORAGE_S3_FORCE_PATH_STYLE) ??
+          parseBooleanFromEnv(process.env.RUNEACH_STORAGE_S3_FORCE_PATH_STYLE) ??
           defaultStorage.s3.forcePathStyle,
       },
     },
     secrets: {
       provider: secretsProvider,
-      strictMode: parseBooleanFromEnv(process.env.ABACUS_SECRETS_STRICT_MODE) ?? defaultSecrets.strictMode,
+      strictMode: parseBooleanFromEnv(process.env.RUNEACH_SECRETS_STRICT_MODE) ?? defaultSecrets.strictMode,
       localEncrypted: {
         keyFilePath:
-          resolvePathFromEnv(process.env.ABACUS_SECRETS_MASTER_KEY_FILE) ??
+          resolvePathFromEnv(process.env.RUNEACH_SECRETS_MASTER_KEY_FILE) ??
           defaultSecrets.localEncrypted.keyFilePath,
       },
     },
   };
   const ignoredEnvKeys: Array<{ key: string; reason: string }> = [];
-  if (deploymentMode === "local_trusted" && process.env.ABACUS_DEPLOYMENT_EXPOSURE !== undefined) {
+  if (deploymentMode === "local_trusted" && process.env.RUNEACH_DEPLOYMENT_EXPOSURE !== undefined) {
     ignoredEnvKeys.push({
-      key: "ABACUS_DEPLOYMENT_EXPOSURE",
+      key: "RUNEACH_DEPLOYMENT_EXPOSURE",
       reason: "Ignored because deployment mode local_trusted always forces private exposure",
     });
   }
@@ -230,15 +230,15 @@ function quickstartDefaultsFromEnv(): {
   return { defaults, usedEnvKeys, ignoredEnvKeys };
 }
 
-function canCreateBootstrapInviteImmediately(config: Pick<AbacusConfig, "database" | "server">): boolean {
+function canCreateBootstrapInviteImmediately(config: Pick<RunEachConfig, "database" | "server">): boolean {
   return config.server.deploymentMode === "authenticated" && config.database.mode !== "embedded-postgres";
 }
 
 export async function onboard(opts: OnboardOptions): Promise<void> {
-  printAbacusCliBanner();
+  printRunEachCliBanner();
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("onboard")} `)));
   const configPath = resolveConfigPath(opts.config);
-  const instance = describeLocalInstancePaths(resolveAbacusInstanceId());
+  const instance = describeLocalInstancePaths(resolveRunEachInstanceId());
   p.log.message(
     pc.dim(
       `Local home: ${instance.homeDir} | instance: ${instance.instanceId} | config: ${configPath}`,
@@ -286,7 +286,7 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
     setupMode = setupModeChoice as SetupMode;
   }
 
-  let llm: AbacusConfig["llm"] | undefined;
+  let llm: RunEachConfig["llm"] | undefined;
   const { defaults: derivedDefaults, usedEnvKeys, ignoredEnvKeys } = quickstartDefaultsFromEnv();
   let {
     database,
@@ -305,7 +305,7 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
       const s = p.spinner();
       s.start("Testing database connection...");
       try {
-        const { createDb } = await import("@abacus-lab/db");
+        const { createDb } = await import("@runeachai/db");
         const db = createDb(database.connectionString);
         await db.execute("SELECT 1");
         s.stop("Database connection successful");
@@ -404,14 +404,14 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
   const jwtSecret = ensureAgentJwtSecret(configPath);
   const envFilePath = resolveAgentJwtEnvFile(configPath);
   if (jwtSecret.created) {
-    p.log.success(`Created ${pc.cyan("ABACUS_AGENT_JWT_SECRET")} in ${pc.dim(envFilePath)}`);
-  } else if (process.env.ABACUS_AGENT_JWT_SECRET?.trim()) {
-    p.log.info(`Using existing ${pc.cyan("ABACUS_AGENT_JWT_SECRET")} from environment`);
+    p.log.success(`Created ${pc.cyan("RUNEACH_AGENT_JWT_SECRET")} in ${pc.dim(envFilePath)}`);
+  } else if (process.env.RUNEACH_AGENT_JWT_SECRET?.trim()) {
+    p.log.info(`Using existing ${pc.cyan("RUNEACH_AGENT_JWT_SECRET")} from environment`);
   } else {
-    p.log.info(`Using existing ${pc.cyan("ABACUS_AGENT_JWT_SECRET")} in ${pc.dim(envFilePath)}`);
+    p.log.info(`Using existing ${pc.cyan("RUNEACH_AGENT_JWT_SECRET")} in ${pc.dim(envFilePath)}`);
   }
 
-  const config: AbacusConfig = {
+  const config: RunEachConfig = {
     $meta: {
       version: 1,
       updatedAt: new Date().toISOString(),
@@ -445,7 +445,7 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
       `Auth URL mode: ${auth.baseUrlMode}${auth.publicBaseUrl ? ` (${auth.publicBaseUrl})` : ""}`,
       `Storage: ${storage.provider}`,
       `Secrets: ${secrets.provider} (strict mode ${secrets.strictMode ? "on" : "off"})`,
-      "Agent auth: ABACUS_AGENT_JWT_SECRET configured",
+      "Agent auth: RUNEACH_AGENT_JWT_SECRET configured",
     ].join("\n"),
     "Configuration saved",
   );
@@ -467,7 +467,7 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
   let shouldRunNow = opts.run === true || opts.yes === true;
   if (!shouldRunNow && !opts.invokedByRun && process.stdin.isTTY && process.stdout.isTTY) {
     const answer = await p.confirm({
-      message: "Start Abacus now?",
+      message: "Start RunEach now?",
       initialValue: true,
     });
     if (!p.isCancel(answer)) {
@@ -476,7 +476,7 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
   }
 
   if (shouldRunNow && !opts.invokedByRun) {
-    process.env.ABACUS_OPEN_ON_LISTEN = "true";
+    process.env.RUNEACH_OPEN_ON_LISTEN = "true";
     const { runCommand } = await import("./run.js");
     await runCommand({ config: configPath, repair: true, yes: true });
     return;

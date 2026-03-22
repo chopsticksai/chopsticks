@@ -176,7 +176,7 @@ export function Routines() {
     onError: (mutationError) => {
       pushToast({
         title: t("Failed to update routine"),
-        body: mutationError instanceof Error ? mutationError.message : t("Abacus could not update the routine."),
+        body: mutationError instanceof Error ? mutationError.message : t("RunEach could not update the routine."),
         tone: "error",
       });
     },
@@ -199,7 +199,7 @@ export function Routines() {
     onError: (mutationError) => {
       pushToast({
         title: t("Routine run failed"),
-        body: mutationError instanceof Error ? mutationError.message : t("Abacus could not start the routine run."),
+        body: mutationError instanceof Error ? mutationError.message : t("RunEach could not start the routine run."),
         tone: "error",
       });
     },
@@ -485,7 +485,7 @@ export function Routines() {
 
           <div className="flex flex-col gap-3 border-t border-border/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">
-              {t("After creation, Abacus takes you straight to trigger setup for schedules, webhooks, or internal runs.")}
+              {t("After creation, RunEach takes you straight to trigger setup for schedules, webhooks, or internal runs.")}
             </div>
             <div className="flex flex-col gap-2 sm:items-end">
               <Button

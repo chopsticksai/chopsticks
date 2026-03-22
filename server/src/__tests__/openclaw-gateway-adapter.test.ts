@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { createServer } from "node:http";
 import { WebSocketServer } from "ws";
-import { execute, testEnvironment } from "@abacus-lab/adapter-openclaw-gateway/server";
+import { execute, testEnvironment } from "@runeachai/adapter-openclaw-gateway/server";
 import {
   buildOpenClawGatewayConfig,
   parseOpenClawGatewayStdoutLine,
-} from "@abacus-lab/adapter-openclaw-gateway/ui";
-import type { AdapterExecutionContext } from "@abacus-lab/adapter-utils";
+} from "@runeachai/adapter-openclaw-gateway/ui";
+import type { AdapterExecutionContext } from "@runeachai/adapter-utils";
 
 function buildContext(
   config: Record<string, unknown>,
@@ -422,18 +422,18 @@ describe("openclaw gateway adapter execute", () => {
               issueId: "issue-123",
               wakeReason: "issue_assigned",
               issueIds: ["issue-123"],
-              abacusWorkspace: {
+              runeachWorkspace: {
                 cwd: "/tmp/worktrees/pap-123",
                 strategy: "git_worktree",
                 branchName: "pap-123-test",
               },
-              abacusWorkspaces: [
+              runeachWorkspaces: [
                 {
                   id: "workspace-1",
                   cwd: "/tmp/project",
                 },
               ],
-              abacusRuntimeServiceIntents: [
+              runeachRuntimeServiceIntents: [
                 {
                   name: "preview",
                   lifecycle: "ephemeral",
@@ -452,10 +452,10 @@ describe("openclaw gateway adapter execute", () => {
       const payload = gateway.getAgentPayload();
       expect(payload).toBeTruthy();
       expect(payload?.idempotencyKey).toBe("run-123");
-      expect(payload?.sessionKey).toBe("abacus:issue:issue-123");
+      expect(payload?.sessionKey).toBe("runeach:issue:issue-123");
       expect(String(payload?.message ?? "")).toContain("wake now");
-      expect(String(payload?.message ?? "")).toContain("ABACUS_RUN_ID=run-123");
-      expect(String(payload?.message ?? "")).toContain("ABACUS_TASK_ID=task-123");
+      expect(String(payload?.message ?? "")).toContain("RUNEACH_RUN_ID=run-123");
+      expect(String(payload?.message ?? "")).toContain("RUNEACH_TASK_ID=task-123");
 
       expect(logs.some((entry) => entry.includes("[openclaw-gateway:event] run=run-123 stream=assistant"))).toBe(true);
     } finally {

@@ -4,7 +4,7 @@ import type {
   BudgetOverview,
   BudgetPolicySummary,
   BudgetPolicyUpsertInput,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { api } from "./client";
 
 export const budgetsApi = {

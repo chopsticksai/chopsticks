@@ -1,4 +1,4 @@
-# @abacus-lab/shared
+# @runeachai/shared
 
 ## 0.3.1
 

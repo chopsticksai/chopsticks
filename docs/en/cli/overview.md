@@ -3,12 +3,12 @@ title: CLI Overview
 summary: CLI installation and setup
 ---
 
-The Abacus CLI handles instance setup, diagnostics, and control-plane operations.
+The RunEach CLI handles instance setup, diagnostics, and control-plane operations.
 
 ## Usage
 
 ```sh
-pnpm abacus --help
+pnpm runeach --help
 ```
 
 ## Global Options
@@ -17,7 +17,7 @@ All commands support:
 
 | Flag | Description |
 |------|-------------|
-| `--data-dir <path>` | Local Abacus data root (isolates from `~/.abacus`) |
+| `--data-dir <path>` | Local RunEach data root (isolates from `~/.runeach`) |
 | `--api-base <url>` | API base URL |
 | `--api-key <token>` | API authentication token |
 | `--context <path>` | Context file path |
@@ -29,7 +29,7 @@ Company-scoped commands also accept `--company-id <id>`.
 For clean local instances, pass `--data-dir` on the command you run:
 
 ```sh
-pnpm abacus run --data-dir ./tmp/abacus-dev
+pnpm runeach run --data-dir ./tmp/runeach-dev
 ```
 
 ## Context Profiles
@@ -38,26 +38,26 @@ Store defaults to avoid repeating flags:
 
 ```sh
 # Set defaults
-pnpm abacus context set --api-base http://localhost:3100 --company-id <id>
+pnpm runeach context set --api-base http://localhost:3100 --company-id <id>
 
 # View current context
-pnpm abacus context show
+pnpm runeach context show
 
 # List profiles
-pnpm abacus context list
+pnpm runeach context list
 
 # Switch profile
-pnpm abacus context use default
+pnpm runeach context use default
 ```
 
 To avoid storing secrets in context, use an env var:
 
 ```sh
-pnpm abacus context set --api-key-env-var-name ABACUS_API_KEY
-export ABACUS_API_KEY=...
+pnpm runeach context set --api-key-env-var-name RUNEACH_API_KEY
+export RUNEACH_API_KEY=...
 ```
 
-Context is stored at `~/.abacus/context.json`.
+Context is stored at `~/.runeach/context.json`.
 
 ## Command Categories
 

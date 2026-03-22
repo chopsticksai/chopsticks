@@ -28,14 +28,14 @@ Codex uses `previous_response_id` for session continuity. The adapter serializes
 
 ## Skills Injection
 
-The adapter symlinks Abacus skills into the global Codex skills directory (`~/.codex/skills`). Existing user skills are not overwritten.
+The adapter symlinks RunEach skills into the global Codex skills directory (`~/.codex/skills`). Existing user skills are not overwritten.
 
-When Abacus is running inside a managed worktree instance (`ABACUS_IN_WORKTREE=true`), the adapter instead uses a worktree-isolated `CODEX_HOME` under the Abacus instance so Codex skills, sessions, logs, and other runtime state do not leak across checkouts. It seeds that isolated home from the user's main Codex home for shared auth/config continuity.
+When RunEach is running inside a managed worktree instance (`RUNEACH_IN_WORKTREE=true`), the adapter instead uses a worktree-isolated `CODEX_HOME` under the RunEach instance so Codex skills, sessions, logs, and other runtime state do not leak across checkouts. It seeds that isolated home from the user's main Codex home for shared auth/config continuity.
 
 For manual local CLI usage outside heartbeat runs (for example running as `codexcoder` directly), use:
 
 ```sh
-pnpm abacus agent local-cli codexcoder --company-id <company-id>
+pnpm runeach agent local-cli codexcoder --company-id <company-id>
 ```
 
 This installs any missing skills, creates an agent API key, and prints shell exports to run as that agent.

@@ -1,17 +1,17 @@
 ---
 title: Quickstart
-summary: Get Abacus running in minutes
+summary: Get RunEach running in minutes
 ---
 
-Get Abacus running locally in under 5 minutes.
+Get RunEach running locally in under 5 minutes.
 
 ## Quick Start (Recommended)
 
 ```sh
-npx @abacus-lab/abacus onboard --yes
+npx @runeachai/runeach onboard --yes
 ```
 
-This walks you through setup, configures your environment, and gets Abacus running.
+This walks you through setup, configures your environment, and gets RunEach running.
 
 ## Local Development
 
@@ -24,19 +24,19 @@ pnpm dev
 
 This starts the API server and UI at [http://localhost:3100](http://localhost:3100).
 
-No external database required — Abacus uses an embedded PostgreSQL instance by default.
+No external database required — RunEach uses an embedded PostgreSQL instance by default.
 
 ## One-Command Bootstrap
 
 ```sh
-pnpm abacus run
+pnpm runeach run
 ```
 
 This auto-onboards if config is missing, runs health checks with auto-repair, and starts the server.
 
 ## What's Next
 
-Once Abacus is running:
+Once RunEach is running:
 
 1. Create your first company in the web UI
 2. Define a company goal
@@ -46,5 +46,5 @@ Once Abacus is running:
 6. Hit go — agents start their heartbeats and the company runs
 
 <Card title="Core Concepts" href="/en/start/core-concepts">
-  Learn the key concepts behind Abacus
+  Learn the key concepts behind RunEach
 </Card>

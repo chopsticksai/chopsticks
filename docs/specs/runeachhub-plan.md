@@ -1,17 +1,17 @@
 ---
-title: AbacusHub 方案
-summary: 面向 Abacus 团队蓝图、技能与治理模板的 Marketplace 规划
+title: RunEachHub 方案
+summary: 面向 RunEach 团队蓝图、技能与治理模板的 Marketplace 规划
 ---
 
-# AbacusHub：Abacus 团队配置 Marketplace
+# RunEachHub：RunEach 团队配置 Marketplace
 
 > Supersession note: this marketplace plan predates the markdown-first company package direction. For the current package-format and import/export rollout plan, see `doc/plans/2026-03-13-company-import-export-v2.md` and `docs/companies/companies-spec.md`.
 
-> 一个面向“整家公司 AI 团队配置”的应用商店。它售卖可直接安装到 Abacus 公司的团队蓝图、代理蓝图、技能与治理模板。
+> 一个面向“整家公司 AI 团队配置”的应用商店。它售卖可直接安装到 RunEach 公司的团队蓝图、代理蓝图、技能与治理模板。
 
 ## 1. 愿景与定位
 
-AbacusHub 的目标不是卖单个 prompt，而是卖 **整套可运行的团队配置**：
+RunEachHub 的目标不是卖单个 prompt，而是卖 **整套可运行的团队配置**：
 
 - 组织架构
 - 代理角色
@@ -29,11 +29,11 @@ AbacusHub 的目标不是卖单个 prompt，而是卖 **整套可运行的团队
 
 > “跳过组织设计，几分钟内获得一支能直接开工的团队。”
 
-| 维度 | AbacusHub |
+| 维度 | RunEachHub |
 |---|---|
 | 销售单位 | 团队蓝图（多代理组织） |
 | 买家 | 想快速搭建 AI 公司的创始人 / 团队负责人 |
-| 安装目标 | Abacus 公司（代理、项目、治理） |
+| 安装目标 | RunEach 公司（代理、项目、治理） |
 | 价值主张 | 快速获得可交付的团队配置 |
 | 价格区间 | `$0–$499`，并支持单项附加组件 |
 
@@ -43,7 +43,7 @@ AbacusHub 的目标不是卖单个 prompt，而是卖 **整套可运行的团队
 
 ## 2.1 团队蓝图（核心产品）
 
-完整的 Abacus 公司配置，包括：
+完整的 RunEach 公司配置，包括：
 
 - **组织架构**：角色、title、汇报关系、能力描述
 - **代理配置**：适配器类型、模型、提示词模板、指令路径
@@ -60,7 +60,7 @@ AbacusHub 的目标不是卖单个 prompt，而是卖 **整套可运行的团队
 
 ## 2.2 代理蓝图
 
-单个代理配置，可插入现有 Abacus 组织：
+单个代理配置，可插入现有 RunEach 组织：
 
 - 角色定义
 - 提示词模板
@@ -81,7 +81,7 @@ AbacusHub 的目标不是卖单个 prompt，而是卖 **整套可运行的团队
 
 - Markdown skill 文件
 - 工具配置与脚本
-- 与 Abacus skill 加载系统兼容
+- 与 RunEach skill 加载系统兼容
 
 ## 2.4 治理模板
 
@@ -105,7 +105,7 @@ AbacusHub 的目标不是卖单个 prompt，而是卖 **整套可运行的团队
 - 创作者：`creatorId`、`creatorName`、`creatorAvatar`
 - 分类：`categories`、`tags`、`agentCount`
 - 内容：预览图、README、打包文件清单
-- 兼容性：支持的适配器、要求模型、最低 Abacus 版本
+- 兼容性：支持的适配器、要求模型、最低 RunEach 版本
 - 社会证明：安装量、评分、评论数
 - 元数据：版本、发布时间、更新时间、状态
 
@@ -194,7 +194,7 @@ type ListingType =
 | `/browse?type=governance_template` | 治理模板 | 只看治理策略 |
 | `/listings/:slug` | Listing 详情页 | 完整商品页 |
 | `/creators/:slug` | 创作者页 | Bio、作品、统计 |
-| `/about` | 关于 | AbacusHub 定位与使命 |
+| `/about` | 关于 | RunEachHub 定位与使命 |
 | `/pricing` | 定价页 | 平台抽成和买家说明 |
 
 ## 4.2 认证后页面
@@ -242,14 +242,14 @@ type ListingType =
   -> 查看 listing 详情、评论、组织图预览
   -> 点击购买（或免费安装）
   -> 购买完成后点击 “Install to Company”
-  -> 选择目标 Abacus 公司（或新建）
-  -> AbacusHub 调用 Abacus API：
+  -> 选择目标 RunEach 公司（或新建）
+  -> RunEachHub 调用 RunEach API：
        1. 创建代理
        2. 建立汇报关系
        3. 创建项目与 workspace
        4. 应用治理规则
        5. 部署 skills 与指令文件
-  -> 跳转回 Abacus，看到新团队已就位
+  -> 跳转回 RunEach，看到新团队已就位
 ```
 
 ## 5.2 创作者：构建 → 发布 → 变现
@@ -263,13 +263,13 @@ type ListingType =
   -> 在 Creator Dashboard 中查看安装量、收入和评论
 ```
 
-## 5.3 从 Abacus 导出并发布
+## 5.3 从 RunEach 导出并发布
 
 ```txt
-在运行中的 Abacus 公司中执行“Export as Blueprint”
+在运行中的 RunEach 公司中执行“Export as Blueprint”
   -> 导出代理配置（去敏感信息）
   -> 导出组织结构、治理规则、项目模板、skill 文件
-  -> 上传到 AbacusHub
+  -> 上传到 RunEachHub
   -> 编辑 listing 信息并发布
 ```
 
@@ -291,7 +291,7 @@ type ListingType =
 |---|---|
 | 商品卡片 | 迷你组织图预览 + 代理数量 |
 | 详情页 | 交互式组织图 + 每个代理的展开说明 |
-| 安装流程 | 一键部署到 Abacus 公司 |
+| 安装流程 | 一键部署到 RunEach 公司 |
 | 社会证明 | “已有 X 家公司在运行这个蓝图” |
 | 预览 | 可选 live demo sandbox |
 
@@ -363,7 +363,7 @@ type ListingType =
 | 项目 | 金额 | 说明 |
 |---|---|---|
 | 创作者分成 | 销售价的 90% | 另扣 Stripe 手续费 |
-| 平台抽成 | 销售价的 10% | AbacusHub 收入 |
+| 平台抽成 | 销售价的 10% | RunEachHub 收入 |
 | 免费 listing | `$0` | 无平台费用 |
 | Stripe Connect | 标准费率 | 由 Stripe 处理 |
 
@@ -374,18 +374,18 @@ type ListingType =
 ## 9.1 技术栈
 
 - 前端：Next.js + Tailwind CSS
-- 后端：Node.js API（或直接扩展 Abacus server）
+- 后端：Node.js API（或直接扩展 RunEach server）
 - 数据库：Postgres
 - 支付：Stripe Connect（Marketplace 模式）
 - 存储：S3 / R2
-- 认证：可复用 Abacus auth，或通过 OAuth2 对接
+- 认证：可复用 RunEach auth，或通过 OAuth2 对接
 
-## 9.2 与 Abacus 的集成方式
+## 9.2 与 RunEach 的集成方式
 
 两种选择：
 
-- **Option A**：独立应用，通过 API 调用 Abacus 完成安装
-- **Option B**：直接作为 Abacus UI 的内置模块（如 `/marketplace`）
+- **Option A**：独立应用，通过 API 调用 RunEach 完成安装
+- **Option B**：直接作为 RunEach UI 的内置模块（如 `/marketplace`）
 
 MVP 更适合 **Option B**，因为它最简单、上下文最连贯。
 
@@ -422,7 +422,7 @@ blueprint/
 - [ ] 含 org chart 的 Listing 详情页
 - [ ] 创作者注册与 listing 创建向导
 - [ ] 仅支持免费安装
-- [ ] 蓝图安装到 Abacus 公司
+- [ ] 蓝图安装到 RunEach 公司
 
 ## Phase 2：支付与社会证明
 
@@ -430,7 +430,7 @@ blueprint/
 - [ ] 购买流程
 - [ ] 评论系统
 - [ ] 创作者分析面板
-- [ ] “从 Abacus 导出” CLI 命令
+- [ ] “从 RunEach 导出” CLI 命令
 
 ## Phase 3：增长能力
 

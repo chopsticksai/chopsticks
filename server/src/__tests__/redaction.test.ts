@@ -19,7 +19,7 @@ describe("redaction", () => {
           type: "plain",
           value: "sk-plain",
         },
-        ABACUS_API_URL: "http://localhost:3100",
+        RUNEACH_API_URL: "http://localhost:3100",
       },
     };
 
@@ -40,7 +40,7 @@ describe("redaction", () => {
         type: "plain",
         value: REDACTED_EVENT_VALUE,
       },
-      ABACUS_API_URL: "http://localhost:3100",
+      RUNEACH_API_URL: "http://localhost:3100",
     });
   });
 

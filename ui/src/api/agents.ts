@@ -11,8 +11,8 @@ import type {
   HeartbeatRun,
   Approval,
   AgentConfigRevision,
-} from "@abacus-lab/shared";
-import { isUuidLike, normalizeAgentUrlKey } from "@abacus-lab/shared";
+} from "@runeachai/shared";
+import { isUuidLike, normalizeAgentUrlKey } from "@runeachai/shared";
 import { ApiError, api } from "./client";
 
 export interface AgentKey {
@@ -189,5 +189,5 @@ export const agentsApi = {
 export interface AvailableSkill {
   name: string;
   description: string;
-  isabacusManaged: boolean;
+  isruneachManaged: boolean;
 }

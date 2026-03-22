@@ -7,7 +7,7 @@ import type {
   RoutineRunSummary,
   RoutineTrigger,
   RoutineTriggerSecretMaterial,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { activityApi } from "./activity";
 import { api } from "./client";
 

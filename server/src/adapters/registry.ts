@@ -1,5 +1,5 @@
 import type { ServerAdapterModule } from "./types.js";
-import { getAdapterSessionManagement } from "@abacus-lab/adapter-utils";
+import { getAdapterSessionManagement } from "@runeachai/adapter-utils";
 import {
   execute as claudeExecute,
   listClaudeSkills,
@@ -7,14 +7,14 @@ import {
   testEnvironment as claudeTestEnvironment,
   sessionCodec as claudeSessionCodec,
   getQuotaWindows as claudeGetQuotaWindows,
-} from "@abacus-lab/adapter-claude-local/server";
-import { agentConfigurationDoc as claudeAgentConfigurationDoc, models as claudeModels } from "@abacus-lab/adapter-claude-local";
+} from "@runeachai/adapter-claude-local/server";
+import { agentConfigurationDoc as claudeAgentConfigurationDoc, models as claudeModels } from "@runeachai/adapter-claude-local";
 import {
   execute as codeBuddyExecute,
   testEnvironment as codeBuddyTestEnvironment,
   sessionCodec as codeBuddySessionCodec,
-} from "@abacus-lab/adapter-codebuddy-local/server";
-import { agentConfigurationDoc as codeBuddyAgentConfigurationDoc, models as codeBuddyModels } from "@abacus-lab/adapter-codebuddy-local";
+} from "@runeachai/adapter-codebuddy-local/server";
+import { agentConfigurationDoc as codeBuddyAgentConfigurationDoc, models as codeBuddyModels } from "@runeachai/adapter-codebuddy-local";
 import {
   execute as codexExecute,
   listCodexSkills,
@@ -22,24 +22,24 @@ import {
   testEnvironment as codexTestEnvironment,
   sessionCodec as codexSessionCodec,
   getQuotaWindows as codexGetQuotaWindows,
-} from "@abacus-lab/adapter-codex-local/server";
-import { agentConfigurationDoc as codexAgentConfigurationDoc, models as codexModels } from "@abacus-lab/adapter-codex-local";
+} from "@runeachai/adapter-codex-local/server";
+import { agentConfigurationDoc as codexAgentConfigurationDoc, models as codexModels } from "@runeachai/adapter-codex-local";
 import {
   execute as cursorExecute,
   listCursorSkills,
   syncCursorSkills,
   testEnvironment as cursorTestEnvironment,
   sessionCodec as cursorSessionCodec,
-} from "@abacus-lab/adapter-cursor-local/server";
-import { agentConfigurationDoc as cursorAgentConfigurationDoc, models as cursorModels } from "@abacus-lab/adapter-cursor-local";
+} from "@runeachai/adapter-cursor-local/server";
+import { agentConfigurationDoc as cursorAgentConfigurationDoc, models as cursorModels } from "@runeachai/adapter-cursor-local";
 import {
   execute as geminiExecute,
   listGeminiSkills,
   syncGeminiSkills,
   testEnvironment as geminiTestEnvironment,
   sessionCodec as geminiSessionCodec,
-} from "@abacus-lab/adapter-gemini-local/server";
-import { agentConfigurationDoc as geminiAgentConfigurationDoc, models as geminiModels } from "@abacus-lab/adapter-gemini-local";
+} from "@runeachai/adapter-gemini-local/server";
+import { agentConfigurationDoc as geminiAgentConfigurationDoc, models as geminiModels } from "@runeachai/adapter-gemini-local";
 import {
   execute as openCodeExecute,
   listOpenCodeSkills,
@@ -47,18 +47,18 @@ import {
   testEnvironment as openCodeTestEnvironment,
   sessionCodec as openCodeSessionCodec,
   listOpenCodeModels,
-} from "@abacus-lab/adapter-opencode-local/server";
+} from "@runeachai/adapter-opencode-local/server";
 import {
   agentConfigurationDoc as openCodeAgentConfigurationDoc,
-} from "@abacus-lab/adapter-opencode-local";
+} from "@runeachai/adapter-opencode-local";
 import {
   execute as openclawGatewayExecute,
   testEnvironment as openclawGatewayTestEnvironment,
-} from "@abacus-lab/adapter-openclaw-gateway/server";
+} from "@runeachai/adapter-openclaw-gateway/server";
 import {
   agentConfigurationDoc as openclawGatewayAgentConfigurationDoc,
   models as openclawGatewayModels,
-} from "@abacus-lab/adapter-openclaw-gateway";
+} from "@runeachai/adapter-openclaw-gateway";
 import { listCodexModels } from "./codex-models.js";
 import { listCursorModels } from "./cursor-models.js";
 import {
@@ -68,10 +68,10 @@ import {
   testEnvironment as piTestEnvironment,
   sessionCodec as piSessionCodec,
   listPiModels,
-} from "@abacus-lab/adapter-pi-local/server";
+} from "@runeachai/adapter-pi-local/server";
 import {
   agentConfigurationDoc as piAgentConfigurationDoc,
-} from "@abacus-lab/adapter-pi-local";
+} from "@runeachai/adapter-pi-local";
 import {
   execute as hermesExecute,
   testEnvironment as hermesTestEnvironment,

@@ -1,8 +1,8 @@
 import { and, desc, eq } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
-import { companySecrets, companySecretVersions } from "@abacus-lab/db";
-import type { AgentEnvConfig, EnvBinding, SecretProvider } from "@abacus-lab/shared";
-import { envBindingSchema } from "@abacus-lab/shared";
+import type { Db } from "@runeachai/db";
+import { companySecrets, companySecretVersions } from "@runeachai/db";
+import type { AgentEnvConfig, EnvBinding, SecretProvider } from "@runeachai/shared";
+import { envBindingSchema } from "@runeachai/shared";
 import { conflict, notFound, unprocessable } from "../errors.js";
 import { getSecretProvider, listSecretProviders } from "../secrets/provider-registry.js";
 

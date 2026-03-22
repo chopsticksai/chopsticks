@@ -1,11 +1,11 @@
 import { and, eq, isNull } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
-import { plugins, pluginState } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
+import { plugins, pluginState } from "@runeachai/db";
 import type {
   PluginStateScopeKind,
   SetPluginState,
   ListPluginState,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { notFound } from "../errors.js";
 
 // ---------------------------------------------------------------------------

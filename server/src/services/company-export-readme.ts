@@ -1,7 +1,7 @@
 /**
  * Generates README.md with Mermaid org chart for company exports.
  */
-import type { CompanyPortabilityManifest } from "@abacus-lab/shared";
+import type { CompanyPortabilityManifest } from "@runeachai/shared";
 
 const ROLE_LABELS: Record<string, string> = {
   ceo: "CEO",
@@ -96,7 +96,7 @@ export function generateReadme(
   // What's Inside table
   lines.push("## What's Inside");
   lines.push("");
-  lines.push("> This is an [Agent Company](https://agentcompanies.io) package from [Abacus](https://abacus.ing)");
+  lines.push("> This is an [Agent Company](https://agentcompanies.io) package from [RunEach](https://runeach.ing)");
   lines.push("");
 
   const counts: Array<[string, number]> = [];
@@ -157,15 +157,15 @@ export function generateReadme(
   lines.push("## Getting Started");
   lines.push("");
   lines.push("```bash");
-  lines.push("pnpm abacus-lab company import this-github-url-or-folder");
+  lines.push("pnpm runeachai company import this-github-url-or-folder");
   lines.push("```");
   lines.push("");
-  lines.push("See [Abacus](https://abacus.ing) for more information.");
+  lines.push("See [RunEach](https://runeach.ing) for more information.");
   lines.push("");
 
   // Footer
   lines.push("---");
-  lines.push(`Exported from [Abacus](https://abacus.ing) on ${new Date().toISOString().split("T")[0]}`);
+  lines.push(`Exported from [RunEach](https://runeach.ing) on ${new Date().toISOString().split("T")[0]}`);
   lines.push("");
 
   return lines.join("\n");

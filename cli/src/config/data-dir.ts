@@ -3,7 +3,7 @@ import {
   expandHomePrefix,
   resolveDefaultConfigPath,
   resolveDefaultContextPath,
-  resolveAbacusInstanceId,
+  resolveRunEachInstanceId,
 } from "./home.js";
 
 export interface DataDirOptionLike {
@@ -26,21 +26,21 @@ export function applyDataDirOverride(
   if (!rawDataDir) return null;
 
   const resolvedDataDir = path.resolve(expandHomePrefix(rawDataDir));
-  process.env.ABACUS_HOME = resolvedDataDir;
+  process.env.RUNEACH_HOME = resolvedDataDir;
 
   if (support.hasConfigOption) {
-    const hasConfigOverride = Boolean(options.config?.trim()) || Boolean(process.env.ABACUS_CONFIG?.trim());
+    const hasConfigOverride = Boolean(options.config?.trim()) || Boolean(process.env.RUNEACH_CONFIG?.trim());
     if (!hasConfigOverride) {
-      const instanceId = resolveAbacusInstanceId(options.instance);
-      process.env.ABACUS_INSTANCE_ID = instanceId;
-      process.env.ABACUS_CONFIG = resolveDefaultConfigPath(instanceId);
+      const instanceId = resolveRunEachInstanceId(options.instance);
+      process.env.RUNEACH_INSTANCE_ID = instanceId;
+      process.env.RUNEACH_CONFIG = resolveDefaultConfigPath(instanceId);
     }
   }
 
   if (support.hasContextOption) {
-    const hasContextOverride = Boolean(options.context?.trim()) || Boolean(process.env.ABACUS_CONTEXT?.trim());
+    const hasContextOverride = Boolean(options.context?.trim()) || Boolean(process.env.RUNEACH_CONTEXT?.trim());
     if (!hasContextOverride) {
-      process.env.ABACUS_CONTEXT = resolveDefaultContextPath();
+      process.env.RUNEACH_CONTEXT = resolveDefaultContextPath();
     }
   }
 

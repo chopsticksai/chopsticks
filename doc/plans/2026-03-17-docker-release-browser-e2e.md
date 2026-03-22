@@ -2,18 +2,18 @@
 
 ## Context
 
-Today release smoke testing for published Abacus packages is manual and shell-driven:
+Today release smoke testing for published RunEach packages is manual and shell-driven:
 
 ```sh
-HOST_PORT=3232 DATA_DIR=./data/release-smoke-canary ABACUS_VERSION=canary ./scripts/docker-onboard-smoke.sh
-HOST_PORT=3233 DATA_DIR=./data/release-smoke-stable ABACUS_VERSION=latest ./scripts/docker-onboard-smoke.sh
+HOST_PORT=3232 DATA_DIR=./data/release-smoke-canary RUNEACH_VERSION=canary ./scripts/docker-onboard-smoke.sh
+HOST_PORT=3233 DATA_DIR=./data/release-smoke-stable RUNEACH_VERSION=latest ./scripts/docker-onboard-smoke.sh
 ```
 
 That is useful because it exercises the same public install surface users hit:
 
 - Docker
-- `npx abacus@canary`
-- `npx abacus@latest`
+- `npx runeach@canary`
+- `npx runeach@latest`
 - authenticated bootstrap flow
 
 But it still leaves the most important release questions to a human with a browser:
@@ -65,7 +65,7 @@ That is a good base, but it does not validate the public npm package, Docker pat
 `scripts/docker-onboard-smoke.sh` already does useful setup work:
 
 - builds `Dockerfile.onboard-smoke`
-- runs `abacus@${ABACUS_VERSION}` inside Docker
+- runs `runeach@${RUNEACH_VERSION}` inside Docker
 - waits for health
 - signs up or signs in a smoke admin user
 - generates and accepts the bootstrap CEO invite in authenticated mode
@@ -105,8 +105,8 @@ Later we can add a second credentialed smoke lane for real model-backed agents.
 
 The current defaults in `scripts/docker-onboard-smoke.sh` should be treated as stable test fixtures:
 
-- email: `smoke-admin@abacus.local`
-- password: `abacus-smoke-password`
+- email: `smoke-admin@runeach.local`
+- password: `runeach-smoke-password`
 
 The browser test should log in with those exact values unless overridden by env vars.
 
@@ -214,7 +214,7 @@ Recommended triggers:
 
 Recommended inputs:
 
-- `abacus_version`
+- `runeach_version`
   - `canary` or `latest`
 - `host_port`
   - optional, default runner-safe port
@@ -254,7 +254,7 @@ First ship the workflow as manual-only so the harness and test can be stabilized
 
 After `publish_canary` succeeds in `.github/workflows/release.yml`, call the reusable release-smoke workflow with:
 
-- `abacus_version=canary`
+- `runeach_version=canary`
 
 This proves the just-published public canary really boots and onboards.
 
@@ -262,7 +262,7 @@ This proves the just-published public canary really boots and onboards.
 
 After `publish_stable` succeeds, call the same workflow with:
 
-- `abacus_version=latest`
+- `runeach_version=latest`
 
 This gives us post-publish confirmation that the stable dist-tag is healthy.
 
@@ -328,8 +328,8 @@ Tasks:
 Acceptance:
 
 - the suite passes locally against both:
-  - `ABACUS_VERSION=canary`
-  - `ABACUS_VERSION=latest`
+  - `RUNEACH_VERSION=canary`
+  - `RUNEACH_VERSION=latest`
 
 ## Phase 3: GitHub Actions workflow
 
@@ -384,8 +384,8 @@ This should stay optional until the token-free lane is trustworthy.
 
 The plan is complete when the implemented system can demonstrate all of the following:
 
-1. A published `abacus@canary` Docker install can be smoke-tested by Playwright in CI.
-2. A published `abacus@latest` Docker install can be smoke-tested by Playwright in CI.
+1. A published `runeach@canary` Docker install can be smoke-tested by Playwright in CI.
+2. A published `runeach@latest` Docker install can be smoke-tested by Playwright in CI.
 3. The test logs into authenticated mode with the smoke credentials.
 4. The test sees onboarding for a fresh instance.
 5. The test completes onboarding in the browser.

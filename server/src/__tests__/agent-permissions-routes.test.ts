@@ -88,8 +88,8 @@ const mockWorkspaceOperationService = vi.hoisted(() => ({}));
 const mockLogActivity = vi.hoisted(() => vi.fn());
 const mockEnsurePiModelConfiguredAndAvailable = vi.hoisted(() => vi.fn());
 
-vi.mock("@abacus-lab/adapter-pi-local/server", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@abacus-lab/adapter-pi-local/server")>();
+vi.mock("@runeachai/adapter-pi-local/server", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@runeachai/adapter-pi-local/server")>();
   return {
     ...actual,
     ensurePiModelConfiguredAndAvailable: mockEnsurePiModelConfiguredAndAvailable,
@@ -119,7 +119,7 @@ function createDbStub() {
         where: vi.fn().mockReturnValue({
           then: vi.fn().mockResolvedValue([{
             id: companyId,
-      name: "Abacus",
+      name: "RunEach",
             requireBoardApprovalForNewAgents: false,
           }]),
         }),

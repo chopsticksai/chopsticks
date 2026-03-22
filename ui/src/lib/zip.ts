@@ -1,4 +1,4 @@
-import type { CompanyPortabilityFileEntry } from "@abacus-lab/shared";
+import type { CompanyPortabilityFileEntry } from "@runeachai/shared";
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();

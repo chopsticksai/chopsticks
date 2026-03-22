@@ -1,4 +1,4 @@
-import { usePluginAction, usePluginData, type PluginWidgetProps } from "@abacus-lab/plugin-sdk/ui";
+import { usePluginAction, usePluginData, type PluginWidgetProps } from "@runeachai/plugin-sdk/ui";
 
 type HealthData = {
   status: "ok" | "degraded" | "error";

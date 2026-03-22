@@ -3,13 +3,13 @@ import type { Dirent } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AdapterExecutionContext, AdapterExecutionResult } from "@abacus-lab/adapter-utils";
+import type { AdapterExecutionContext, AdapterExecutionResult } from "@runeachai/adapter-utils";
 import {
   asBoolean,
   asNumber,
   asString,
   asStringArray,
-  buildAbacusEnv,
+  buildRunEachEnv,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
   ensurePathInEnv,
@@ -17,7 +17,7 @@ import {
   redactEnvForLogs,
   renderTemplate,
   runChildProcess,
-} from "@abacus-lab/adapter-utils/server-utils";
+} from "@runeachai/adapter-utils/server-utils";
 import {
   DEFAULT_CODEBUDDY_LOCAL_MODEL,
   DEFAULT_CODEBUDDY_LOCAL_SKIP_PERMISSIONS,
@@ -27,7 +27,7 @@ import { normalizeCodeBuddyStreamLine } from "../shared/stream.js";
 import { isCodeBuddyUnknownSessionError, parseCodeBuddyJsonl } from "./parse.js";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
-const ABACUS_SKILLS_CANDIDATES = [
+const RUNEACH_SKILLS_CANDIDATES = [
   path.resolve(__moduleDir, "../../skills"),
   path.resolve(__moduleDir, "../../../../../skills"),
 ];
@@ -74,22 +74,22 @@ function normalizeEffort(rawEffort: string): "low" | "medium" | "high" | "xhigh"
   return null;
 }
 
-function renderAbacusEnvNote(env: Record<string, string>): string {
-  const abacusKeys = Object.keys(env)
-    .filter((key) => key.startsWith("ABACUS_"))
+function renderRunEachEnvNote(env: Record<string, string>): string {
+  const runeachKeys = Object.keys(env)
+    .filter((key) => key.startsWith("RUNEACH_"))
     .sort();
-  if (abacusKeys.length === 0) return "";
+  if (runeachKeys.length === 0) return "";
   return [
-    "Abacus runtime note:",
-    `The following ABACUS_* environment variables are available in this run: ${abacusKeys.join(", ")}`,
+    "RunEach runtime note:",
+    `The following RUNEACH_* environment variables are available in this run: ${runeachKeys.join(", ")}`,
     "Do not assume these variables are missing without checking your shell environment.",
     "",
     "",
   ].join("\n");
 }
 
-async function resolveAbacusSkillsDir(): Promise<string | null> {
-  for (const candidate of ABACUS_SKILLS_CANDIDATES) {
+async function resolveRunEachSkillsDir(): Promise<string | null> {
+  for (const candidate of RUNEACH_SKILLS_CANDIDATES) {
     const isDir = await fs.stat(candidate).then((s) => s.isDirectory()).catch(() => false);
     if (isDir) return candidate;
   }
@@ -106,7 +106,7 @@ export async function ensureCodeBuddySkillsInjected(
   onLog: AdapterExecutionContext["onLog"],
   options: EnsureCodeBuddySkillsInjectedOptions = {},
 ) {
-  const skillsDir = options.skillsDir ?? await resolveAbacusSkillsDir();
+  const skillsDir = options.skillsDir ?? await resolveRunEachSkillsDir();
   if (!skillsDir) return;
 
   const skillsHome = options.skillsHome ?? codeBuddySkillsHome();
@@ -115,7 +115,7 @@ export async function ensureCodeBuddySkillsInjected(
   } catch (err) {
     await onLog(
       "stderr",
-      `[abacus] Failed to prepare CodeBuddy skills directory ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
+      `[runeach] Failed to prepare CodeBuddy skills directory ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
     );
     return;
   }
@@ -126,7 +126,7 @@ export async function ensureCodeBuddySkillsInjected(
   } catch (err) {
     await onLog(
       "stderr",
-      `[abacus] Failed to read Abacus skills from ${skillsDir}: ${err instanceof Error ? err.message : String(err)}\n`,
+      `[runeach] Failed to read RunEach skills from ${skillsDir}: ${err instanceof Error ? err.message : String(err)}\n`,
     );
     return;
   }
@@ -144,12 +144,12 @@ export async function ensureCodeBuddySkillsInjected(
       await linkSkill(source, target);
       await onLog(
         "stderr",
-        `[abacus] Injected CodeBuddy skill "${entry.name}" into ${skillsHome}\n`,
+        `[runeach] Injected CodeBuddy skill "${entry.name}" into ${skillsHome}\n`,
       );
     } catch (err) {
       await onLog(
         "stderr",
-        `[abacus] Failed to inject CodeBuddy skill "${entry.name}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
+        `[runeach] Failed to inject CodeBuddy skill "${entry.name}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
       );
     }
   }
@@ -160,7 +160,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Abacus work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your RunEach work.",
   );
   const command = asString(config.command, "codebuddy");
   const model = asString(config.model, DEFAULT_CODEBUDDY_LOCAL_MODEL).trim();
@@ -171,14 +171,14 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     DEFAULT_CODEBUDDY_LOCAL_SKIP_PERMISSIONS,
   );
 
-  const workspaceContext = parseObject(context.abacusWorkspace);
+  const workspaceContext = parseObject(context.runeachWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceId = asString(workspaceContext.workspaceId, "");
   const workspaceRepoUrl = asString(workspaceContext.repoUrl, "");
   const workspaceRepoRef = asString(workspaceContext.repoRef, "");
-  const workspaceHints = Array.isArray(context.abacusWorkspaces)
-    ? context.abacusWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.runeachWorkspaces)
+    ? context.runeachWorkspaces.filter(
       (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
     )
     : [];
@@ -191,9 +191,9 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const envConfig = parseObject(config.env);
   const hasExplicitApiKey =
-    typeof envConfig.ABACUS_API_KEY === "string" && envConfig.ABACUS_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildAbacusEnv(agent) };
-  env.ABACUS_RUN_ID = runId;
+    typeof envConfig.RUNEACH_API_KEY === "string" && envConfig.RUNEACH_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildRunEachEnv(agent) };
+  env.RUNEACH_RUN_ID = runId;
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
     (typeof context.issueId === "string" && context.issueId.trim().length > 0 && context.issueId.trim()) ||
@@ -217,23 +217,23 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const linkedIssueIds = Array.isArray(context.issueIds)
     ? context.issueIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     : [];
-  if (wakeTaskId) env.ABACUS_TASK_ID = wakeTaskId;
-  if (wakeReason) env.ABACUS_WAKE_REASON = wakeReason;
-  if (wakeCommentId) env.ABACUS_WAKE_COMMENT_ID = wakeCommentId;
-  if (approvalId) env.ABACUS_APPROVAL_ID = approvalId;
-  if (approvalStatus) env.ABACUS_APPROVAL_STATUS = approvalStatus;
-  if (linkedIssueIds.length > 0) env.ABACUS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
-  if (effectiveWorkspaceCwd) env.ABACUS_WORKSPACE_CWD = effectiveWorkspaceCwd;
-  if (workspaceSource) env.ABACUS_WORKSPACE_SOURCE = workspaceSource;
-  if (workspaceId) env.ABACUS_WORKSPACE_ID = workspaceId;
-  if (workspaceRepoUrl) env.ABACUS_WORKSPACE_REPO_URL = workspaceRepoUrl;
-  if (workspaceRepoRef) env.ABACUS_WORKSPACE_REPO_REF = workspaceRepoRef;
-  if (workspaceHints.length > 0) env.ABACUS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+  if (wakeTaskId) env.RUNEACH_TASK_ID = wakeTaskId;
+  if (wakeReason) env.RUNEACH_WAKE_REASON = wakeReason;
+  if (wakeCommentId) env.RUNEACH_WAKE_COMMENT_ID = wakeCommentId;
+  if (approvalId) env.RUNEACH_APPROVAL_ID = approvalId;
+  if (approvalStatus) env.RUNEACH_APPROVAL_STATUS = approvalStatus;
+  if (linkedIssueIds.length > 0) env.RUNEACH_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+  if (effectiveWorkspaceCwd) env.RUNEACH_WORKSPACE_CWD = effectiveWorkspaceCwd;
+  if (workspaceSource) env.RUNEACH_WORKSPACE_SOURCE = workspaceSource;
+  if (workspaceId) env.RUNEACH_WORKSPACE_ID = workspaceId;
+  if (workspaceRepoUrl) env.RUNEACH_WORKSPACE_REPO_URL = workspaceRepoUrl;
+  if (workspaceRepoRef) env.RUNEACH_WORKSPACE_REPO_REF = workspaceRepoRef;
+  if (workspaceHints.length > 0) env.RUNEACH_WORKSPACES_JSON = JSON.stringify(workspaceHints);
   for (const [key, value] of Object.entries(envConfig)) {
     if (typeof value === "string") env[key] = value;
   }
   if (!hasExplicitApiKey && authToken) {
-    env.ABACUS_API_KEY = authToken;
+    env.RUNEACH_API_KEY = authToken;
   }
 
   const runtimeEnv = ensurePathInEnv({ ...process.env, ...env });
@@ -258,7 +258,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   if (runtimeSessionId && !canResumeSession) {
     await onLog(
       "stderr",
-      `[abacus] CodeBuddy session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[runeach] CodeBuddy session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
 
@@ -274,13 +274,13 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
         `Resolve any relative file references from ${instructionsDir}.\n\n`;
       await onLog(
         "stderr",
-        `[abacus] Loaded agent instructions file: ${instructionsFilePath}\n`,
+        `[runeach] Loaded agent instructions file: ${instructionsFilePath}\n`,
       );
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
       await onLog(
         "stderr",
-        `[abacus] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
+        `[runeach] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
       );
     }
   }
@@ -320,8 +320,8 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     run: { id: runId, source: "on_demand" },
     context,
   });
-  const abacusEnvNote = renderAbacusEnvNote(env);
-  const prompt = `${instructionsPrefix}${abacusEnvNote}${renderedPrompt}`;
+  const runeachEnvNote = renderRunEachEnvNote(env);
+  const prompt = `${instructionsPrefix}${runeachEnvNote}${renderedPrompt}`;
 
   const buildArgs = (resumeSessionId: string | null) => {
     const args = ["-p", "--output-format", "stream-json"];
@@ -468,7 +468,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stderr",
-      `[abacus] CodeBuddy resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
+      `[runeach] CodeBuddy resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
     );
     const retry = await runAttempt(null);
     return toResult(retry, true);

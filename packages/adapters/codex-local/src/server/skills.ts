@@ -4,20 +4,20 @@ import type {
   AdapterSkillContext,
   AdapterSkillEntry,
   AdapterSkillSnapshot,
-} from "@abacus-lab/adapter-utils";
+} from "@runeachai/adapter-utils";
 import {
-  readAbacusRuntimeSkillEntries,
-  resolveAbacusDesiredSkillNames,
-} from "@abacus-lab/adapter-utils/server-utils";
+  readRunEachRuntimeSkillEntries,
+  resolveRunEachDesiredSkillNames,
+} from "@runeachai/adapter-utils/server-utils";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
 async function buildCodexSkillSnapshot(
   config: Record<string, unknown>,
 ): Promise<AdapterSkillSnapshot> {
-  const availableEntries = await readAbacusRuntimeSkillEntries(config, __moduleDir);
+  const availableEntries = await readRunEachRuntimeSkillEntries(config, __moduleDir);
   const availableByKey = new Map(availableEntries.map((entry) => [entry.key, entry]));
-  const desiredSkills = resolveAbacusDesiredSkillNames(config, availableEntries);
+  const desiredSkills = resolveRunEachDesiredSkillNames(config, availableEntries);
   const desiredSet = new Set(desiredSkills);
   const entries: AdapterSkillEntry[] = availableEntries.map((entry) => ({
     key: entry.key,
@@ -25,8 +25,8 @@ async function buildCodexSkillSnapshot(
     desired: desiredSet.has(entry.key),
     managed: true,
     state: desiredSet.has(entry.key) ? "configured" : "available",
-    origin: entry.required ? "abacus_required" : "company_managed",
-    originLabel: entry.required ? "Required by Abacus" : "Managed by Abacus",
+    origin: entry.required ? "runeach_required" : "company_managed",
+    originLabel: entry.required ? "Required by RunEach" : "Managed by RunEach",
     readOnly: false,
     sourcePath: entry.source,
     targetPath: null,
@@ -40,7 +40,7 @@ async function buildCodexSkillSnapshot(
 
   for (const desiredSkill of desiredSkills) {
     if (availableByKey.has(desiredSkill)) continue;
-    warnings.push(`Desired skill "${desiredSkill}" is not available from the Abacus skills directory.`);
+    warnings.push(`Desired skill "${desiredSkill}" is not available from the RunEach skills directory.`);
     entries.push({
       key: desiredSkill,
       runtimeName: null,
@@ -52,7 +52,7 @@ async function buildCodexSkillSnapshot(
       readOnly: false,
       sourcePath: null,
       targetPath: null,
-      detail: "Abacus cannot find this skill in the local runtime skills directory.",
+      detail: "RunEach cannot find this skill in the local runtime skills directory.",
     });
   }
 
@@ -83,5 +83,5 @@ export function resolveCodexDesiredSkillNames(
   config: Record<string, unknown>,
   availableEntries: Array<{ key: string; required?: boolean }>,
 ) {
-  return resolveAbacusDesiredSkillNames(config, availableEntries);
+  return resolveRunEachDesiredSkillNames(config, availableEntries);
 }

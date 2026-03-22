@@ -1,19 +1,19 @@
 {
-  "name": "@abacus-lab/create-abacus-plugin",
+  "name": "@runeachai/create-runeach-plugin",
   "version": "0.1.0",
   "license": "MIT",
-  "homepage": "https://github.com/abacus-lab/abacus",
+  "homepage": "https://github.com/runeachai/runeach",
   "bugs": {
-    "url": "https://github.com/abacus-lab/abacus/issues"
+    "url": "https://github.com/runeachai/runeach/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/abacus-lab/abacus",
-    "directory": "packages/plugins/create-abacus-plugin"
+    "url": "https://github.com/runeachai/runeach",
+    "directory": "packages/plugins/create-runeach-plugin"
   },
   "type": "module",
   "bin": {
-    "create-abacus-plugin": "./dist/index.js"
+    "create-runeach-plugin": "./dist/index.js"
   },
   "exports": {
     ".": "./src/index.ts"
@@ -21,7 +21,7 @@
   "publishConfig": {
     "access": "public",
     "bin": {
-      "create-abacus-plugin": "./dist/index.js"
+      "create-runeach-plugin": "./dist/index.js"
     },
     "exports": {
       ".": {
@@ -41,7 +41,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@abacus-lab/plugin-sdk": "workspace:*"
+    "@runeachai/plugin-sdk": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.6.0",

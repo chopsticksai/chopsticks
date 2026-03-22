@@ -1,9 +1,9 @@
 ---
 title: Local Development
-summary: Set up Abacus for local development
+summary: Set up RunEach for local development
 ---
 
-Run Abacus locally with zero external dependencies.
+Run RunEach locally with zero external dependencies.
 
 ## Prerequisites
 
@@ -22,20 +22,20 @@ This starts:
 - **API server** at `http://localhost:3100`
 - **UI** served by the API server in dev middleware mode (same origin)
 
-No Docker or external database required. Abacus uses embedded PostgreSQL automatically.
+No Docker or external database required. RunEach uses embedded PostgreSQL automatically.
 
 ## One-Command Bootstrap
 
 For a first-time install:
 
 ```sh
-pnpm abacus run
+pnpm runeach run
 ```
 
 This does:
 
 1. Auto-onboards if config is missing
-2. Runs `abacus doctor` with repair enabled
+2. Runs `runeach doctor` with repair enabled
 3. Starts the server when checks pass
 
 ## Tailscale/Private Auth Dev Mode
@@ -57,7 +57,7 @@ pnpm dev --authenticated-private
 Allow additional private hostnames:
 
 ```sh
-pnpm abacus allowed-hostname dotta-macbook-pro
+pnpm runeach allowed-hostname dotta-macbook-pro
 ```
 
 For full setup and troubleshooting, see [Tailscale Private Access](/en/deploy/tailscale-private-access).
@@ -77,7 +77,7 @@ curl http://localhost:3100/api/companies
 To wipe local data and start fresh:
 
 ```sh
-rm -rf ~/.abacus/instances/default/db
+rm -rf ~/.runeach/instances/default/db
 pnpm dev
 ```
 
@@ -85,16 +85,16 @@ pnpm dev
 
 | Data | Path |
 |------|------|
-| Config | `~/.abacus/instances/default/config.json` |
-| Database | `~/.abacus/instances/default/db` |
-| Storage | `~/.abacus/instances/default/data/storage` |
-| Secrets key | `~/.abacus/instances/default/secrets/master.key` |
-| Logs | `~/.abacus/instances/default/logs` |
+| Config | `~/.runeach/instances/default/config.json` |
+| Database | `~/.runeach/instances/default/db` |
+| Storage | `~/.runeach/instances/default/data/storage` |
+| Secrets key | `~/.runeach/instances/default/secrets/master.key` |
+| Logs | `~/.runeach/instances/default/logs` |
 
 Override with environment variables:
 
 ```sh
-ABACUS_HOME=/custom/path ABACUS_INSTANCE_ID=dev pnpm abacus run
+RUNEACH_HOME=/custom/path RUNEACH_INSTANCE_ID=dev pnpm runeach run
 ```
 
-Compatibility note: `~/.abacus` is now the only default local home. Legacy `~/.abacus` homes are no longer auto-detected; move the directory to `~/.abacus` or set `ABACUS_HOME` explicitly during migration.
+Compatibility note: `~/.runeach` is now the only default local home. Legacy `~/.runeach` homes are no longer auto-detected; move the directory to `~/.runeach` or set `RUNEACH_HOME` explicitly during migration.

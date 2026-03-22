@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# Kill all local abacus dev server processes (across all worktrees).
+# Kill all local runeach dev server processes (across all worktrees).
 #
 # Usage:
-#   scripts/kill-dev.sh        # kill all abacus dev processes
+#   scripts/kill-dev.sh        # kill all runeach dev processes
 #   scripts/kill-dev.sh --dry  # preview what would be killed
 #
 
@@ -14,8 +14,8 @@ if [[ "${1:-}" == "--dry" || "${1:-}" == "--dry-run" || "${1:-}" == "-n" ]]; the
   DRY_RUN=true
 fi
 
-# Collect PIDs of node processes running from any abacus directory.
-# Matches paths like /Users/*/abacus/... or /Users/*/abacus-*/...
+# Collect PIDs of node processes running from any runeach directory.
+# Matches paths like /Users/*/runeach/... or /Users/*/runeach-*/...
 # Excludes postgres-related processes.
 pids=()
 lines=()
@@ -27,14 +27,14 @@ while IFS= read -r line; do
   pid=$(echo "$line" | awk '{print $2}')
   pids+=("$pid")
   lines+=("$line")
-done < <(ps aux | grep -E '/abacus(-[^/]+)?/' | grep node | grep -v grep || true)
+done < <(ps aux | grep -E '/runeach(-[^/]+)?/' | grep node | grep -v grep || true)
 
 if [[ ${#pids[@]} -eq 0 ]]; then
-  echo "No abacus dev processes found."
+  echo "No runeach dev processes found."
   exit 0
 fi
 
-echo "Found ${#pids[@]} abacus dev process(es):"
+echo "Found ${#pids[@]} runeach dev process(es):"
 echo ""
 
 for i in "${!pids[@]}"; do

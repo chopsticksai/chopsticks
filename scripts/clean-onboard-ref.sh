@@ -17,9 +17,9 @@ Examples:
 Environment overrides:
   KEEP_TEMP=1                 Keep the temp directory and detached worktree for debugging
   PC_TEST_ROOT=/tmp/custom    Base temp directory to use
-  PC_DATA=/tmp/data           Abacus data dir to use
-  ABACUS_HOST=127.0.0.1    Host passed to the onboarded server
-  ABACUS_PORT=3232         Port passed to the onboarded server
+  PC_DATA=/tmp/data           RunEach data dir to use
+  RUNEACH_HOST=127.0.0.1    Host passed to the onboarded server
+  RUNEACH_PORT=3232         Port passed to the onboarded server
 
 Notes:
   - Defaults to the current committed ref (HEAD), not uncommitted local edits.
@@ -40,14 +40,14 @@ fi
 TARGET_COMMIT="$(git -C "$REPO_ROOT" rev-parse --verify "${TARGET_REF}^{commit}")"
 
 export KEEP_TEMP="${KEEP_TEMP:-0}"
-export PC_TEST_ROOT="${PC_TEST_ROOT:-$(mktemp -d /tmp/abacus-clean-ref.XXXXXX)}"
+export PC_TEST_ROOT="${PC_TEST_ROOT:-$(mktemp -d /tmp/runeach-clean-ref.XXXXXX)}"
 export PC_HOME="${PC_HOME:-$PC_TEST_ROOT/home}"
 export PC_CACHE="${PC_CACHE:-$PC_TEST_ROOT/npm-cache}"
-export PC_DATA="${PC_DATA:-$PC_TEST_ROOT/abacus-data}"
+export PC_DATA="${PC_DATA:-$PC_TEST_ROOT/runeach-data}"
 export PC_REPO="${PC_REPO:-$PC_TEST_ROOT/repo}"
-export ABACUS_HOST="${ABACUS_HOST:-127.0.0.1}"
-export ABACUS_PORT="${ABACUS_PORT:-3100}"
-export ABACUS_OPEN_ON_LISTEN="${ABACUS_OPEN_ON_LISTEN:-false}"
+export RUNEACH_HOST="${RUNEACH_HOST:-127.0.0.1}"
+export RUNEACH_PORT="${RUNEACH_PORT:-3100}"
+export RUNEACH_OPEN_ON_LISTEN="${RUNEACH_OPEN_ON_LISTEN:-false}"
 
 cleanup() {
   if [ "$KEEP_TEMP" = "1" ]; then
@@ -68,8 +68,8 @@ echo "PC_TEST_ROOT: $PC_TEST_ROOT"
 echo "PC_HOME: $PC_HOME"
 echo "PC_DATA: $PC_DATA"
 echo "PC_REPO: $PC_REPO"
-echo "ABACUS_HOST: $ABACUS_HOST"
-echo "ABACUS_PORT: $ABACUS_PORT"
+echo "RUNEACH_HOST: $RUNEACH_HOST"
+echo "RUNEACH_PORT: $RUNEACH_PORT"
 
 git -C "$REPO_ROOT" worktree add --detach "$PC_REPO" "$TARGET_COMMIT"
 
@@ -80,7 +80,7 @@ env \
   HOME="$PC_HOME" \
   npm_config_cache="$PC_CACHE" \
   npm_config_userconfig="$PC_HOME/.npmrc" \
-  HOST="$ABACUS_HOST" \
-  PORT="$ABACUS_PORT" \
-  ABACUS_OPEN_ON_LISTEN="$ABACUS_OPEN_ON_LISTEN" \
-  pnpm abacus onboard --yes --data-dir "$PC_DATA"
+  HOST="$RUNEACH_HOST" \
+  PORT="$RUNEACH_PORT" \
+  RUNEACH_OPEN_ON_LISTEN="$RUNEACH_OPEN_ON_LISTEN" \
+  pnpm runeach onboard --yes --data-dir "$PC_DATA"

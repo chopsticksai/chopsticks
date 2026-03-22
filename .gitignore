@@ -7,7 +7,7 @@ drizzle/meta/
 coverage/
 .DS_Store
 data/
-.abacus/
+.runeach/
 .pnpm-store/
 tmp-*
 cli/tmp/
@@ -38,7 +38,7 @@ tmp/
 # Editor / tool temp files
 *.tmp
 .claude/settings.local.json
-.abacus-local/
+.runeach-local/
 /.agents/
 
 # Doc maintenance cursor

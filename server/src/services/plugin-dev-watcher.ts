@@ -51,7 +51,7 @@ type PluginWatchTarget = {
 };
 
 type PluginPackageJson = {
-  abacusPlugin?: {
+  runeachPlugin?: {
     manifest?: string;
     worker?: string;
     ui?: string;
@@ -67,7 +67,7 @@ function shouldIgnorePath(filename: string | null | undefined): boolean {
       segment === "node_modules" ||
       segment === ".git" ||
       segment === ".vite" ||
-      segment === ".abacus-sdk" ||
+      segment === ".runeach-sdk" ||
       segment.startsWith("."),
   );
 }
@@ -127,9 +127,9 @@ export function resolvePluginWatchTargets(
   }
 
   const entrypointPaths = [
-    packageJson?.abacusPlugin?.manifest,
-    packageJson?.abacusPlugin?.worker,
-    packageJson?.abacusPlugin?.ui,
+    packageJson?.runeachPlugin?.manifest,
+    packageJson?.runeachPlugin?.worker,
+    packageJson?.runeachPlugin?.ui,
   ].filter((value): value is string => typeof value === "string" && value.length > 0);
 
   if (entrypointPaths.length === 0) {

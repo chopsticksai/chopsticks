@@ -7,14 +7,14 @@ import { bootstrapCeoInvite } from "./auth-bootstrap-ceo.js";
 import { onboard } from "./onboard.js";
 import { doctor } from "./doctor.js";
 import { publicCliCommand } from "../config/branding.js";
-import { loadAbacusEnvFile } from "../config/env.js";
+import { loadRunEachEnvFile } from "../config/env.js";
 import { configExists, resolveConfigPath } from "../config/store.js";
-import type { AbacusConfig } from "../config/schema.js";
+import type { RunEachConfig } from "../config/schema.js";
 import { readConfig } from "../config/store.js";
 import {
   describeLocalInstancePaths,
-  resolveAbacusHomeDir,
-  resolveAbacusInstanceId,
+  resolveRunEachHomeDir,
+  resolveRunEachInstanceId,
 } from "../config/home.js";
 
 interface RunOptions {
@@ -32,18 +32,18 @@ interface StartedServer {
 }
 
 export async function runCommand(opts: RunOptions): Promise<void> {
-  const instanceId = resolveAbacusInstanceId(opts.instance);
-  process.env.ABACUS_INSTANCE_ID = instanceId;
+  const instanceId = resolveRunEachInstanceId(opts.instance);
+  process.env.RUNEACH_INSTANCE_ID = instanceId;
 
-  const homeDir = resolveAbacusHomeDir();
+  const homeDir = resolveRunEachHomeDir();
   fs.mkdirSync(homeDir, { recursive: true });
 
   const paths = describeLocalInstancePaths(instanceId);
   fs.mkdirSync(paths.instanceRoot, { recursive: true });
 
   const configPath = resolveConfigPath(opts.config);
-  process.env.ABACUS_CONFIG = configPath;
-  loadAbacusEnvFile(configPath);
+  process.env.RUNEACH_CONFIG = configPath;
+  loadRunEachEnvFile(configPath);
 
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("run")} `)));
   p.log.message(pc.dim(`Home: ${paths.homeDir}`));
@@ -81,7 +81,7 @@ export async function runCommand(opts: RunOptions): Promise<void> {
     process.exit(1);
   }
 
-  p.log.step("Starting Abacus server...");
+  p.log.step("Starting RunEach server...");
   const startedServer = await importServerEntry();
 
   if (shouldGenerateBootstrapInviteAfterStart(config)) {
@@ -95,12 +95,12 @@ export async function runCommand(opts: RunOptions): Promise<void> {
 }
 
 function resolveBootstrapInviteBaseUrl(
-  config: AbacusConfig,
+  config: RunEachConfig,
   startedServer: StartedServer,
 ): string {
   const explicitBaseUrl =
-    process.env.ABACUS_PUBLIC_URL ??
-    process.env.ABACUS_AUTH_PUBLIC_BASE_URL ??
+    process.env.RUNEACH_PUBLIC_URL ??
+    process.env.RUNEACH_AUTH_PUBLIC_BASE_URL ??
     process.env.BETTER_AUTH_URL ??
     process.env.BETTER_AUTH_BASE_URL ??
     (config.auth.baseUrlMode === "explicit" ? config.auth.publicBaseUrl : undefined);
@@ -142,10 +142,10 @@ function getMissingModuleSpecifier(err: unknown): string | null {
 }
 
 function maybeEnableUiDevMiddleware(entrypoint: string): void {
-  if (process.env.ABACUS_UI_DEV_MIDDLEWARE !== undefined) return;
+  if (process.env.RUNEACH_UI_DEV_MIDDLEWARE !== undefined) return;
   const normalized = entrypoint.replaceAll("\\", "/");
-  if (normalized.endsWith("/server/src/index.ts") || normalized.endsWith("@abacus-lab/server/src/index.ts")) {
-    process.env.ABACUS_UI_DEV_MIDDLEWARE = "true";
+  if (normalized.endsWith("/server/src/index.ts") || normalized.endsWith("@runeachai/server/src/index.ts")) {
+    process.env.RUNEACH_UI_DEV_MIDDLEWARE = "true";
   }
 }
 
@@ -159,35 +159,35 @@ async function importServerEntry(): Promise<StartedServer> {
     return await startServerFromModule(mod, devEntry);
   }
 
-  // Production mode: import the published @abacus-lab/server package
+  // Production mode: import the published @runeachai/server package
   try {
-    const mod = await import("@abacus-lab/server");
-    return await startServerFromModule(mod, "@abacus-lab/server");
+    const mod = await import("@runeachai/server");
+    return await startServerFromModule(mod, "@runeachai/server");
   } catch (err) {
     const missingSpecifier = getMissingModuleSpecifier(err);
-    const missingServerEntrypoint = !missingSpecifier || missingSpecifier === "@abacus-lab/server";
+    const missingServerEntrypoint = !missingSpecifier || missingSpecifier === "@runeachai/server";
     if (isModuleNotFoundError(err) && missingServerEntrypoint) {
       throw new Error(
-        `Could not locate a Abacus server entrypoint.\n` +
-        `Tried: ${devEntry}, @abacus-lab/server\n` +
+        `Could not locate a RunEach server entrypoint.\n` +
+        `Tried: ${devEntry}, @runeachai/server\n` +
         `${formatError(err)}`,
       );
     }
     throw new Error(
-      `Abacus server failed to start.\n` +
+      `RunEach server failed to start.\n` +
       `${formatError(err)}`,
     );
   }
 }
 
-function shouldGenerateBootstrapInviteAfterStart(config: AbacusConfig): boolean {
+function shouldGenerateBootstrapInviteAfterStart(config: RunEachConfig): boolean {
   return config.server.deploymentMode === "authenticated" && config.database.mode === "embedded-postgres";
 }
 
 async function startServerFromModule(mod: unknown, label: string): Promise<StartedServer> {
   const startServer = (mod as { startServer?: () => Promise<StartedServer> }).startServer;
   if (typeof startServer !== "function") {
-    throw new Error(`Abacus server entrypoint did not export startServer(): ${label}`);
+    throw new Error(`RunEach server entrypoint did not export startServer(): ${label}`);
   }
   return await startServer();
 }

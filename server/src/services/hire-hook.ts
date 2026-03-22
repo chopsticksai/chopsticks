@@ -1,13 +1,13 @@
 import { and, eq } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
-import { agents } from "@abacus-lab/db";
-import type { HireApprovedPayload } from "@abacus-lab/adapter-utils";
+import type { Db } from "@runeachai/db";
+import { agents } from "@runeachai/db";
+import type { HireApprovedPayload } from "@runeachai/adapter-utils";
 import { findServerAdapter } from "../adapters/registry.js";
 import { logger } from "../middleware/logger.js";
 import { logActivity } from "./activity-log.js";
 
 const HIRE_APPROVED_MESSAGE =
-  "Tell your user that your hire was approved, now they should assign you a task in Abacus or ask you to create issues.";
+  "Tell your user that your hire was approved, now they should assign you a task in RunEach or ask you to create issues.";
 
 export interface NotifyHireApprovedInput {
   companyId: string;

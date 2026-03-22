@@ -1,5 +1,5 @@
 import { asc, eq, ne, sql, and } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
 import {
   plugins,
   pluginConfig,
@@ -7,9 +7,9 @@ import {
   pluginJobs,
   pluginJobRuns,
   pluginWebhookDeliveries,
-} from "@abacus-lab/db";
+} from "@runeachai/db";
 import type {
-  AbacusPluginManifestV1,
+  RunEachPluginManifestV1,
   PluginStatus,
   InstallPlugin,
   UpdatePluginStatus,
@@ -24,7 +24,7 @@ import type {
   PluginJobRunStatus,
   PluginJobRunTrigger,
   PluginWebhookDeliveryStatus,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { conflict, notFound } from "../errors.js";
 
 // ---------------------------------------------------------------------------
@@ -49,7 +49,7 @@ function isPluginKeyConflict(error: unknown): boolean {
 /**
  * PluginRegistry – CRUD operations for the `plugins` and `plugin_config`
  * tables.  Follows the same factory-function pattern used by the rest of
- * the Abacus service layer.
+ * the RunEach service layer.
  *
  * This is the lowest-level persistence layer for plugins. Higher-level
  * concerns such as lifecycle state-machine enforcement and capability
@@ -134,7 +134,7 @@ export function pluginRegistryService(db: Db) {
      * manifest from the package.  This method persists the plugin row and
      * assigns the next install order.
      */
-    install: async (input: InstallPlugin, manifest: AbacusPluginManifestV1) => {
+    install: async (input: InstallPlugin, manifest: RunEachPluginManifestV1) => {
       const existing = await getByKey(manifest.id);
       if (existing) {
         if (existing.status !== "uninstalled") {
@@ -198,7 +198,7 @@ export function pluginRegistryService(db: Db) {
       data: {
         packageName?: string;
         version?: string;
-        manifest?: AbacusPluginManifestV1;
+        manifest?: RunEachPluginManifestV1;
       },
     ) => {
       const plugin = await getById(id);
@@ -436,7 +436,7 @@ export function pluginRegistryService(db: Db) {
         .then((rows) => rows[0] ?? null),
 
     /**
-     * Create or update a persistent mapping between a Abacus object and an
+     * Create or update a persistent mapping between a RunEach object and an
      * external entity.
      *
      * @param pluginId - The UUID of the plugin.

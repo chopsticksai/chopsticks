@@ -28,7 +28,7 @@ export async function addAllowedHostname(host: string, opts: { config?: string }
   } else {
     p.log.success(`Added allowed hostname: ${pc.cyan(normalized)}`);
     p.log.message(
-      pc.dim("Restart the Abacus server for this change to take effect."),
+      pc.dim("Restart the RunEach server for this change to take effect."),
     );
   }
 

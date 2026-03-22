@@ -2,11 +2,11 @@ services:
   db:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: abacus
-      POSTGRES_PASSWORD: abacus
-      POSTGRES_DB: abacus
+      POSTGRES_USER: runeach
+      POSTGRES_PASSWORD: runeach
+      POSTGRES_DB: runeach
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U abacus -d abacus"]
+      test: ["CMD-SHELL", "pg_isready -U runeach -d runeach"]
       interval: 2s
       timeout: 5s
       retries: 30
@@ -20,19 +20,19 @@ services:
     ports:
       - "3100:3100"
     environment:
-      DATABASE_URL: postgres://abacus:abacus@db:5432/abacus
+      DATABASE_URL: postgres://runeach:runeach@db:5432/runeach
       PORT: "3100"
       SERVE_UI: "true"
-      ABACUS_DEPLOYMENT_MODE: "authenticated"
-      ABACUS_DEPLOYMENT_EXPOSURE: "private"
-      ABACUS_PUBLIC_URL: "${ABACUS_PUBLIC_URL:-http://localhost:3100}"
+      RUNEACH_DEPLOYMENT_MODE: "authenticated"
+      RUNEACH_DEPLOYMENT_EXPOSURE: "private"
+      RUNEACH_PUBLIC_URL: "${RUNEACH_PUBLIC_URL:-http://localhost:3100}"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
     volumes:
-      - abacus-data:/abacus
+      - runeach-data:/runeach
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
   pgdata:
-  abacus-data:
+  runeach-data:

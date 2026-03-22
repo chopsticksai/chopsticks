@@ -1,11 +1,11 @@
-import type { AbacusPluginManifestV1 } from "@abacus-lab/plugin-sdk";
+import type { RunEachPluginManifestV1 } from "@runeachai/plugin-sdk";
 
-const manifest: AbacusPluginManifestV1 = {
-  id: "abacus.plugin-authoring-smoke-example",
+const manifest: RunEachPluginManifestV1 = {
+  id: "runeach.plugin-authoring-smoke-example",
   apiVersion: 1,
   version: "0.1.0",
   displayName: "Plugin Authoring Smoke Example",
-  description: "A Abacus plugin",
+  description: "A RunEach plugin",
   author: "Plugin Author",
   categories: ["connector"],
   capabilities: [

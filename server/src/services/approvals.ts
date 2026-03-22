@@ -1,6 +1,6 @@
 import { and, asc, eq, inArray } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
-import { approvalComments, approvals } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
+import { approvalComments, approvals } from "@runeachai/db";
 import { notFound, unprocessable } from "../errors.js";
 import { redactCurrentUserText } from "../log-redaction.js";
 import { agentService } from "./agents.js";

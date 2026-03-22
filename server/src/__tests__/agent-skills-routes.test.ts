@@ -139,9 +139,9 @@ describe("agent skill routes", () => {
     mockSecretService.resolveAdapterConfigForRuntime.mockResolvedValue({ config: { env: {} } });
     mockCompanySkillService.listRuntimeSkillEntries.mockResolvedValue([
       {
-        key: "abacus-lab/abacus/abacus",
-        runtimeName: "abacus",
-        source: "/tmp/abacus",
+        key: "runeachai/runeach/runeach",
+        runtimeName: "runeach",
+        source: "/tmp/runeach",
         required: true,
         requiredReason: "required",
       },
@@ -149,8 +149,8 @@ describe("agent skill routes", () => {
     mockCompanySkillService.resolveRequestedSkillKeys.mockImplementation(
       async (_companyId: string, requested: string[]) =>
         requested.map((value) =>
-          value === "abacus"
-            ? "abacus-lab/abacus/abacus"
+          value === "runeach"
+            ? "runeachai/runeach/runeach"
             : value,
         ),
     );
@@ -158,7 +158,7 @@ describe("agent skill routes", () => {
       adapterType: "claude_local",
       supported: true,
       mode: "ephemeral",
-      desiredSkills: ["abacus-lab/abacus/abacus"],
+      desiredSkills: ["runeachai/runeach/runeach"],
       entries: [],
       warnings: [],
     });
@@ -166,7 +166,7 @@ describe("agent skill routes", () => {
       adapterType: "claude_local",
       supported: true,
       mode: "ephemeral",
-      desiredSkills: ["abacus-lab/abacus/abacus"],
+      desiredSkills: ["runeachai/runeach/runeach"],
       entries: [],
       warnings: [],
     });
@@ -225,7 +225,7 @@ describe("agent skill routes", () => {
       expect.objectContaining({
         adapterType: "claude_local",
         config: expect.objectContaining({
-          abacusRuntimeSkills: expect.any(Array),
+          runeachRuntimeSkills: expect.any(Array),
         }),
       }),
     );
@@ -237,7 +237,7 @@ describe("agent skill routes", () => {
       adapterType: "codex_local",
       supported: true,
       mode: "persistent",
-      desiredSkills: ["abacus-lab/abacus/abacus"],
+      desiredSkills: ["runeachai/runeach/runeach"],
       entries: [],
       warnings: [],
     });
@@ -256,7 +256,7 @@ describe("agent skill routes", () => {
 
     const res = await request(createApp())
       .post("/api/agents/11111111-1111-4111-8111-111111111111/skills/sync?companyId=company-1")
-      .send({ desiredSkills: ["abacus-lab/abacus/abacus"] });
+      .send({ desiredSkills: ["runeachai/runeach/runeach"] });
 
     expect(res.status, JSON.stringify(res.body)).toBe(200);
     expect(mockCompanySkillService.listRuntimeSkillEntries).toHaveBeenCalledWith("company-1", {
@@ -270,16 +270,16 @@ describe("agent skill routes", () => {
 
     const res = await request(createApp())
       .post("/api/agents/11111111-1111-4111-8111-111111111111/skills/sync?companyId=company-1")
-      .send({ desiredSkills: ["abacus"] });
+      .send({ desiredSkills: ["runeach"] });
 
     expect(res.status, JSON.stringify(res.body)).toBe(200);
-    expect(mockCompanySkillService.resolveRequestedSkillKeys).toHaveBeenCalledWith("company-1", ["abacus"]);
+    expect(mockCompanySkillService.resolveRequestedSkillKeys).toHaveBeenCalledWith("company-1", ["runeach"]);
     expect(mockAgentService.update).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
         adapterConfig: expect.objectContaining({
-          abacusSkillSync: expect.objectContaining({
-            desiredSkills: ["abacus-lab/abacus/abacus"],
+          runeachSkillSync: expect.objectContaining({
+            desiredSkills: ["runeachai/runeach/runeach"],
           }),
         }),
       }),
@@ -294,18 +294,18 @@ describe("agent skill routes", () => {
         name: "QA Agent",
         role: "engineer",
         adapterType: "claude_local",
-        desiredSkills: ["abacus"],
+        desiredSkills: ["runeach"],
         adapterConfig: {},
       });
 
     expect(res.status, JSON.stringify(res.body)).toBe(201);
-    expect(mockCompanySkillService.resolveRequestedSkillKeys).toHaveBeenCalledWith("company-1", ["abacus"]);
+    expect(mockCompanySkillService.resolveRequestedSkillKeys).toHaveBeenCalledWith("company-1", ["runeach"]);
     expect(mockAgentService.create).toHaveBeenCalledWith(
       "company-1",
       expect.objectContaining({
         adapterConfig: expect.objectContaining({
-          abacusSkillSync: expect.objectContaining({
-            desiredSkills: ["abacus-lab/abacus/abacus"],
+          runeachSkillSync: expect.objectContaining({
+            desiredSkills: ["runeachai/runeach/runeach"],
           }),
         }),
       }),
@@ -410,19 +410,19 @@ describe("agent skill routes", () => {
         name: "QA Agent",
         role: "engineer",
         adapterType: "claude_local",
-        desiredSkills: ["abacus"],
+        desiredSkills: ["runeach"],
         adapterConfig: {},
       });
 
     expect(res.status, JSON.stringify(res.body)).toBe(201);
-    expect(mockCompanySkillService.resolveRequestedSkillKeys).toHaveBeenCalledWith("company-1", ["abacus"]);
+    expect(mockCompanySkillService.resolveRequestedSkillKeys).toHaveBeenCalledWith("company-1", ["runeach"]);
     expect(mockApprovalService.create).toHaveBeenCalledWith(
       "company-1",
       expect.objectContaining({
         payload: expect.objectContaining({
-          desiredSkills: ["abacus-lab/abacus/abacus"],
+          desiredSkills: ["runeachai/runeach/runeach"],
           requestedConfigurationSnapshot: expect.objectContaining({
-            desiredSkills: ["abacus-lab/abacus/abacus"],
+            desiredSkills: ["runeachai/runeach/runeach"],
           }),
         }),
       }),

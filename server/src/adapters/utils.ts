@@ -17,16 +17,16 @@ export {
   resolvePathValue,
   renderTemplate,
   redactEnvForLogs,
-  buildAbacusEnv,
+  buildRunEachEnv,
   defaultPathForPlatform,
   ensurePathInEnv,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
-} from "@abacus-lab/adapter-utils/server-utils";
+} from "@runeachai/adapter-utils/server-utils";
 
 // Re-export runChildProcess with the server's pino logger wired in.
-import { runChildProcess as _runChildProcess } from "@abacus-lab/adapter-utils/server-utils";
-import type { RunProcessResult } from "@abacus-lab/adapter-utils/server-utils";
+import { runChildProcess as _runChildProcess } from "@runeachai/adapter-utils/server-utils";
+import type { RunProcessResult } from "@runeachai/adapter-utils/server-utils";
 
 export async function runChildProcess(
   runId: string,

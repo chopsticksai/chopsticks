@@ -1,4 +1,4 @@
-import type { AgentAdapterType, JoinRequest } from "@abacus-lab/shared";
+import type { AgentAdapterType, JoinRequest } from "@runeachai/shared";
 import { api } from "./client";
 
 type InviteSummary = {

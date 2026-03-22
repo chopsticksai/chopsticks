@@ -5,14 +5,14 @@ import { fileURLToPath } from "node:url";
 import type {
   AdapterSkillContext,
   AdapterSkillSnapshot,
-} from "@abacus-lab/adapter-utils";
+} from "@runeachai/adapter-utils";
 import {
   buildPersistentSkillSnapshot,
-  ensureAbacusSkillSymlink,
-  readAbacusRuntimeSkillEntries,
+  ensureRunEachSkillSymlink,
+  readRunEachRuntimeSkillEntries,
   readInstalledSkillTargets,
-  resolveAbacusDesiredSkillNames,
-} from "@abacus-lab/adapter-utils/server-utils";
+  resolveRunEachDesiredSkillNames,
+} from "@runeachai/adapter-utils/server-utils";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -31,8 +31,8 @@ function resolveOpenCodeSkillsHome(config: Record<string, unknown>) {
 }
 
 async function buildOpenCodeSkillSnapshot(config: Record<string, unknown>): Promise<AdapterSkillSnapshot> {
-  const availableEntries = await readAbacusRuntimeSkillEntries(config, __moduleDir);
-  const desiredSkills = resolveAbacusDesiredSkillNames(config, availableEntries);
+  const availableEntries = await readRunEachRuntimeSkillEntries(config, __moduleDir);
+  const desiredSkills = resolveRunEachDesiredSkillNames(config, availableEntries);
   const skillsHome = resolveOpenCodeSkillsHome(config);
   const installed = await readInstalledSkillTargets(skillsHome);
   return buildPersistentSkillSnapshot({
@@ -45,7 +45,7 @@ async function buildOpenCodeSkillSnapshot(config: Record<string, unknown>): Prom
     installedDetail: "Installed in the shared Claude/OpenCode skills home.",
     missingDetail: "Configured but not currently linked into the shared Claude/OpenCode skills home.",
     externalConflictDetail: "Skill name is occupied by an external installation in the shared skills home.",
-    externalDetail: "Installed outside Abacus management in the shared skills home.",
+    externalDetail: "Installed outside RunEach management in the shared skills home.",
     warnings: [
       "OpenCode currently uses the shared Claude skills home (~/.claude/skills).",
     ],
@@ -60,7 +60,7 @@ export async function syncOpenCodeSkills(
   ctx: AdapterSkillContext,
   desiredSkills: string[],
 ): Promise<AdapterSkillSnapshot> {
-  const availableEntries = await readAbacusRuntimeSkillEntries(ctx.config, __moduleDir);
+  const availableEntries = await readRunEachRuntimeSkillEntries(ctx.config, __moduleDir);
   const desiredSet = new Set([
     ...desiredSkills,
     ...availableEntries.filter((entry) => entry.required).map((entry) => entry.key),
@@ -73,7 +73,7 @@ export async function syncOpenCodeSkills(
   for (const available of availableEntries) {
     if (!desiredSet.has(available.key)) continue;
     const target = path.join(skillsHome, available.runtimeName);
-    await ensureAbacusSkillSymlink(available.source, target);
+    await ensureRunEachSkillSymlink(available.source, target);
   }
 
   for (const [name, installedEntry] of installed.entries()) {
@@ -91,5 +91,5 @@ export function resolveOpenCodeDesiredSkillNames(
   config: Record<string, unknown>,
   availableEntries: Array<{ key: string; required?: boolean }>,
 ) {
-  return resolveAbacusDesiredSkillNames(config, availableEntries);
+  return resolveRunEachDesiredSkillNames(config, availableEntries);
 }

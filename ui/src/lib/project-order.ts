@@ -1,7 +1,7 @@
-import type { Project } from "@abacus-lab/shared";
+import type { Project } from "@runeachai/shared";
 
-export const PROJECT_ORDER_UPDATED_EVENT = "abacus:project-order-updated";
-const PROJECT_ORDER_STORAGE_PREFIX = "abacus.projectOrder";
+export const PROJECT_ORDER_UPDATED_EVENT = "runeach:project-order-updated";
+const PROJECT_ORDER_STORAGE_PREFIX = "runeach.projectOrder";
 const ANONYMOUS_USER_ID = "anonymous";
 
 type ProjectOrderUpdatedDetail = {

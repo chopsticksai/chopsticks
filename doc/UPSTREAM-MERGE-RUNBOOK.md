@@ -3,7 +3,7 @@
 ## Summary
 
 This runbook is the operational checklist for merging upstream
-`paperclipai/paperclip` changes into the `abacus-lab/abacus`  fork.
+`paperclipai/paperclip` changes into the `runeachai/runeach`  fork.
 
 Use this document to answer:
 
@@ -19,7 +19,7 @@ This document is procedural. For normative rules, see:
 ## Terminology
 
 - `upstream`: the canonical Paperclip repo, default remote `origin`
-- `private fork`: the Abacus repo, default remote `private`
+- `private fork`: the RunEach repo, default remote `private`
 - `base branch`: the private-fork comparison target, usually `private/master`
 - `UI-localized`: localized per [`doc/UI-LOCALIZATION.md`](./UI-LOCALIZATION.md)
 
@@ -90,7 +90,7 @@ git merge origin/master
   exceptions, and post-merge requirements.
 - Use [`doc/UI-LOCALIZATION.md`](./UI-LOCALIZATION.md) for any user-visible UI
   copy introduced or changed by the merge.
-- Keep upstream behavior changes while re-applying Abacus naming and
+- Keep upstream behavior changes while re-applying RunEach naming and
   existing repository invariants.
 
 ### 6. Run Rename Audit

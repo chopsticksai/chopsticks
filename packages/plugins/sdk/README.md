@@ -1,12 +1,12 @@
-# `@abacus-lab/plugin-sdk`
+# `@runeachai/plugin-sdk`
 
-Official TypeScript SDK for Abacus plugin authors.
+Official TypeScript SDK for RunEach plugin authors.
 
-- **Worker SDK:** `@abacus-lab/plugin-sdk` — `definePlugin`, context, lifecycle
-- **UI SDK:** `@abacus-lab/plugin-sdk/ui` — React hooks and slot props
-- **Testing:** `@abacus-lab/plugin-sdk/testing` — in-memory host harness
-- **Bundlers:** `@abacus-lab/plugin-sdk/bundlers` — esbuild/rollup presets
-- **Dev server:** `@abacus-lab/plugin-sdk/dev-server` — static UI server + SSE reload
+- **Worker SDK:** `@runeachai/plugin-sdk` — `definePlugin`, context, lifecycle
+- **UI SDK:** `@runeachai/plugin-sdk/ui` — React hooks and slot props
+- **Testing:** `@runeachai/plugin-sdk/testing` — in-memory host harness
+- **Bundlers:** `@runeachai/plugin-sdk/bundlers` — esbuild/rollup presets
+- **Dev server:** `@runeachai/plugin-sdk/dev-server` — static UI server + SSE reload
 
 Reference: `doc/plugins/PLUGIN_SPEC.md`
 
@@ -14,15 +14,15 @@ Reference: `doc/plugins/PLUGIN_SPEC.md`
 
 | Import | Purpose |
 |--------|--------|
-| `@abacus-lab/plugin-sdk` | Worker entry: `definePlugin`, `runWorker`, context types, protocol helpers |
-| `@abacus-lab/plugin-sdk/ui` | UI entry: `usePluginData`, `usePluginAction`, `usePluginStream`, `useHostContext`, slot prop types |
-| `@abacus-lab/plugin-sdk/ui/hooks` | Hooks only |
-| `@abacus-lab/plugin-sdk/ui/types` | UI types and slot prop interfaces |
-| `@abacus-lab/plugin-sdk/testing` | `createTestHarness` for unit/integration tests |
-| `@abacus-lab/plugin-sdk/bundlers` | `createPluginBundlerPresets` for worker/manifest/ui builds |
-| `@abacus-lab/plugin-sdk/dev-server` | `startPluginDevServer`, `getUiBuildSnapshot` |
-| `@abacus-lab/plugin-sdk/protocol` | JSON-RPC protocol types and helpers (advanced) |
-| `@abacus-lab/plugin-sdk/types` | Worker context and API types (advanced) |
+| `@runeachai/plugin-sdk` | Worker entry: `definePlugin`, `runWorker`, context types, protocol helpers |
+| `@runeachai/plugin-sdk/ui` | UI entry: `usePluginData`, `usePluginAction`, `usePluginStream`, `useHostContext`, slot prop types |
+| `@runeachai/plugin-sdk/ui/hooks` | Hooks only |
+| `@runeachai/plugin-sdk/ui/types` | UI types and slot prop interfaces |
+| `@runeachai/plugin-sdk/testing` | `createTestHarness` for unit/integration tests |
+| `@runeachai/plugin-sdk/bundlers` | `createPluginBundlerPresets` for worker/manifest/ui builds |
+| `@runeachai/plugin-sdk/dev-server` | `startPluginDevServer`, `getUiBuildSnapshot` |
+| `@runeachai/plugin-sdk/protocol` | JSON-RPC protocol types and helpers (advanced) |
+| `@runeachai/plugin-sdk/types` | Worker context and API types (advanced) |
 
 ## Manifest entrypoints
 
@@ -34,7 +34,7 @@ In your plugin manifest you declare:
 ## Install
 
 ```bash
-pnpm add @abacus-lab/plugin-sdk
+pnpm add @runeachai/plugin-sdk
 ```
 
 ## Current deployment caveats
@@ -42,9 +42,9 @@ pnpm add @abacus-lab/plugin-sdk
 The SDK is stable enough for local development and first-party examples, but the runtime deployment model is still early.
 
 - Plugin workers and plugin UI should both be treated as trusted code today.
-- Plugin UI bundles run as same-origin JavaScript inside the main Abacus app. They can call ordinary Abacus HTTP APIs with the board session, so manifest capabilities are not a frontend sandbox.
+- Plugin UI bundles run as same-origin JavaScript inside the main RunEach app. They can call ordinary RunEach HTTP APIs with the board session, so manifest capabilities are not a frontend sandbox.
 - Local-path installs and the repo example plugins are development workflows. They assume the plugin source checkout exists on disk.
-- For deployed plugins, publish an npm package and install that package into the Abacus instance at runtime.
+- For deployed plugins, publish an npm package and install that package into the RunEach instance at runtime.
 - The current host runtime expects a writable filesystem, `npm` available at runtime, and network access to the package registry used for plugin installation.
 - Dynamic plugin install is currently best suited to single-node persistent deployments. Multi-instance cloud deployments still need a shared artifact/distribution model before runtime installs are reliable across nodes.
 - The host does not currently ship a real shared React component kit for plugins. Build your plugin UI with ordinary React components and CSS.
@@ -55,7 +55,7 @@ If you are authoring a plugin for others to deploy, treat npm-packaged installat
 ## Worker quick start
 
 ```ts
-import { definePlugin, runWorker } from "@abacus-lab/plugin-sdk";
+import { definePlugin, runWorker } from "@runeachai/plugin-sdk";
 
 const plugin = definePlugin({
   async setup(ctx) {
@@ -218,7 +218,7 @@ The same set of values is used as **slot types** (where a component mounts) and 
 
 **Scope** describes whether the slot requires an entity to render. **Global** slots render without a specific entity but still receive the active `companyId` through `PluginHostContext` — use it to scope data fetches to the current company. **Entity** slots additionally require `entityId` and `entityType` (e.g. a detail tab on a specific issue).
 
-**Entity types** (for `entityTypes` on slots): `project` \| `issue` \| `agent` \| `goal` \| `run` \| `comment`. Full list: import `PLUGIN_UI_SLOT_TYPES` and `PLUGIN_UI_SLOT_ENTITY_TYPES` from `@abacus-lab/plugin-sdk`.
+**Entity types** (for `entityTypes` on slots): `project` \| `issue` \| `agent` \| `goal` \| `run` \| `comment`. Full list: import `PLUGIN_UI_SLOT_TYPES` and `PLUGIN_UI_SLOT_ENTITY_TYPES` from `@runeachai/plugin-sdk`.
 
 ### Slot component descriptions
 
@@ -240,7 +240,7 @@ Replaces the auto-generated JSON Schema settings form with a custom React compon
 
 #### `dashboardWidget`
 
-A card or section rendered on the main dashboard. Use this for at-a-glance metrics, status indicators, or summary views that surface plugin data alongside core Abacus information. Receives `PluginWidgetProps` with `context.companyId` set to the active company. Requires the `ui.dashboardWidget.register` capability.
+A card or section rendered on the main dashboard. Use this for at-a-glance metrics, status indicators, or summary views that surface plugin data alongside core RunEach information. Receives `PluginWidgetProps` with `context.companyId` set to the active company. Requires the `ui.dashboardWidget.register` capability.
 
 #### `detailTab`
 
@@ -334,12 +334,12 @@ Declare in `manifest.capabilities`. Grouped by scope:
 | | `ui.commentAnnotation.register` |
 | | `ui.action.register` |
 
-Full list in code: import `PLUGIN_CAPABILITIES` from `@abacus-lab/plugin-sdk`.
+Full list in code: import `PLUGIN_CAPABILITIES` from `@runeachai/plugin-sdk`.
 
 ## UI quick start
 
 ```tsx
-import { usePluginData, usePluginAction } from "@abacus-lab/plugin-sdk/ui";
+import { usePluginData, usePluginAction } from "@runeachai/plugin-sdk/ui";
 
 export function DashboardWidget() {
   const { data } = usePluginData<{ status: string }>("health");
@@ -361,7 +361,7 @@ export function DashboardWidget() {
 Fetches data from the worker's registered `getData` handler. Re-fetches when `params` changes. Returns `{ data, loading, error, refresh }`.
 
 ```tsx
-import { usePluginData } from "@abacus-lab/plugin-sdk/ui";
+import { usePluginData } from "@runeachai/plugin-sdk/ui";
 
 interface SyncStatus {
   lastSyncAt: string;
@@ -394,7 +394,7 @@ Returns an async function that calls the worker's `performAction` handler. Throw
 
 ```tsx
 import { useState } from "react";
-import { usePluginAction, type PluginBridgeError } from "@abacus-lab/plugin-sdk/ui";
+import { usePluginAction, type PluginBridgeError } from "@runeachai/plugin-sdk/ui";
 
 export function ResyncButton({ context }: PluginWidgetProps) {
   const resync = usePluginAction("resync");
@@ -429,8 +429,8 @@ export function ResyncButton({ context }: PluginWidgetProps) {
 Reads the active company, project, entity, and user context. Use this to scope data fetches and actions.
 
 ```tsx
-import { useHostContext, usePluginData } from "@abacus-lab/plugin-sdk/ui";
-import type { PluginDetailTabProps } from "@abacus-lab/plugin-sdk/ui";
+import { useHostContext, usePluginData } from "@runeachai/plugin-sdk/ui";
+import type { PluginDetailTabProps } from "@runeachai/plugin-sdk/ui";
 
 export function IssueLinearLink({ context }: PluginDetailTabProps) {
   const { companyId, entityId, entityType } = context;
@@ -449,7 +449,7 @@ export function IssueLinearLink({ context }: PluginDetailTabProps) {
 Subscribes to a real-time event stream pushed from the plugin worker via SSE. The worker pushes events using `ctx.streams.emit(channel, event)` and the hook receives them as they arrive. Returns `{ events, lastEvent, connecting, connected, error, close }`.
 
 ```tsx
-import { usePluginStream } from "@abacus-lab/plugin-sdk/ui";
+import { usePluginStream } from "@runeachai/plugin-sdk/ui";
 
 interface ChatToken {
   text: string;
@@ -478,7 +478,7 @@ The current host does **not** provide a real shared component library to plugins
 
 ### Slot component props
 
-Each slot type receives a typed props object with `context: PluginHostContext`. Import from `@abacus-lab/plugin-sdk/ui`.
+Each slot type receives a typed props object with `context: PluginHostContext`. Import from `@runeachai/plugin-sdk/ui`.
 
 | Slot type | Props interface | `context` extras |
 |-----------|----------------|------------------|
@@ -496,8 +496,8 @@ Each slot type receives a typed props object with `context: PluginHostContext`. 
 Example detail tab with entity context:
 
 ```tsx
-import type { PluginDetailTabProps } from "@abacus-lab/plugin-sdk/ui";
-import { usePluginData } from "@abacus-lab/plugin-sdk/ui";
+import type { PluginDetailTabProps } from "@runeachai/plugin-sdk/ui";
+import { usePluginData } from "@runeachai/plugin-sdk/ui";
 
 export function AgentMetricsTab({ context }: PluginDetailTabProps) {
   const { data, loading } = usePluginData<Record<string, string>>("agent-metrics", {
@@ -586,7 +586,7 @@ Plugins can add a link under each project in the sidebar via the `projectSidebar
 Minimal React component that links to the project’s plugin tab (see project detail tabs in the spec):
 
 ```tsx
-import type { PluginProjectSidebarItemProps } from "@abacus-lab/plugin-sdk/ui";
+import type { PluginProjectSidebarItemProps } from "@runeachai/plugin-sdk/ui";
 
 export function FilesLink({ context }: PluginProjectSidebarItemProps) {
   const projectId = context.entityId;
@@ -635,7 +635,7 @@ import { useState } from "react";
 import {
   useHostContext,
   usePluginAction,
-} from "@abacus-lab/plugin-sdk/ui";
+} from "@runeachai/plugin-sdk/ui";
 
 export function SyncToolbarButton() {
   const context = useHostContext();
@@ -792,7 +792,7 @@ ctx.actions.register("ask-agent", async (params) => {
 
 ```tsx
 import { useState } from "react";
-import { usePluginAction, usePluginStream } from "@abacus-lab/plugin-sdk/ui";
+import { usePluginAction, usePluginStream } from "@runeachai/plugin-sdk/ui";
 
 interface AgentEvent {
   type: "chunk" | "done" | "error";
@@ -851,7 +851,7 @@ Exported types: `AgentSession`, `AgentSessionEvent`, `AgentSessionSendResult`, `
 ## Testing utilities
 
 ```ts
-import { createTestHarness } from "@abacus-lab/plugin-sdk/testing";
+import { createTestHarness } from "@runeachai/plugin-sdk/testing";
 import plugin from "../src/worker.js";
 import manifest from "../src/manifest.js";
 
@@ -863,7 +863,7 @@ await harness.emit("issue.created", { issueId: "iss_1" }, { entityId: "iss_1", e
 ## Bundler presets
 
 ```ts
-import { createPluginBundlerPresets } from "@abacus-lab/plugin-sdk/bundlers";
+import { createPluginBundlerPresets } from "@runeachai/plugin-sdk/bundlers";
 
 const presets = createPluginBundlerPresets({ uiEntry: "src/ui/index.tsx" });
 // presets.esbuild.worker / presets.esbuild.manifest / presets.esbuild.ui
@@ -873,16 +873,16 @@ const presets = createPluginBundlerPresets({ uiEntry: "src/ui/index.tsx" });
 ## Local dev server (hot-reload events)
 
 ```bash
-abacus-plugin-dev-server --root . --ui-dir dist/ui --port 4177
+runeach-plugin-dev-server --root . --ui-dir dist/ui --port 4177
 ```
 
 Or programmatically:
 
 ```ts
-import { startPluginDevServer } from "@abacus-lab/plugin-sdk/dev-server";
+import { startPluginDevServer } from "@runeachai/plugin-sdk/dev-server";
 const server = await startPluginDevServer({ rootDir: process.cwd() });
 ```
 
 Dev server endpoints:
-- `GET /__abacus__/health` returns `{ ok, rootDir, uiDir }`
-- `GET /__abacus__/events` streams `reload` SSE events on UI build changes
+- `GET /__runeach__/health` returns `{ ok, rootDir, uiDir }`
+- `GET /__runeach__/events` streams `reload` SSE events on UI build changes

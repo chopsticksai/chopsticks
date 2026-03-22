@@ -37,20 +37,20 @@ describe("buildInviteOnboardingTextDocument", () => {
       allowedHostnames: [],
     });
 
-    expect(text).toContain("Abacus OpenClaw Gateway Onboarding");
+    expect(text).toContain("RunEach OpenClaw Gateway Onboarding");
     expect(text).toContain("/api/invites/token-123/accept");
     expect(text).toContain("/api/join-requests/{requestId}/claim-api-key");
     expect(text).toContain("/api/invites/token-123/onboarding.txt");
-    expect(text).toContain("Suggested Abacus base URLs to try");
+    expect(text).toContain("Suggested RunEach base URLs to try");
     expect(text).toContain("http://localhost:3100");
     expect(text).toContain("host.docker.internal");
-    expect(text).toContain("abacusApiUrl");
+    expect(text).toContain("runeachApiUrl");
     expect(text).toContain("adapterType \"openclaw_gateway\"");
     expect(text).toContain("headers.x-openclaw-token");
     expect(text).toContain("Do NOT use /v1/responses or /hooks/*");
-    expect(text).toContain("set the first reachable candidate as agentDefaultsPayload.abacusApiUrl");
-    expect(text).toContain("~/.openclaw/workspace/abacus-claimed-api-key.json");
-    expect(text).toContain("ABACUS_API_KEY");
+    expect(text).toContain("set the first reachable candidate as agentDefaultsPayload.runeachApiUrl");
+    expect(text).toContain("~/.openclaw/workspace/runeach-claimed-api-key.json");
+    expect(text).toContain("RUNEACH_API_KEY");
     expect(text).toContain("saved token field");
     expect(text).toContain("Gateway token unexpectedly short");
   });

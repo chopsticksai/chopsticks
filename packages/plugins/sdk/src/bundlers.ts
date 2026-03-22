@@ -1,5 +1,5 @@
 /**
- * Bundling presets for Abacus plugins.
+ * Bundling presets for RunEach plugins.
  *
  * These helpers return plain config objects so plugin authors can use them
  * with esbuild or rollup without re-implementing host contract defaults.
@@ -56,12 +56,12 @@ export interface PluginBundlerPresets {
  * Build esbuild/rollup baseline configs for plugin worker, manifest, and UI bundles.
  *
  * The presets intentionally externalize host/runtime deps (`react`, SDK packages)
- * to match the Abacus plugin loader contract.
+ * to match the RunEach plugin loader contract.
  */
 export function createPluginBundlerPresets(input: PluginBundlerPresetInput = {}): PluginBundlerPresets {
   const uiExternal = [
-    "@abacus-lab/plugin-sdk/ui",
-    "@abacus-lab/plugin-sdk/ui/hooks",
+    "@runeachai/plugin-sdk/ui",
+    "@runeachai/plugin-sdk/ui/hooks",
     "react",
     "react-dom",
     "react/jsx-runtime",
@@ -129,7 +129,7 @@ export function createPluginBundlerPresets(input: PluginBundlerPresetInput = {})
       sourcemap,
       entryFileNames: "manifest.js",
     },
-    external: ["@abacus-lab/plugin-sdk"],
+    external: ["@runeachai/plugin-sdk"],
   };
 
   const rollupUi = uiEntry

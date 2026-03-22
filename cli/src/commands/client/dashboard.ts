@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import type { DashboardSummary } from "@abacus-lab/shared";
+import type { DashboardSummary } from "@runeachai/shared";
 import {
   addCommonClientOptions,
   handleCommandError,

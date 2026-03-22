@@ -36,12 +36,12 @@
  * @see PLUGIN_SPEC.md §12.5 — Graceful Shutdown Policy
  */
 import { EventEmitter } from "node:events";
-import type { Db } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
 import type {
   PluginStatus,
   PluginRecord,
-  AbacusPluginManifestV1,
-} from "@abacus-lab/shared";
+  RunEachPluginManifestV1,
+} from "@runeachai/shared";
 import { pluginRegistryService } from "./plugin-registry.js";
 import { pluginLoader, type PluginLoader } from "./plugin-loader.js";
 import type { PluginWorkerManager, WorkerStartOptions } from "./plugin-worker-manager.js";

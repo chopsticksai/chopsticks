@@ -1,4 +1,4 @@
-import type { Project, ProjectWorkspace } from "@abacus-lab/shared";
+import type { Project, ProjectWorkspace } from "@runeachai/shared";
 import { api } from "./client";
 
 function withCompanyScope(path: string, companyId?: string) {

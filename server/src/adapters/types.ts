@@ -26,4 +26,4 @@ export type {
   ResolvedSessionCompactionPolicy,
   SessionCompactionPolicy,
   ServerAdapterModule,
-} from "@abacus-lab/adapter-utils";
+} from "@runeachai/adapter-utils";

@@ -2,13 +2,13 @@
  * Shared attachment content-type configuration.
  *
  * By default only image types are allowed.  Set the
- * `ABACUS_ALLOWED_ATTACHMENT_TYPES` environment variable to a
+ * `RUNEACH_ALLOWED_ATTACHMENT_TYPES` environment variable to a
  * comma-separated list of MIME types or wildcard patterns to expand the
  * allowed set.
  *
  * Examples:
- *   ABACUS_ALLOWED_ATTACHMENT_TYPES=image/*,application/pdf
- *   ABACUS_ALLOWED_ATTACHMENT_TYPES=image/*,application/pdf,text/*
+ *   RUNEACH_ALLOWED_ATTACHMENT_TYPES=image/*,application/pdf
+ *   RUNEACH_ALLOWED_ATTACHMENT_TYPES=image/*,application/pdf,text/*
  *
  * Supported pattern syntax:
  *   - Exact types:   "application/pdf"
@@ -62,7 +62,7 @@ export function matchesContentType(contentType: string, allowedPatterns: string[
 // ---------- Module-level singletons read once at startup ----------
 
 const allowedPatterns: string[] = parseAllowedTypes(
-  process.env.ABACUS_ALLOWED_ATTACHMENT_TYPES,
+  process.env.RUNEACH_ALLOWED_ATTACHMENT_TYPES,
 );
 
 /** Convenience wrapper using the process-level allowed list. */
@@ -71,4 +71,4 @@ export function isAllowedContentType(contentType: string): boolean {
 }
 
 export const MAX_ATTACHMENT_BYTES =
-  Number(process.env.ABACUS_ATTACHMENT_MAX_BYTES) || 10 * 1024 * 1024;
+  Number(process.env.RUNEACH_ATTACHMENT_MAX_BYTES) || 10 * 1024 * 1024;

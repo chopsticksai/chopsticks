@@ -1,9 +1,9 @@
 import * as p from "@clack/prompts";
 import type { StorageConfig } from "../config/schema.js";
-import { resolveDefaultStorageDir, resolveAbacusInstanceId } from "../config/home.js";
+import { resolveDefaultStorageDir, resolveRunEachInstanceId } from "../config/home.js";
 
 function defaultStorageBaseDir(): string {
-  return resolveDefaultStorageDir(resolveAbacusInstanceId());
+  return resolveDefaultStorageDir(resolveRunEachInstanceId());
 }
 
 export function defaultStorageConfig(): StorageConfig {
@@ -13,7 +13,7 @@ export function defaultStorageConfig(): StorageConfig {
       baseDir: defaultStorageBaseDir(),
     },
     s3: {
-      bucket: "abacus",
+      bucket: "runeach",
       region: "us-east-1",
       endpoint: undefined,
       prefix: "",
@@ -73,8 +73,8 @@ export async function promptStorage(current?: StorageConfig): Promise<StorageCon
 
   const bucket = await p.text({
     message: "S3 bucket",
-    defaultValue: base.s3.bucket || "abacus",
-    placeholder: "abacus",
+    defaultValue: base.s3.bucket || "runeach",
+    placeholder: "runeach",
     validate: (value) => {
       if (!value || value.trim().length === 0) return "Bucket is required";
     },
@@ -113,7 +113,7 @@ export async function promptStorage(current?: StorageConfig): Promise<StorageCon
   const prefix = await p.text({
     message: "Object key prefix (optional)",
     defaultValue: base.s3.prefix ?? "",
-    placeholder: "abacus/",
+    placeholder: "runeach/",
   });
 
   if (p.isCancel(prefix)) {

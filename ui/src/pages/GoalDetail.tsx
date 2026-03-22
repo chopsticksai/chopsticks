@@ -20,7 +20,7 @@ import { projectUrl } from "../lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus } from "lucide-react";
-import type { Goal, Project } from "@abacus-lab/shared";
+import type { Goal, Project } from "@runeachai/shared";
 
 export function GoalDetail() {
   const { t } = useI18n();

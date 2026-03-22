@@ -9,12 +9,12 @@ describe("applyAgentSkillSnapshot", () => {
         lastSaved: [],
         hasHydratedSnapshot: false,
       },
-      ["abacus", "para-memory-files"],
+      ["runeach", "para-memory-files"],
     );
 
     expect(result).toEqual({
-      draft: ["abacus", "para-memory-files"],
-      lastSaved: ["abacus", "para-memory-files"],
+      draft: ["runeach", "para-memory-files"],
+      lastSaved: ["runeach", "para-memory-files"],
       hasHydratedSnapshot: true,
       shouldSkipAutosave: true,
     });
@@ -23,16 +23,16 @@ describe("applyAgentSkillSnapshot", () => {
   it("keeps unsaved local edits when a fresh snapshot arrives", () => {
     const result = applyAgentSkillSnapshot(
       {
-        draft: ["abacus", "custom-skill"],
-        lastSaved: ["abacus"],
+        draft: ["runeach", "custom-skill"],
+        lastSaved: ["runeach"],
         hasHydratedSnapshot: true,
       },
-      ["abacus"],
+      ["runeach"],
     );
 
     expect(result).toEqual({
-      draft: ["abacus", "custom-skill"],
-      lastSaved: ["abacus"],
+      draft: ["runeach", "custom-skill"],
+      lastSaved: ["runeach"],
       hasHydratedSnapshot: true,
       shouldSkipAutosave: false,
     });
@@ -41,16 +41,16 @@ describe("applyAgentSkillSnapshot", () => {
   it("adopts server state after a successful save and skips the follow-up autosave pass", () => {
     const result = applyAgentSkillSnapshot(
       {
-        draft: ["abacus", "custom-skill"],
-        lastSaved: ["abacus", "custom-skill"],
+        draft: ["runeach", "custom-skill"],
+        lastSaved: ["runeach", "custom-skill"],
         hasHydratedSnapshot: true,
       },
-      ["abacus", "custom-skill"],
+      ["runeach", "custom-skill"],
     );
 
     expect(result).toEqual({
-      draft: ["abacus", "custom-skill"],
-      lastSaved: ["abacus", "custom-skill"],
+      draft: ["runeach", "custom-skill"],
+      lastSaved: ["runeach", "custom-skill"],
       hasHydratedSnapshot: true,
       shouldSkipAutosave: true,
     });
@@ -64,18 +64,18 @@ describe("applyAgentSkillSnapshot", () => {
       managed: false,
       state: "external",
       origin: "user_installed",
-    }, new Set(["abacus"]))).toBe(true);
+    }, new Set(["runeach"]))).toBe(true);
   });
 
   it("keeps company-library entries in the managed section even when the adapter reports an external conflict", () => {
     expect(isReadOnlyUnmanagedSkillEntry({
-      key: "abacus",
-      runtimeName: "abacus",
+      key: "runeach",
+      runtimeName: "runeach",
       desired: true,
       managed: false,
       state: "external",
       origin: "company_managed",
-    }, new Set(["abacus"]))).toBe(false);
+    }, new Set(["runeach"]))).toBe(false);
   });
 
   it("falls back to legacy snapshots that only mark unmanaged external entries", () => {

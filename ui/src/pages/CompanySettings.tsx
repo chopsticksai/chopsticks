@@ -591,35 +591,35 @@ function buildAgentSnippet(
 
   const connectivityBlock =
     candidateUrls.length === 0
-      ? `${t("No candidate URLs are available. Ask your user to configure a reachable hostname in Abacus, then retry.")}
+      ? `${t("No candidate URLs are available. Ask your user to configure a reachable hostname in RunEach, then retry.")}
 ${t("Suggested steps:")}
-- ${t("choose a hostname that resolves to the Abacus host from your runtime")}
-- ${t("run: pnpm abacus-lab allowed-hostname <host>")}
-- ${t("restart Abacus")}
+- ${t("choose a hostname that resolves to the RunEach host from your runtime")}
+- ${t("run: pnpm runeachai allowed-hostname <host>")}
+- ${t("restart RunEach")}
 - ${t("verify with: curl -fsS http://<host>:3100/api/health")}
 - ${t("regenerate this invite snippet")}`
-      : `${t("If none are reachable, ask your user to add a reachable hostname in Abacus, restart, and retry.")}
+      : `${t("If none are reachable, ask your user to add a reachable hostname in RunEach, restart, and retry.")}
 ${t("Suggested command:")}
-- ${t("pnpm abacus-lab allowed-hostname <host>")}
+- ${t("pnpm runeachai allowed-hostname <host>")}
 ${t("Then verify with: curl -fsS <base-url>/api/health")}`;
 
   const resolutionLine = resolutionTestUrl
-    ? `\nYou MUST test Abacus-to-gateway reachability, call: ${resolutionTestUrl}?url=<urlencoded-gateway-url> (using the hostname that worked above). Do not assume your 172.x is necessarily reachable from Abacus. Test it. `
+    ? `\nYou MUST test RunEach-to-gateway reachability, call: ${resolutionTestUrl}?url=<urlencoded-gateway-url> (using the hostname that worked above). Do not assume your 172.x is necessarily reachable from RunEach. Test it. `
     : "";
 
-  return `${t("You're invited to join an Abacus organization.")}
+  return `${t("You're invited to join an RunEach organization.")}
 
 ${t("The URLs you should try are:")}
 ${candidateList}
 
 ${t("Connectivity guidance:")}
-${t("If you are running on a different machine than Abacus, Abacus must be reachable at one of the hostnames used above.")}
+${t("If you are running on a different machine than RunEach, RunEach must be reachable at one of the hostnames used above.")}
 ${t("Verify the hostname works from your runtime with: GET <base-url>/api/health")}
 
 ${connectivityBlock}
 
 ${t("For your \"agentName\", just use your own agent name (OpenClaw or whatever your name is) and send it directly.")}
-${t("You also need to send a gateway URL that Abacus can access. Check your config and include that URL.")}${resolutionLine}
+${t("You also need to send a gateway URL that RunEach can access. Check your config and include that URL.")}${resolutionLine}
 
 ---
 
@@ -629,14 +629,14 @@ ${t("When you submit the join request, use:")}
 - \`agentDefaultsPayload.url\` as your \`ws://\` or \`wss://\` gateway URL
 - \`agentDefaultsPayload.headers["x-openclaw-token"]\` with your gateway token
 - (legacy accepted) \`agentDefaultsPayload.headers["x-openclaw-auth"]\`
-${t("Keep device auth enabled (recommended). If `devicePrivateKeyPem` is omitted, Abacus will generate and persist one during join so pairing approvals remain stable.")}
+${t("Keep device auth enabled (recommended). If `devicePrivateKeyPem` is omitted, RunEach will generate and persist one during join so pairing approvals remain stable.")}
 ${t("Only use `disableDeviceAuth=true` for special environments where pairing cannot be completed.")}
 
 ${t("Do NOT use `/v1/responses` or `/hooks/*` in this join flow.")}
 
-${t("Before you do anything, please respond to your user that you understand the instructions and you're going to work on them. Then do the step above in another session called \"abacus-onboarding\" and then tell your user when you're done. Update your user in intermediate steps along the way so they know what's going on.")}
+${t("Before you do anything, please respond to your user that you understand the instructions and you're going to work on them. Then do the step above in another session called \"runeach-onboarding\" and then tell your user when you're done. Update your user in intermediate steps along the way so they know what's going on.")}
 
-${t("Then after you've connected to Abacus (exchanged keys etc.) you MUST review and follow the onboarding instructions in onboarding.txt they give you.")}
+${t("Then after you've connected to RunEach (exchanged keys etc.) you MUST review and follow the onboarding instructions in onboarding.txt they give you.")}
 
 `;
 }

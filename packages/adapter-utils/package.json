@@ -1,14 +1,14 @@
 {
-  "name": "@abacus-lab/adapter-utils",
+  "name": "@runeachai/adapter-utils",
   "version": "0.3.1",
   "license": "MIT",
-  "homepage": "https://github.com/abacus-lab/abacus",
+  "homepage": "https://github.com/runeachai/runeach",
   "bugs": {
-    "url": "https://github.com/abacus-lab/abacus/issues"
+    "url": "https://github.com/runeachai/runeach/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/abacus-lab/abacus",
+    "url": "https://github.com/runeachai/runeach",
     "directory": "packages/adapter-utils"
   },
   "type": "module",

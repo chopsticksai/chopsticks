@@ -160,7 +160,7 @@ export type AdapterSkillState =
 
 export type AdapterSkillOrigin =
   | "company_managed"
-  | "abacus_required"
+  | "runeach_required"
   | "user_installed"
   | "external_unknown";
 

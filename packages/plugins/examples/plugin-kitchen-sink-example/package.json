@@ -1,13 +1,13 @@
 {
-  "name": "@abacus-lab/plugin-kitchen-sink-example",
+  "name": "@runeachai/plugin-kitchen-sink-example",
   "version": "0.1.0",
-  "description": "Reference plugin that demonstrates the full Abacus plugin surface area in one package",
+  "description": "Reference plugin that demonstrates the full RunEach plugin surface area in one package",
   "type": "module",
   "private": true,
   "exports": {
     ".": "./src/index.ts"
   },
-  "abacusPlugin": {
+  "runeachPlugin": {
     "manifest": "./dist/manifest.js",
     "worker": "./dist/worker.js",
     "ui": "./dist/ui/"
@@ -16,11 +16,11 @@
     "prebuild": "node ../../../../scripts/ensure-plugin-build-deps.mjs",
     "build": "tsc && node ./scripts/build-ui.mjs",
     "clean": "rm -rf dist",
-    "typecheck": "pnpm --filter @abacus-lab/plugin-sdk build && tsc --noEmit"
+    "typecheck": "pnpm --filter @runeachai/plugin-sdk build && tsc --noEmit"
   },
   "dependencies": {
-    "@abacus-lab/plugin-sdk": "workspace:*",
-    "@abacus-lab/shared": "workspace:*"
+    "@runeachai/plugin-sdk": "workspace:*",
+    "@runeachai/shared": "workspace:*"
   },
   "devDependencies": {
     "esbuild": "^0.27.3",

@@ -1,9 +1,9 @@
 import { randomInt } from "node:crypto";
 import path from "node:path";
-import type { AbacusConfig } from "../config/schema.js";
+import type { RunEachConfig } from "../config/schema.js";
 import { expandHomePrefix } from "../config/home.js";
 
-export const DEFAULT_WORKTREE_HOME = "~/.abacus-worktrees";
+export const DEFAULT_WORKTREE_HOME = "~/.runeach-worktrees";
 export const WORKTREE_SEED_MODES = ["minimal", "full"] as const;
 
 export type WorktreeSeedMode = (typeof WORKTREE_SEED_MODES)[number];
@@ -146,7 +146,7 @@ export function resolveWorktreeLocalPaths(opts: {
   const cwd = path.resolve(opts.cwd);
   const homeDir = path.resolve(expandHomePrefix(opts.homeDir ?? DEFAULT_WORKTREE_HOME));
   const instanceRoot = path.resolve(homeDir, "instances", opts.instanceId);
-  const repoConfigDir = path.resolve(cwd, ".abacus");
+  const repoConfigDir = path.resolve(cwd, ".runeach");
   return {
     cwd,
     repoConfigDir,
@@ -177,12 +177,12 @@ export function rewriteLocalUrlPort(rawUrl: string | undefined, port: number): s
 }
 
 export function buildWorktreeConfig(input: {
-  sourceConfig: AbacusConfig | null;
+  sourceConfig: RunEachConfig | null;
   paths: WorktreeLocalPaths;
   serverPort: number;
   databasePort: number;
   now?: Date;
-}): AbacusConfig {
+}): RunEachConfig {
   const { sourceConfig, paths, serverPort, databasePort } = input;
   const nowIso = (input.now ?? new Date()).toISOString();
 
@@ -230,7 +230,7 @@ export function buildWorktreeConfig(input: {
         baseDir: paths.storageDir,
       },
       s3: {
-        bucket: source?.storage.s3.bucket ?? "abacus",
+        bucket: source?.storage.s3.bucket ?? "runeach",
         region: source?.storage.s3.region ?? "us-east-1",
         endpoint: source?.storage.s3.endpoint,
         prefix: source?.storage.s3.prefix ?? "",
@@ -252,13 +252,13 @@ export function buildWorktreeEnvEntries(
   branding?: WorktreeUiBranding,
 ): Record<string, string> {
   return {
-    ABACUS_HOME: paths.homeDir,
-    ABACUS_INSTANCE_ID: paths.instanceId,
-    ABACUS_CONFIG: paths.configPath,
-    ABACUS_CONTEXT: paths.contextPath,
-    ABACUS_IN_WORKTREE: "true",
-    ...(branding?.name ? { ABACUS_WORKTREE_NAME: branding.name } : {}),
-    ...(branding?.color ? { ABACUS_WORKTREE_COLOR: branding.color } : {}),
+    RUNEACH_HOME: paths.homeDir,
+    RUNEACH_INSTANCE_ID: paths.instanceId,
+    RUNEACH_CONFIG: paths.configPath,
+    RUNEACH_CONTEXT: paths.contextPath,
+    RUNEACH_IN_WORKTREE: "true",
+    ...(branding?.name ? { RUNEACH_WORKTREE_NAME: branding.name } : {}),
+    ...(branding?.color ? { RUNEACH_WORKTREE_COLOR: branding.color } : {}),
   };
 }
 

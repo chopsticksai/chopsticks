@@ -50,16 +50,16 @@ function pickReadableTextColor(background: string): string {
 }
 
 export function getWorktreeUiBranding(): WorktreeUiBranding | null {
-  if (readMetaContent("abacus-worktree-enabled") !== "true") return null;
+  if (readMetaContent("runeach-worktree-enabled") !== "true") return null;
 
-  const name = readMetaContent("abacus-worktree-name");
-  const color = normalizeHexColor(readMetaContent("abacus-worktree-color"));
+  const name = readMetaContent("runeach-worktree-name");
+  const color = normalizeHexColor(readMetaContent("runeach-worktree-color"));
   if (!name || !color) return null;
 
   return {
     enabled: true,
     name,
     color,
-    textColor: normalizeHexColor(readMetaContent("abacus-worktree-text-color")) ?? pickReadableTextColor(color),
+    textColor: normalizeHexColor(readMetaContent("runeach-worktree-text-color")) ?? pickReadableTextColor(color),
   };
 }

@@ -10,7 +10,7 @@ import type {
   CompanySkillProjectScanResult,
   CompanySkillSourceBadge,
   CompanySkillUpdateStatus,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { companySkillsApi } from "../api/companySkills";
 import { useCompany } from "../context/CompanyContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
@@ -150,8 +150,8 @@ function sourceMeta(
 ) {
   const normalizedLabel = sourceLabel?.toLowerCase() ?? "";
   const translatedSourceLabel =
-    sourceLabel === "Abacus bundled"
-      ? t("Abacus bundled")
+    sourceLabel === "RunEach bundled"
+      ? t("RunEach bundled")
       : sourceLabel;
   const isSkillsShManaged =
     normalizedLabel.includes("skills.sh") || normalizedLabel.includes("vercel-labs/skills");
@@ -167,8 +167,8 @@ function sourceMeta(
       return { icon: Link2, label: translatedSourceLabel ?? t("URL"), managedLabel: t("URL managed") };
     case "local":
       return { icon: Folder, label: translatedSourceLabel ?? t("Folder"), managedLabel: t("Folder managed") };
-    case "abacus":
-      return { icon: Paperclip, label: translatedSourceLabel ?? t("Abacus"), managedLabel: t("Abacus managed") };
+    case "runeach":
+      return { icon: Paperclip, label: translatedSourceLabel ?? t("RunEach"), managedLabel: t("RunEach managed") };
     default:
       return { icon: Boxes, label: translatedSourceLabel ?? t("Catalog"), managedLabel: t("Catalog managed") };
   }
@@ -902,7 +902,7 @@ export function CompanySkills() {
       pushToast({
         tone: "success",
         title: t("Skill created"),
-        body: t("{name} is now editable in the Abacus workspace.", { name: skill.name }),
+        body: t("{name} is now editable in the RunEach workspace.", { name: skill.name }),
       });
     },
     onError: (error) => {

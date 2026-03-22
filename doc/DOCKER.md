@@ -1,17 +1,17 @@
 # Docker Quickstart
 
-Run Abacus in Docker without installing Node or pnpm locally.
+Run RunEach in Docker without installing Node or pnpm locally.
 
 ## One-liner (build + run)
 
 ```sh
-docker build -t abacus-local . && \
-docker run --name abacus \
+docker build -t runeach-local . && \
+docker run --name runeach \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e ABACUS_HOME=/abacus \
-  -v "$(pwd)/data/docker-abacus:/abacus" \
-  abacus-local
+  -e RUNEACH_HOME=/runeach \
+  -v "$(pwd)/data/docker-runeach:/runeach" \
+  runeach-local
 ```
 
 Open: `http://localhost:3100`
@@ -23,7 +23,7 @@ Data persistence:
 - local secrets key
 - local agent workspace data
 
-All persisted under your bind mount (`./data/docker-abacus` in the example above).
+All persisted under your bind mount (`./data/docker-runeach` in the example above).
 
 ## Compose Quickstart
 
@@ -34,39 +34,39 @@ docker compose -f docker-compose.quickstart.yml up --build
 Defaults:
 
 - host port: `3100`
-- persistent data dir: `./data/docker-abacus`
+- persistent data dir: `./data/docker-runeach`
 
 Optional overrides:
 
 ```sh
-ABACUS_PORT=3200 ABACUS_DATA_DIR=./data/pc docker compose -f docker-compose.quickstart.yml up --build
+RUNEACH_PORT=3200 RUNEACH_DATA_DIR=./data/pc docker compose -f docker-compose.quickstart.yml up --build
 ```
 
-If you change host port or use a non-local domain, set `ABACUS_PUBLIC_URL` to the external URL you will use in browser/auth flows.
+If you change host port or use a non-local domain, set `RUNEACH_PUBLIC_URL` to the external URL you will use in browser/auth flows.
 
 ## Authenticated Compose (Single Public URL)
 
-For authenticated deployments, set one canonical public URL and let Abacus derive auth/callback defaults:
+For authenticated deployments, set one canonical public URL and let RunEach derive auth/callback defaults:
 
 ```yaml
 services:
-  abacus:
+  runeach:
     environment:
-      ABACUS_DEPLOYMENT_MODE: authenticated
-      ABACUS_DEPLOYMENT_EXPOSURE: private
-      ABACUS_PUBLIC_URL: https://desk.koker.net
+      RUNEACH_DEPLOYMENT_MODE: authenticated
+      RUNEACH_DEPLOYMENT_EXPOSURE: private
+      RUNEACH_PUBLIC_URL: https://desk.koker.net
 ```
 
-`ABACUS_PUBLIC_URL` is used as the primary source for:
+`RUNEACH_PUBLIC_URL` is used as the primary source for:
 
 - auth public base URL
 - Better Auth base URL defaults
 - bootstrap invite URL defaults
 - hostname allowlist defaults (hostname extracted from URL)
 
-Granular overrides remain available if needed (`ABACUS_AUTH_PUBLIC_BASE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_TRUSTED_ORIGINS`, `ABACUS_ALLOWED_HOSTNAMES`).
+Granular overrides remain available if needed (`RUNEACH_AUTH_PUBLIC_BASE_URL`, `BETTER_AUTH_URL`, `BETTER_AUTH_TRUSTED_ORIGINS`, `RUNEACH_ALLOWED_HOSTNAMES`).
 
-Set `ABACUS_ALLOWED_HOSTNAMES` explicitly only when you need additional hostnames beyond the public URL host (for example Tailscale/LAN aliases or multiple private hostnames).
+Set `RUNEACH_ALLOWED_HOSTNAMES` explicitly only when you need additional hostnames beyond the public URL host (for example Tailscale/LAN aliases or multiple private hostnames).
 
 ## Claude + Codex Local Adapters in Docker
 
@@ -78,20 +78,20 @@ The image pre-installs:
 If you want local adapter runs inside the container, pass API keys when starting the container:
 
 ```sh
-docker run --name abacus \
+docker run --name runeach \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e ABACUS_HOME=/abacus \
+  -e RUNEACH_HOME=/runeach \
   -e OPENAI_API_KEY=... \
   -e ANTHROPIC_API_KEY=... \
-  -v "$(pwd)/data/docker-abacus:/abacus" \
-  abacus-local
+  -v "$(pwd)/data/docker-runeach:/runeach" \
+  runeach-local
 ```
 
 Notes:
 
 - Without API keys, the app still runs normally.
-- Adapter environment checks in Abacus will surface missing auth/CLI prerequisites.
+- Adapter environment checks in RunEach will surface missing auth/CLI prerequisites.
 
 ## Untrusted PR Review Container
 
@@ -103,7 +103,7 @@ That setup keeps CLI auth state in Docker volumes instead of your host home dire
 
 Use this when you want to mimic a fresh machine that only has Ubuntu + npm and verify:
 
-- `npx @abacus-lab/abacus onboard --yes` completes
+- `npx @runeachai/runeach onboard --yes` completes
 - the server binds to `0.0.0.0:3100` so host access works
 - onboard/run banners and startup logs are visible in your terminal
 
@@ -118,9 +118,9 @@ Open: `http://localhost:3131` (default smoke host port)
 Useful overrides:
 
 ```sh
-HOST_PORT=3200 ABACUS_VERSION=latest ./scripts/docker-onboard-smoke.sh
-ABACUS_DEPLOYMENT_MODE=authenticated ABACUS_DEPLOYMENT_EXPOSURE=private ./scripts/docker-onboard-smoke.sh
-SMOKE_DETACH=true SMOKE_METADATA_FILE=/tmp/abacus-smoke.env ABACUS_VERSION=latest ./scripts/docker-onboard-smoke.sh
+HOST_PORT=3200 RUNEACH_VERSION=latest ./scripts/docker-onboard-smoke.sh
+RUNEACH_DEPLOYMENT_MODE=authenticated RUNEACH_DEPLOYMENT_EXPOSURE=private ./scripts/docker-onboard-smoke.sh
+SMOKE_DETACH=true SMOKE_METADATA_FILE=/tmp/runeach-smoke.env RUNEACH_VERSION=latest ./scripts/docker-onboard-smoke.sh
 ```
 
 Notes:
@@ -128,9 +128,9 @@ Notes:
 - Persistent data is mounted at `./data/docker-onboard-smoke` by default.
 - Container runtime user id defaults to your local `id -u` so the mounted data dir stays writable while avoiding root runtime.
 - Smoke script defaults to `authenticated/private` mode so `HOST=0.0.0.0` can be exposed to the host.
-- Smoke script defaults host port to `3131` to avoid conflicts with local Abacus on `3100`.
-- Smoke script also defaults `ABACUS_PUBLIC_URL` to `http://localhost:<HOST_PORT>` so bootstrap invite URLs and auth callbacks use the reachable host port instead of the container's internal `3100`.
-- In authenticated mode, the smoke script defaults `SMOKE_AUTO_BOOTSTRAP=true` and drives the real bootstrap path automatically: it signs up a real user, runs `abacus auth bootstrap-ceo` inside the container to mint a real bootstrap invite, accepts that invite over HTTP, and verifies board session access.
+- Smoke script defaults host port to `3131` to avoid conflicts with local RunEach on `3100`.
+- Smoke script also defaults `RUNEACH_PUBLIC_URL` to `http://localhost:<HOST_PORT>` so bootstrap invite URLs and auth callbacks use the reachable host port instead of the container's internal `3100`.
+- In authenticated mode, the smoke script defaults `SMOKE_AUTO_BOOTSTRAP=true` and drives the real bootstrap path automatically: it signs up a real user, runs `runeach auth bootstrap-ceo` inside the container to mint a real bootstrap invite, accepts that invite over HTTP, and verifies board session access.
 - Run the script in the foreground to watch the onboarding flow; stop with `Ctrl+C` after validation.
 - Set `SMOKE_DETACH=true` to leave the container running for automation and optionally write shell-ready metadata to `SMOKE_METADATA_FILE`.
 - The image definition is in `Dockerfile.onboard-smoke`.

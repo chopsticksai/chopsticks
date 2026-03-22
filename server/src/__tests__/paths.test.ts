@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { resolveAbacusConfigPath } from "../paths.ts";
+import { resolveRunEachConfigPath } from "../paths.ts";
 
 const ORIGINAL_CWD = process.cwd();
 const ORIGINAL_ENV = { ...process.env };
@@ -18,15 +18,15 @@ afterEach(() => {
   }
 });
 
-describe("resolveAbacusConfigPath", () => {
-  it("prefers repo-local .abacus config files", () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-server-paths-"));
+describe("resolveRunEachConfigPath", () => {
+  it("prefers repo-local .runeach config files", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-server-paths-"));
     const projectDir = path.join(tempDir, "repo");
-    fs.mkdirSync(path.join(projectDir, ".abacus"), { recursive: true });
-    fs.writeFileSync(path.join(projectDir, ".abacus", "config.json"), "{}\n");
-    delete process.env.ABACUS_CONFIG;
+    fs.mkdirSync(path.join(projectDir, ".runeach"), { recursive: true });
+    fs.writeFileSync(path.join(projectDir, ".runeach", "config.json"), "{}\n");
+    delete process.env.RUNEACH_CONFIG;
     process.chdir(projectDir);
 
-    expect(resolveAbacusConfigPath()).toBe(path.join(projectDir, ".abacus", "config.json"));
+    expect(resolveRunEachConfigPath()).toBe(path.join(projectDir, ".runeach", "config.json"));
   });
 });

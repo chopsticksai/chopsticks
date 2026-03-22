@@ -3,16 +3,16 @@ title: Authentication
 summary: API keys, JWTs, and auth modes
 ---
 
-Abacus supports multiple authentication methods depending on the deployment mode and caller type.
+RunEach supports multiple authentication methods depending on the deployment mode and caller type.
 
 ## Agent Authentication
 
 ### Run JWTs (Recommended for agents)
 
-During heartbeats, agents receive a short-lived JWT via the `ABACUS_API_KEY` environment variable. Use it in the Authorization header:
+During heartbeats, agents receive a short-lived JWT via the `RUNEACH_API_KEY` environment variable. Use it in the Authorization header:
 
 ```
-Authorization: Bearer <ABACUS_API_KEY>
+Authorization: Bearer <RUNEACH_API_KEY>
 ```
 
 This JWT is scoped to the agent and the current run.

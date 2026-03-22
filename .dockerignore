@@ -1,6 +1,6 @@
 .git
 .github
-.abacus
+.runeach
 .pnpm-store
 node_modules
 **/node_modules

@@ -120,8 +120,8 @@ async function startUiWatcher(uiDir: string, onReload: (filePath: string) => voi
  * Start a local static server for plugin UI assets with SSE reload events.
  *
  * Endpoint summary:
- * - `GET /__abacus__/health` for diagnostics
- * - `GET /__abacus__/events` for hot-reload stream
+ * - `GET /__runeach__/health` for diagnostics
+ * - `GET /__runeach__/events` for hot-reload stream
  * - Any other path serves files from the configured UI build directory
  */
 export async function startPluginDevServer(options: PluginDevServerOptions = {}): Promise<PluginDevServer> {
@@ -137,12 +137,12 @@ export async function startPluginDevServer(options: PluginDevServerOptions = {})
   const handleRequest = async (req: IncomingMessage, res: ServerResponse) => {
     const url = req.url ?? "/";
 
-    if (url === "/__abacus__/health") {
+    if (url === "/__runeach__/health") {
       sendJson(res, { ok: true, rootDir, uiDir });
       return;
     }
 
-    if (url === "/__abacus__/events") {
+    if (url === "/__runeach__/events") {
       res.writeHead(200, {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache, no-transform",

@@ -3,26 +3,26 @@ import type { Dirent } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { AdapterExecutionContext, AdapterExecutionResult } from "@abacus-lab/adapter-utils";
+import type { AdapterExecutionContext, AdapterExecutionResult } from "@runeachai/adapter-utils";
 import {
   asBoolean,
   asNumber,
   asString,
   asStringArray,
-  buildAbacusEnv,
+  buildRunEachEnv,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
-  ensureAbacusSkillSymlink,
+  ensureRunEachSkillSymlink,
   joinPromptSections,
   ensurePathInEnv,
-  readAbacusRuntimeSkillEntries,
-  resolveAbacusDesiredSkillNames,
+  readRunEachRuntimeSkillEntries,
+  resolveRunEachDesiredSkillNames,
   removeMaintainerOnlySkillSymlinks,
   parseObject,
   redactEnvForLogs,
   renderTemplate,
   runChildProcess,
-} from "@abacus-lab/adapter-utils/server-utils";
+} from "@runeachai/adapter-utils/server-utils";
 import { DEFAULT_GEMINI_LOCAL_MODEL } from "../index.js";
 import {
   describeGeminiFailure,
@@ -46,14 +46,14 @@ function resolveGeminiBillingType(env: Record<string, string>): "api" | "subscri
     : "subscription";
 }
 
-function renderAbacusEnvNote(env: Record<string, string>): string {
-  const abacusKeys = Object.keys(env)
-    .filter((key) => key.startsWith("ABACUS_"))
+function renderRunEachEnvNote(env: Record<string, string>): string {
+  const runeachKeys = Object.keys(env)
+    .filter((key) => key.startsWith("RUNEACH_"))
     .sort();
-  if (abacusKeys.length === 0) return "";
+  if (runeachKeys.length === 0) return "";
   return [
-    "Abacus runtime note:",
-    `The following ABACUS_* environment variables are available in this run: ${abacusKeys.join(", ")}`,
+    "RunEach runtime note:",
+    `The following RUNEACH_* environment variables are available in this run: ${runeachKeys.join(", ")}`,
     "Do not assume these variables are missing without checking your shell environment.",
     "",
     "",
@@ -61,14 +61,14 @@ function renderAbacusEnvNote(env: Record<string, string>): string {
 }
 
 function renderApiAccessNote(env: Record<string, string>): string {
-  if (!hasNonEmptyEnvValue(env, "ABACUS_API_URL") || !hasNonEmptyEnvValue(env, "ABACUS_API_KEY")) return "";
+  if (!hasNonEmptyEnvValue(env, "RUNEACH_API_URL") || !hasNonEmptyEnvValue(env, "RUNEACH_API_KEY")) return "";
   return [
-    "Abacus API access note:",
-    "Use run_shell_command with curl to make Abacus API requests.",
+    "RunEach API access note:",
+    "Use run_shell_command with curl to make RunEach API requests.",
     "GET example:",
-    `  run_shell_command({ command: "curl -s -H \\"Authorization: Bearer $ABACUS_API_KEY\\" \\"$ABACUS_API_URL/api/agents/me\\"" })`,
+    `  run_shell_command({ command: "curl -s -H \\"Authorization: Bearer $RUNEACH_API_KEY\\" \\"$RUNEACH_API_URL/api/agents/me\\"" })`,
     "POST/PATCH example:",
-    `  run_shell_command({ command: "curl -s -X POST -H \\"Authorization: Bearer $ABACUS_API_KEY\\" -H 'Content-Type: application/json' -H \\"X-Abacus-Run-Id: $ABACUS_RUN_ID\\" -d '{...}' \\"$ABACUS_API_URL/api/issues/{id}/checkout\\"" })`,
+    `  run_shell_command({ command: "curl -s -X POST -H \\"Authorization: Bearer $RUNEACH_API_KEY\\" -H 'Content-Type: application/json' -H \\"X-RunEach-Run-Id: $RUNEACH_RUN_ID\\" -d '{...}' \\"$RUNEACH_API_URL/api/issues/{id}/checkout\\"" })`,
     "",
     "",
   ].join("\n");
@@ -79,7 +79,7 @@ function geminiSkillsHome(): string {
 }
 
 /**
- * Inject Abacus skills directly into `~/.gemini/skills/` via symlinks.
+ * Inject RunEach skills directly into `~/.gemini/skills/` via symlinks.
  * This avoids needing GEMINI_CLI_HOME overrides, so the CLI naturally finds
  * both its auth credentials and the injected skills in the real home directory.
  */
@@ -98,7 +98,7 @@ async function ensureGeminiSkillsInjected(
   } catch (err) {
     await onLog(
       "stderr",
-      `[abacus] Failed to prepare Gemini skills directory ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
+      `[runeach] Failed to prepare Gemini skills directory ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
     );
     return;
   }
@@ -109,7 +109,7 @@ async function ensureGeminiSkillsInjected(
   for (const skillName of removedSkills) {
     await onLog(
       "stderr",
-      `[abacus] Removed maintainer-only Gemini skill "${skillName}" from ${skillsHome}\n`,
+      `[runeach] Removed maintainer-only Gemini skill "${skillName}" from ${skillsHome}\n`,
     );
   }
 
@@ -117,16 +117,16 @@ async function ensureGeminiSkillsInjected(
     const target = path.join(skillsHome, entry.runtimeName);
 
     try {
-      const result = await ensureAbacusSkillSymlink(entry.source, target);
+      const result = await ensureRunEachSkillSymlink(entry.source, target);
       if (result === "skipped") continue;
       await onLog(
         "stderr",
-        `[abacus] ${result === "repaired" ? "Repaired" : "Linked"} Gemini skill: ${entry.key}\n`,
+        `[runeach] ${result === "repaired" ? "Repaired" : "Linked"} Gemini skill: ${entry.key}\n`,
       );
     } catch (err) {
       await onLog(
         "stderr",
-        `[abacus] Failed to link Gemini skill "${entry.key}": ${err instanceof Error ? err.message : String(err)}\n`,
+        `[runeach] Failed to link Gemini skill "${entry.key}": ${err instanceof Error ? err.message : String(err)}\n`,
       );
     }
   }
@@ -137,21 +137,21 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Abacus work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your RunEach work.",
   );
   const command = asString(config.command, "gemini");
   const model = asString(config.model, DEFAULT_GEMINI_LOCAL_MODEL).trim();
   const sandbox = asBoolean(config.sandbox, false);
 
-  const workspaceContext = parseObject(context.abacusWorkspace);
+  const workspaceContext = parseObject(context.runeachWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceId = asString(workspaceContext.workspaceId, "");
   const workspaceRepoUrl = asString(workspaceContext.repoUrl, "");
   const workspaceRepoRef = asString(workspaceContext.repoRef, "");
   const agentHome = asString(workspaceContext.agentHome, "");
-  const workspaceHints = Array.isArray(context.abacusWorkspaces)
-    ? context.abacusWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.runeachWorkspaces)
+    ? context.runeachWorkspaces.filter(
       (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
     )
     : [];
@@ -160,15 +160,15 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const effectiveWorkspaceCwd = useConfiguredInsteadOfAgentHome ? "" : workspaceCwd;
   const cwd = effectiveWorkspaceCwd || configuredCwd || process.cwd();
   await ensureAbsoluteDirectory(cwd, { createIfMissing: true });
-  const geminiSkillEntries = await readAbacusRuntimeSkillEntries(config, __moduleDir);
-  const desiredGeminiSkillNames = resolveAbacusDesiredSkillNames(config, geminiSkillEntries);
+  const geminiSkillEntries = await readRunEachRuntimeSkillEntries(config, __moduleDir);
+  const desiredGeminiSkillNames = resolveRunEachDesiredSkillNames(config, geminiSkillEntries);
   await ensureGeminiSkillsInjected(onLog, geminiSkillEntries, desiredGeminiSkillNames);
 
   const envConfig = parseObject(config.env);
   const hasExplicitApiKey =
-    typeof envConfig.ABACUS_API_KEY === "string" && envConfig.ABACUS_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildAbacusEnv(agent) };
-  env.ABACUS_RUN_ID = runId;
+    typeof envConfig.RUNEACH_API_KEY === "string" && envConfig.RUNEACH_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildRunEachEnv(agent) };
+  env.RUNEACH_RUN_ID = runId;
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
     (typeof context.issueId === "string" && context.issueId.trim().length > 0 && context.issueId.trim()) ||
@@ -192,25 +192,25 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const linkedIssueIds = Array.isArray(context.issueIds)
     ? context.issueIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     : [];
-  if (wakeTaskId) env.ABACUS_TASK_ID = wakeTaskId;
-  if (wakeReason) env.ABACUS_WAKE_REASON = wakeReason;
-  if (wakeCommentId) env.ABACUS_WAKE_COMMENT_ID = wakeCommentId;
-  if (approvalId) env.ABACUS_APPROVAL_ID = approvalId;
-  if (approvalStatus) env.ABACUS_APPROVAL_STATUS = approvalStatus;
-  if (linkedIssueIds.length > 0) env.ABACUS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
-  if (effectiveWorkspaceCwd) env.ABACUS_WORKSPACE_CWD = effectiveWorkspaceCwd;
-  if (workspaceSource) env.ABACUS_WORKSPACE_SOURCE = workspaceSource;
-  if (workspaceId) env.ABACUS_WORKSPACE_ID = workspaceId;
-  if (workspaceRepoUrl) env.ABACUS_WORKSPACE_REPO_URL = workspaceRepoUrl;
-  if (workspaceRepoRef) env.ABACUS_WORKSPACE_REPO_REF = workspaceRepoRef;
+  if (wakeTaskId) env.RUNEACH_TASK_ID = wakeTaskId;
+  if (wakeReason) env.RUNEACH_WAKE_REASON = wakeReason;
+  if (wakeCommentId) env.RUNEACH_WAKE_COMMENT_ID = wakeCommentId;
+  if (approvalId) env.RUNEACH_APPROVAL_ID = approvalId;
+  if (approvalStatus) env.RUNEACH_APPROVAL_STATUS = approvalStatus;
+  if (linkedIssueIds.length > 0) env.RUNEACH_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+  if (effectiveWorkspaceCwd) env.RUNEACH_WORKSPACE_CWD = effectiveWorkspaceCwd;
+  if (workspaceSource) env.RUNEACH_WORKSPACE_SOURCE = workspaceSource;
+  if (workspaceId) env.RUNEACH_WORKSPACE_ID = workspaceId;
+  if (workspaceRepoUrl) env.RUNEACH_WORKSPACE_REPO_URL = workspaceRepoUrl;
+  if (workspaceRepoRef) env.RUNEACH_WORKSPACE_REPO_REF = workspaceRepoRef;
   if (agentHome) env.AGENT_HOME = agentHome;
-  if (workspaceHints.length > 0) env.ABACUS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+  if (workspaceHints.length > 0) env.RUNEACH_WORKSPACES_JSON = JSON.stringify(workspaceHints);
 
   for (const [key, value] of Object.entries(envConfig)) {
     if (typeof value === "string") env[key] = value;
   }
   if (!hasExplicitApiKey && authToken) {
-    env.ABACUS_API_KEY = authToken;
+    env.RUNEACH_API_KEY = authToken;
   }
   const effectiveEnv = Object.fromEntries(
     Object.entries({ ...process.env, ...env }).filter(
@@ -239,7 +239,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   if (runtimeSessionId && !canResumeSession) {
     await onLog(
       "stdout",
-      `[abacus] Gemini session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[runeach] Gemini session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
 
@@ -255,13 +255,13 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
         `Resolve any relative file references from ${instructionsDir}.\n\n`;
       await onLog(
         "stdout",
-        `[abacus] Loaded agent instructions file: ${instructionsFilePath}\n`,
+        `[runeach] Loaded agent instructions file: ${instructionsFilePath}\n`,
       );
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
       await onLog(
         "stdout",
-        `[abacus] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
+        `[runeach] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
       );
     }
   }
@@ -297,14 +297,14 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     !sessionId && bootstrapPromptTemplate.trim().length > 0
       ? renderTemplate(bootstrapPromptTemplate, templateData).trim()
       : "";
-  const sessionHandoffNote = asString(context.abacusSessionHandoffMarkdown, "").trim();
-  const abacusEnvNote = renderAbacusEnvNote(env);
+  const sessionHandoffNote = asString(context.runeachSessionHandoffMarkdown, "").trim();
+  const runeachEnvNote = renderRunEachEnvNote(env);
   const apiAccessNote = renderApiAccessNote(env);
   const prompt = joinPromptSections([
     instructionsPrefix,
     renderedBootstrapPrompt,
     sessionHandoffNote,
-    abacusEnvNote,
+    runeachEnvNote,
     apiAccessNote,
     renderedPrompt,
   ]);
@@ -313,7 +313,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     instructionsChars: instructionsPrefix.length,
     bootstrapPromptChars: renderedBootstrapPrompt.length,
     sessionHandoffChars: sessionHandoffNote.length,
-    runtimeNoteChars: abacusEnvNote.length + apiAccessNote.length,
+    runtimeNoteChars: runeachEnvNote.length + apiAccessNote.length,
     heartbeatPromptChars: renderedPrompt.length,
   };
 
@@ -455,7 +455,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stdout",
-      `[abacus] Gemini resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
+      `[runeach] Gemini resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
     );
     const retry = await runAttempt(null);
     return toResult(retry, true, true);

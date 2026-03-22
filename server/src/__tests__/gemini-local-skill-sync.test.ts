@@ -5,14 +5,14 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   listGeminiSkills,
   syncGeminiSkills,
-} from "@abacus-lab/adapter-gemini-local/server";
+} from "@runeachai/adapter-gemini-local/server";
 
 async function makeTempDir(prefix: string): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), prefix));
 }
 
 describe("gemini local skill sync", () => {
-  const abacusKey = "abacus-lab/abacus/abacus";
+  const runeachKey = "runeachai/runeach/runeach";
   const cleanupDirs = new Set<string>();
 
   afterEach(async () => {
@@ -20,8 +20,8 @@ describe("gemini local skill sync", () => {
     cleanupDirs.clear();
   });
 
-  it("reports configured Abacus skills and installs them into the Gemini skills home", async () => {
-    const home = await makeTempDir("abacus-gemini-skill-sync-");
+  it("reports configured RunEach skills and installs them into the Gemini skills home", async () => {
+    const home = await makeTempDir("runeach-gemini-skill-sync-");
     cleanupDirs.add(home);
 
     const ctx = {
@@ -32,25 +32,25 @@ describe("gemini local skill sync", () => {
         env: {
           HOME: home,
         },
-        abacusSkillSync: {
-          desiredSkills: [abacusKey],
+        runeachSkillSync: {
+          desiredSkills: [runeachKey],
         },
       },
     } as const;
 
     const before = await listGeminiSkills(ctx);
     expect(before.mode).toBe("persistent");
-    expect(before.desiredSkills).toContain(abacusKey);
-    expect(before.entries.find((entry) => entry.key === abacusKey)?.required).toBe(true);
-    expect(before.entries.find((entry) => entry.key === abacusKey)?.state).toBe("missing");
+    expect(before.desiredSkills).toContain(runeachKey);
+    expect(before.entries.find((entry) => entry.key === runeachKey)?.required).toBe(true);
+    expect(before.entries.find((entry) => entry.key === runeachKey)?.state).toBe("missing");
 
-    const after = await syncGeminiSkills(ctx, [abacusKey]);
-    expect(after.entries.find((entry) => entry.key === abacusKey)?.state).toBe("installed");
-    expect((await fs.lstat(path.join(home, ".gemini", "skills", "abacus"))).isSymbolicLink()).toBe(true);
+    const after = await syncGeminiSkills(ctx, [runeachKey]);
+    expect(after.entries.find((entry) => entry.key === runeachKey)?.state).toBe("installed");
+    expect((await fs.lstat(path.join(home, ".gemini", "skills", "runeach"))).isSymbolicLink()).toBe(true);
   });
 
-  it("keeps required bundled Abacus skills installed even when the desired set is emptied", async () => {
-    const home = await makeTempDir("abacus-gemini-skill-prune-");
+  it("keeps required bundled RunEach skills installed even when the desired set is emptied", async () => {
+    const home = await makeTempDir("runeach-gemini-skill-prune-");
     cleanupDirs.add(home);
 
     const configuredCtx = {
@@ -61,13 +61,13 @@ describe("gemini local skill sync", () => {
         env: {
           HOME: home,
         },
-        abacusSkillSync: {
-          desiredSkills: [abacusKey],
+        runeachSkillSync: {
+          desiredSkills: [runeachKey],
         },
       },
     } as const;
 
-    await syncGeminiSkills(configuredCtx, [abacusKey]);
+    await syncGeminiSkills(configuredCtx, [runeachKey]);
 
     const clearedCtx = {
       ...configuredCtx,
@@ -75,15 +75,15 @@ describe("gemini local skill sync", () => {
         env: {
           HOME: home,
         },
-        abacusSkillSync: {
+        runeachSkillSync: {
           desiredSkills: [],
         },
       },
     } as const;
 
     const after = await syncGeminiSkills(clearedCtx, []);
-    expect(after.desiredSkills).toContain(abacusKey);
-    expect(after.entries.find((entry) => entry.key === abacusKey)?.state).toBe("installed");
-    expect((await fs.lstat(path.join(home, ".gemini", "skills", "abacus"))).isSymbolicLink()).toBe(true);
+    expect(after.desiredSkills).toContain(runeachKey);
+    expect(after.entries.find((entry) => entry.key === runeachKey)?.state).toBe("installed");
+    expect((await fs.lstat(path.join(home, ".gemini", "skills", "runeach"))).isSymbolicLink()).toBe(true);
   });
 });

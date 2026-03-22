@@ -6,16 +6,16 @@ type PluginBridgeRegistry = {
 };
 
 type GlobalBridge = typeof globalThis & {
-  __abacusPluginBridge__?: PluginBridgeRegistry;
+  __runeachPluginBridge__?: PluginBridgeRegistry;
 };
 
 function getBridgeRegistry(): PluginBridgeRegistry | undefined {
-  return (globalThis as GlobalBridge).__abacusPluginBridge__;
+  return (globalThis as GlobalBridge).__runeachPluginBridge__;
 }
 
 function missingBridgeValueError(name: string): Error {
   return new Error(
-    `Abacus plugin UI runtime is not initialized for "${name}". ` +
+    `RunEach plugin UI runtime is not initialized for "${name}". ` +
       'Ensure the host loaded the plugin bridge before rendering this UI module.',
   );
 }
@@ -47,5 +47,5 @@ export function renderSdkUiComponent<TProps>(
     return component(props);
   }
 
-  throw new Error(`Abacus plugin UI component "${name}" is not callable`);
+  throw new Error(`RunEach plugin UI component "${name}" is not callable`);
 }

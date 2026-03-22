@@ -1,7 +1,7 @@
 import type { UIAdapterModule } from "../types";
-import { parseCodexStdoutLine } from "@abacus-lab/adapter-codex-local/ui";
+import { parseCodexStdoutLine } from "@runeachai/adapter-codex-local/ui";
 import { CodexLocalConfigFields } from "./config-fields";
-import { buildCodexLocalConfig } from "@abacus-lab/adapter-codex-local/ui";
+import { buildCodexLocalConfig } from "@runeachai/adapter-codex-local/ui";
 
 export const codexLocalUIAdapter: UIAdapterModule = {
   type: "codex_local",

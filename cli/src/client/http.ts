@@ -23,7 +23,7 @@ interface ApiClientOptions {
   runId?: string;
 }
 
-export class AbacusApiClient {
+export class RunEachApiClient {
   readonly apiBase: string;
   readonly apiKey?: string;
   readonly runId?: string;
@@ -73,7 +73,7 @@ export class AbacusApiClient {
     }
 
     if (this.runId) {
-      headers["x-abacus-run-id"] = this.runId;
+      headers["x-runeach-run-id"] = this.runId;
     }
 
     const response = await fetch(url, {

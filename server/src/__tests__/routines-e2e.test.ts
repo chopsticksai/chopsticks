@@ -25,7 +25,7 @@ import {
   routineRuns,
   routines,
   routineTriggers,
-} from "@abacus-lab/db";
+} from "@runeachai/db";
 import { errorHandler } from "../middleware/index.js";
 import { accessService } from "../services/access.js";
 
@@ -33,7 +33,7 @@ vi.mock("../services/index.js", async () => {
   const actual = await vi.importActual<typeof import("../services/index.js")>("../services/index.js");
   const { randomUUID } = await import("node:crypto");
   const { eq } = await import("drizzle-orm");
-  const { heartbeatRuns, issues } = await import("@abacus-lab/db");
+  const { heartbeatRuns, issues } = await import("@runeachai/db");
 
   return {
     ...actual,
@@ -121,13 +121,13 @@ async function getAvailablePort(): Promise<number> {
 }
 
 async function startTempDatabase() {
-  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-routines-e2e-"));
+  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-routines-e2e-"));
   const port = await getAvailablePort();
   const EmbeddedPostgres = await getEmbeddedPostgresCtor();
   const instance = new EmbeddedPostgres({
     databaseDir: dataDir,
-    user: "abacus",
-    password: "abacus",
+    user: "runeach",
+    password: "runeach",
     port,
     persistent: true,
     initdbFlags: ["--encoding=UTF8", "--locale=C"],
@@ -137,9 +137,9 @@ async function startTempDatabase() {
   await instance.initialise();
   await instance.start();
 
-  const adminConnectionString = `postgres://abacus:abacus@127.0.0.1:${port}/postgres`;
-  await ensurePostgresDatabase(adminConnectionString, "abacus");
-  const connectionString = `postgres://abacus:abacus@127.0.0.1:${port}/abacus`;
+  const adminConnectionString = `postgres://runeach:runeach@127.0.0.1:${port}/postgres`;
+  await ensurePostgresDatabase(adminConnectionString, "runeach");
+  const connectionString = `postgres://runeach:runeach@127.0.0.1:${port}/runeach`;
   await applyPendingMigrations(connectionString);
   return { connectionString, dataDir, instance };
 }
@@ -202,7 +202,7 @@ describe("routine routes end-to-end", () => {
 
     await db.insert(companies).values({
       id: companyId,
-      name: "Abacus",
+      name: "RunEach",
       issuePrefix,
       requireBoardApprovalForNewAgents: false,
     });

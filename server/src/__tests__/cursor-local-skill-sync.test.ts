@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   listCursorSkills,
   syncCursorSkills,
-} from "@abacus-lab/adapter-cursor-local/server";
+} from "@runeachai/adapter-cursor-local/server";
 
 async function makeTempDir(prefix: string): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), prefix));
@@ -19,7 +19,7 @@ async function createSkillDir(root: string, name: string) {
 }
 
 describe("cursor local skill sync", () => {
-  const abacusKey = "abacus-lab/abacus/abacus";
+  const runeachKey = "runeachai/runeach/runeach";
   const cleanupDirs = new Set<string>();
 
   afterEach(async () => {
@@ -27,8 +27,8 @@ describe("cursor local skill sync", () => {
     cleanupDirs.clear();
   });
 
-  it("reports configured Abacus skills and installs them into the Cursor skills home", async () => {
-    const home = await makeTempDir("abacus-cursor-skill-sync-");
+  it("reports configured RunEach skills and installs them into the Cursor skills home", async () => {
+    const home = await makeTempDir("runeach-cursor-skill-sync-");
     cleanupDirs.add(home);
 
     const ctx = {
@@ -39,30 +39,30 @@ describe("cursor local skill sync", () => {
         env: {
           HOME: home,
         },
-        abacusSkillSync: {
-          desiredSkills: [abacusKey],
+        runeachSkillSync: {
+          desiredSkills: [runeachKey],
         },
       },
     } as const;
 
     const before = await listCursorSkills(ctx);
     expect(before.mode).toBe("persistent");
-    expect(before.desiredSkills).toContain(abacusKey);
-    expect(before.entries.find((entry) => entry.key === abacusKey)?.required).toBe(true);
-    expect(before.entries.find((entry) => entry.key === abacusKey)?.state).toBe("missing");
+    expect(before.desiredSkills).toContain(runeachKey);
+    expect(before.entries.find((entry) => entry.key === runeachKey)?.required).toBe(true);
+    expect(before.entries.find((entry) => entry.key === runeachKey)?.state).toBe("missing");
 
-    const after = await syncCursorSkills(ctx, [abacusKey]);
-    expect(after.entries.find((entry) => entry.key === abacusKey)?.state).toBe("installed");
-    expect((await fs.lstat(path.join(home, ".cursor", "skills", "abacus"))).isSymbolicLink()).toBe(true);
+    const after = await syncCursorSkills(ctx, [runeachKey]);
+    expect(after.entries.find((entry) => entry.key === runeachKey)?.state).toBe("installed");
+    expect((await fs.lstat(path.join(home, ".cursor", "skills", "runeach"))).isSymbolicLink()).toBe(true);
   });
 
-  it("recognizes company-library runtime skills supplied outside the bundled Abacus directory", async () => {
-    const home = await makeTempDir("abacus-cursor-runtime-skills-home-");
-    const runtimeSkills = await makeTempDir("abacus-cursor-runtime-skills-src-");
+  it("recognizes company-library runtime skills supplied outside the bundled RunEach directory", async () => {
+    const home = await makeTempDir("runeach-cursor-runtime-skills-home-");
+    const runtimeSkills = await makeTempDir("runeach-cursor-runtime-skills-src-");
     cleanupDirs.add(home);
     cleanupDirs.add(runtimeSkills);
 
-    const abacusDir = await createSkillDir(runtimeSkills, "abacus");
+    const runeachDir = await createSkillDir(runtimeSkills, "runeach");
     const asciiHeartDir = await createSkillDir(runtimeSkills, "ascii-heart");
 
     const ctx = {
@@ -73,13 +73,13 @@ describe("cursor local skill sync", () => {
         env: {
           HOME: home,
         },
-        abacusRuntimeSkills: [
+        runeachRuntimeSkills: [
           {
-            key: "abacus",
-            runtimeName: "abacus",
-            source: abacusDir,
+            key: "runeach",
+            runtimeName: "runeach",
+            source: runeachDir,
             required: true,
-            requiredReason: "Bundled Abacus skills are always available for local adapters.",
+            requiredReason: "Bundled RunEach skills are always available for local adapters.",
           },
           {
             key: "ascii-heart",
@@ -87,7 +87,7 @@ describe("cursor local skill sync", () => {
             source: asciiHeartDir,
           },
         ],
-        abacusSkillSync: {
+        runeachSkillSync: {
           desiredSkills: ["ascii-heart"],
         },
       },
@@ -95,7 +95,7 @@ describe("cursor local skill sync", () => {
 
     const before = await listCursorSkills(ctx);
     expect(before.warnings).toEqual([]);
-    expect(before.desiredSkills).toEqual(["abacus", "ascii-heart"]);
+    expect(before.desiredSkills).toEqual(["runeach", "ascii-heart"]);
     expect(before.entries.find((entry) => entry.key === "ascii-heart")?.state).toBe("missing");
 
     const after = await syncCursorSkills(ctx, ["ascii-heart"]);
@@ -104,8 +104,8 @@ describe("cursor local skill sync", () => {
     expect((await fs.lstat(path.join(home, ".cursor", "skills", "ascii-heart"))).isSymbolicLink()).toBe(true);
   });
 
-  it("keeps required bundled Abacus skills installed even when the desired set is emptied", async () => {
-    const home = await makeTempDir("abacus-cursor-skill-prune-");
+  it("keeps required bundled RunEach skills installed even when the desired set is emptied", async () => {
+    const home = await makeTempDir("runeach-cursor-skill-prune-");
     cleanupDirs.add(home);
 
     const configuredCtx = {
@@ -116,13 +116,13 @@ describe("cursor local skill sync", () => {
         env: {
           HOME: home,
         },
-        abacusSkillSync: {
-          desiredSkills: [abacusKey],
+        runeachSkillSync: {
+          desiredSkills: [runeachKey],
         },
       },
     } as const;
 
-    await syncCursorSkills(configuredCtx, [abacusKey]);
+    await syncCursorSkills(configuredCtx, [runeachKey]);
 
     const clearedCtx = {
       ...configuredCtx,
@@ -130,15 +130,15 @@ describe("cursor local skill sync", () => {
         env: {
           HOME: home,
         },
-        abacusSkillSync: {
+        runeachSkillSync: {
           desiredSkills: [],
         },
       },
     } as const;
 
     const after = await syncCursorSkills(clearedCtx, []);
-    expect(after.desiredSkills).toContain(abacusKey);
-    expect(after.entries.find((entry) => entry.key === abacusKey)?.state).toBe("installed");
-    expect((await fs.lstat(path.join(home, ".cursor", "skills", "abacus"))).isSymbolicLink()).toBe(true);
+    expect(after.desiredSkills).toContain(runeachKey);
+    expect(after.entries.find((entry) => entry.key === runeachKey)?.state).toBe("installed");
+    expect((await fs.lstat(path.join(home, ".cursor", "skills", "runeach"))).isSymbolicLink()).toBe(true);
   });
 });

@@ -2,17 +2,17 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@abacus-lab/adapter-gemini-local/server";
+import { execute } from "@runeachai/adapter-gemini-local/server";
 
 async function writeFakeGeminiCommand(commandPath: string): Promise<void> {
   const script = `#!/usr/bin/env node
 const fs = require("node:fs");
 
-const capturePath = process.env.ABACUS_TEST_CAPTURE_PATH;
+const capturePath = process.env.RUNEACH_TEST_CAPTURE_PATH;
 const payload = {
   argv: process.argv.slice(2),
-  abacusEnvKeys: Object.keys(process.env)
-    .filter((key) => key.startsWith("ABACUS_"))
+  runeachEnvKeys: Object.keys(process.env)
+    .filter((key) => key.startsWith("RUNEACH_"))
     .sort(),
 };
 if (capturePath) {
@@ -41,12 +41,12 @@ console.log(JSON.stringify({
 
 type CapturePayload = {
   argv: string[];
-  abacusEnvKeys: string[];
+  runeachEnvKeys: string[];
 };
 
 describe("gemini execute", () => {
-  it("passes prompt via --prompt and injects abacus env vars", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-gemini-execute-"));
+  it("passes prompt via --prompt and injects runeach env vars", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "runeach-gemini-execute-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "gemini");
     const capturePath = path.join(root, "capture.json");
@@ -78,9 +78,9 @@ describe("gemini execute", () => {
           cwd: workspace,
           model: "gemini-2.5-pro",
           env: {
-            ABACUS_TEST_CAPTURE_PATH: capturePath,
+            RUNEACH_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the abacus heartbeat.",
+          promptTemplate: "Follow the runeach heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -101,20 +101,20 @@ describe("gemini execute", () => {
       expect(capture.argv).toContain("yolo");
       const promptFlagIndex = capture.argv.indexOf("--prompt");
       const promptArg = promptFlagIndex >= 0 ? capture.argv[promptFlagIndex + 1] : "";
-      expect(promptArg).toContain("Follow the abacus heartbeat.");
-      expect(promptArg).toContain("Abacus runtime note:");
-      expect(capture.abacusEnvKeys).toEqual(
+      expect(promptArg).toContain("Follow the runeach heartbeat.");
+      expect(promptArg).toContain("RunEach runtime note:");
+      expect(capture.runeachEnvKeys).toEqual(
         expect.arrayContaining([
-          "ABACUS_AGENT_ID",
-          "ABACUS_API_KEY",
-          "ABACUS_API_URL",
-          "ABACUS_COMPANY_ID",
-          "ABACUS_RUN_ID",
+          "RUNEACH_AGENT_ID",
+          "RUNEACH_API_KEY",
+          "RUNEACH_API_URL",
+          "RUNEACH_COMPANY_ID",
+          "RUNEACH_RUN_ID",
         ]),
       );
-      expect(invocationPrompt).toContain("Abacus runtime note:");
-      expect(invocationPrompt).toContain("ABACUS_API_URL");
-      expect(invocationPrompt).toContain("Abacus API access note:");
+      expect(invocationPrompt).toContain("RunEach runtime note:");
+      expect(invocationPrompt).toContain("RUNEACH_API_URL");
+      expect(invocationPrompt).toContain("RunEach API access note:");
       expect(invocationPrompt).toContain("run_shell_command");
       expect(result.question).toBeNull();
     } finally {
@@ -128,7 +128,7 @@ describe("gemini execute", () => {
   });
 
   it("always passes --approval-mode yolo", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-gemini-yolo-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "runeach-gemini-yolo-"));
     const workspace = path.join(root, "workspace");
     const commandPath = path.join(root, "gemini");
     const capturePath = path.join(root, "capture.json");
@@ -146,7 +146,7 @@ describe("gemini execute", () => {
         config: {
           command: commandPath,
           cwd: workspace,
-          env: { ABACUS_TEST_CAPTURE_PATH: capturePath },
+          env: { RUNEACH_TEST_CAPTURE_PATH: capturePath },
         },
         context: {},
         authToken: "t",

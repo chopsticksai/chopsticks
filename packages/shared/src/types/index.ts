@@ -178,7 +178,7 @@ export type {
   PluginLauncherDeclaration,
   PluginMinimumHostVersion,
   PluginUiDeclaration,
-  AbacusPluginManifestV1,
+  RunEachPluginManifestV1,
   PluginRecord,
   PluginStateRecord,
   PluginConfig,

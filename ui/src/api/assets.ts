@@ -1,4 +1,4 @@
-import type { AssetImage } from "@abacus-lab/shared";
+import type { AssetImage } from "@runeachai/shared";
 import { api } from "./client";
 
 export const assetsApi = {

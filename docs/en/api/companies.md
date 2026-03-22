@@ -3,7 +3,7 @@ title: Companies
 summary: Company CRUD endpoints
 ---
 
-Manage companies within your Abacus instance.
+Manage companies within your RunEach instance.
 
 ## List Companies
 

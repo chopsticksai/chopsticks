@@ -2,18 +2,18 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { execute } from "@abacus-lab/adapter-cursor-local/server";
+import { execute } from "@runeachai/adapter-cursor-local/server";
 
 async function writeFakeCursorCommand(basePath: string): Promise<string> {
   const script = `
 const fs = require("node:fs");
 
-const capturePath = process.env.ABACUS_TEST_CAPTURE_PATH;
+const capturePath = process.env.RUNEACH_TEST_CAPTURE_PATH;
 const payload = {
   argv: process.argv.slice(2),
   prompt: fs.readFileSync(0, "utf8"),
-  abacusEnvKeys: Object.keys(process.env)
-    .filter((key) => key.startsWith("ABACUS_"))
+  runeachEnvKeys: Object.keys(process.env)
+    .filter((key) => key.startsWith("RUNEACH_"))
     .sort(),
 };
 if (capturePath) {
@@ -56,7 +56,7 @@ console.log(JSON.stringify({
 type CapturePayload = {
   argv: string[];
   prompt: string;
-  abacusEnvKeys: string[];
+  runeachEnvKeys: string[];
 };
 
 async function createSkillDir(root: string, name: string) {
@@ -67,8 +67,8 @@ async function createSkillDir(root: string, name: string) {
 }
 
 describe("cursor execute", () => {
-  it("injects abacus env vars and prompt note by default", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-cursor-execute-"));
+  it("injects runeach env vars and prompt note by default", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "runeach-cursor-execute-"));
     const workspace = path.join(root, "workspace");
     const commandPath = await writeFakeCursorCommand(path.join(root, "agent"));
     const capturePath = path.join(root, "capture.json");
@@ -99,9 +99,9 @@ describe("cursor execute", () => {
           cwd: workspace,
           model: "auto",
           env: {
-            ABACUS_TEST_CAPTURE_PATH: capturePath,
+            RUNEACH_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the abacus heartbeat.",
+          promptTemplate: "Follow the runeach heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -115,22 +115,22 @@ describe("cursor execute", () => {
       expect(result.errorMessage).toBeNull();
 
       const capture = JSON.parse(await fs.readFile(capturePath, "utf8")) as CapturePayload;
-      expect(capture.argv).not.toContain("Follow the abacus heartbeat.");
+      expect(capture.argv).not.toContain("Follow the runeach heartbeat.");
       expect(capture.argv).not.toContain("--mode");
       expect(capture.argv).not.toContain("ask");
-      expect(capture.abacusEnvKeys).toEqual(
+      expect(capture.runeachEnvKeys).toEqual(
         expect.arrayContaining([
-          "ABACUS_AGENT_ID",
-          "ABACUS_API_KEY",
-          "ABACUS_API_URL",
-          "ABACUS_COMPANY_ID",
-          "ABACUS_RUN_ID",
+          "RUNEACH_AGENT_ID",
+          "RUNEACH_API_KEY",
+          "RUNEACH_API_URL",
+          "RUNEACH_COMPANY_ID",
+          "RUNEACH_RUN_ID",
         ]),
       );
-      expect(capture.prompt).toContain("Abacus runtime note:");
-      expect(capture.prompt).toContain("ABACUS_API_KEY");
-      expect(invocationPrompt).toContain("Abacus runtime note:");
-      expect(invocationPrompt).toContain("ABACUS_API_URL");
+      expect(capture.prompt).toContain("RunEach runtime note:");
+      expect(capture.prompt).toContain("RUNEACH_API_KEY");
+      expect(invocationPrompt).toContain("RunEach runtime note:");
+      expect(invocationPrompt).toContain("RUNEACH_API_URL");
     } finally {
       if (previousHome === undefined) {
         delete process.env.HOME;
@@ -142,7 +142,7 @@ describe("cursor execute", () => {
   });
 
   it("passes --mode when explicitly configured", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-cursor-execute-mode-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "runeach-cursor-execute-mode-"));
     const workspace = path.join(root, "workspace");
     const commandPath = await writeFakeCursorCommand(path.join(root, "agent"));
     const capturePath = path.join(root, "capture.json");
@@ -173,9 +173,9 @@ describe("cursor execute", () => {
           model: "auto",
           mode: "ask",
           env: {
-            ABACUS_TEST_CAPTURE_PATH: capturePath,
+            RUNEACH_TEST_CAPTURE_PATH: capturePath,
           },
-          promptTemplate: "Follow the abacus heartbeat.",
+          promptTemplate: "Follow the runeach heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",
@@ -199,13 +199,13 @@ describe("cursor execute", () => {
   });
 
   it("injects company-library runtime skills into the Cursor skills home before execution", async () => {
-    const root = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-cursor-execute-runtime-skill-"));
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "runeach-cursor-execute-runtime-skill-"));
     const workspace = path.join(root, "workspace");
     const commandPath = await writeFakeCursorCommand(path.join(root, "agent"));
     const runtimeSkillsRoot = path.join(root, "runtime-skills");
     await fs.mkdir(workspace, { recursive: true });
 
-    const abacusDir = await createSkillDir(runtimeSkillsRoot, "abacus");
+    const runeachDir = await createSkillDir(runtimeSkillsRoot, "runeach");
     const asciiHeartDir = await createSkillDir(runtimeSkillsRoot, "ascii-heart");
 
     const previousHome = process.env.HOME;
@@ -231,22 +231,22 @@ describe("cursor execute", () => {
           command: commandPath,
           cwd: workspace,
           model: "auto",
-          abacusRuntimeSkills: [
+          runeachRuntimeSkills: [
             {
-              name: "abacus",
-              source: abacusDir,
+              name: "runeach",
+              source: runeachDir,
               required: true,
-              requiredReason: "Bundled Abacus skills are always available for local adapters.",
+              requiredReason: "Bundled RunEach skills are always available for local adapters.",
             },
             {
               name: "ascii-heart",
               source: asciiHeartDir,
             },
           ],
-          abacusSkillSync: {
+          runeachSkillSync: {
             desiredSkills: ["ascii-heart"],
           },
-          promptTemplate: "Follow the abacus heartbeat.",
+          promptTemplate: "Follow the runeach heartbeat.",
         },
         context: {},
         authToken: "run-jwt-token",

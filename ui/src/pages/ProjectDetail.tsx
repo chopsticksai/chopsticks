@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useParams, useNavigate, useLocation, Navigate } from "@/lib/router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { PROJECT_COLORS, isUuidLike, type BudgetPolicySummary } from "@abacus-lab/shared";
+import { PROJECT_COLORS, isUuidLike, type BudgetPolicySummary } from "@runeachai/shared";
 import { budgetsApi } from "../api/budgets";
 import { projectsApi } from "../api/projects";
 import { issuesApi } from "../api/issues";
@@ -197,7 +197,7 @@ function ProjectIssuesList({ projectId, companyId }: { projectId: string; compan
       agents={agents}
       liveIssueIds={liveIssueIds}
       projectId={projectId}
-      viewStateKey={`abacus:project-view:${projectId}`}
+      viewStateKey={`runeach:project-view:${projectId}`}
       onUpdateIssue={(id, data) => updateIssue.mutate({ id, data })}
     />
   );
@@ -465,7 +465,7 @@ export function ProjectDetail() {
   if (routeProjectRef && activeTab === null) {
     let cachedTab: string | null = null;
     if (project?.id) {
-      try { cachedTab = localStorage.getItem(`abacus:project-tab:${project.id}`); } catch {}
+      try { cachedTab = localStorage.getItem(`runeach:project-tab:${project.id}`); } catch {}
     }
     if (cachedTab === "overview") {
       return <Navigate to={`/projects/${canonicalProjectRef}/overview`} replace />;
@@ -489,7 +489,7 @@ export function ProjectDetail() {
   const handleTabChange = (tab: ProjectTab) => {
     // Cache the active tab per project
     if (project?.id) {
-      try { localStorage.setItem(`abacus:project-tab:${project.id}`, tab); } catch {}
+      try { localStorage.setItem(`runeach:project-tab:${project.id}`, tab); } catch {}
     }
     if (isProjectPluginTab(tab)) {
       navigate(`/projects/${canonicalProjectRef}?tab=${encodeURIComponent(tab)}`);

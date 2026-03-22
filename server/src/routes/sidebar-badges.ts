@@ -1,7 +1,7 @@
 import { Router } from "express";
-import type { Db } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
 import { and, eq, sql } from "drizzle-orm";
-import { joinRequests } from "@abacus-lab/db";
+import { joinRequests } from "@runeachai/db";
 import { sidebarBadgeService } from "../services/sidebar-badges.js";
 import { accessService } from "../services/access.js";
 import { dashboardService } from "../services/dashboard.js";

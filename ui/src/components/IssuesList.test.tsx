@@ -4,7 +4,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { Issue } from "@abacus-lab/shared";
+import type { Issue } from "@runeachai/shared";
 import { I18nProvider } from "../context/I18nContext";
 import { IssuesList } from "./IssuesList";
 
@@ -141,7 +141,7 @@ async function renderIssuesList(options?: {
             issues={options?.issues ?? []}
             agents={options?.agents}
             projects={options?.projects}
-            viewStateKey={options?.viewStateKey ?? "abacus:issues-view"}
+            viewStateKey={options?.viewStateKey ?? "runeach:issues-view"}
             onUpdateIssue={vi.fn()}
           />
         </I18nProvider>
@@ -169,7 +169,7 @@ describe("IssuesList", () => {
   beforeEach(() => {
     (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
     window.localStorage.clear();
-    window.localStorage.setItem("abacus.locale", "zh-CN");
+    window.localStorage.setItem("runeach.locale", "zh-CN");
     mockOpenNewIssue.mockReset();
     mockGetSession.mockResolvedValue({
       session: { id: "session-1", userId: "user-1" },
@@ -185,7 +185,7 @@ describe("IssuesList", () => {
 
   it("localizes the filters UI and clears project filters from persisted view state", async () => {
     window.localStorage.setItem(
-      "abacus:issues-view:company-1",
+      "runeach:issues-view:company-1",
       JSON.stringify({ projects: ["project-1"] }),
     );
 
@@ -213,7 +213,7 @@ describe("IssuesList", () => {
     await flushUi();
 
     const stored = JSON.parse(
-      window.localStorage.getItem("abacus:issues-view:company-1") ?? "{}",
+      window.localStorage.getItem("runeach:issues-view:company-1") ?? "{}",
     ) as { projects?: string[] };
     expect(stored.projects).toEqual([]);
 
@@ -228,7 +228,7 @@ describe("IssuesList", () => {
     ];
 
     window.localStorage.setItem(
-      "abacus:issues-view:company-1",
+      "runeach:issues-view:company-1",
       JSON.stringify({ assignees: ["__me"] }),
     );
 
@@ -245,7 +245,7 @@ describe("IssuesList", () => {
     await firstView.cleanup();
 
     window.localStorage.setItem(
-      "abacus:issues-view:company-1",
+      "runeach:issues-view:company-1",
       JSON.stringify({ assignees: ["__unassigned"] }),
     );
 

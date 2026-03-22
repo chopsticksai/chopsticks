@@ -1,6 +1,6 @@
 import { Readable } from "node:stream";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { CompanyPortabilityFileEntry } from "@abacus-lab/shared";
+import type { CompanyPortabilityFileEntry } from "@runeachai/shared";
 
 const companySvc = {
   getById: vi.fn(),
@@ -95,14 +95,14 @@ function asTextFile(entry: CompanyPortabilityFileEntry | undefined) {
 }
 
 describe("company portability", () => {
-  const abacusKey = "abacus-lab/abacus/abacus";
+  const runeachKey = "runeachai/runeach/runeach";
   const companyPlaybookKey = "company/company-1/company-playbook";
 
   beforeEach(() => {
     vi.clearAllMocks();
     companySvc.getById.mockResolvedValue({
       id: "company-1",
-      name: "Abacus",
+      name: "RunEach",
       description: null,
       issuePrefix: "PAP",
       brandColor: "#5c5fff",
@@ -123,8 +123,8 @@ describe("company portability", () => {
         adapterType: "claude_local",
         adapterConfig: {
           promptTemplate: "You are ClaudeCoder.",
-          abacusSkillSync: {
-            desiredSkills: [abacusKey],
+          runeachSkillSync: {
+            desiredSkills: [runeachKey],
           },
           instructionsFilePath: "/tmp/ignored.md",
           cwd: "/tmp/ignored",
@@ -191,13 +191,13 @@ describe("company portability", () => {
       {
         id: "skill-1",
         companyId: "company-1",
-        key: abacusKey,
-        slug: "abacus",
-        name: "abacus",
-        description: "Abacus coordination skill",
-        markdown: "---\nname: abacus\ndescription: Abacus coordination skill\n---\n\n# Abacus\n",
+        key: runeachKey,
+        slug: "runeach",
+        name: "runeach",
+        description: "RunEach coordination skill",
+        markdown: "---\nname: runeach\ndescription: RunEach coordination skill\n---\n\n# RunEach\n",
         sourceType: "github",
-        sourceLocator: "https://github.com/abacus-lab/abacus/tree/master/skills/abacus",
+        sourceLocator: "https://github.com/runeachai/runeach/tree/master/skills/runeach",
         sourceRef: "0123456789abcdef0123456789abcdef01234567",
         trustLevel: "markdown_only",
         compatibility: "compatible",
@@ -207,11 +207,11 @@ describe("company portability", () => {
         ],
         metadata: {
           sourceKind: "github",
-          owner: "abacus-lab",
-          repo: "abacus",
+          owner: "runeachai",
+          repo: "runeach",
           ref: "0123456789abcdef0123456789abcdef01234567",
           trackingRef: "master",
-          repoSkillDir: "skills/abacus",
+          repoSkillDir: "skills/runeach",
         },
       },
       {
@@ -258,7 +258,7 @@ describe("company portability", () => {
         path: relativePath,
         kind: relativePath === "SKILL.md" ? "skill" : "reference",
         content: relativePath === "SKILL.md"
-          ? "---\nname: abacus\ndescription: Abacus coordination skill\n---\n\n# Abacus\n"
+          ? "---\nname: runeach\ndescription: RunEach coordination skill\n---\n\n# RunEach\n"
           : "# API\n",
         language: "markdown",
         markdown: true,
@@ -301,7 +301,7 @@ describe("company portability", () => {
     }));
   });
 
-  it("exports referenced skills as stubs by default with sanitized Abacus extension data", async () => {
+  it("exports referenced skills as stubs by default with sanitized RunEach extension data", async () => {
     const portability = companyPortabilityService({} as any);
 
     const exported = await portability.exportBundle("company-1", {
@@ -313,20 +313,20 @@ describe("company portability", () => {
       },
     });
 
-    expect(asTextFile(exported.files["COMPANY.md"])).toContain('name: "Abacus"');
+    expect(asTextFile(exported.files["COMPANY.md"])).toContain('name: "RunEach"');
     expect(asTextFile(exported.files["COMPANY.md"])).toContain('schema: "agentcompanies/v1"');
     expect(asTextFile(exported.files["agents/claudecoder/AGENTS.md"])).toContain("You are ClaudeCoder.");
     expect(asTextFile(exported.files["agents/claudecoder/AGENTS.md"])).toContain("skills:");
-    expect(asTextFile(exported.files["agents/claudecoder/AGENTS.md"])).toContain(`- "${abacusKey}"`);
+    expect(asTextFile(exported.files["agents/claudecoder/AGENTS.md"])).toContain(`- "${runeachKey}"`);
     expect(asTextFile(exported.files["agents/cmo/AGENTS.md"])).not.toContain("skills:");
-    expect(asTextFile(exported.files["skills/abacus-lab/abacus/abacus/SKILL.md"])).toContain("metadata:");
-    expect(asTextFile(exported.files["skills/abacus-lab/abacus/abacus/SKILL.md"])).toContain('kind: "github-dir"');
-    expect(exported.files["skills/abacus-lab/abacus/abacus/references/api.md"]).toBeUndefined();
+    expect(asTextFile(exported.files["skills/runeachai/runeach/runeach/SKILL.md"])).toContain("metadata:");
+    expect(asTextFile(exported.files["skills/runeachai/runeach/runeach/SKILL.md"])).toContain('kind: "github-dir"');
+    expect(exported.files["skills/runeachai/runeach/runeach/references/api.md"]).toBeUndefined();
     expect(asTextFile(exported.files["skills/company/PAP/company-playbook/SKILL.md"])).toContain("# Company Playbook");
     expect(asTextFile(exported.files["skills/company/PAP/company-playbook/references/checklist.md"])).toContain("# Checklist");
 
-    const extension = asTextFile(exported.files[".abacus.yaml"]);
-    expect(extension).toContain('schema: "abacus/v1"');
+    const extension = asTextFile(exported.files[".runeach.yaml"]);
+    expect(extension).toContain('schema: "runeach/v1"');
     expect(extension).not.toContain("promptTemplate");
     expect(extension).not.toContain("instructionsFilePath");
     expect(extension).not.toContain("command:");
@@ -336,7 +336,7 @@ describe("company portability", () => {
     expect(extension).toContain("ANTHROPIC_API_KEY:");
     expect(extension).toContain('requirement: "optional"');
     expect(extension).toContain('default: ""');
-    expect(extension).not.toContain("abacusSkillSync");
+    expect(extension).not.toContain("runeachSkillSync");
     expect(extension).not.toContain("PATH:");
     expect(extension).not.toContain("requireBoardApprovalForNewAgents: true");
     expect(extension).not.toContain("budgetMonthlyCents: 0");
@@ -357,9 +357,9 @@ describe("company portability", () => {
       expandReferencedSkills: true,
     });
 
-    expect(asTextFile(exported.files["skills/abacus-lab/abacus/abacus/SKILL.md"])).toContain("# Abacus");
-    expect(asTextFile(exported.files["skills/abacus-lab/abacus/abacus/SKILL.md"])).toContain("metadata:");
-    expect(asTextFile(exported.files["skills/abacus-lab/abacus/abacus/references/api.md"])).toContain("# API");
+    expect(asTextFile(exported.files["skills/runeachai/runeach/runeach/SKILL.md"])).toContain("# RunEach");
+    expect(asTextFile(exported.files["skills/runeachai/runeach/runeach/SKILL.md"])).toContain("metadata:");
+    expect(asTextFile(exported.files["skills/runeachai/runeach/runeach/references/api.md"])).toContain("# API");
   });
 
   it("exports only selected skills when skills filter is provided", async () => {
@@ -377,7 +377,7 @@ describe("company portability", () => {
 
     expect(exported.files["skills/company/PAP/company-playbook/SKILL.md"]).toBeDefined();
     expect(asTextFile(exported.files["skills/company/PAP/company-playbook/SKILL.md"])).toContain("# Company Playbook");
-    expect(exported.files["skills/abacus-lab/abacus/abacus/SKILL.md"]).toBeUndefined();
+    expect(exported.files["skills/runeachai/runeach/runeach/SKILL.md"]).toBeUndefined();
   });
 
   it("warns and exports all skills when skills filter matches nothing", async () => {
@@ -395,10 +395,10 @@ describe("company portability", () => {
 
     expect(exported.warnings).toContainEqual(expect.stringContaining("nonexistent-skill"));
     expect(exported.files["skills/company/PAP/company-playbook/SKILL.md"]).toBeDefined();
-    expect(exported.files["skills/abacus-lab/abacus/abacus/SKILL.md"]).toBeDefined();
+    expect(exported.files["skills/runeachai/runeach/runeach/SKILL.md"]).toBeDefined();
   });
 
-  it("exports the company logo into images/ and references it from .abacus.yaml", async () => {
+  it("exports the company logo into images/ and references it from .runeach.yaml", async () => {
     const storage = {
       getObject: vi.fn().mockResolvedValue({
         stream: Readable.from([Buffer.from("png-bytes")]),
@@ -406,7 +406,7 @@ describe("company portability", () => {
     };
     companySvc.getById.mockResolvedValue({
       id: "company-1",
-      name: "Abacus",
+      name: "RunEach",
       description: null,
       issuePrefix: "PAP",
       brandColor: "#5c5fff",
@@ -439,7 +439,7 @@ describe("company portability", () => {
       data: Buffer.from("png-bytes").toString("base64"),
       contentType: "image/png",
     });
-    expect(exported.files[".abacus.yaml"]).toContain('logoPath: "images/company-logo.png"');
+    expect(exported.files[".runeach.yaml"]).toContain('logoPath: "images/company-logo.png"');
   });
 
   it("exports duplicate skill slugs into readable namespaced paths", async () => {
@@ -489,23 +489,23 @@ describe("company portability", () => {
         },
       },
       {
-        id: "skill-abacus",
+        id: "skill-runeach",
         companyId: "company-1",
-        key: "abacus-lab/abacus/release-changelog",
+        key: "runeachai/runeach/release-changelog",
         slug: "release-changelog",
         name: "release-changelog",
         description: "Bundled release changelog skill",
         markdown: "---\nname: release-changelog\n---\n\n# Bundled Release Changelog\n",
         sourceType: "github",
-        sourceLocator: "https://github.com/abacus-lab/abacus/tree/master/skills/release-changelog",
+        sourceLocator: "https://github.com/runeachai/runeach/tree/master/skills/release-changelog",
         sourceRef: "0123456789abcdef0123456789abcdef01234567",
         trustLevel: "markdown_only",
         compatibility: "compatible",
         fileInventory: [{ path: "SKILL.md", kind: "skill" }],
         metadata: {
-          sourceKind: "abacus_bundled",
-          owner: "abacus-lab",
-          repo: "abacus",
+          sourceKind: "runeach_bundled",
+          owner: "runeachai",
+          repo: "runeach",
           ref: "0123456789abcdef0123456789abcdef01234567",
           trackingRef: "master",
           repoSkillDir: "skills/release-changelog",
@@ -523,8 +523,8 @@ describe("company portability", () => {
     });
 
     expect(asTextFile(exported.files["skills/local/release-changelog/SKILL.md"])).toContain("# Local Release Changelog");
-    expect(asTextFile(exported.files["skills/abacus-lab/abacus/release-changelog/SKILL.md"])).toContain("metadata:");
-    expect(asTextFile(exported.files["skills/abacus-lab/abacus/release-changelog/SKILL.md"])).toContain("abacus-lab/abacus/release-changelog");
+    expect(asTextFile(exported.files["skills/runeachai/runeach/release-changelog/SKILL.md"])).toContain("metadata:");
+    expect(asTextFile(exported.files["skills/runeachai/runeach/release-changelog/SKILL.md"])).toContain("runeachai/runeach/release-changelog");
   });
 
   it("builds export previews without tasks by default", async () => {
@@ -573,7 +573,7 @@ describe("company portability", () => {
     expect(preview.fileInventory.some((entry) => entry.path.startsWith("tasks/"))).toBe(false);
   });
 
-  it("reads env inputs back from .abacus.yaml during preview import", async () => {
+  it("reads env inputs back from .runeach.yaml during preview import", async () => {
     const portability = companyPortabilityService({} as any);
 
     const exported = await portability.exportBundle("company-1", {
@@ -599,7 +599,7 @@ describe("company portability", () => {
       },
       target: {
         mode: "new_company",
-        newCompanyName: "Imported Abacus",
+        newCompanyName: "Imported RunEach",
       },
       agents: "all",
       collisionStrategy: "rename",
@@ -628,12 +628,12 @@ describe("company portability", () => {
     ]);
   });
 
-  it("imports a vendor-neutral package without .abacus.yaml", async () => {
+  it("imports a vendor-neutral package without .runeach.yaml", async () => {
     const portability = companyPortabilityService({} as any);
 
     companySvc.create.mockResolvedValue({
       id: "company-imported",
-      name: "Imported Abacus",
+      name: "Imported RunEach",
     });
     accessSvc.ensureMembership.mockResolvedValue(undefined);
     agentSvc.create.mockResolvedValue({
@@ -644,16 +644,16 @@ describe("company portability", () => {
     const preview = await portability.previewImport({
       source: {
         type: "inline",
-        rootPath: "abacus-demo",
+        rootPath: "runeach-demo",
         files: {
           "COMPANY.md": [
             "---",
             'schema: "agentcompanies/v1"',
-            'name: "Imported Abacus"',
+            'name: "Imported RunEach"',
             'description: "Portable company package"',
             "---",
             "",
-            "# Imported Abacus",
+            "# Imported RunEach",
             "",
           ].join("\n"),
           "agents/claudecoder/AGENTS.md": [
@@ -677,14 +677,14 @@ describe("company portability", () => {
       },
       target: {
         mode: "new_company",
-        newCompanyName: "Imported Abacus",
+        newCompanyName: "Imported RunEach",
       },
       agents: "all",
       collisionStrategy: "rename",
     });
 
     expect(preview.errors).toEqual([]);
-    expect(preview.manifest.company?.name).toBe("Imported Abacus");
+    expect(preview.manifest.company?.name).toBe("Imported RunEach");
     expect(preview.manifest.agents).toEqual([
       expect.objectContaining({
         slug: "claudecoder",
@@ -697,16 +697,16 @@ describe("company portability", () => {
     await portability.importBundle({
       source: {
         type: "inline",
-        rootPath: "abacus-demo",
+        rootPath: "runeach-demo",
         files: {
           "COMPANY.md": [
             "---",
             'schema: "agentcompanies/v1"',
-            'name: "Imported Abacus"',
+            'name: "Imported RunEach"',
             'description: "Portable company package"',
             "---",
             "",
-            "# Imported Abacus",
+            "# Imported RunEach",
             "",
           ].join("\n"),
           "agents/claudecoder/AGENTS.md": [
@@ -730,14 +730,14 @@ describe("company portability", () => {
       },
       target: {
         mode: "new_company",
-        newCompanyName: "Imported Abacus",
+        newCompanyName: "Imported RunEach",
       },
       agents: "all",
       collisionStrategy: "rename",
     }, "user-1");
 
     expect(companySvc.create).toHaveBeenCalledWith(expect.objectContaining({
-      name: "Imported Abacus",
+      name: "Imported RunEach",
       description: "Portable company package",
     }));
     expect(agentSvc.create).toHaveBeenCalledWith("company-imported", expect.objectContaining({
@@ -793,7 +793,7 @@ describe("company portability", () => {
       },
     });
 
-    const extension = asTextFile(exported.files[".abacus.yaml"]);
+    const extension = asTextFile(exported.files[".runeach.yaml"]);
     expect(extension).toContain("APIKEY:");
     expect(extension).toContain("GITHUBAUTH:");
     expect(extension).toContain("PRIVATEKEY:");
@@ -808,7 +808,7 @@ describe("company portability", () => {
 
     companySvc.create.mockResolvedValue({
       id: "company-imported",
-      name: "Imported Abacus",
+      name: "Imported RunEach",
     });
     accessSvc.ensureMembership.mockResolvedValue(undefined);
     agentSvc.create.mockResolvedValue({
@@ -841,7 +841,7 @@ describe("company portability", () => {
       },
       target: {
         mode: "new_company",
-        newCompanyName: "Imported Abacus",
+        newCompanyName: "Imported RunEach",
       },
       agents: "all",
       collisionStrategy: "rename",
@@ -853,8 +853,8 @@ describe("company portability", () => {
     });
     expect(agentSvc.create).toHaveBeenCalledWith("company-imported", expect.objectContaining({
       adapterConfig: expect.objectContaining({
-        abacusSkillSync: {
-          desiredSkills: [abacusKey],
+        runeachSkillSync: {
+          desiredSkills: [runeachKey],
         },
       }),
     }));
@@ -873,12 +873,12 @@ describe("company portability", () => {
     };
     companySvc.create.mockResolvedValue({
       id: "company-imported",
-      name: "Imported Abacus",
+      name: "Imported RunEach",
       logoAssetId: null,
     });
     companySvc.update.mockResolvedValue({
       id: "company-imported",
-      name: "Imported Abacus",
+      name: "Imported RunEach",
       logoAssetId: "asset-created",
     });
     agentSvc.create.mockResolvedValue({
@@ -901,7 +901,7 @@ describe("company portability", () => {
       data: Buffer.from("png-bytes").toString("base64"),
       contentType: "image/png",
     };
-    exported.files[".abacus.yaml"] = `${exported.files[".abacus.yaml"]}`.replace(
+    exported.files[".runeach.yaml"] = `${exported.files[".runeach.yaml"]}`.replace(
       'brandColor: "#5c5fff"\n',
       'brandColor: "#5c5fff"\n  logoPath: "images/company-logo.png"\n',
     );
@@ -922,7 +922,7 @@ describe("company portability", () => {
       },
       target: {
         mode: "new_company",
-        newCompanyName: "Imported Abacus",
+        newCompanyName: "Imported RunEach",
       },
       agents: "all",
       collisionStrategy: "rename",
@@ -950,7 +950,7 @@ describe("company portability", () => {
 
     companySvc.create.mockResolvedValue({
       id: "company-imported",
-      name: "Imported Abacus",
+      name: "Imported RunEach",
     });
     agentSvc.create.mockResolvedValue({
       id: "agent-created",
@@ -982,7 +982,7 @@ describe("company portability", () => {
       },
       target: {
         mode: "new_company",
-        newCompanyName: "Imported Abacus",
+        newCompanyName: "Imported RunEach",
       },
       agents: "all",
       collisionStrategy: "rename",
@@ -1016,7 +1016,7 @@ describe("company portability", () => {
     projectSvc.list.mockResolvedValue([]);
     companySvc.getById.mockResolvedValue({
       id: "company-1",
-      name: "Abacus",
+      name: "RunEach",
       description: "Existing company",
       brandColor: "#123456",
       requireBoardApprovalForNewAgents: false,
@@ -1088,7 +1088,7 @@ describe("company portability", () => {
 
     companySvc.create.mockResolvedValue({
       id: "company-imported",
-      name: "Imported Abacus",
+      name: "Imported RunEach",
     });
     accessSvc.ensureMembership.mockResolvedValue(undefined);
     agentSvc.create.mockResolvedValue({
@@ -1121,7 +1121,7 @@ describe("company portability", () => {
       },
       target: {
         mode: "new_company",
-        newCompanyName: "Imported Abacus",
+        newCompanyName: "Imported RunEach",
       },
       agents: "all",
       collisionStrategy: "rename",

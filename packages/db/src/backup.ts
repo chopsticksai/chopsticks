@@ -21,22 +21,22 @@ function expandHomePrefix(value: string): string {
   return value;
 }
 
-function resolveAbacusHomeDir(): string {
-  const envHome = process.env.ABACUS_HOME?.trim();
+function resolveRunEachHomeDir(): string {
+  const envHome = process.env.RUNEACH_HOME?.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
-  return path.resolve(os.homedir(), ".abacus");
+  return path.resolve(os.homedir(), ".runeach");
 }
 
-function resolveAbacusInstanceId(): string {
-  const raw = process.env.ABACUS_INSTANCE_ID?.trim() || "default";
+function resolveRunEachInstanceId(): string {
+  const raw = process.env.RUNEACH_INSTANCE_ID?.trim() || "default";
   if (!/^[a-zA-Z0-9_-]+$/.test(raw)) {
-    throw new Error(`Invalid ABACUS_INSTANCE_ID '${raw}'.`);
+    throw new Error(`Invalid RUNEACH_INSTANCE_ID '${raw}'.`);
   }
   return raw;
 }
 
 function resolveDefaultConfigPath(): string {
-  return path.resolve(resolveAbacusHomeDir(), "instances", resolveAbacusInstanceId(), "config.json");
+  return path.resolve(resolveRunEachHomeDir(), "instances", resolveRunEachInstanceId(), "config.json");
 }
 
 function readConfig(configPath: string): PartialConfig | null {
@@ -111,11 +111,11 @@ function resolveConnectionString(config: PartialConfig | null): string {
   }
 
   const port = resolveEmbeddedPort(config);
-  return `postgres://abacus:abacus@127.0.0.1:${port}/abacus`;
+  return `postgres://runeach:runeach@127.0.0.1:${port}/runeach`;
 }
 
 function resolveDefaultBackupDir(): string {
-  return path.resolve(resolveAbacusHomeDir(), "instances", resolveAbacusInstanceId(), "data", "backups");
+  return path.resolve(resolveRunEachHomeDir(), "instances", resolveRunEachInstanceId(), "data", "backups");
 }
 
 function resolveBackupDir(config: PartialConfig | null): string {
@@ -146,7 +146,7 @@ async function main() {
       connectionString,
       backupDir,
       retentionDays,
-      filenamePrefix: "abacus",
+      filenamePrefix: "runeach",
     });
 
     console.log(`Backup saved: ${formatDatabaseBackupResult(result)}`);

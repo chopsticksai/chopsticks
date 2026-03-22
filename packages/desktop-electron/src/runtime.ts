@@ -24,8 +24,8 @@ export function resolvePackagedRuntimeRoot(appRoot: string): string {
 
 function resolvePackagedServerEntrypoint(runtimeRoot: string): string {
   const candidates = [
-    path.resolve(runtimeRoot, "node_modules", "@abacus-lab", "server", "dist", "index.js"),
-    path.resolve(runtimeRoot, "node_modules", "@abacus", "server", "dist", "index.js"),
+    path.resolve(runtimeRoot, "node_modules", "@runeachai", "server", "dist", "index.js"),
+    path.resolve(runtimeRoot, "node_modules", "@runeach", "server", "dist", "index.js"),
   ];
 
   for (const candidate of candidates) {
@@ -46,16 +46,16 @@ export function resolveServerEntrypoint(input: DesktopRuntimeInput): string {
 export function buildWorkerEnvironment(input: DesktopRuntimeInput): NodeJS.ProcessEnv {
   return {
     ...process.env,
-    ABACUS_DESKTOP_MODE: input.mode,
-    ABACUS_DESKTOP_SERVER_ENTRY: resolveServerEntrypoint(input),
-    ABACUS_HOME: process.env.ABACUS_HOME?.trim() || input.userDataDir,
-    ABACUS_INSTANCE_ID: process.env.ABACUS_INSTANCE_ID?.trim() || "default",
+    RUNEACH_DESKTOP_MODE: input.mode,
+    RUNEACH_DESKTOP_SERVER_ENTRY: resolveServerEntrypoint(input),
+    RUNEACH_HOME: process.env.RUNEACH_HOME?.trim() || input.userDataDir,
+    RUNEACH_INSTANCE_ID: process.env.RUNEACH_INSTANCE_ID?.trim() || "default",
     HOST: "127.0.0.1",
     PORT: process.env.PORT?.trim() || "3100",
-    ABACUS_OPEN_ON_LISTEN: "false",
+    RUNEACH_OPEN_ON_LISTEN: "false",
     ...(input.mode === "development"
       ? {
-          ABACUS_UI_DEV_MIDDLEWARE: "true",
+          RUNEACH_UI_DEV_MIDDLEWARE: "true",
         }
       : {}),
   };

@@ -22,25 +22,25 @@ export const databaseBackupConfigSchema = z.object({
   enabled: z.boolean().default(true),
   intervalMinutes: z.number().int().min(1).max(7 * 24 * 60).default(60),
   retentionDays: z.number().int().min(1).max(3650).default(30),
-  dir: z.string().default("~/.abacus/instances/default/data/backups"),
+  dir: z.string().default("~/.runeach/instances/default/data/backups"),
 });
 
 export const databaseConfigSchema = z.object({
   mode: z.enum(["embedded-postgres", "postgres"]).default("embedded-postgres"),
   connectionString: z.string().optional(),
-  embeddedPostgresDataDir: z.string().default("~/.abacus/instances/default/db"),
+  embeddedPostgresDataDir: z.string().default("~/.runeach/instances/default/db"),
   embeddedPostgresPort: z.number().int().min(1).max(65535).default(54329),
   backup: databaseBackupConfigSchema.default({
     enabled: true,
     intervalMinutes: 60,
     retentionDays: 30,
-    dir: "~/.abacus/instances/default/data/backups",
+    dir: "~/.runeach/instances/default/data/backups",
   }),
 });
 
 export const loggingConfigSchema = z.object({
   mode: z.enum(["file", "cloud"]),
-  logDir: z.string().default("~/.abacus/instances/default/logs"),
+  logDir: z.string().default("~/.runeach/instances/default/logs"),
 });
 
 export const serverConfigSchema = z.object({
@@ -59,11 +59,11 @@ export const authConfigSchema = z.object({
 });
 
 export const storageLocalDiskConfigSchema = z.object({
-  baseDir: z.string().default("~/.abacus/instances/default/data/storage"),
+  baseDir: z.string().default("~/.runeach/instances/default/data/storage"),
 });
 
 export const storageS3ConfigSchema = z.object({
-  bucket: z.string().min(1).default("abacus"),
+  bucket: z.string().min(1).default("runeach"),
   region: z.string().min(1).default("us-east-1"),
   endpoint: z.string().optional(),
   prefix: z.string().default(""),
@@ -73,10 +73,10 @@ export const storageS3ConfigSchema = z.object({
 export const storageConfigSchema = z.object({
   provider: z.enum(STORAGE_PROVIDERS).default("local_disk"),
   localDisk: storageLocalDiskConfigSchema.default({
-    baseDir: "~/.abacus/instances/default/data/storage",
+    baseDir: "~/.runeach/instances/default/data/storage",
   }),
   s3: storageS3ConfigSchema.default({
-    bucket: "abacus",
+    bucket: "runeach",
     region: "us-east-1",
     prefix: "",
     forcePathStyle: false,
@@ -84,18 +84,18 @@ export const storageConfigSchema = z.object({
 });
 
 export const secretsLocalEncryptedConfigSchema = z.object({
-  keyFilePath: z.string().default("~/.abacus/instances/default/secrets/master.key"),
+  keyFilePath: z.string().default("~/.runeach/instances/default/secrets/master.key"),
 });
 
 export const secretsConfigSchema = z.object({
   provider: z.enum(SECRET_PROVIDERS).default("local_encrypted"),
   strictMode: z.boolean().default(false),
   localEncrypted: secretsLocalEncryptedConfigSchema.default({
-    keyFilePath: "~/.abacus/instances/default/secrets/master.key",
+    keyFilePath: "~/.runeach/instances/default/secrets/master.key",
   }),
 });
 
-export const abacusConfigSchema = z
+export const runeachConfigSchema = z
   .object({
     $meta: configMetaSchema,
     llm: llmConfigSchema.optional(),
@@ -109,10 +109,10 @@ export const abacusConfigSchema = z
     storage: storageConfigSchema.default({
       provider: "local_disk",
       localDisk: {
-        baseDir: "~/.abacus/instances/default/data/storage",
+        baseDir: "~/.runeach/instances/default/data/storage",
       },
       s3: {
-        bucket: "abacus",
+        bucket: "runeach",
         region: "us-east-1",
         prefix: "",
         forcePathStyle: false,
@@ -122,7 +122,7 @@ export const abacusConfigSchema = z
       provider: "local_encrypted",
       strictMode: false,
       localEncrypted: {
-        keyFilePath: "~/.abacus/instances/default/secrets/master.key",
+        keyFilePath: "~/.runeach/instances/default/secrets/master.key",
       },
     }),
   })
@@ -163,7 +163,7 @@ export const abacusConfigSchema = z
     }
   });
 
-export type AbacusConfig = z.infer<typeof abacusConfigSchema>;
+export type RunEachConfig = z.infer<typeof runeachConfigSchema>;
 export type LlmConfig = z.infer<typeof llmConfigSchema>;
 export type DatabaseConfig = z.infer<typeof databaseConfigSchema>;
 export type LoggingConfig = z.infer<typeof loggingConfigSchema>;

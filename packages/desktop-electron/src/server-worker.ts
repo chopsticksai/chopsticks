@@ -14,9 +14,9 @@ type FatalMessage = {
 };
 
 function resolveServerEntrypoint(): string {
-  const entry = process.env.ABACUS_DESKTOP_SERVER_ENTRY?.trim();
+  const entry = process.env.RUNEACH_DESKTOP_SERVER_ENTRY?.trim();
   if (!entry) {
-    throw new Error("ABACUS_DESKTOP_SERVER_ENTRY is required.");
+    throw new Error("RUNEACH_DESKTOP_SERVER_ENTRY is required.");
   }
   if (!fs.existsSync(entry)) {
     throw new Error(`Server entrypoint not found: ${entry}`);
@@ -25,11 +25,11 @@ function resolveServerEntrypoint(): string {
 }
 
 function applyDesktopEnvironment(): void {
-  process.env.ABACUS_HOME = process.env.ABACUS_HOME?.trim() || process.cwd();
-  process.env.ABACUS_INSTANCE_ID = process.env.ABACUS_INSTANCE_ID?.trim() || "default";
+  process.env.RUNEACH_HOME = process.env.RUNEACH_HOME?.trim() || process.cwd();
+  process.env.RUNEACH_INSTANCE_ID = process.env.RUNEACH_INSTANCE_ID?.trim() || "default";
   process.env.HOST = "127.0.0.1";
   process.env.PORT = process.env.PORT?.trim() || "3100";
-  process.env.ABACUS_OPEN_ON_LISTEN = "false";
+  process.env.RUNEACH_OPEN_ON_LISTEN = "false";
 }
 
 async function loadServerModule(entryPath: string): Promise<() => Promise<{ apiUrl: string }>> {

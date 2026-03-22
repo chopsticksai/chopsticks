@@ -4,7 +4,7 @@ import { resolveDefaultContextPath } from "../config/home.js";
 
 const DEFAULT_CONTEXT_BASENAME = "context.json";
 const DEFAULT_PROFILE = "default";
-const REPO_CONTEXT_DIRNAME = ".abacus";
+const REPO_CONTEXT_DIRNAME = ".runeach";
 
 export interface ClientContextProfile {
   apiBase?: string;
@@ -38,7 +38,7 @@ function findContextFileFromAncestors(startDir: string): string | null {
 
 export function resolveContextPath(overridePath?: string): string {
   if (overridePath) return path.resolve(overridePath);
-  if (process.env.ABACUS_CONTEXT) return path.resolve(process.env.ABACUS_CONTEXT);
+  if (process.env.RUNEACH_CONTEXT) return path.resolve(process.env.RUNEACH_CONTEXT);
   return findContextFileFromAncestors(process.cwd()) ?? resolveDefaultContextPath();
 }
 

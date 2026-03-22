@@ -24,18 +24,18 @@ OPENCLAW_METHOD="${OPENCLAW_METHOD:-POST}"
 OPENCLAW_AUTH_HEADER="${OPENCLAW_AUTH_HEADER:-}"
 OPENCLAW_TIMEOUT_SEC="${OPENCLAW_TIMEOUT_SEC:-180}"
 OPENCLAW_MODEL="${OPENCLAW_MODEL:-openclaw}"
-OPENCLAW_USER="${OPENCLAW_USER:-abacus-smoke}"
+OPENCLAW_USER="${OPENCLAW_USER:-runeach-smoke}"
 
-ABACUS_RUN_ID="${ABACUS_RUN_ID:-smoke-run-$(date +%s)}"
-ABACUS_AGENT_ID="${ABACUS_AGENT_ID:-openclaw-smoke-agent}"
-ABACUS_COMPANY_ID="${ABACUS_COMPANY_ID:-openclaw-smoke-company}"
-ABACUS_API_URL="${ABACUS_API_URL:-http://localhost:3100}"
-ABACUS_TASK_ID="${ABACUS_TASK_ID:-openclaw-smoke-task}"
-ABACUS_WAKE_REASON="${ABACUS_WAKE_REASON:-openclaw_smoke_test}"
-ABACUS_WAKE_COMMENT_ID="${ABACUS_WAKE_COMMENT_ID:-}"
-ABACUS_APPROVAL_ID="${ABACUS_APPROVAL_ID:-}"
-ABACUS_APPROVAL_STATUS="${ABACUS_APPROVAL_STATUS:-}"
-ABACUS_LINKED_ISSUE_IDS="${ABACUS_LINKED_ISSUE_IDS:-}"
+RUNEACH_RUN_ID="${RUNEACH_RUN_ID:-smoke-run-$(date +%s)}"
+RUNEACH_AGENT_ID="${RUNEACH_AGENT_ID:-openclaw-smoke-agent}"
+RUNEACH_COMPANY_ID="${RUNEACH_COMPANY_ID:-openclaw-smoke-company}"
+RUNEACH_API_URL="${RUNEACH_API_URL:-http://localhost:3100}"
+RUNEACH_TASK_ID="${RUNEACH_TASK_ID:-openclaw-smoke-task}"
+RUNEACH_WAKE_REASON="${RUNEACH_WAKE_REASON:-openclaw_smoke_test}"
+RUNEACH_WAKE_COMMENT_ID="${RUNEACH_WAKE_COMMENT_ID:-}"
+RUNEACH_APPROVAL_ID="${RUNEACH_APPROVAL_ID:-}"
+RUNEACH_APPROVAL_STATUS="${RUNEACH_APPROVAL_STATUS:-}"
+RUNEACH_LINKED_ISSUE_IDS="${RUNEACH_LINKED_ISSUE_IDS:-}"
 OPENCLAW_TEXT_PREFIX="${OPENCLAW_TEXT_PREFIX:-Standalone OpenClaw SSE smoke test.}"
 
 [[ -n "$OPENCLAW_URL" ]] || fail "OPENCLAW_URL is required"
@@ -43,51 +43,51 @@ OPENCLAW_TEXT_PREFIX="${OPENCLAW_TEXT_PREFIX:-Standalone OpenClaw SSE smoke test
 read -r -d '' TEXT_BODY <<EOF || true
 ${OPENCLAW_TEXT_PREFIX}
 
-ABACUS_RUN_ID=${ABACUS_RUN_ID}
-ABACUS_AGENT_ID=${ABACUS_AGENT_ID}
-ABACUS_COMPANY_ID=${ABACUS_COMPANY_ID}
-ABACUS_API_URL=${ABACUS_API_URL}
-ABACUS_TASK_ID=${ABACUS_TASK_ID}
-ABACUS_WAKE_REASON=${ABACUS_WAKE_REASON}
-ABACUS_WAKE_COMMENT_ID=${ABACUS_WAKE_COMMENT_ID}
-ABACUS_APPROVAL_ID=${ABACUS_APPROVAL_ID}
-ABACUS_APPROVAL_STATUS=${ABACUS_APPROVAL_STATUS}
-ABACUS_LINKED_ISSUE_IDS=${ABACUS_LINKED_ISSUE_IDS}
+RUNEACH_RUN_ID=${RUNEACH_RUN_ID}
+RUNEACH_AGENT_ID=${RUNEACH_AGENT_ID}
+RUNEACH_COMPANY_ID=${RUNEACH_COMPANY_ID}
+RUNEACH_API_URL=${RUNEACH_API_URL}
+RUNEACH_TASK_ID=${RUNEACH_TASK_ID}
+RUNEACH_WAKE_REASON=${RUNEACH_WAKE_REASON}
+RUNEACH_WAKE_COMMENT_ID=${RUNEACH_WAKE_COMMENT_ID}
+RUNEACH_APPROVAL_ID=${RUNEACH_APPROVAL_ID}
+RUNEACH_APPROVAL_STATUS=${RUNEACH_APPROVAL_STATUS}
+RUNEACH_LINKED_ISSUE_IDS=${RUNEACH_LINKED_ISSUE_IDS}
 
-Run your Abacus heartbeat procedure now.
+Run your RunEach heartbeat procedure now.
 EOF
 
 PAYLOAD="$(jq -nc \
   --arg text "$TEXT_BODY" \
   --arg model "$OPENCLAW_MODEL" \
   --arg user "$OPENCLAW_USER" \
-  --arg runId "$ABACUS_RUN_ID" \
-  --arg agentId "$ABACUS_AGENT_ID" \
-  --arg companyId "$ABACUS_COMPANY_ID" \
-  --arg apiUrl "$ABACUS_API_URL" \
-  --arg taskId "$ABACUS_TASK_ID" \
-  --arg wakeReason "$ABACUS_WAKE_REASON" \
-  --arg wakeCommentId "$ABACUS_WAKE_COMMENT_ID" \
-  --arg approvalId "$ABACUS_APPROVAL_ID" \
-  --arg approvalStatus "$ABACUS_APPROVAL_STATUS" \
-  --arg linkedIssueIds "$ABACUS_LINKED_ISSUE_IDS" \
+  --arg runId "$RUNEACH_RUN_ID" \
+  --arg agentId "$RUNEACH_AGENT_ID" \
+  --arg companyId "$RUNEACH_COMPANY_ID" \
+  --arg apiUrl "$RUNEACH_API_URL" \
+  --arg taskId "$RUNEACH_TASK_ID" \
+  --arg wakeReason "$RUNEACH_WAKE_REASON" \
+  --arg wakeCommentId "$RUNEACH_WAKE_COMMENT_ID" \
+  --arg approvalId "$RUNEACH_APPROVAL_ID" \
+  --arg approvalStatus "$RUNEACH_APPROVAL_STATUS" \
+  --arg linkedIssueIds "$RUNEACH_LINKED_ISSUE_IDS" \
   '{
     model: $model,
     user: $user,
     input: $text,
     stream: true,
     metadata: {
-      ABACUS_RUN_ID: $runId,
-      ABACUS_AGENT_ID: $agentId,
-      ABACUS_COMPANY_ID: $companyId,
-      ABACUS_API_URL: $apiUrl,
-      ABACUS_TASK_ID: $taskId,
-      ABACUS_WAKE_REASON: $wakeReason,
-      ABACUS_WAKE_COMMENT_ID: $wakeCommentId,
-      ABACUS_APPROVAL_ID: $approvalId,
-      ABACUS_APPROVAL_STATUS: $approvalStatus,
-      ABACUS_LINKED_ISSUE_IDS: $linkedIssueIds,
-      abacus_session_key: ("abacus:run:" + $runId)
+      RUNEACH_RUN_ID: $runId,
+      RUNEACH_AGENT_ID: $agentId,
+      RUNEACH_COMPANY_ID: $companyId,
+      RUNEACH_API_URL: $apiUrl,
+      RUNEACH_TASK_ID: $taskId,
+      RUNEACH_WAKE_REASON: $wakeReason,
+      RUNEACH_WAKE_COMMENT_ID: $wakeCommentId,
+      RUNEACH_APPROVAL_ID: $approvalId,
+      RUNEACH_APPROVAL_STATUS: $approvalStatus,
+      RUNEACH_LINKED_ISSUE_IDS: $linkedIssueIds,
+      runeach_session_key: ("runeach:run:" + $runId)
     }
   }')"
 
@@ -105,7 +105,7 @@ args=(
   -X "$OPENCLAW_METHOD"
   -H "content-type: application/json"
   -H "accept: text/event-stream"
-  -H "x-openclaw-session-key: abacus:run:${ABACUS_RUN_ID}"
+  -H "x-openclaw-session-key: runeach:run:${RUNEACH_RUN_ID}"
   -D "$headers_file"
   -o "$body_file"
   --data "$PAYLOAD"

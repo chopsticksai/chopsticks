@@ -1,6 +1,6 @@
-# Releasing Abacus
+# Releasing RunEach
 
-Maintainer runbook for shipping Abacus across npm, GitHub, and the website-facing changelog surface.
+Maintainer runbook for shipping RunEach across npm, GitHub, and the website-facing changelog surface.
 
 The release model is now commit-driven:
 
@@ -11,7 +11,7 @@ The release model is now commit-driven:
 
 ## Versioning Model
 
-Abacus uses calendar versions that still fit semver syntax:
+RunEach uses calendar versions that still fit semver syntax:
 
 - stable: `YYYY.MDD.P`
 - canary: `YYYY.MDD.P-canary.N`
@@ -35,7 +35,7 @@ Important constraints:
 Every stable release has four separate surfaces:
 
 1. **Verification** - the exact git SHA passes typecheck, tests, and build
-2. **npm** - `@abacus-lab/abacus` and public workspace packages are published
+2. **npm** - `@runeachai/runeach` and public workspace packages are published
 3. **GitHub** - the stable release gets a git tag and GitHub Release
 4. **Website / announcements** - the stable changelog is published externally and announced
 
@@ -68,16 +68,16 @@ It:
 Users install canaries with:
 
 ```bash
-npx @abacus-lab/abacus@canary onboard
+npx @runeachai/runeach@canary onboard
 # or
-npx @abacus-lab/abacus@canary onboard --data-dir "$(mktemp -d /tmp/abacus-canary.XXXXXX)"
+npx @runeachai/runeach@canary onboard --data-dir "$(mktemp -d /tmp/runeach-canary.XXXXXX)"
 ```
 
 ### Stable
 
 Use [`.github/workflows/release.yml`](../.github/workflows/release.yml) from the Actions tab with the manual `workflow_dispatch` inputs.
 
-[Run the action here](https://github.com/abacus-lab/abacus/actions/workflows/release.yml)
+[Run the action here](https://github.com/runeachai/runeach/actions/workflows/release.yml)
 
 Inputs:
 
@@ -146,7 +146,7 @@ Recommended local generation flow:
 
 ```bash
 VERSION="$(./scripts/release.sh stable --date 2026-03-18 --print-version)"
-claude --print --output-format stream-json --verbose --dangerously-skip-permissions --model claude-opus-4-6 "Use the release-changelog skill to draft or update releases/v${VERSION}.md for Abacus. Read doc/RELEASING.md and .agents/skills/release-changelog/SKILL.md, then generate the stable changelog for v${VERSION} from commits since the last stable tag. Do not create a canary changelog."
+claude --print --output-format stream-json --verbose --dangerously-skip-permissions --model claude-opus-4-6 "Use the release-changelog skill to draft or update releases/v${VERSION}.md for RunEach. Read doc/RELEASING.md and .agents/skills/release-changelog/SKILL.md, then generate the stable changelog for v${VERSION} from commits since the last stable tag. Do not create a canary changelog."
 ```
 
 The repo intentionally does not run this through GitHub Actions because:
@@ -160,32 +160,32 @@ The repo intentionally does not run this through GitHub Actions because:
 For a canary:
 
 ```bash
-ABACUS_VERSION=canary ./scripts/docker-onboard-smoke.sh
+RUNEACH_VERSION=canary ./scripts/docker-onboard-smoke.sh
 ```
 
 For the current stable:
 
 ```bash
-ABACUS_VERSION=latest ./scripts/docker-onboard-smoke.sh
+RUNEACH_VERSION=latest ./scripts/docker-onboard-smoke.sh
 ```
 
 Useful isolated variants:
 
 ```bash
-HOST_PORT=3232 DATA_DIR=./data/release-smoke-canary ABACUS_VERSION=canary ./scripts/docker-onboard-smoke.sh
-HOST_PORT=3233 DATA_DIR=./data/release-smoke-stable ABACUS_VERSION=latest ./scripts/docker-onboard-smoke.sh
+HOST_PORT=3232 DATA_DIR=./data/release-smoke-canary RUNEACH_VERSION=canary ./scripts/docker-onboard-smoke.sh
+HOST_PORT=3233 DATA_DIR=./data/release-smoke-stable RUNEACH_VERSION=latest ./scripts/docker-onboard-smoke.sh
 ```
 
 Automated browser smoke is also available:
 
 ```bash
-gh workflow run release-smoke.yml -f abacus_version=canary
-gh workflow run release-smoke.yml -f abacus_version=latest
+gh workflow run release-smoke.yml -f runeach_version=canary
+gh workflow run release-smoke.yml -f runeach_version=latest
 ```
 
 Minimum checks:
 
-- `npx @abacus-lab/abacus@canary onboard` installs
+- `npx @runeachai/runeach@canary onboard` installs
 - onboarding completes without crashes
 - authenticated login works with the smoke credentials
 - the browser lands in onboarding on a fresh instance

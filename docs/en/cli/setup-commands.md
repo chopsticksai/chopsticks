@@ -5,32 +5,32 @@ summary: Onboard, run, doctor, and configure
 
 Instance setup and diagnostics commands.
 
-## `abacus run`
+## `runeach run`
 
 One-command bootstrap and start:
 
 ```sh
-pnpm abacus run
+pnpm runeach run
 ```
 
 Does:
 
 1. Auto-onboards if config is missing
-2. Runs `abacus doctor` with repair enabled
+2. Runs `runeach doctor` with repair enabled
 3. Starts the server when checks pass
 
 Choose a specific instance:
 
 ```sh
-pnpm abacus run --instance dev
+pnpm runeach run --instance dev
 ```
 
-## `abacus onboard`
+## `runeach onboard`
 
 Interactive first-time setup:
 
 ```sh
-pnpm abacus onboard
+pnpm runeach onboard
 ```
 
 First prompt:
@@ -41,22 +41,22 @@ First prompt:
 Start immediately after onboarding:
 
 ```sh
-pnpm abacus onboard --run
+pnpm runeach onboard --run
 ```
 
 Non-interactive defaults + immediate start (opens browser on server listen):
 
 ```sh
-pnpm abacus onboard --yes
+pnpm runeach onboard --yes
 ```
 
-## `abacus doctor`
+## `runeach doctor`
 
 Health checks with optional auto-repair:
 
 ```sh
-pnpm abacus doctor
-pnpm abacus doctor --repair
+pnpm runeach doctor
+pnpm runeach doctor --repair
 ```
 
 Validates:
@@ -67,51 +67,51 @@ Validates:
 - Storage configuration
 - Missing key files
 
-## `abacus configure`
+## `runeach configure`
 
 Update configuration sections:
 
 ```sh
-pnpm abacus configure --section server
-pnpm abacus configure --section secrets
-pnpm abacus configure --section storage
+pnpm runeach configure --section server
+pnpm runeach configure --section secrets
+pnpm runeach configure --section storage
 ```
 
-## `abacus env`
+## `runeach env`
 
 Show resolved environment configuration:
 
 ```sh
-pnpm abacus env
+pnpm runeach env
 ```
 
-## `abacus allowed-hostname`
+## `runeach allowed-hostname`
 
 Allow a private hostname for authenticated/private mode:
 
 ```sh
-pnpm abacus allowed-hostname my-tailscale-host
+pnpm runeach allowed-hostname my-tailscale-host
 ```
 
 ## Local Storage Paths
 
 | Data | Default Path |
 |------|-------------|
-| Config | `~/.abacus/instances/default/config.json` |
-| Database | `~/.abacus/instances/default/db` |
-| Logs | `~/.abacus/instances/default/logs` |
-| Storage | `~/.abacus/instances/default/data/storage` |
-| Secrets key | `~/.abacus/instances/default/secrets/master.key` |
+| Config | `~/.runeach/instances/default/config.json` |
+| Database | `~/.runeach/instances/default/db` |
+| Logs | `~/.runeach/instances/default/logs` |
+| Storage | `~/.runeach/instances/default/data/storage` |
+| Secrets key | `~/.runeach/instances/default/secrets/master.key` |
 
 Override with:
 
 ```sh
-ABACUS_HOME=/custom/home ABACUS_INSTANCE_ID=dev pnpm abacus run
+RUNEACH_HOME=/custom/home RUNEACH_INSTANCE_ID=dev pnpm runeach run
 ```
 
 Or pass `--data-dir` directly on any command:
 
 ```sh
-pnpm abacus run --data-dir ./tmp/abacus-dev
-pnpm abacus doctor --data-dir ./tmp/abacus-dev
+pnpm runeach run --data-dir ./tmp/runeach-dev
+pnpm runeach doctor --data-dir ./tmp/runeach-dev
 ```

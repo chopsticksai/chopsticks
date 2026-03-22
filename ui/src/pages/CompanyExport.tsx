@@ -5,7 +5,7 @@ import type {
   CompanyPortabilityExportPreviewResult,
   CompanyPortabilityExportResult,
   CompanyPortabilityManifest,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { useNavigate, useLocation } from "@/lib/router";
 import { useCompany } from "../context/CompanyContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
@@ -67,12 +67,12 @@ function checkedSlugs(checkedFiles: Set<string>): {
 }
 
 /**
- * Filter .abacus.yaml content so it only includes entries whose
+ * Filter .runeach.yaml content so it only includes entries whose
  * corresponding files are checked. Works by line-level YAML parsing
  * since the file has a known, simple structure produced by our own
  * renderYamlBlock.
  */
-function filterAbacusYaml(yaml: string, checkedFiles: Set<string>): string {
+function filterRunEachYaml(yaml: string, checkedFiles: Set<string>): string {
   const slugs = checkedSlugs(checkedFiles);
   const lines = yaml.split("\n");
   const out: string[] = [];
@@ -382,7 +382,7 @@ function generateReadmeFromSelection(
 
   lines.push(`## ${t("What's Inside")}`);
   lines.push("");
-  lines.push(t("This is an [Agent Company](https://abacus.ing) package."));
+  lines.push(t("This is an [Agent Company](https://runeach.ing) package."));
   lines.push("");
 
   const counts: Array<[string, number]> = [];
@@ -426,14 +426,14 @@ function generateReadmeFromSelection(
   lines.push(`## ${t("Getting Started")}`);
   lines.push("");
   lines.push("```bash");
-  lines.push(t("pnpm abacus-lab company import this-github-url-or-folder"));
+  lines.push(t("pnpm runeachai company import this-github-url-or-folder"));
   lines.push("```");
   lines.push("");
-  lines.push(t("See [Abacus](https://abacus.ing) for more information."));
+  lines.push(t("See [RunEach](https://runeach.ing) for more information."));
   lines.push("");
   lines.push("---");
   lines.push(
-    t("Exported from [Abacus](https://abacus.ing) on {date}", {
+    t("Exported from [RunEach](https://runeach.ing) on {date}", {
       date: new Date().toISOString().split("T")[0],
     }),
   );
@@ -690,16 +690,16 @@ export function CompanyExport() {
     };
   }, [tree, treeSearch, checkedFiles, taskLimit]);
 
-  // Recompute .abacus.yaml and README.md content whenever checked files
+  // Recompute .runeach.yaml and README.md content whenever checked files
   // change so the preview & download always reflect the current selection.
   const effectiveFiles = useMemo(() => {
     if (!exportData) return {} as Record<string, CompanyPortabilityFileEntry>;
     const filtered = { ...exportData.files };
 
-    // Filter .abacus.yaml
-    const yamlPath = exportData.abacusExtensionPath;
+    // Filter .runeach.yaml
+    const yamlPath = exportData.runeachExtensionPath;
     if (yamlPath && typeof exportData.files[yamlPath] === "string") {
-      filtered[yamlPath] = filterAbacusYaml(exportData.files[yamlPath], checkedFiles);
+      filtered[yamlPath] = filterRunEachYaml(exportData.files[yamlPath], checkedFiles);
     }
 
     // Regenerate README.md based on checked selection

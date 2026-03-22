@@ -1,14 +1,14 @@
 {
-  "name": "@abacus-lab/adapter-openclaw-gateway",
+  "name": "@runeachai/adapter-openclaw-gateway",
   "version": "0.3.1",
   "license": "MIT",
-  "homepage": "https://github.com/abacus-lab/abacus",
+  "homepage": "https://github.com/runeachai/runeach",
   "bugs": {
-    "url": "https://github.com/abacus-lab/abacus/issues"
+    "url": "https://github.com/runeachai/runeach/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/abacus-lab/abacus",
+    "url": "https://github.com/runeachai/runeach",
     "directory": "packages/adapters/openclaw-gateway"
   },
   "type": "module",
@@ -50,7 +50,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@abacus-lab/adapter-utils": "workspace:*",
+    "@runeachai/adapter-utils": "workspace:*",
     "picocolors": "^1.1.1",
     "ws": "^8.19.0"
   },

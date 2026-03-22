@@ -1,14 +1,14 @@
 {
-  "name": "@abacus-lab/server",
+  "name": "@runeachai/server",
   "version": "0.3.1",
   "license": "MIT",
-  "homepage": "https://github.com/abacus-lab/abacus",
+  "homepage": "https://github.com/runeachai/runeach",
   "bugs": {
-    "url": "https://github.com/abacus-lab/abacus/issues"
+    "url": "https://github.com/runeachai/runeach/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/abacus-lab/abacus",
+    "url": "https://github.com/runeachai/runeach",
     "directory": "server"
   },
   "type": "module",
@@ -33,29 +33,29 @@
   ],
   "scripts": {
     "dev": "tsx src/index.ts",
-    "dev:watch": "cross-env ABACUS_MIGRATION_PROMPT=never ABACUS_MIGRATION_AUTO_APPLY=true tsx watch --ignore ../ui/node_modules --ignore ../ui/.vite --ignore ../ui/dist src/index.ts",
+    "dev:watch": "cross-env RUNEACH_MIGRATION_PROMPT=never RUNEACH_MIGRATION_AUTO_APPLY=true tsx watch --ignore ../ui/node_modules --ignore ../ui/.vite --ignore ../ui/dist src/index.ts",
     "prepare:ui-dist": "bash ../scripts/prepare-server-ui-dist.sh",
     "build": "tsc && node -e \"const fs=require('node:fs'); fs.mkdirSync('dist/onboarding-assets',{recursive:true}); fs.cpSync('src/onboarding-assets','dist/onboarding-assets',{recursive:true});\"",
     "prepack": "pnpm run prepare:ui-dist",
     "postpack": "rm -rf ui-dist",
     "clean": "rm -rf dist",
     "start": "node dist/index.js",
-    "typecheck": "pnpm --filter @abacus-lab/plugin-sdk build && tsc --noEmit"
+    "typecheck": "pnpm --filter @runeachai/plugin-sdk build && tsc --noEmit"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.888.0",
-    "@abacus-lab/adapter-claude-local": "workspace:*",
-    "@abacus-lab/adapter-codebuddy-local": "workspace:*",
-    "@abacus-lab/adapter-codex-local": "workspace:*",
-    "@abacus-lab/adapter-cursor-local": "workspace:*",
-    "@abacus-lab/adapter-gemini-local": "workspace:*",
-    "@abacus-lab/adapter-openclaw-gateway": "workspace:*",
-    "@abacus-lab/adapter-opencode-local": "workspace:*",
-    "@abacus-lab/adapter-pi-local": "workspace:*",
-    "@abacus-lab/adapter-utils": "workspace:*",
-    "@abacus-lab/db": "workspace:*",
-    "@abacus-lab/plugin-sdk": "workspace:*",
-    "@abacus-lab/shared": "workspace:*",
+    "@runeachai/adapter-claude-local": "workspace:*",
+    "@runeachai/adapter-codebuddy-local": "workspace:*",
+    "@runeachai/adapter-codex-local": "workspace:*",
+    "@runeachai/adapter-cursor-local": "workspace:*",
+    "@runeachai/adapter-gemini-local": "workspace:*",
+    "@runeachai/adapter-openclaw-gateway": "workspace:*",
+    "@runeachai/adapter-opencode-local": "workspace:*",
+    "@runeachai/adapter-pi-local": "workspace:*",
+    "@runeachai/adapter-utils": "workspace:*",
+    "@runeachai/db": "workspace:*",
+    "@runeachai/plugin-sdk": "workspace:*",
+    "@runeachai/shared": "workspace:*",
     "ajv": "^8.18.0",
     "ajv-formats": "^3.0.1",
     "better-auth": "1.4.18",

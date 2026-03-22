@@ -4,7 +4,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { AdapterEnvironmentTestResult } from "@abacus-lab/shared";
+import type { AdapterEnvironmentTestResult } from "@runeachai/shared";
 import { OnboardingWizard } from "./OnboardingWizard";
 
 const mockAdapterModels = vi.fn();

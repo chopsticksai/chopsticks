@@ -17,10 +17,10 @@
   - `exp`
   - optional `jti` (run token id)
 - New config/env settings:
-  - `ABACUS_AGENT_JWT_SECRET`
-  - `ABACUS_AGENT_JWT_TTL_SECONDS` (default: `172800`)
-  - `ABACUS_AGENT_JWT_ISSUER` (default: `abacus`)
-  - `ABACUS_AGENT_JWT_AUDIENCE` (default: `abacus-api`)
+  - `RUNEACH_AGENT_JWT_SECRET`
+  - `RUNEACH_AGENT_JWT_TTL_SECONDS` (default: `172800`)
+  - `RUNEACH_AGENT_JWT_ISSUER` (default: `runeach`)
+  - `RUNEACH_AGENT_JWT_AUDIENCE` (default: `runeach-api`)
 
 ## 2) Dual authentication path in `actorMiddleware`
 
@@ -48,24 +48,24 @@
    - `packages/adapters/claude-local/src/server/execute.ts`
    - `packages/adapters/codex-local/src/server/execute.ts`
 
-   inject `ABACUS_API_KEY` from context token.
+   inject `RUNEACH_API_KEY` from context token.
 
 - Preserve existing behavior for explicit user-defined env vars in `adapterConfig.env`:
-  - if user already sets `ABACUS_API_KEY`, do not overwrite it.
+  - if user already sets `RUNEACH_API_KEY`, do not overwrite it.
 - Continue injecting:
-  - `ABACUS_AGENT_ID`
-  - `ABACUS_COMPANY_ID`
-  - `ABACUS_API_URL`
+  - `RUNEACH_AGENT_ID`
+  - `RUNEACH_COMPANY_ID`
+  - `RUNEACH_API_URL`
 
 ## 5) Documentation updates
 
 - Update operator-facing docs to remove manual key setup expectation for local adapters:
-  - `skills/abacus/SKILL.md`
+  - `skills/runeach/SKILL.md`
   - `cli/src/commands/heartbeat-run.ts` output/help examples if they mention manual API key setup.
 
 ## 6) P0 acceptance criteria
 
-- Local adapters authenticate without manual `ABACUS_API_KEY` config.
+- Local adapters authenticate without manual `RUNEACH_API_KEY` config.
 - Existing static keys (`agent_api_keys`) still work unchanged.
 - Auth remains company-scoped (`req.actor.companyId` used by existing checks).
 - JWT generation and verification errors are logged as non-leaking structured events.

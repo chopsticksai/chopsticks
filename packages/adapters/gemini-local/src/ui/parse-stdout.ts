@@ -1,4 +1,4 @@
-import type { TranscriptEntry } from "@abacus-lab/adapter-utils";
+import type { TranscriptEntry } from "@runeachai/adapter-utils";
 
 function safeJsonParse(text: string): unknown {
   try {

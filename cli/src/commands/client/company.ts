@@ -9,7 +9,7 @@ import type {
   CompanyPortabilityInclude,
   CompanyPortabilityPreviewResult,
   CompanyPortabilityImportResult,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { ApiRequestError } from "../../client/http.js";
 import {
   addCommonClientOptions,
@@ -137,9 +137,9 @@ async function collectPackageFiles(
     }
     if (!entry.isFile()) continue;
     const isMarkdown = entry.name.endsWith(".md");
-    const isAbacusYaml = entry.name === ".abacus.yaml" || entry.name === ".abacus.yml";
+    const isRunEachYaml = entry.name === ".runeach.yaml" || entry.name === ".runeach.yml";
     const contentType = binaryContentTypeByExtension[path.extname(entry.name).toLowerCase()];
-    if (!isMarkdown && !isAbacusYaml && !contentType) continue;
+    if (!isMarkdown && !isRunEachYaml && !contentType) continue;
     const relativePath = path.relative(root, absolutePath).replace(/\\/g, "/");
     files[relativePath] = readPortableFileEntry(relativePath, await readFile(absolutePath));
   }
@@ -370,7 +370,7 @@ export function registerCompanyCommands(program: Command): void {
               out: path.resolve(opts.out!),
               rootPath: exported.rootPath,
               filesWritten: Object.keys(exported.files).length,
-              abacusExtensionPath: exported.abacusExtensionPath,
+              runeachExtensionPath: exported.runeachExtensionPath,
               warningCount: exported.warnings.length,
             },
             { json: ctx.json },

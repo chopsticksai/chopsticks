@@ -2,7 +2,7 @@
 
 ## Goal
 
-Add a new first-party example plugin, `Kitchen Sink (Example)`, that demonstrates every currently implemented abacus plugin API surface in one place.
+Add a new first-party example plugin, `Kitchen Sink (Example)`, that demonstrates every currently implemented runeach plugin API surface in one place.
 
 This plugin is meant to be:
 
@@ -32,7 +32,7 @@ The kitchen-sink plugin should answer those questions by example.
 
 ## Success Criteria
 
-The plugin is successful if a contributor can install it and, without reading the SDK first, discover and exercise the current plugin runtime surface area from inside abacus.
+The plugin is successful if a contributor can install it and, without reading the SDK first, discover and exercise the current plugin runtime surface area from inside runeach.
 
 Concretely:
 
@@ -135,10 +135,10 @@ The implementation should keep a small validation checklist for these before we 
 The plugin should be named:
 
 - display name: `Kitchen Sink (Example)`
-- package: `@abacus-lab/plugin-kitchen-sink-example`
-- plugin id: `abacus.kitchen-sink-example` or `abacus-kitchen-sink-example`
+- package: `@runeachai/plugin-kitchen-sink-example`
+- plugin id: `runeach.kitchen-sink-example` or `runeach-kitchen-sink-example`
 
-Recommendation: use `abacus-kitchen-sink-example` to match current in-repo example naming style.
+Recommendation: use `runeach-kitchen-sink-example` to match current in-repo example naming style.
 
 Category mix:
 
@@ -171,7 +171,7 @@ Recommended page sections:
   - emit event
   - watch event log
   - stream demo output
-- `abacus Domain APIs`
+- `runeach Domain APIs`
   - companies
   - projects/workspaces
   - issues
@@ -265,7 +265,7 @@ Demos:
 
 - emit a plugin event
 - subscribe to plugin events
-- subscribe to a core abacus event such as `issue.created`
+- subscribe to a core runeach event such as `issue.created`
 - show recent received events in a timeline
 
 ### `ctx.jobs`
@@ -291,7 +291,7 @@ Demo:
 - make a simple outbound GET request to a safe endpoint
 - show status code, latency, and JSON result
 
-Recommendation: default to a abacus-local endpoint or a stable public echo endpoint to avoid flaky docs.
+Recommendation: default to a runeach-local endpoint or a stable public echo endpoint to avoid flaky docs.
 
 ### `ctx.secrets`
 

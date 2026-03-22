@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { isCursorUnknownSessionError, parseCursorJsonl } from "@abacus-lab/adapter-cursor-local/server";
-import { parseCursorStdoutLine } from "@abacus-lab/adapter-cursor-local/ui";
-import { printCursorStreamEvent } from "@abacus-lab/adapter-cursor-local/cli";
+import { isCursorUnknownSessionError, parseCursorJsonl } from "@runeachai/adapter-cursor-local/server";
+import { parseCursorStdoutLine } from "@runeachai/adapter-cursor-local/ui";
+import { printCursorStreamEvent } from "@runeachai/adapter-cursor-local/cli";
 
 describe("cursor parser", () => {
   it("extracts session, summary, usage, cost, and terminal error message", () => {
@@ -139,7 +139,7 @@ describe("cursor ui stdout parser", () => {
 
   it("compacts shellToolCall and shell tool result for run log", () => {
     const ts = "2026-03-05T00:00:00.000Z";
-    const longCommand = "curl -s -X POST \"$ABACUS_API_URL/api/issues/abc/checkout\" -H \"Authorization: Bearer $ABACUS_API_KEY\"";
+    const longCommand = "curl -s -X POST \"$RUNEACH_API_URL/api/issues/abc/checkout\" -H \"Authorization: Bearer $RUNEACH_API_KEY\"";
 
     expect(
       parseCursorStdoutLine(

@@ -3,7 +3,7 @@ title: Issues
 summary: Issue CRUD、checkout/release、评论、文档和附件
 ---
 
-Issue 是 Abacus 中的工作单元。它支持层级关系、原子 checkout、评论、键控文本文件和文件附件。
+Issue 是 RunEach 中的工作单元。它支持层级关系、原子 checkout、评论、键控文本文件和文件附件。
 
 ## 列出 Issues
 
@@ -55,7 +55,7 @@ POST /api/companies/{companyId}/issues
 
 ```
 PATCH /api/issues/{issueId}
-Headers: X-Abacus-Run-Id: {runId}
+Headers: X-RunEach-Run-Id: {runId}
 {
   "status": "done",
   "comment": "Implemented caching with 90% hit rate."
@@ -70,7 +70,7 @@ Headers: X-Abacus-Run-Id: {runId}
 
 ```
 POST /api/issues/{issueId}/checkout
-Headers: X-Abacus-Run-Id: {runId}
+Headers: X-RunEach-Run-Id: {runId}
 {
   "agentId": "{yourAgentId}",
   "expectedStatuses": ["todo", "backlog", "blocked"]

@@ -26,14 +26,14 @@ function parseNumber(value: string | undefined, fallback: number) {
 }
 
 function jwtConfig() {
-  const secret = process.env.ABACUS_AGENT_JWT_SECRET;
+  const secret = process.env.RUNEACH_AGENT_JWT_SECRET;
   if (!secret) return null;
 
   return {
     secret,
-    ttlSeconds: parseNumber(process.env.ABACUS_AGENT_JWT_TTL_SECONDS, 60 * 60 * 48),
-    issuer: process.env.ABACUS_AGENT_JWT_ISSUER ?? "abacus",
-    audience: process.env.ABACUS_AGENT_JWT_AUDIENCE ?? "abacus-api",
+    ttlSeconds: parseNumber(process.env.RUNEACH_AGENT_JWT_TTL_SECONDS, 60 * 60 * 48),
+    issuer: process.env.RUNEACH_AGENT_JWT_ISSUER ?? "runeach",
+    audience: process.env.RUNEACH_AGENT_JWT_AUDIENCE ?? "runeach-api",
   };
 }
 

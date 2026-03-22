@@ -54,8 +54,8 @@ import {
   SlidersHorizontal,
   Trash2,
 } from "lucide-react";
-import type { ActivityEvent } from "@abacus-lab/shared";
-import type { Agent, IssueAttachment } from "@abacus-lab/shared";
+import type { ActivityEvent } from "@runeachai/shared";
+import type { Agent, IssueAttachment } from "@runeachai/shared";
 
 type CommentReassignment = {
   assigneeAgentId: string | null;
@@ -1047,7 +1047,7 @@ export function IssueDetail() {
             projectId={issue.projectId}
             issueStatus={issue.status}
             agentMap={agentMap}
-            draftKey={`abacus:issue-comment-draft:${issue.id}`}
+            draftKey={`runeach:issue-comment-draft:${issue.id}`}
             enableReassign
             reassignOptions={commentReassignOptions}
             currentAssigneeValue={actualAssigneeValue}

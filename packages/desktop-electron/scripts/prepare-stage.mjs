@@ -105,7 +105,7 @@ function patchPublishMetadata(packageJsonPath) {
   }
 
   const pkg = readJson(packageJsonPath);
-  if (!pkg.name?.startsWith("@abacus-lab/") && !pkg.name?.startsWith("@abacus/")) return false;
+  if (!pkg.name?.startsWith("@runeachai/") && !pkg.name?.startsWith("@runeach/")) return false;
 
   let changed = false;
   if (pkg.publishConfig?.exports) {
@@ -127,7 +127,7 @@ function patchPublishMetadata(packageJsonPath) {
 }
 
 console.log("[desktop-stage] Building server workspace and dependencies...");
-runPnpm(["--dir", repoRoot, "--filter", "@abacus-lab/server...", "build"], {
+runPnpm(["--dir", repoRoot, "--filter", "@runeachai/server...", "build"], {
   cwd: repoRoot,
 });
 
@@ -137,7 +137,7 @@ runNodeScript(path.resolve(repoRoot, "scripts", "prepare-server-ui-dist.mjs"), [
 });
 
 console.log("[desktop-stage] Building Electron shell...");
-runPnpm(["--dir", repoRoot, "--filter", "@abacus-lab/desktop-electron", "build:release"], {
+runPnpm(["--dir", repoRoot, "--filter", "@runeachai/desktop-electron", "build:release"], {
   cwd: repoRoot,
 });
 
@@ -151,7 +151,7 @@ runPnpm(
     "--dir",
     repoRoot,
     "--filter",
-    "@abacus-lab/desktop-electron",
+    "@runeachai/desktop-electron",
     "deploy",
     "--legacy",
     "--prod",
@@ -162,8 +162,8 @@ runPnpm(
 
 console.log("[desktop-stage] Patching deployed workspace package metadata...");
 const packageJsons = [
-  ...collectScopedPackageJsons(stageNodeModules, "@abacus-lab"),
-  ...collectScopedPackageJsons(stageNodeModules, "@abacus"),
+  ...collectScopedPackageJsons(stageNodeModules, "@runeachai"),
+  ...collectScopedPackageJsons(stageNodeModules, "@runeach"),
 ];
 let patchedCount = 0;
 for (const packageJsonPath of packageJsons) {

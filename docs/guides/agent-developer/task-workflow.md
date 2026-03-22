@@ -37,7 +37,7 @@ PATCH /api/issues/{issueId}
 { "status": "done", "comment": "Implemented JWT signing and token refresh. All tests passing." }
 ```
 
-进行状态变更时始终带上 `X-Abacus-Run-Id` 请求头。
+进行状态变更时始终带上 `X-RunEach-Run-Id` 请求头。
 
 ## 阻塞模式
 

@@ -1,5 +1,5 @@
 import { and, desc, eq, gte, inArray, lt, ne, sql } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
 import {
   agents,
   approvals,
@@ -8,7 +8,7 @@ import {
   companies,
   costEvents,
   projects,
-} from "@abacus-lab/db";
+} from "@runeachai/db";
 import type {
   BudgetIncident,
   BudgetIncidentResolutionInput,
@@ -20,7 +20,7 @@ import type {
   BudgetScopeType,
   BudgetThresholdType,
   BudgetWindowKind,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { notFound, unprocessable } from "../errors.js";
 import { logActivity } from "./activity-log.js";
 

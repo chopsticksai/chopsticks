@@ -1,17 +1,17 @@
 <p align="center">
-  <img src="doc/assets/header.png" alt="Abacus — runs your business" width="720" />
+  <img src="doc/assets/header.png" alt="RunEach — runs your business" width="720" />
 </p>
 
 <p align="center">
   <a href="#quickstart"><strong>Quickstart</strong></a> &middot;
-  <a href="__KEEP_ABACUS_COM_DOCS__"><strong>Docs</strong></a> &middot;
-  <a href="https://github.com/abacus-lab/abacus"><strong>GitHub</strong></a> &middot;
+  <a href="__KEEP_RUNEACH_COM_DOCS__"><strong>Docs</strong></a> &middot;
+  <a href="https://github.com/runeachai/runeach"><strong>GitHub</strong></a> &middot;
   <a href="https://discord.gg/m4HZY7xNG3"><strong>Discord</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/abacus-lab/abacus/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
-  <a href="https://github.com/abacus-lab/abacus/stargazers"><img src="https://img.shields.io/github/stars/abacus-lab/abacus?style=flat" alt="Stars" /></a>
+  <a href="https://github.com/runeachai/runeach/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
+  <a href="https://github.com/runeachai/runeach/stargazers"><img src="https://img.shields.io/github/stars/runeachai/runeach?style=flat" alt="Stars" /></a>
   <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/lang-Chinese-red" alt="中文" /></a>
   <a href="https://discord.gg/m4HZY7xNG3"><img src="https://img.shields.io/discord/000000000?label=discord" alt="Discord" /></a>
 </p>
@@ -26,13 +26,13 @@
 
 > Forked from paperclip. MIT Licensed.
 
-## What is Abacus?
+## What is RunEach?
 
 # Open-source orchestration for zero-human companies
 
-**If OpenClaw is an _employee_, Abacus is the _company_**
+**If OpenClaw is an _employee_, RunEach is the _company_**
 
-Abacus is a Node.js server and React UI that orchestrates a team of AI agents to run a business. Bring your own agents, assign goals, and track your agents' work and costs from one dashboard.
+RunEach is a Node.js server and React UI that orchestrates a team of AI agents to run a business. Bring your own agents, assign goals, and track your agents' work and costs from one dashboard.
 
 It looks like a task manager — but under the hood it has org charts, budgets, governance, goal alignment, and agent coordination.
 
@@ -46,7 +46,7 @@ It looks like a task manager — but under the hood it has org charts, budgets, 
 
 <br/>
 
-> **COMING SOON: AbacusHub** — Discover, publish, and install entire companies from a single registry. Browse pre-built company templates — full org structures, agent configs, and skills — and import them into your Abacus instance in seconds.
+> **COMING SOON: RunEachHub** — Discover, publish, and install entire companies from a single registry. Browse pre-built company templates — full org structures, agent configs, and skills — and import them into your RunEach instance in seconds.
 
 <br/>
 
@@ -69,7 +69,7 @@ It looks like a task manager — but under the hood it has org charts, budgets, 
 
 <br/>
 
-## Abacus is right for you if
+## RunEach is right for you if
 
 - ✅ You want to build **autonomous AI companies**
 - ✅ You **coordinate many different agents** (OpenClaw, Codex, Claude, Cursor) toward a common goal
@@ -130,28 +130,28 @@ Monitor and manage your autonomous businesses from anywhere.
 
 <br/>
 
-## Problems Abacus solves
+## Problems RunEach solves
 
-| Without Abacus                                                                                                                     | With Abacus                                                                                                                         |
+| Without RunEach                                                                                                                     | With RunEach                                                                                                                         |
 | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | ❌ You have 20 Claude Code tabs open and can't track which one does what. On reboot you lose everything.                              | ✅ Tasks are ticket-based, conversations are threaded, sessions persist across reboots.                                                |
 | ❌ You manually gather context from several places to remind your bot what you're actually doing.                                     | ✅ Context flows from the task up through the project and company goals — your agent always knows what to do and why.                  |
-| ❌ Folders of agent configs are disorganized and you're re-inventing task management, communication, and coordination between agents. | ✅ Abacus gives you org charts, ticketing, delegation, and governance out of the box — so you run a company, not a pile of scripts. |
+| ❌ Folders of agent configs are disorganized and you're re-inventing task management, communication, and coordination between agents. | ✅ RunEach gives you org charts, ticketing, delegation, and governance out of the box — so you run a company, not a pile of scripts. |
 | ❌ Runaway loops waste hundreds of dollars of tokens and max your quota before you even know what happened.                           | ✅ Cost tracking surfaces token budgets and throttles agents when they're out. Management prioritizes with budgets.                    |
 | ❌ You have recurring jobs (customer support, social, reports) and have to remember to manually kick them off.                        | ✅ Heartbeats handle regular work on a schedule. Management supervises.                                                                |
-| ❌ You have an idea, you have to find your repo, fire up Claude Code, keep a tab open, and babysit it.                                | ✅ Add a task in Abacus. Your coding agent works on it until it's done. Management reviews their work.                              |
+| ❌ You have an idea, you have to find your repo, fire up Claude Code, keep a tab open, and babysit it.                                | ✅ Add a task in RunEach. Your coding agent works on it until it's done. Management reviews their work.                              |
 
 <br/>
 
-## Why Abacus is special
+## Why RunEach is special
 
-Abacus handles the hard orchestration details correctly.
+RunEach handles the hard orchestration details correctly.
 
 |                                   |                                                                                                               |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | **Atomic execution.**             | Task checkout and budget enforcement are atomic, so no double-work and no runaway spend.                      |
 | **Persistent agent state.**       | Agents resume the same task context across heartbeats instead of restarting from scratch.                     |
-| **Runtime skill injection.**      | Agents can learn Abacus workflows and project context at runtime, without retraining.                      |
+| **Runtime skill injection.**      | Agents can learn RunEach workflows and project context at runtime, without retraining.                      |
 | **Governance with rollback.**     | Approval gates are enforced, config changes are revisioned, and bad changes can be rolled back safely.        |
 | **Goal-aware execution.**         | Tasks carry full goal ancestry so agents consistently see the "why," not just a title.                        |
 | **Portable company templates.**   | Export/import orgs, agents, and skills with secret scrubbing and collision handling.                          |
@@ -159,32 +159,32 @@ Abacus handles the hard orchestration details correctly.
 
 <br/>
 
-## What Abacus is not
+## What RunEach is not
 
 |                              |                                                                                                                      |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | **Not a chatbot.**           | Agents have jobs, not chat windows.                                                                                  |
 | **Not an agent framework.**  | We don't tell you how to build agents. We tell you how to run a company made of them.                                |
-| **Not a workflow builder.**  | No drag-and-drop pipelines. Abacus models companies — with org charts, goals, budgets, and governance.            |
-| **Not a prompt manager.**    | Agents bring their own prompts, models, and runtimes. Abacus manages the organization they work in.               |
-| **Not a single-agent tool.** | This is for teams. If you have one agent, you probably don't need Abacus. If you have twenty — you definitely do. |
-| **Not a code review tool.**  | Abacus orchestrates work, not pull requests. Bring your own review process.                                       |
+| **Not a workflow builder.**  | No drag-and-drop pipelines. RunEach models companies — with org charts, goals, budgets, and governance.            |
+| **Not a prompt manager.**    | Agents bring their own prompts, models, and runtimes. RunEach manages the organization they work in.               |
+| **Not a single-agent tool.** | This is for teams. If you have one agent, you probably don't need RunEach. If you have twenty — you definitely do. |
+| **Not a code review tool.**  | RunEach orchestrates work, not pull requests. Bring your own review process.                                       |
 
 <br/>
 
 ## Quickstart
 
-Open source. Self-hosted. No Abacus account required.
+Open source. Self-hosted. No RunEach account required.
 
 ```bash
-npx @abacus-lab/abacus onboard --yes
+npx @runeachai/runeach onboard --yes
 ```
 
 Or manually:
 
 ```bash
-git clone https://github.com/abacus-lab/abacus.git
-cd abacus
+git clone https://github.com/runeachai/runeach.git
+cd runeach
 pnpm install
 pnpm dev
 ```
@@ -204,7 +204,7 @@ pnpm desktop:dev
 Useful overrides:
 
 ```bash
-ABACUS_HOME=/custom/desktop-home PORT=3210 pnpm desktop:dev
+RUNEACH_HOME=/custom/desktop-home PORT=3210 pnpm desktop:dev
 ```
 
 Run the desktop smoke harness:
@@ -220,21 +220,21 @@ pnpm smoke:desktop
 **What does a typical setup look like?**
 Locally, a single Node.js process manages an embedded Postgres and local file storage. For production, point it at your own Postgres and deploy however you like. Configure projects, agents, and goals — the agents take care of the rest.
 
-If you're a solo-entreprenuer you can use Tailscale to access Abacus on the go. Then later you can deploy to e.g. Vercel when you need it.
+If you're a solo-entreprenuer you can use Tailscale to access RunEach on the go. Then later you can deploy to e.g. Vercel when you need it.
 
 **Can I run multiple companies?**
 Yes. A single deployment can run an unlimited number of companies with complete data isolation.
 
-**How is Abacus different from agents like OpenClaw or Claude Code?**
-Abacus _uses_ those agents. It orchestrates them into a company — with org charts, budgets, goals, governance, and accountability.
+**How is RunEach different from agents like OpenClaw or Claude Code?**
+RunEach _uses_ those agents. It orchestrates them into a company — with org charts, budgets, goals, governance, and accountability.
 
-**Why should I use Abacus instead of just pointing my OpenClaw to Asana or Trello?**
-Agent orchestration has subtleties in how you coordinate who has work checked out, how to maintain sessions, monitoring costs, establishing governance - Abacus does this for you.
+**Why should I use RunEach instead of just pointing my OpenClaw to Asana or Trello?**
+Agent orchestration has subtleties in how you coordinate who has work checked out, how to maintain sessions, monitoring costs, establishing governance - RunEach does this for you.
 
 (Bring-your-own-ticket-system is on the Roadmap)
 
 **Do agents run continuously?**
-By default, agents run on scheduled heartbeats and event-based triggers (task assignment, @-mentions). You can also hook in continuous agents like OpenClaw. You bring your agent and Abacus coordinates.
+By default, agents run on scheduled heartbeats and event-based triggers (task assignment, @-mentions). You can also hook in continuous agents like OpenClaw. You bring your agent and RunEach coordinates.
 
 <br/>
 
@@ -259,7 +259,7 @@ See [doc/DEVELOPING.md](doc/DEVELOPING.md) for the full development guide.
 
 - ⚪ Get OpenClaw onboarding easier
 - ⚪ Get cloud agents working e.g. Cursor / e2b agents
-- ⚪ AbacusHub - discover, publish, and install entire AI companies
+- ⚪ RunEachHub - discover, publish, and install entire AI companies
 - ⚪ Easy agent configurations / easier to understand
 - ⚪ Better support for harness engineering
 - 🟢 Plugin system (e.g. if you want to add a knowledgebase, custom tracing, queues, etc)
@@ -276,18 +276,18 @@ We welcome contributions. See the [contributing guide](CONTRIBUTING.md) for deta
 ## Community
 
 - [Discord](https://discord.gg/m4HZY7xNG3) — Join the community
-- [GitHub Issues](https://github.com/abacus-lab/abacus/issues) — bugs and feature requests
-- [GitHub Discussions](https://github.com/abacus-lab/abacus/discussions) — ideas and RFC
+- [GitHub Issues](https://github.com/runeachai/runeach/issues) — bugs and feature requests
+- [GitHub Discussions](https://github.com/runeachai/runeach/discussions) — ideas and RFC
 
 <br/>
 
 ## License
 
-MIT &copy; 2026 Abacus
+MIT &copy; 2026 RunEach
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/image?repos=abacus-lab/abacus&type=date&legend=top-left)](https://www.star-history.com/?repos=abacus-lab%2Fabacus&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/image?repos=runeachai/runeach&type=date&legend=top-left)](https://www.star-history.com/?repos=runeachai%2Fruneach&type=date&legend=top-left)
 
 <br/>
 

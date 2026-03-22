@@ -1,11 +1,11 @@
 import { and, eq, inArray, sql } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
 import {
   companyMemberships,
   instanceUserRoles,
   principalPermissionGrants,
-} from "@abacus-lab/db";
-import type { PermissionKey, PrincipalType } from "@abacus-lab/shared";
+} from "@runeachai/db";
+import type { PermissionKey, PrincipalType } from "@runeachai/shared";
 
 type MembershipRow = typeof companyMemberships.$inferSelect;
 type GrantInput = {

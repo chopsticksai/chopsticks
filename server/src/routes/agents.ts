@@ -1,8 +1,8 @@
 import { Router, type Request } from "express";
 import { generateKeyPairSync, randomUUID } from "node:crypto";
 import path from "node:path";
-import type { Db } from "@abacus-lab/db";
-import { agents as agentsTable, companies, heartbeatRuns } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
+import { agents as agentsTable, companies, heartbeatRuns } from "@runeachai/db";
 import { and, desc, eq, inArray, not, sql } from "drizzle-orm";
 import {
   agentSkillSyncSchema,
@@ -21,11 +21,11 @@ import {
   updateAgentInstructionsPathSchema,
   wakeAgentSchema,
   updateAgentSchema,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import {
-  readAbacusSkillSyncPreference,
-  writeAbacusSkillSyncPreference,
-} from "@abacus-lab/adapter-utils/server-utils";
+  readRunEachSkillSyncPreference,
+  writeRunEachSkillSyncPreference,
+} from "@runeachai/adapter-utils/server-utils";
 import { validate } from "../middleware/validate.js";
 import {
   agentService,
@@ -49,15 +49,15 @@ import { redactEventPayload } from "../redaction.js";
 import { redactCurrentUserValue } from "../log-redaction.js";
 import { renderOrgChartSvg, renderOrgChartPng, type OrgNode, type OrgChartStyle, ORG_CHART_STYLES } from "./org-chart-svg.js";
 import { instanceSettingsService } from "../services/instance-settings.js";
-import { runClaudeLogin } from "@abacus-lab/adapter-claude-local/server";
+import { runClaudeLogin } from "@runeachai/adapter-claude-local/server";
 import {
   DEFAULT_CODEX_LOCAL_BYPASS_APPROVALS_AND_SANDBOX,
   DEFAULT_CODEX_LOCAL_MODEL,
-} from "@abacus-lab/adapter-codex-local";
-import { DEFAULT_CURSOR_LOCAL_MODEL } from "@abacus-lab/adapter-cursor-local";
-import { DEFAULT_GEMINI_LOCAL_MODEL } from "@abacus-lab/adapter-gemini-local";
-import { ensureOpenCodeModelConfiguredAndAvailable } from "@abacus-lab/adapter-opencode-local/server";
-import { ensurePiModelConfiguredAndAvailable } from "@abacus-lab/adapter-pi-local/server";
+} from "@runeachai/adapter-codex-local";
+import { DEFAULT_CURSOR_LOCAL_MODEL } from "@runeachai/adapter-cursor-local";
+import { DEFAULT_GEMINI_LOCAL_MODEL } from "@runeachai/adapter-gemini-local";
+import { ensureOpenCodeModelConfiguredAndAvailable } from "@runeachai/adapter-opencode-local/server";
+import { ensurePiModelConfiguredAndAvailable } from "@runeachai/adapter-pi-local/server";
 import {
   loadDefaultAgentInstructionsBundle,
   resolveDefaultAgentInstructionsBundleRole,
@@ -87,7 +87,7 @@ export function agentRoutes(db: Db) {
   const companySkills = companySkillService(db);
   const workspaceOperations = workspaceOperationService(db);
   const instanceSettings = instanceSettingsService(db);
-  const strictSecretsMode = process.env.ABACUS_SECRETS_STRICT_MODE === "true";
+  const strictSecretsMode = process.env.RUNEACH_SECRETS_STRICT_MODE === "true";
 
   async function getCurrentUserRedactionOptions() {
     return {
@@ -530,7 +530,7 @@ export function agentRoutes(db: Db) {
     });
     return {
       ...config,
-      abacusRuntimeSkills: runtimeSkillEntries,
+      runeachRuntimeSkills: runtimeSkillEntries,
     };
   }
 
@@ -561,7 +561,7 @@ export function agentRoutes(db: Db) {
     const desiredSkills = Array.from(new Set([...requiredSkills, ...resolvedRequestedSkills]));
 
     return {
-      adapterConfig: writeAbacusSkillSyncPreference(adapterConfig, desiredSkills),
+      adapterConfig: writeRunEachSkillSyncPreference(adapterConfig, desiredSkills),
       desiredSkills,
       runtimeSkillEntries,
     };
@@ -703,7 +703,7 @@ export function agentRoutes(db: Db) {
 
     const adapter = findServerAdapter(agent.adapterType);
     if (!adapter?.listSkills) {
-      const preference = readAbacusSkillSyncPreference(
+      const preference = readRunEachSkillSyncPreference(
         agent.adapterConfig as Record<string, unknown>,
       );
       const runtimeSkillEntries = await companySkills.listRuntimeSkillEntries(agent.companyId, {
@@ -786,7 +786,7 @@ export function agentRoutes(db: Db) {
       );
       const runtimeSkillConfig = {
         ...runtimeConfig,
-        abacusRuntimeSkills: runtimeSkillEntries,
+        runeachRuntimeSkills: runtimeSkillEntries,
       };
       const snapshot = adapter?.syncSkills
         ? await adapter.syncSkills({

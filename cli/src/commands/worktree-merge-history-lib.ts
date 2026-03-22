@@ -9,7 +9,7 @@ import {
   issues,
   projects,
   projectWorkspaces,
-} from "@abacus-lab/db";
+} from "@runeachai/db";
 
 type IssueRow = typeof issues.$inferSelect;
 type CommentRow = typeof issueComments.$inferSelect;

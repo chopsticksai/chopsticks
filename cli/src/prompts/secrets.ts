@@ -1,10 +1,10 @@
 import * as p from "@clack/prompts";
-import type { SecretProvider } from "@abacus-lab/shared";
+import type { SecretProvider } from "@runeachai/shared";
 import type { SecretsConfig } from "../config/schema.js";
-import { resolveDefaultSecretsKeyFilePath, resolveAbacusInstanceId } from "../config/home.js";
+import { resolveDefaultSecretsKeyFilePath, resolveRunEachInstanceId } from "../config/home.js";
 
 function defaultKeyFilePath(): string {
-  return resolveDefaultSecretsKeyFilePath(resolveAbacusInstanceId());
+  return resolveDefaultSecretsKeyFilePath(resolveRunEachInstanceId());
 }
 
 export function defaultSecretsConfig(): SecretsConfig {

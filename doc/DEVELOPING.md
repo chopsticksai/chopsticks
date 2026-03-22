@@ -34,7 +34,7 @@ pnpm dev
 
 Windows native shell support:
 
-- `pnpm dev`, `pnpm abacus ...`, `pnpm db:backup`, and `pnpm build:npm` are supported from PowerShell and `cmd.exe`
+- `pnpm dev`, `pnpm runeach ...`, `pnpm db:backup`, and `pnpm build:npm` are supported from PowerShell and `cmd.exe`
 - release and smoke helpers under `scripts/*.sh` still expect a POSIX shell such as Git Bash
 
 This starts:
@@ -53,7 +53,7 @@ pnpm desktop:dev
 Supported user-facing overrides:
 
 ```sh
-ABACUS_HOME=/custom/path PORT=3210 pnpm desktop:dev
+RUNEACH_HOME=/custom/path PORT=3210 pnpm desktop:dev
 ```
 
 For a repo-owned smoke check that launches Electron with remote debugging and validates the boot handoff, run:
@@ -77,7 +77,7 @@ This runs dev as `authenticated/private` and binds the server to `0.0.0.0` for p
 Allow additional private hostnames (for example custom Tailscale hostnames):
 
 ```sh
-pnpm abacus allowed-hostname dotta-macbook-pro
+pnpm runeach allowed-hostname dotta-macbook-pro
 ```
 
 ## One-Command Local Run
@@ -85,27 +85,27 @@ pnpm abacus allowed-hostname dotta-macbook-pro
 For a first-time local install, you can bootstrap and run in one command:
 
 ```sh
-pnpm abacus run
+pnpm runeach run
 ```
 
-`abacus run` does:
+`runeach run` does:
 
 1. auto-onboard if config is missing
-2. `abacus doctor` with repair enabled
+2. `runeach doctor` with repair enabled
 3. starts the server when checks pass
 
 ## Docker Quickstart (No local Node install)
 
-Build and run Abacus in Docker:
+Build and run RunEach in Docker:
 
 ```sh
-docker build -t abacus-local .
-docker run --name abacus \
+docker build -t runeach-local .
+docker run --name runeach \
   -p 3100:3100 \
   -e HOST=0.0.0.0 \
-  -e ABACUS_HOME=/abacus \
-  -v "$(pwd)/data/docker-abacus:/abacus" \
-  abacus-local
+  -e RUNEACH_HOME=/runeach \
+  -v "$(pwd)/data/docker-runeach:/runeach" \
+  runeach-local
 ```
 
 Or use Compose:
@@ -125,15 +125,15 @@ For a separate review-oriented container that keeps `codex`/`claude` login state
 For local development, leave `DATABASE_URL` unset.
 The server will automatically use embedded PostgreSQL and persist data at:
 
-- `~/.abacus/instances/default/db`
+- `~/.runeach/instances/default/db`
 
 Override home and instance:
 
 ```sh
-ABACUS_HOME=/custom/path ABACUS_INSTANCE_ID=dev pnpm abacus run
+RUNEACH_HOME=/custom/path RUNEACH_INSTANCE_ID=dev pnpm runeach run
 ```
 
-Abacus uses `~/.abacus` as the default local home. Set `ABACUS_HOME` explicitly if you want a different location.
+RunEach uses `~/.runeach` as the default local home. Set `RUNEACH_HOME` explicitly if you want a different location.
 
 No Docker or external database is required for this mode.
 
@@ -141,42 +141,42 @@ No Docker or external database is required for this mode.
 
 For local development, the default storage provider is `local_disk`, which persists uploaded images/attachments at:
 
-- `~/.abacus/instances/default/data/storage`
+- `~/.runeach/instances/default/data/storage`
 
 Configure storage provider/settings:
 
 ```sh
-pnpm abacus configure --section storage
+pnpm runeach configure --section storage
 ```
 
 ## Default Agent Workspaces
 
-When a local agent run has no resolved project/session workspace, Abacus falls back to an agent home workspace under the instance root:
+When a local agent run has no resolved project/session workspace, RunEach falls back to an agent home workspace under the instance root:
 
-- `~/.abacus/instances/default/workspaces/<agent-id>`
+- `~/.runeach/instances/default/workspaces/<agent-id>`
 
-This path honors `ABACUS_HOME` and `ABACUS_INSTANCE_ID` in non-default setups.
+This path honors `RUNEACH_HOME` and `RUNEACH_INSTANCE_ID` in non-default setups.
 
-For `codex_local`, Abacus also manages a per-company Codex home under the instance root and seeds it from the shared Codex login/config home (`$CODEX_HOME` or `~/.codex`):
+For `codex_local`, RunEach also manages a per-company Codex home under the instance root and seeds it from the shared Codex login/config home (`$CODEX_HOME` or `~/.codex`):
 
-- `~/.abacus/instances/default/companies/<company-id>/codex-home`
+- `~/.runeach/instances/default/companies/<company-id>/codex-home`
 
 ## Worktree-local Instances
 
-When developing from multiple git worktrees, do not point two Abacus servers at the same embedded PostgreSQL data directory.
+When developing from multiple git worktrees, do not point two RunEach servers at the same embedded PostgreSQL data directory.
 
-Instead, create a repo-local Abacus config plus an isolated instance for the worktree:
+Instead, create a repo-local RunEach config plus an isolated instance for the worktree:
 
 ```sh
-abacus worktree init
+runeach worktree init
 # or create the git worktree and initialize it in one step:
-pnpm abacus worktree:make abacus-pr-432
+pnpm runeach worktree:make runeach-pr-432
 ```
 
 This command:
 
-- writes repo-local files at `.abacus/config.json` and `.abacus/.env`
-- creates an isolated instance under `~/.abacus-worktrees/instances/<worktree-id>/`
+- writes repo-local files at `.runeach/config.json` and `.runeach/.env`
+- creates an isolated instance under `~/.runeach-worktrees/instances/<worktree-id>/`
 - when run inside a linked git worktree, mirrors the effective git hooks into that worktree's private git dir
 - picks a free app port and embedded PostgreSQL port
 - by default seeds the isolated DB in `minimal` mode from your main instance via a logical SQL snapshot
@@ -187,29 +187,29 @@ Seed modes:
 - `full` makes a full logical clone of the source instance
 - `--no-seed` creates an empty isolated instance
 
-After `worktree init`, both the server and the CLI auto-load the repo-local `.abacus/.env` when run inside that worktree, so normal commands like `pnpm dev`, `abacus doctor`, and `abacus db:backup` stay scoped to the worktree instance.
+After `worktree init`, both the server and the CLI auto-load the repo-local `.runeach/.env` when run inside that worktree, so normal commands like `pnpm dev`, `runeach doctor`, and `runeach db:backup` stay scoped to the worktree instance.
 
-That repo-local env also sets `ABACUS_IN_WORKTREE=true`, which the server can use for worktree-specific UI behavior such as an alternate favicon.
+That repo-local env also sets `RUNEACH_IN_WORKTREE=true`, which the server can use for worktree-specific UI behavior such as an alternate favicon.
 
 Print shell exports explicitly when needed:
 
 ```sh
-abacus worktree env
+runeach worktree env
 # or:
-eval "$(abacus worktree env)"
+eval "$(runeach worktree env)"
 ```
 
 ### Worktree CLI Reference
 
-**`pnpm abacus worktree init [options]`** — Create repo-local config/env and an isolated instance for the current worktree.
+**`pnpm runeach worktree init [options]`** — Create repo-local config/env and an isolated instance for the current worktree.
 
 | Option | Description |
 |---|---|
 | `--name <name>` | Display name used to derive the instance id |
 | `--instance <id>` | Explicit isolated instance id |
-| `--home <path>` | Home root for worktree instances (default: `~/.abacus-worktrees`) |
+| `--home <path>` | Home root for worktree instances (default: `~/.runeach-worktrees`) |
 | `--from-config <path>` | Source config.json to seed from |
-| `--from-data-dir <path>` | Source ABACUS_HOME used when deriving the source config |
+| `--from-data-dir <path>` | Source RUNEACH_HOME used when deriving the source config |
 | `--from-instance <id>` | Source instance id (default: `default`) |
 | `--server-port <port>` | Preferred server port |
 | `--db-port <port>` | Preferred embedded Postgres port |
@@ -220,22 +220,22 @@ eval "$(abacus worktree env)"
 Examples:
 
 ```sh
-abacus worktree init --no-seed
-abacus worktree init --seed-mode full
-abacus worktree init --from-instance default
-abacus worktree init --from-data-dir ~/.abacus
-abacus worktree init --force
+runeach worktree init --no-seed
+runeach worktree init --seed-mode full
+runeach worktree init --from-instance default
+runeach worktree init --from-data-dir ~/.runeach
+runeach worktree init --force
 ```
 
-**`pnpm abacus worktree:make <name> [options]`** — Create `~/NAME` as a git worktree, then initialize an isolated Abacus instance inside it. This combines `git worktree add` with `worktree init` in a single step.
+**`pnpm runeach worktree:make <name> [options]`** — Create `~/NAME` as a git worktree, then initialize an isolated RunEach instance inside it. This combines `git worktree add` with `worktree init` in a single step.
 
 | Option | Description |
 |---|---|
 | `--start-point <ref>` | Remote ref to base the new branch on (e.g. `origin/main`) |
 | `--instance <id>` | Explicit isolated instance id |
-| `--home <path>` | Home root for worktree instances (default: `~/.abacus-worktrees`) |
+| `--home <path>` | Home root for worktree instances (default: `~/.runeach-worktrees`) |
 | `--from-config <path>` | Source config.json to seed from |
-| `--from-data-dir <path>` | Source ABACUS_HOME used when deriving the source config |
+| `--from-data-dir <path>` | Source RUNEACH_HOME used when deriving the source config |
 | `--from-instance <id>` | Source instance id (default: `default`) |
 | `--server-port <port>` | Preferred server port |
 | `--db-port <port>` | Preferred embedded Postgres port |
@@ -246,12 +246,12 @@ abacus worktree init --force
 Examples:
 
 ```sh
-pnpm abacus worktree:make abacus-pr-432
-pnpm abacus worktree:make my-feature --start-point origin/main
-pnpm abacus worktree:make experiment --no-seed
+pnpm runeach worktree:make runeach-pr-432
+pnpm runeach worktree:make my-feature --start-point origin/main
+pnpm runeach worktree:make experiment --no-seed
 ```
 
-**`pnpm abacus worktree env [options]`** — Print shell exports for the current worktree-local Abacus instance.
+**`pnpm runeach worktree env [options]`** — Print shell exports for the current worktree-local RunEach instance.
 
 | Option | Description |
 |---|---|
@@ -261,14 +261,14 @@ pnpm abacus worktree:make experiment --no-seed
 Examples:
 
 ```sh
-pnpm abacus worktree env
-pnpm abacus worktree env --json
-eval "$(pnpm abacus worktree env)"
+pnpm runeach worktree env
+pnpm runeach worktree env --json
+eval "$(pnpm runeach worktree env)"
 ```
 
-For project execution worktrees, Abacus can also run a project-defined provision command after it creates or reuses an isolated git worktree. Configure this on the project's execution workspace policy (`workspaceStrategy.provisionCommand`). The command runs inside the derived worktree and receives `ABACUS_WORKSPACE_*`, `ABACUS_PROJECT_ID`, `ABACUS_AGENT_ID`, and `ABACUS_ISSUE_*` environment variables so each repo can bootstrap itself however it wants.
+For project execution worktrees, RunEach can also run a project-defined provision command after it creates or reuses an isolated git worktree. Configure this on the project's execution workspace policy (`workspaceStrategy.provisionCommand`). The command runs inside the derived worktree and receives `RUNEACH_WORKSPACE_*`, `RUNEACH_PROJECT_ID`, `RUNEACH_AGENT_ID`, and `RUNEACH_ISSUE_*` environment variables so each repo can bootstrap itself however it wants.
 
-Default execution worktrees live under `.abacus/worktrees`. If branch creation is blocked by an existing checkout, remove the stale worktree or set `workspaceStrategy.worktreeParentDir` explicitly.
+Default execution worktrees live under `.runeach/worktrees`. If branch creation is blocked by an existing checkout, remove the stale worktree or set `workspaceStrategy.worktreeParentDir` explicitly.
 
 ## Quick Health Checks
 
@@ -289,7 +289,7 @@ Expected:
 To wipe local dev data and start fresh:
 
 ```sh
-rm -rf ~/.abacus/instances/default/db
+rm -rf ~/.runeach/instances/default/db
 pnpm dev
 ```
 
@@ -299,55 +299,55 @@ If you set `DATABASE_URL`, the server will use that instead of embedded PostgreS
 
 ## Automatic DB Backups
 
-Abacus can run automatic DB backups on a timer. Defaults:
+RunEach can run automatic DB backups on a timer. Defaults:
 
 - enabled
 - every 60 minutes
 - retain 30 days
-- backup dir: `~/.abacus/instances/default/data/backups`
+- backup dir: `~/.runeach/instances/default/data/backups`
 
 Configure these in:
 
 ```sh
-pnpm abacus configure --section database
+pnpm runeach configure --section database
 ```
 
 Run a one-off backup manually:
 
 ```sh
-pnpm abacus db:backup
+pnpm runeach db:backup
 # or:
 pnpm db:backup
 ```
 
 Environment overrides:
 
-- `ABACUS_DB_BACKUP_ENABLED=true|false`
-- `ABACUS_DB_BACKUP_INTERVAL_MINUTES=<minutes>`
-- `ABACUS_DB_BACKUP_RETENTION_DAYS=<days>`
-- `ABACUS_DB_BACKUP_DIR=/absolute/or/~/path`
+- `RUNEACH_DB_BACKUP_ENABLED=true|false`
+- `RUNEACH_DB_BACKUP_INTERVAL_MINUTES=<minutes>`
+- `RUNEACH_DB_BACKUP_RETENTION_DAYS=<days>`
+- `RUNEACH_DB_BACKUP_DIR=/absolute/or/~/path`
 
 ## Secrets in Dev
 
 Agent env vars now support secret references. By default, secret values are stored with local encryption and only secret refs are persisted in agent config.
 
-- Default local key path: `~/.abacus/instances/default/secrets/master.key`
-- Override key material directly: `ABACUS_SECRETS_MASTER_KEY`
-- Override key file path: `ABACUS_SECRETS_MASTER_KEY_FILE`
+- Default local key path: `~/.runeach/instances/default/secrets/master.key`
+- Override key material directly: `RUNEACH_SECRETS_MASTER_KEY`
+- Override key file path: `RUNEACH_SECRETS_MASTER_KEY_FILE`
 
 Strict mode (recommended outside local trusted machines):
 
 ```sh
-ABACUS_SECRETS_STRICT_MODE=true
+RUNEACH_SECRETS_STRICT_MODE=true
 ```
 
 When strict mode is enabled, sensitive env keys (for example `*_API_KEY`, `*_TOKEN`, `*_SECRET`) must use secret references instead of inline plain values.
 
 CLI configuration support:
 
-- `pnpm abacus onboard` writes a default `secrets` config section (`local_encrypted`, strict mode off, key file path set) and creates a local key file when needed.
-- `pnpm abacus configure --section secrets` lets you update provider/strict mode/key path and creates the local key file when needed.
-- `pnpm abacus doctor` validates secrets adapter configuration and can create a missing local key file with `--repair`.
+- `pnpm runeach onboard` writes a default `secrets` config section (`local_encrypted`, strict mode off, key file path set) and creates a local key file when needed.
+- `pnpm runeach configure --section secrets` lets you update provider/strict mode/key path and creates the local key file when needed.
+- `pnpm runeach doctor` validates secrets adapter configuration and can create a missing local key file with `--repair`.
 
 Migration helper for existing inline env secrets:
 
@@ -361,7 +361,7 @@ pnpm secrets:migrate-inline-env --apply # apply migration
 Company deletion is intended as a dev/debug capability and can be disabled at runtime:
 
 ```sh
-ABACUS_ENABLE_COMPANY_DELETION=false
+RUNEACH_ENABLE_COMPANY_DELETION=false
 ```
 
 Default behavior:
@@ -371,27 +371,27 @@ Default behavior:
 
 ## CLI Client Operations
 
-Abacus CLI now includes client-side control-plane commands in addition to setup commands.
+RunEach CLI now includes client-side control-plane commands in addition to setup commands.
 
 Quick examples:
 
 ```sh
-pnpm abacus issue list --company-id <company-id>
-pnpm abacus issue create --company-id <company-id> --title "Investigate checkout conflict"
-pnpm abacus issue update <issue-id> --status in_progress --comment "Started triage"
+pnpm runeach issue list --company-id <company-id>
+pnpm runeach issue create --company-id <company-id> --title "Investigate checkout conflict"
+pnpm runeach issue update <issue-id> --status in_progress --comment "Started triage"
 ```
 
 Set defaults once with context profiles:
 
 ```sh
-pnpm abacus context set --api-base http://localhost:3100 --company-id <company-id>
+pnpm runeach context set --api-base http://localhost:3100 --company-id <company-id>
 ```
 
 Then run commands without repeating flags:
 
 ```sh
-pnpm abacus issue list
-pnpm abacus dashboard get
+pnpm runeach issue list
+pnpm runeach dashboard get
 ```
 
 See full command reference in `doc/CLI.md`.
@@ -404,7 +404,7 @@ Agent-oriented invite onboarding now exposes machine-readable API docs:
 - `GET /api/invites/:token/onboarding` returns onboarding manifest details (registration endpoint, claim endpoint template, skill install hints).
 - `GET /api/invites/:token/onboarding.txt` returns a plain-text onboarding doc intended for both human operators and agents (llm.txt-style handoff), including optional inviter message and suggested network host candidates.
 - `GET /api/skills/index` lists available skill documents.
-- `GET /api/skills/abacus` returns the Abacus heartbeat skill markdown.
+- `GET /api/skills/runeach` returns the RunEach heartbeat skill markdown.
 
 ## OpenClaw Join Smoke Test
 
@@ -424,12 +424,12 @@ What it validates:
 Required permissions:
 
 - This script performs board-governed actions (create invite, approve join, wakeup another agent).
-- In authenticated mode, run with board auth via `ABACUS_AUTH_HEADER` or `ABACUS_COOKIE`.
+- In authenticated mode, run with board auth via `RUNEACH_AUTH_HEADER` or `RUNEACH_COOKIE`.
 
 Optional auth flags (for authenticated mode):
 
-- `ABACUS_AUTH_HEADER` (for example `Bearer ...`)
-- `ABACUS_COOKIE` (session cookie header value)
+- `RUNEACH_AUTH_HEADER` (for example `Bearer ...`)
+- `RUNEACH_COOKIE` (session cookie header value)
 
 ## OpenClaw Docker UI One-Command Script
 
@@ -452,11 +452,11 @@ Model behavior for this smoke script:
 
 State behavior for this smoke script:
 
-- defaults to isolated config dir `~/.openclaw-abacus-smoke`
+- defaults to isolated config dir `~/.openclaw-runeach-smoke`
 - resets smoke agent state each run by default (`OPENCLAW_RESET_STATE=1`) to avoid stale provider/auth drift
 
 Networking behavior for this smoke script:
 
-- auto-detects and prints a Abacus host URL reachable from inside OpenClaw Docker
-- default container-side host alias is `host.docker.internal` (override with `ABACUS_HOST_FROM_CONTAINER` / `ABACUS_HOST_PORT`)
-- if Abacus rejects container hostnames in authenticated/private mode, allow `host.docker.internal` via `pnpm abacus allowed-hostname host.docker.internal` and restart Abacus
+- auto-detects and prints a RunEach host URL reachable from inside OpenClaw Docker
+- default container-side host alias is `host.docker.internal` (override with `RUNEACH_HOST_FROM_CONTAINER` / `RUNEACH_HOST_PORT`)
+- if RunEach rejects container hostnames in authenticated/private mode, allow `host.docker.internal` via `pnpm runeach allowed-hostname host.docker.internal` and restart RunEach

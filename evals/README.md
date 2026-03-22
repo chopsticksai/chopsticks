@@ -1,6 +1,6 @@
-# Abacus Evals
+# RunEach Evals
 
-Eval framework for testing Abacus agent behaviors across models and prompt versions.
+Eval framework for testing RunEach agent behaviors across models and prompt versions.
 
 See [the evals framework plan](../doc/plans/2026-03-13-agent-evals-framework.md) for full design rationale.
 
@@ -36,7 +36,7 @@ promptfoo view
 
 ### What's tested
 
-Phase 0 covers narrow behavior evals for the Abacus heartbeat skill:
+Phase 0 covers narrow behavior evals for the RunEach heartbeat skill:
 
 | Case | Category | What it checks |
 |------|----------|---------------|

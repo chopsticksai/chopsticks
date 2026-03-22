@@ -1,4 +1,4 @@
-import type { AbacusPluginManifestV1 } from "@abacus-lab/plugin-sdk";
+import type { RunEachPluginManifestV1 } from "@runeachai/plugin-sdk";
 import {
   DEFAULT_CONFIG,
   EXPORT_NAMES,
@@ -11,13 +11,13 @@ import {
   WEBHOOK_KEYS,
 } from "./constants.js";
 
-const manifest: AbacusPluginManifestV1 = {
+const manifest: RunEachPluginManifestV1 = {
   id: PLUGIN_ID,
   apiVersion: 1,
   version: PLUGIN_VERSION,
   displayName: "Kitchen Sink (Example)",
-  description: "Reference plugin that demonstrates the current Abacus plugin API surface, UI surfaces, bridge actions, events, jobs, webhooks, tools, local workspace access, and runtime diagnostics in one place.",
-  author: "Abacus",
+  description: "Reference plugin that demonstrates the current RunEach plugin API surface, UI surfaces, bridge actions, events, jobs, webhooks, tools, local workspace access, and runtime diagnostics in one place.",
+  author: "RunEach",
   categories: ["ui", "automation", "workspace", "connector"],
   capabilities: [
     "companies.read",
@@ -158,7 +158,7 @@ const manifest: AbacusPluginManifestV1 = {
     {
       name: TOOL_NAMES.companySummary,
       displayName: "Kitchen Sink Company Summary",
-      description: "Summarizes the current company using the Abacus domain APIs.",
+      description: "Summarizes the current company using the RunEach domain APIs.",
       parametersSchema: {
         type: "object",
         properties: {},

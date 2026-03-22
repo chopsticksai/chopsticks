@@ -5,14 +5,14 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   listOpenCodeSkills,
   syncOpenCodeSkills,
-} from "@abacus-lab/adapter-opencode-local/server";
+} from "@runeachai/adapter-opencode-local/server";
 
 async function makeTempDir(prefix: string): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), prefix));
 }
 
 describe("opencode local skill sync", () => {
-  const abacusKey = "abacus-lab/abacus/abacus";
+  const runeachKey = "runeachai/runeach/runeach";
   const cleanupDirs = new Set<string>();
 
   afterEach(async () => {
@@ -20,8 +20,8 @@ describe("opencode local skill sync", () => {
     cleanupDirs.clear();
   });
 
-  it("reports configured Abacus skills and installs them into the shared Claude/OpenCode skills home", async () => {
-    const home = await makeTempDir("abacus-opencode-skill-sync-");
+  it("reports configured RunEach skills and installs them into the shared Claude/OpenCode skills home", async () => {
+    const home = await makeTempDir("runeach-opencode-skill-sync-");
     cleanupDirs.add(home);
 
     const ctx = {
@@ -32,8 +32,8 @@ describe("opencode local skill sync", () => {
         env: {
           HOME: home,
         },
-        abacusSkillSync: {
-          desiredSkills: [abacusKey],
+        runeachSkillSync: {
+          desiredSkills: [runeachKey],
         },
       },
     } as const;
@@ -41,17 +41,17 @@ describe("opencode local skill sync", () => {
     const before = await listOpenCodeSkills(ctx);
     expect(before.mode).toBe("persistent");
     expect(before.warnings).toContain("OpenCode currently uses the shared Claude skills home (~/.claude/skills).");
-    expect(before.desiredSkills).toContain(abacusKey);
-    expect(before.entries.find((entry) => entry.key === abacusKey)?.required).toBe(true);
-    expect(before.entries.find((entry) => entry.key === abacusKey)?.state).toBe("missing");
+    expect(before.desiredSkills).toContain(runeachKey);
+    expect(before.entries.find((entry) => entry.key === runeachKey)?.required).toBe(true);
+    expect(before.entries.find((entry) => entry.key === runeachKey)?.state).toBe("missing");
 
-    const after = await syncOpenCodeSkills(ctx, [abacusKey]);
-    expect(after.entries.find((entry) => entry.key === abacusKey)?.state).toBe("installed");
-    expect((await fs.lstat(path.join(home, ".claude", "skills", "abacus"))).isSymbolicLink()).toBe(true);
+    const after = await syncOpenCodeSkills(ctx, [runeachKey]);
+    expect(after.entries.find((entry) => entry.key === runeachKey)?.state).toBe("installed");
+    expect((await fs.lstat(path.join(home, ".claude", "skills", "runeach"))).isSymbolicLink()).toBe(true);
   });
 
-  it("keeps required bundled Abacus skills installed even when the desired set is emptied", async () => {
-    const home = await makeTempDir("abacus-opencode-skill-prune-");
+  it("keeps required bundled RunEach skills installed even when the desired set is emptied", async () => {
+    const home = await makeTempDir("runeach-opencode-skill-prune-");
     cleanupDirs.add(home);
 
     const configuredCtx = {
@@ -62,13 +62,13 @@ describe("opencode local skill sync", () => {
         env: {
           HOME: home,
         },
-        abacusSkillSync: {
-          desiredSkills: [abacusKey],
+        runeachSkillSync: {
+          desiredSkills: [runeachKey],
         },
       },
     } as const;
 
-    await syncOpenCodeSkills(configuredCtx, [abacusKey]);
+    await syncOpenCodeSkills(configuredCtx, [runeachKey]);
 
     const clearedCtx = {
       ...configuredCtx,
@@ -76,15 +76,15 @@ describe("opencode local skill sync", () => {
         env: {
           HOME: home,
         },
-        abacusSkillSync: {
+        runeachSkillSync: {
           desiredSkills: [],
         },
       },
     } as const;
 
     const after = await syncOpenCodeSkills(clearedCtx, []);
-    expect(after.desiredSkills).toContain(abacusKey);
-    expect(after.entries.find((entry) => entry.key === abacusKey)?.state).toBe("installed");
-    expect((await fs.lstat(path.join(home, ".claude", "skills", "abacus"))).isSymbolicLink()).toBe(true);
+    expect(after.desiredSkills).toContain(runeachKey);
+    expect(after.entries.find((entry) => entry.key === runeachKey)?.state).toBe("installed");
+    expect((await fs.lstat(path.join(home, ".claude", "skills", "runeach"))).isSymbolicLink()).toBe(true);
   });
 });

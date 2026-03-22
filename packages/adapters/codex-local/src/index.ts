@@ -40,8 +40,8 @@ Operational fields:
 
 Notes:
 - Prompts are piped via stdin (Codex receives "-" prompt argument).
-- Abacus injects desired local skills into the active workspace's ".agents/skills" directory at execution time so Codex can discover "$abacus" and related skills without coupling them to the user's login home.
-- Unless explicitly overridden in adapter config, Abacus runs Codex with a per-company managed CODEX_HOME under the active Abacus instance and seeds auth/config from the shared Codex home (the CODEX_HOME env var, when set, or ~/.codex).
+- RunEach injects desired local skills into the active workspace's ".agents/skills" directory at execution time so Codex can discover "$runeach" and related skills without coupling them to the user's login home.
+- Unless explicitly overridden in adapter config, RunEach runs Codex with a per-company managed CODEX_HOME under the active RunEach instance and seeds auth/config from the shared Codex home (the CODEX_HOME env var, when set, or ~/.codex).
 - Some model/tool combinations reject certain effort levels (for example minimal with web search enabled).
-- When Abacus realizes a workspace/runtime for a run, it injects ABACUS_WORKSPACE_* and ABACUS_RUNTIME_* env vars for agent-side tooling.
+- When RunEach realizes a workspace/runtime for a run, it injects RUNEACH_WORKSPACE_* and RUNEACH_RUNTIME_* env vars for agent-side tooling.
 `;

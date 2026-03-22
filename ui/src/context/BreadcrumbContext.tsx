@@ -22,10 +22,10 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (breadcrumbs.length === 0) {
-      document.title = "Abacus";
+      document.title = "RunEach";
     } else {
       const parts = [...breadcrumbs].reverse().map((b) => translateText(b.label));
-      document.title = `${parts.join(" · ")} · Abacus`;
+      document.title = `${parts.join(" · ")} · RunEach`;
     }
   }, [breadcrumbs]);
 

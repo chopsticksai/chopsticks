@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Company } from "@abacus-lab/shared";
+import type { Company } from "@runeachai/shared";
 import { companiesApi } from "../api/companies";
 import { ApiError } from "../api/client";
 import { queryKeys } from "../lib/queryKeys";
@@ -31,7 +31,7 @@ interface CompanyContextValue {
   }) => Promise<Company>;
 }
 
-const STORAGE_KEY = "abacus.selectedCompanyId";
+const STORAGE_KEY = "runeach.selectedCompanyId";
 
 const CompanyContext = createContext<CompanyContextValue | null>(null);
 

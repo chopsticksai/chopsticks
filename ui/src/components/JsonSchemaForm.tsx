@@ -496,7 +496,7 @@ const SecretField = React.memo(({
       label={label}
       description={
         description ||
-        translateText("This secret is stored securely via the Abacus secret provider.")
+        translateText("This secret is stored securely via the RunEach secret provider.")
       }
       required={isRequired}
       error={error}

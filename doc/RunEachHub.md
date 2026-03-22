@@ -1,16 +1,16 @@
-# AbacusHub — The Company Registry
+# RunEachHub — The Company Registry
 
 **Download a company.**
 
-AbacusHub is the public registry where people share, discover, and download Abacus company configurations. A company template is a portable artifact containing an entire org — agents, reporting structure, adapter configs, role definitions, seed tasks — ready to spin up with one command.
+RunEachHub is the public registry where people share, discover, and download RunEach company configurations. A company template is a portable artifact containing an entire org — agents, reporting structure, adapter configs, role definitions, seed tasks — ready to spin up with one command.
 
 ---
 
 ## What It Is
 
-AbacusHub is to Abacus what a package registry is to a programming language. Abacus already supports exportable org configs (see [SPEC.md](./SPEC.md) §2). AbacusHub is the public directory where those exports live.
+RunEachHub is to RunEach what a package registry is to a programming language. RunEach already supports exportable org configs (see [SPEC.md](./SPEC.md) §2). RunEachHub is the public directory where those exports live.
 
-A user builds a working company in Abacus — a dev shop, a marketing agency, a research lab, a content studio — exports the template, and publishes it to AbacusHub. Anyone can browse, search, download, and spin up that company on their own Abacus instance.
+A user builds a working company in RunEach — a dev shop, a marketing agency, a research lab, a content studio — exports the template, and publishes it to RunEachHub. Anyone can browse, search, download, and spin up that company on their own RunEach instance.
 
 The tagline: **you can literally download a company.**
 
@@ -18,7 +18,7 @@ The tagline: **you can literally download a company.**
 
 ## What Gets Published
 
-An AbacusHub package is a **company template export** — the portable artifact format defined in the Abacus spec. It contains:
+An RunEachHub package is a **company template export** — the portable artifact format defined in the RunEach spec. It contains:
 
 | Component | Description |
 |---|---|
@@ -33,7 +33,7 @@ Templates are **structure, not state.** No in-progress tasks, no historical cost
 
 ### Sub-packages
 
-Not every use case needs a whole company. AbacusHub also supports publishing individual components:
+Not every use case needs a whole company. RunEachHub also supports publishing individual components:
 
 - **Agent templates** — a single agent config (e.g. "Senior TypeScript Engineer", "SEO Content Writer", "DevOps Agent")
 - **Team templates** — a subtree of the org chart (e.g. "Marketing Team: CMO + 3 reports", "Engineering Pod: Tech Lead + 4 Engineers")
@@ -85,12 +85,12 @@ Two ways to use a template:
 
 **Install (fresh start, target CLI syntax):**
 ```
-abacus install abacushub:<publisher>/<company-slug>
+runeach install runeachhub:<publisher>/<company-slug>
 ```
-Downloads the template and creates a new company in your local Abacus instance. You add your own API keys, set budgets, customize agents, and hit go.
+Downloads the template and creates a new company in your local RunEach instance. You add your own API keys, set budgets, customize agents, and hit go.
 
 **Fork:**
-Forking creates a copy of the template under your own AbacusHub account. You can modify it, republish it as your own variant, and the fork lineage is tracked. This enables evolutionary improvement — someone publishes a marketing agency, you fork it, add a social media team, republish.
+Forking creates a copy of the template under your own RunEachHub account. You can modify it, republish it as your own variant, and the fork lineage is tracked. This enables evolutionary improvement — someone publishes a marketing agency, you fork it, add a social media team, republish.
 
 ### Stars & Comments
 
@@ -114,15 +114,15 @@ These signals feed into search ranking and discovery.
 
 ### Who Can Publish
 
-Anyone with a GitHub account can publish to AbacusHub. Authentication is via GitHub OAuth.
+Anyone with a GitHub account can publish to RunEachHub. Authentication is via GitHub OAuth.
 
 ### How to Publish
 
-From within Abacus, export your company as a template, then publish. The commands below describe the target AbacusHub CLI surface:
+From within RunEach, export your company as a template, then publish. The commands below describe the target RunEachHub CLI surface:
 
 ```
-abacus export --template my-company
-abacus publish abacushub my-company
+runeach export --template my-company
+runeach publish runeachhub my-company
 ```
 
 Or use the web UI to upload a template export directly.
@@ -152,7 +152,7 @@ Templates use semantic versioning. Each publish creates an immutable version. Us
 For power users who maintain multiple templates:
 
 ```
-abacus abacushub sync
+runeach runeachhub sync
 ```
 
 Scans your local exported templates and publishes any that are new or updated. Useful for maintaining a portfolio of company templates from a single repo.
@@ -201,23 +201,23 @@ New accounts have a waiting period before they can publish. This prevents drive-
 
 ## Architecture
 
-AbacusHub is a **separate service** from Abacus itself. Abacus is self-hosted; AbacusHub is a hosted registry that Abacus instances talk to.
+RunEachHub is a **separate service** from RunEach itself. RunEach is self-hosted; RunEachHub is a hosted registry that RunEach instances talk to.
 
 ### Integration Points
 
 | Layer | Role |
 |---|---|
-| **AbacusHub Web** | Browse, search, discover, comment, star — the website |
-| **AbacusHub API** | Registry API for publishing, downloading, searching programmatically |
-| **Abacus CLI** | Target CLI surface: `abacus install`, `abacus publish`, `abacus abacushub sync` |
-| **Abacus UI** | "Browse AbacusHub" panel in the Abacus web UI for discovering templates without leaving the app |
+| **RunEachHub Web** | Browse, search, discover, comment, star — the website |
+| **RunEachHub API** | Registry API for publishing, downloading, searching programmatically |
+| **RunEach CLI** | Target CLI surface: `runeach install`, `runeach publish`, `runeach runeachhub sync` |
+| **RunEach UI** | "Browse RunEachHub" panel in the RunEach web UI for discovering templates without leaving the app |
 
 ### Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Frontend | React + Vite (consistent with Abacus) |
-| Backend | TypeScript + Hono (consistent with Abacus) |
+| Frontend | React + Vite (consistent with RunEach) |
+| Backend | TypeScript + Hono (consistent with RunEach) |
 | Database | PostgreSQL |
 | Search | Vector embeddings for semantic search |
 | Auth | GitHub OAuth |
@@ -257,25 +257,25 @@ Report
 
 ### "I want to start a company"
 
-1. Open AbacusHub, browse by category or search "dev shop for building SaaS"
+1. Open RunEachHub, browse by category or search "dev shop for building SaaS"
 2. Find a template that fits — "Lean SaaS Dev Shop (CEO + CTO + 3 Engineers)"
 3. Read the description, inspect the org chart, check the comments
-4. Run `abacus install abacushub:acme/lean-saas-shop`
-5. Abacus creates the company locally with all agents pre-configured
+4. Run `runeach install runeachhub:acme/lean-saas-shop`
+5. RunEach creates the company locally with all agents pre-configured
 6. Set your API keys, adjust budgets, add your initial tasks
 7. Hit go
 
 ### "I built something great and want to share it"
 
-1. Build and iterate on a company in Abacus until it works well
-2. Export: `abacus export --template my-agency`
-3. Publish: `abacus publish abacushub my-agency`
+1. Build and iterate on a company in RunEach until it works well
+2. Export: `runeach export --template my-agency`
+3. Publish: `runeach publish runeachhub my-agency`
 4. Fill in description, category, tags on the web UI
 5. Template is live — others can find and install it
 
 ### "I want to improve someone else's company"
 
-1. Find a template on AbacusHub that's close to what you need
+1. Find a template on RunEachHub that's close to what you need
 2. Fork it to your account
 3. Install your fork locally, modify the org (add agents, change configs, restructure teams)
 4. Export and re-publish as your own variant
@@ -283,23 +283,23 @@ Report
 
 ### "I just need one great agent, not a whole company"
 
-1. Search AbacusHub for agent templates: "senior python engineer"
+1. Search RunEachHub for agent templates: "senior python engineer"
 2. Find a well-starred agent config
-3. Install just that agent: `abacus install abacushub:acme/senior-python-eng --agent`
+3. Install just that agent: `runeach install runeachhub:acme/senior-python-eng --agent`
 4. Assign it to a manager in your existing company
 5. Done
 
 ---
 
-## Relationship to Abacus
+## Relationship to RunEach
 
-AbacusHub is **not required** to use Abacus. You can build companies entirely from scratch without ever touching AbacusHub. But AbacusHub dramatically lowers the barrier to entry:
+RunEachHub is **not required** to use RunEach. You can build companies entirely from scratch without ever touching RunEachHub. But RunEachHub dramatically lowers the barrier to entry:
 
 - **New users** get a working company in minutes instead of hours
 - **Experienced users** share proven configurations with the community
 - **The ecosystem** compounds — every good template makes the next company easier to build
 
-AbacusHub is to Abacus what a package registry is to a language runtime: optional, but transformative.
+RunEachHub is to RunEach what a package registry is to a language runtime: optional, but transformative.
 
 ---
 
@@ -311,7 +311,7 @@ AbacusHub is to Abacus what a package registry is to a language runtime: optiona
 - [ ] Template browsing (list, filter by category)
 - [ ] Template detail page (description, org chart, agent list, install command)
 - [ ] Semantic search (vector embeddings)
-- [ ] `abacus install abacushub:<publisher>/<slug>` CLI command
+- [ ] `runeach install runeachhub:<publisher>/<slug>` CLI command
 - [ ] GitHub OAuth authentication
 - [ ] Stars
 - [ ] Download counts
@@ -325,12 +325,12 @@ AbacusHub is to Abacus what a package registry is to a language runtime: optiona
 - [ ] Agent and team sub-packages
 - [ ] Verified publisher badges
 - [ ] Automated security scanning of adapter configs
-- [ ] "Browse AbacusHub" panel in Abacus web UI
-- [ ] `abacus abacushub sync` for bulk publishing
+- [ ] "Browse RunEachHub" panel in RunEach web UI
+- [ ] `runeach runeachhub sync` for bulk publishing
 - [ ] Publisher profiles and portfolios
 
 ### Not in Scope
 
 - Paid / premium templates (everything is free and public, at least initially)
 - Private registries (may be a future enterprise feature)
-- Running companies on AbacusHub (it's a registry, not a runtime — consistent with Abacus's own philosophy)
+- Running companies on RunEachHub (it's a registry, not a runtime — consistent with RunEach's own philosophy)

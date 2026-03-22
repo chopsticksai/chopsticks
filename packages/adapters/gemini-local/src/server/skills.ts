@@ -5,14 +5,14 @@ import { fileURLToPath } from "node:url";
 import type {
   AdapterSkillContext,
   AdapterSkillSnapshot,
-} from "@abacus-lab/adapter-utils";
+} from "@runeachai/adapter-utils";
 import {
   buildPersistentSkillSnapshot,
-  ensureAbacusSkillSymlink,
-  readAbacusRuntimeSkillEntries,
+  ensureRunEachSkillSymlink,
+  readRunEachRuntimeSkillEntries,
   readInstalledSkillTargets,
-  resolveAbacusDesiredSkillNames,
-} from "@abacus-lab/adapter-utils/server-utils";
+  resolveRunEachDesiredSkillNames,
+} from "@runeachai/adapter-utils/server-utils";
 
 const __moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -31,8 +31,8 @@ function resolveGeminiSkillsHome(config: Record<string, unknown>) {
 }
 
 async function buildGeminiSkillSnapshot(config: Record<string, unknown>): Promise<AdapterSkillSnapshot> {
-  const availableEntries = await readAbacusRuntimeSkillEntries(config, __moduleDir);
-  const desiredSkills = resolveAbacusDesiredSkillNames(config, availableEntries);
+  const availableEntries = await readRunEachRuntimeSkillEntries(config, __moduleDir);
+  const desiredSkills = resolveRunEachDesiredSkillNames(config, availableEntries);
   const skillsHome = resolveGeminiSkillsHome(config);
   const installed = await readInstalledSkillTargets(skillsHome);
   return buildPersistentSkillSnapshot({
@@ -44,7 +44,7 @@ async function buildGeminiSkillSnapshot(config: Record<string, unknown>): Promis
     locationLabel: "~/.gemini/skills",
     missingDetail: "Configured but not currently linked into the Gemini skills home.",
     externalConflictDetail: "Skill name is occupied by an external installation.",
-    externalDetail: "Installed outside Abacus management.",
+    externalDetail: "Installed outside RunEach management.",
   });
 }
 
@@ -56,7 +56,7 @@ export async function syncGeminiSkills(
   ctx: AdapterSkillContext,
   desiredSkills: string[],
 ): Promise<AdapterSkillSnapshot> {
-  const availableEntries = await readAbacusRuntimeSkillEntries(ctx.config, __moduleDir);
+  const availableEntries = await readRunEachRuntimeSkillEntries(ctx.config, __moduleDir);
   const desiredSet = new Set([
     ...desiredSkills,
     ...availableEntries.filter((entry) => entry.required).map((entry) => entry.key),
@@ -69,7 +69,7 @@ export async function syncGeminiSkills(
   for (const available of availableEntries) {
     if (!desiredSet.has(available.key)) continue;
     const target = path.join(skillsHome, available.runtimeName);
-    await ensureAbacusSkillSymlink(available.source, target);
+    await ensureRunEachSkillSymlink(available.source, target);
   }
 
   for (const [name, installedEntry] of installed.entries()) {
@@ -87,5 +87,5 @@ export function resolveGeminiDesiredSkillNames(
   config: Record<string, unknown>,
   availableEntries: Array<{ key: string; required?: boolean }>,
 ) {
-  return resolveAbacusDesiredSkillNames(config, availableEntries);
+  return resolveRunEachDesiredSkillNames(config, availableEntries);
 }

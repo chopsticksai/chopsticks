@@ -25,15 +25,15 @@ function makeAgent(adapterConfig: Record<string, unknown>): TestAgent {
 }
 
 describe("agent instructions service", () => {
-  const originalAbacusHome = process.env.ABACUS_HOME;
-  const originalAbacusInstanceId = process.env.ABACUS_INSTANCE_ID;
+  const originalRunEachHome = process.env.RUNEACH_HOME;
+  const originalRunEachInstanceId = process.env.RUNEACH_INSTANCE_ID;
   const cleanupDirs = new Set<string>();
 
   afterEach(async () => {
-    if (originalAbacusHome === undefined) delete process.env.ABACUS_HOME;
-    else process.env.ABACUS_HOME = originalAbacusHome;
-    if (originalAbacusInstanceId === undefined) delete process.env.ABACUS_INSTANCE_ID;
-    else process.env.ABACUS_INSTANCE_ID = originalAbacusInstanceId;
+    if (originalRunEachHome === undefined) delete process.env.RUNEACH_HOME;
+    else process.env.RUNEACH_HOME = originalRunEachHome;
+    if (originalRunEachInstanceId === undefined) delete process.env.RUNEACH_INSTANCE_ID;
+    else process.env.RUNEACH_INSTANCE_ID = originalRunEachInstanceId;
 
     await Promise.all([...cleanupDirs].map(async (dir) => {
       await fs.rm(dir, { recursive: true, force: true });
@@ -42,12 +42,12 @@ describe("agent instructions service", () => {
   });
 
   it("copies the existing bundle into the managed root when switching to managed mode", async () => {
-    const abacusHome = await makeTempDir("abacus-agent-instructions-home-");
-    const externalRoot = await makeTempDir("abacus-agent-instructions-external-");
-    cleanupDirs.add(abacusHome);
+    const runeachHome = await makeTempDir("runeach-agent-instructions-home-");
+    const externalRoot = await makeTempDir("runeach-agent-instructions-external-");
+    cleanupDirs.add(runeachHome);
     cleanupDirs.add(externalRoot);
-    process.env.ABACUS_HOME = abacusHome;
-    process.env.ABACUS_INSTANCE_ID = "test-instance";
+    process.env.RUNEACH_HOME = runeachHome;
+    process.env.RUNEACH_INSTANCE_ID = "test-instance";
 
     await fs.writeFile(path.join(externalRoot, "AGENTS.md"), "# External Agent\n", "utf8");
     await fs.mkdir(path.join(externalRoot, "docs"), { recursive: true });
@@ -66,7 +66,7 @@ describe("agent instructions service", () => {
     expect(result.bundle.mode).toBe("managed");
     expect(result.bundle.managedRootPath).toBe(
       path.join(
-        abacusHome,
+        runeachHome,
         "instances",
         "test-instance",
         "companies",
@@ -82,9 +82,9 @@ describe("agent instructions service", () => {
   });
 
   it("creates the target entry file when switching to a new external root", async () => {
-    const abacusHome = await makeTempDir("abacus-agent-instructions-home-");
+    const runeachHome = await makeTempDir("runeach-agent-instructions-home-");
     const managedRoot = path.join(
-      abacusHome,
+      runeachHome,
       "instances",
       "test-instance",
       "companies",
@@ -93,11 +93,11 @@ describe("agent instructions service", () => {
       "agent-1",
       "instructions",
     );
-    const externalRoot = await makeTempDir("abacus-agent-instructions-new-external-");
-    cleanupDirs.add(abacusHome);
+    const externalRoot = await makeTempDir("runeach-agent-instructions-new-external-");
+    cleanupDirs.add(runeachHome);
     cleanupDirs.add(externalRoot);
-    process.env.ABACUS_HOME = abacusHome;
-    process.env.ABACUS_INSTANCE_ID = "test-instance";
+    process.env.RUNEACH_HOME = runeachHome;
+    process.env.RUNEACH_INSTANCE_ID = "test-instance";
 
     await fs.mkdir(managedRoot, { recursive: true });
     await fs.writeFile(path.join(managedRoot, "AGENTS.md"), "# Managed Agent\n", "utf8");
@@ -122,7 +122,7 @@ describe("agent instructions service", () => {
   });
 
   it("filters junk files, dependency bundles, and python caches from bundle listings and exports", async () => {
-    const externalRoot = await makeTempDir("abacus-agent-instructions-ignore-");
+    const externalRoot = await makeTempDir("runeach-agent-instructions-ignore-");
     cleanupDirs.add(externalRoot);
 
     await fs.writeFile(path.join(externalRoot, "AGENTS.md"), "# External Agent\n", "utf8");

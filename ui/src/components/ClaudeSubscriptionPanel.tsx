@@ -1,4 +1,4 @@
-import type { QuotaWindow } from "@abacus-lab/shared";
+import type { QuotaWindow } from "@runeachai/shared";
 import {
   translateQuotaWindowDetail,
   translateQuotaWindowLabel,

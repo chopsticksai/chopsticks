@@ -87,8 +87,8 @@ import {
   type AgentRuntimeState,
   type LiveEvent,
   type WorkspaceOperation,
-} from "@abacus-lab/shared";
-import { redactHomePathUserSegments, redactHomePathUserSegmentsInValue } from "@abacus-lab/adapter-utils";
+} from "@runeachai/shared";
+import { redactHomePathUserSegments, redactHomePathUserSegmentsInValue } from "@runeachai/adapter-utils";
 import { agentRouteRef } from "../lib/utils";
 import {
   applyAgentSkillSnapshot,
@@ -1931,7 +1931,7 @@ function PromptsTab({
                       <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent side="right" sideOffset={4}>
-                      {t("Managed: Abacus stores and serves the instructions bundle. External: you provide a path on disk where the instructions live.")}
+                      {t("Managed: RunEach stores and serves the instructions bundle. External: you provide a path on disk where the instructions live.")}
                     </TooltipContent>
                   </Tooltip>
                 </span>
@@ -1986,7 +1986,7 @@ function PromptsTab({
                       <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent side="right" sideOffset={4}>
-                      {t("The absolute directory on disk where the instructions bundle lives. In managed mode this is set by Abacus automatically.")}
+                      {t("The absolute directory on disk where the instructions bundle lives. In managed mode this is set by RunEach automatically.")}
                     </TooltipContent>
                   </Tooltip>
                 </span>
@@ -2484,9 +2484,9 @@ function AgentSkillsTab({
   const unsupportedSkillMessage = useMemo(() => {
     if (skillSnapshot?.mode !== "unsupported") return null;
     if (agent.adapterType === "openclaw_gateway") {
-      return t("Abacus cannot manage OpenClaw skills here. Visit your OpenClaw instance to manage this agent's skills.");
+      return t("RunEach cannot manage OpenClaw skills here. Visit your OpenClaw instance to manage this agent's skills.");
     }
-    return t("Abacus cannot manage skills for this adapter yet. Manage them in the adapter directly.");
+    return t("RunEach cannot manage skills for this adapter yet. Manage them in the adapter directly.");
   }, [agent.adapterType, skillSnapshot?.mode, t]);
   const hasUnsavedChanges = !arraysEqual(skillDraft, lastSavedSkills);
   const saveStatusLabel = syncSkills.isPending
@@ -2644,7 +2644,7 @@ function AgentSkillsTab({
                   <section className="border-y border-border">
                     <div className="border-b border-border bg-muted/40 px-3 py-2">
                       <span className="text-xs font-medium text-muted-foreground">
-                        {t("Required by Abacus")}
+                        {t("Required by RunEach")}
                       </span>
                     </div>
                     {requiredSkillRows.map(renderSkillRow)}
@@ -2655,7 +2655,7 @@ function AgentSkillsTab({
                   <section className="border-y border-border">
                     <div className="border-b border-border bg-muted/40 px-3 py-2">
                       <span className="text-xs font-medium text-muted-foreground">
-                        {t("User-installed skills, not managed by Abacus")}
+                        {t("User-installed skills, not managed by RunEach")}
                       </span>
                     </div>
                     {unmanagedSkillRows.map(renderSkillRow)}
@@ -3954,7 +3954,7 @@ function KeysTab({ agentId, companyId }: { agentId: string; companyId?: string }
           {t("Create API Key")}
         </h3>
         <p className="text-xs text-muted-foreground">
-          {t("API keys allow this agent to authenticate calls to the Abacus server.")}
+          {t("API keys allow this agent to authenticate calls to the RunEach server.")}
         </p>
         <div className="flex items-center gap-2">
           <Input

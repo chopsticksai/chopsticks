@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import multer from "multer";
-import type { Db } from "@abacus-lab/db";
-import { createAssetImageMetadataSchema } from "@abacus-lab/shared";
+import type { Db } from "@runeachai/db";
+import { createAssetImageMetadataSchema } from "@runeachai/shared";
 import createDOMPurify from "dompurify";
 import { JSDOM } from "jsdom";
 import type { StorageService } from "../storage/types.js";

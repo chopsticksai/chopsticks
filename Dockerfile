@@ -27,29 +27,29 @@ FROM base AS build
 WORKDIR /app
 COPY --from=deps /app /app
 COPY . .
-RUN pnpm --filter @abacus-lab/ui build
-RUN pnpm --filter @abacus-lab/server build
+RUN pnpm --filter @runeachai/ui build
+RUN pnpm --filter @runeachai/server build
 RUN test -f server/dist/index.js || (echo "ERROR: server build output missing" && exit 1)
 
 FROM base AS production
 WORKDIR /app
 COPY --chown=node:node --from=build /app /app
 RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/codex@latest opencode-ai \
-  && mkdir -p /abacus \
-  && chown node:node /abacus
+  && mkdir -p /runeach \
+  && chown node:node /runeach
 
 ENV NODE_ENV=production \
-  HOME=/abacus \
+  HOME=/runeach \
   HOST=0.0.0.0 \
   PORT=3100 \
   SERVE_UI=true \
-  ABACUS_HOME=/abacus \
-  ABACUS_INSTANCE_ID=default \
-  ABACUS_CONFIG=/abacus/instances/default/config.json \
-  ABACUS_DEPLOYMENT_MODE=authenticated \
-  ABACUS_DEPLOYMENT_EXPOSURE=private
+  RUNEACH_HOME=/runeach \
+  RUNEACH_INSTANCE_ID=default \
+  RUNEACH_CONFIG=/runeach/instances/default/config.json \
+  RUNEACH_DEPLOYMENT_MODE=authenticated \
+  RUNEACH_DEPLOYMENT_EXPOSURE=private
 
-VOLUME ["/abacus"]
+VOLUME ["/runeach"]
 EXPOSE 3100
 
 USER node

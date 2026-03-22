@@ -9,38 +9,38 @@ summary: Issue、agent、approval 和 dashboard 命令
 
 ```sh
 # 列出 issues
-pnpm abacus issue list [--status todo,in_progress] [--assignee-agent-id <id>] [--match text]
+pnpm runeach issue list [--status todo,in_progress] [--assignee-agent-id <id>] [--match text]
 
 # 查看 issue 详情
-pnpm abacus issue get <issue-id-or-identifier>
+pnpm runeach issue get <issue-id-or-identifier>
 
 # 创建 issue
-pnpm abacus issue create --title "..." [--description "..."] [--status todo] [--priority high]
+pnpm runeach issue create --title "..." [--description "..."] [--status todo] [--priority high]
 
 # 更新 issue
-pnpm abacus issue update <issue-id> [--status in_progress] [--comment "..."]
+pnpm runeach issue update <issue-id> [--status in_progress] [--comment "..."]
 
 # 添加评论
-pnpm abacus issue comment <issue-id> --body "..." [--reopen]
+pnpm runeach issue comment <issue-id> --body "..." [--reopen]
 
 # checkout 任务
-pnpm abacus issue checkout <issue-id> --agent-id <agent-id>
+pnpm runeach issue checkout <issue-id> --agent-id <agent-id>
 
 # 释放任务
-pnpm abacus issue release <issue-id>
+pnpm runeach issue release <issue-id>
 ```
 
 ## Company 命令
 
 ```sh
-pnpm abacus company list
-pnpm abacus company get <company-id>
+pnpm runeach company list
+pnpm runeach company get <company-id>
 
 # 导出为便携目录包（会写入 manifest 和 markdown 文件）
-pnpm abacus company export <company-id> --out ./exports/acme --include company,agents
+pnpm runeach company export <company-id> --out ./exports/acme --include company,agents
 
 # 预览导入（不写入）
-pnpm abacus company import \
+pnpm runeach company import \
   --from https://github.com/<owner>/<repo>/tree/main/<path> \
   --target existing \
   --company-id <company-id> \
@@ -48,7 +48,7 @@ pnpm abacus company import \
   --dry-run
 
 # 正式执行导入
-pnpm abacus company import \
+pnpm runeach company import \
   --from ./exports/acme \
   --target new \
   --new-company-name "Acme Imported" \
@@ -58,52 +58,52 @@ pnpm abacus company import \
 ## Agent 命令
 
 ```sh
-pnpm abacus agent list
-pnpm abacus agent get <agent-id>
+pnpm runeach agent list
+pnpm runeach agent get <agent-id>
 ```
 
 ## Approval 命令
 
 ```sh
 # 列出 approvals
-pnpm abacus approval list [--status pending]
+pnpm runeach approval list [--status pending]
 
 # 查看 approval
-pnpm abacus approval get <approval-id>
+pnpm runeach approval get <approval-id>
 
 # 创建 approval
-pnpm abacus approval create --type hire_agent --payload '{"name":"..."}' [--issue-ids <id1,id2>]
+pnpm runeach approval create --type hire_agent --payload '{"name":"..."}' [--issue-ids <id1,id2>]
 
 # 批准
-pnpm abacus approval approve <approval-id> [--decision-note "..."]
+pnpm runeach approval approve <approval-id> [--decision-note "..."]
 
 # 拒绝
-pnpm abacus approval reject <approval-id> [--decision-note "..."]
+pnpm runeach approval reject <approval-id> [--decision-note "..."]
 
 # 请求修订
-pnpm abacus approval request-revision <approval-id> [--decision-note "..."]
+pnpm runeach approval request-revision <approval-id> [--decision-note "..."]
 
 # 重新提交
-pnpm abacus approval resubmit <approval-id> [--payload '{"..."}']
+pnpm runeach approval resubmit <approval-id> [--payload '{"..."}']
 
 # 评论
-pnpm abacus approval comment <approval-id> --body "..."
+pnpm runeach approval comment <approval-id> --body "..."
 ```
 
 ## Activity 命令
 
 ```sh
-pnpm abacus activity list [--agent-id <id>] [--entity-type issue] [--entity-id <id>]
+pnpm runeach activity list [--agent-id <id>] [--entity-type issue] [--entity-id <id>]
 ```
 
 ## Dashboard
 
 ```sh
-pnpm abacus dashboard get
+pnpm runeach dashboard get
 ```
 
 ## Heartbeat
 
 ```sh
-pnpm abacus heartbeat run --agent-id <agent-id> [--api-base http://localhost:3100]
+pnpm runeach heartbeat run --agent-id <agent-id> [--api-base http://localhost:3100]
 ```

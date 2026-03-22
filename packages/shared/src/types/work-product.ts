@@ -8,7 +8,7 @@ export type IssueWorkProductType =
   | "document";
 
 export type IssueWorkProductProvider =
-  | "abacus"
+  | "runeach"
   | "github"
   | "vercel"
   | "s3"

@@ -1,6 +1,6 @@
 import { lt, sql } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
-import { pluginLogs } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
+import { pluginLogs } from "@runeachai/db";
 import { logger } from "../middleware/logger.js";
 
 /** Default retention period: 7 days. */

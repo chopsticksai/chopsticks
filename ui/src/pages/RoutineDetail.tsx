@@ -49,7 +49,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import type { RoutineTrigger } from "@abacus-lab/shared";
+import type { RoutineTrigger } from "@runeachai/shared";
 
 const concurrencyPolicies = ["coalesce_if_active", "always_enqueue", "skip_if_active"];
 const catchUpPolicies = ["skip_missed", "enqueue_missed_with_cap"];
@@ -552,7 +552,7 @@ export function RoutineDetail() {
     onError: (error) => {
       pushToast({
         title: t("Failed to save routine"),
-        body: error instanceof Error ? error.message : t("Abacus could not save the routine."),
+        body: error instanceof Error ? error.message : t("RunEach could not save the routine."),
         tone: "error",
       });
     },
@@ -573,7 +573,7 @@ export function RoutineDetail() {
     onError: (error) => {
       pushToast({
         title: t("Routine run failed"),
-        body: error instanceof Error ? error.message : t("Abacus could not start the routine run."),
+        body: error instanceof Error ? error.message : t("RunEach could not start the routine run."),
         tone: "error",
       });
     },
@@ -595,7 +595,7 @@ export function RoutineDetail() {
     onError: (error) => {
       pushToast({
         title: t("Failed to update routine"),
-        body: error instanceof Error ? error.message : t("Abacus could not update the routine."),
+        body: error instanceof Error ? error.message : t("RunEach could not update the routine."),
         tone: "error",
       });
     },
@@ -636,7 +636,7 @@ export function RoutineDetail() {
     onError: (error) => {
       pushToast({
         title: t("Failed to add trigger"),
-        body: error instanceof Error ? error.message : t("Abacus could not create the trigger."),
+        body: error instanceof Error ? error.message : t("RunEach could not create the trigger."),
         tone: "error",
       });
     },
@@ -654,7 +654,7 @@ export function RoutineDetail() {
     onError: (error) => {
       pushToast({
         title: t("Failed to update trigger"),
-        body: error instanceof Error ? error.message : t("Abacus could not update the trigger."),
+        body: error instanceof Error ? error.message : t("RunEach could not update the trigger."),
         tone: "error",
       });
     },
@@ -672,7 +672,7 @@ export function RoutineDetail() {
     onError: (error) => {
       pushToast({
         title: t("Failed to delete trigger"),
-        body: error instanceof Error ? error.message : t("Abacus could not delete the trigger."),
+        body: error instanceof Error ? error.message : t("RunEach could not delete the trigger."),
         tone: "error",
       });
     },
@@ -694,7 +694,7 @@ export function RoutineDetail() {
     onError: (error) => {
       pushToast({
         title: t("Failed to rotate webhook secret"),
-        body: error instanceof Error ? error.message : t("Abacus could not rotate the webhook secret."),
+        body: error instanceof Error ? error.message : t("RunEach could not rotate the webhook secret."),
         tone: "error",
       });
     },
@@ -822,7 +822,7 @@ export function RoutineDetail() {
         <div className="rounded-lg border border-blue-500/30 bg-blue-500/5 p-4 space-y-3 text-sm">
           <div>
             <p className="font-medium">{secretMessage.title}</p>
-            <p className="text-xs text-muted-foreground">{t("Save this now. Abacus will not show the secret value again.")}</p>
+            <p className="text-xs text-muted-foreground">{t("Save this now. RunEach will not show the secret value again.")}</p>
           </div>
           <div className="space-y-2">
             <div className="flex items-center gap-2">

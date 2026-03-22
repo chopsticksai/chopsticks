@@ -57,14 +57,14 @@ async function getAvailablePort(): Promise<number> {
 }
 
 async function createTempDatabase(): Promise<string> {
-  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-db-client-"));
+  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-db-client-"));
   tempPaths.push(dataDir);
   const port = await getAvailablePort();
   const EmbeddedPostgres = await getEmbeddedPostgresCtor();
   const instance = new EmbeddedPostgres({
     databaseDir: dataDir,
-    user: "abacus",
-    password: "abacus",
+    user: "runeach",
+    password: "runeach",
     port,
     persistent: true,
     initdbFlags: ["--encoding=UTF8", "--locale=C"],
@@ -75,9 +75,9 @@ async function createTempDatabase(): Promise<string> {
   await instance.start();
   runningInstances.push(instance);
 
-  const adminUrl = `postgres://abacus:abacus@127.0.0.1:${port}/postgres`;
-  await ensurePostgresDatabase(adminUrl, "abacus");
-  return `postgres://abacus:abacus@127.0.0.1:${port}/abacus`;
+  const adminUrl = `postgres://runeach:runeach@127.0.0.1:${port}/postgres`;
+  await ensurePostgresDatabase(adminUrl, "runeach");
+  return `postgres://runeach:runeach@127.0.0.1:${port}/runeach`;
 }
 
 async function removeTempDirectory(target: string) {

@@ -3,8 +3,8 @@ import type {
   PluginDetailTabProps,
   PluginCommentAnnotationProps,
   PluginCommentContextMenuItemProps,
-} from "@abacus-lab/plugin-sdk/ui";
-import { usePluginAction, usePluginData } from "@abacus-lab/plugin-sdk/ui";
+} from "@runeachai/plugin-sdk/ui";
+import { usePluginAction, usePluginData } from "@runeachai/plugin-sdk/ui";
 import { useMemo, useState, useEffect, useRef, type MouseEvent, type RefObject } from "react";
 import { EditorView } from "@codemirror/view";
 import { basicSetup } from "codemirror";
@@ -12,7 +12,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
 import { tags } from "@lezer/highlight";
 
-const PLUGIN_KEY = "abacus-file-browser-example";
+const PLUGIN_KEY = "runeach-file-browser-example";
 const FILES_TAB_SLOT_ID = "files-tab";
 
 const editorBaseTheme = {

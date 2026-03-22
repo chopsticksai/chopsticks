@@ -39,7 +39,7 @@ company-package/
 ├── assets/
 ├── scripts/
 ├── references/
-└── .abacus.yaml          (optional vendor extension)
+└── .runeach.yaml          (optional vendor extension)
 ```
 
 ## Common Frontmatter Fields

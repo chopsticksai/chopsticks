@@ -1,6 +1,6 @@
-import type { PluginLauncherRegistration } from "@abacus-lab/plugin-sdk";
+import type { PluginLauncherRegistration } from "@runeachai/plugin-sdk";
 
-export const PLUGIN_ID = "abacus-kitchen-sink-example";
+export const PLUGIN_ID = "runeach-kitchen-sink-example";
 export const PLUGIN_VERSION = "0.1.0";
 export const PAGE_ROUTE = "kitchensink";
 
@@ -93,7 +93,7 @@ export const DEFAULT_CONFIG = {
   secretRefExample: "",
   httpDemoUrl: "https://httpbin.org/anything",
   allowedCommands: SAFE_COMMANDS.map((command) => command.key),
-  workspaceScratchFile: ".abacus-kitchen-sink-demo.txt",
+  workspaceScratchFile: ".runeach-kitchen-sink-demo.txt",
 } as const;
 
 export const RUNTIME_LAUNCHER: PluginLauncherRegistration = {

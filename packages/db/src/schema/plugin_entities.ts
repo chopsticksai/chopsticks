@@ -8,10 +8,10 @@ import {
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { plugins } from "./plugins.js";
-import type { PluginStateScopeKind } from "@abacus-lab/shared";
+import type { PluginStateScopeKind } from "@runeachai/shared";
 
 /**
- * `plugin_entities` table — persistent high-level mapping between Abacus
+ * `plugin_entities` table — persistent high-level mapping between RunEach
  * objects and external plugin-defined entities.
  *
  * This table is used by plugins (e.g. `linear`, `github`) to store pointers

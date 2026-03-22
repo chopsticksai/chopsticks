@@ -3,10 +3,10 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { and, asc, eq } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
-import { companySkills } from "@abacus-lab/db";
-import { readAbacusSkillSyncPreference, writeAbacusSkillSyncPreference } from "@abacus-lab/adapter-utils/server-utils";
-import type { AbacusSkillEntry } from "@abacus-lab/adapter-utils/server-utils";
+import type { Db } from "@runeachai/db";
+import { companySkills } from "@runeachai/db";
+import { readRunEachSkillSyncPreference, writeRunEachSkillSyncPreference } from "@runeachai/adapter-utils/server-utils";
+import type { RunEachSkillEntry } from "@runeachai/adapter-utils/server-utils";
 import type {
   CompanySkill,
   CompanySkillCreateRequest,
@@ -25,10 +25,10 @@ import type {
   CompanySkillTrustLevel,
   CompanySkillUpdateStatus,
   CompanySkillUsageAgent,
-} from "@abacus-lab/shared";
-import { normalizeAgentUrlKey } from "@abacus-lab/shared";
+} from "@runeachai/shared";
+import { normalizeAgentUrlKey } from "@runeachai/shared";
 import { findServerAdapter } from "../adapters/index.js";
-import { resolveAbacusInstanceRoot } from "../home-paths.js";
+import { resolveRunEachInstanceRoot } from "../home-paths.js";
 import { notFound, unprocessable } from "../errors.js";
 import { agentService } from "./agents.js";
 import { projectService } from "./projects.js";
@@ -216,7 +216,7 @@ function uniqueImportedSkillKey(companyId: string, baseSlug: string, usedKeys: S
 }
 
 function buildSkillRuntimeName(key: string, slug: string) {
-  if (key.startsWith("abacus-lab/abacus/")) return slug;
+  if (key.startsWith("runeachai/runeach/")) return slug;
   return `${slug}--${hashSkillValue(key)}`;
 }
 
@@ -226,13 +226,13 @@ function readCanonicalSkillKey(frontmatter: Record<string, unknown>, metadata: R
     ?? asString(frontmatter.skillKey)
     ?? asString(metadata?.skillKey)
     ?? asString(metadata?.canonicalKey)
-    ?? asString(metadata?.abacusSkillKey),
+    ?? asString(metadata?.runeachSkillKey),
   );
   if (direct) return direct;
-  const abacus = isPlainRecord(metadata?.abacus) ? metadata?.abacus as Record<string, unknown> : null;
+  const runeach = isPlainRecord(metadata?.runeach) ? metadata?.runeach as Record<string, unknown> : null;
   return normalizeSkillKey(
-    asString(abacus?.skillKey)
-    ?? asString(abacus?.key),
+    asString(runeach?.skillKey)
+    ?? asString(runeach?.key),
   );
 }
 
@@ -246,8 +246,8 @@ function deriveCanonicalSkillKey(
   if (explicitKey) return explicitKey;
 
   const sourceKind = asString(metadata?.sourceKind);
-  if (sourceKind === "abacus_bundled") {
-    return `abacus-lab/abacus/${slug}`;
+  if (sourceKind === "runeach_bundled") {
+    return `runeachai/runeach/${slug}`;
   }
 
   const owner = normalizeSkillSlug(asString(metadata?.owner));
@@ -1215,7 +1215,7 @@ function resolveDesiredSkillKeys(
   skills: CompanySkill[],
   config: Record<string, unknown>,
 ) {
-  const preference = readAbacusSkillSyncPreference(config);
+  const preference = readRunEachSkillSyncPreference(config);
   return Array.from(new Set(
     preference.desiredSkills
       .map((reference) => resolveSkillReference(skills, reference).skill?.key ?? normalizeSkillKey(reference))
@@ -1262,7 +1262,7 @@ export async function findMissingLocalSkillIds(
 }
 
 function resolveManagedSkillsRoot(companyId: string) {
-  return path.resolve(resolveAbacusInstanceRoot(), "skills", companyId);
+  return path.resolve(resolveRunEachInstanceRoot(), "skills", companyId);
 }
 
 function resolveLocalSkillFilePath(skill: CompanySkill, relativePath: string) {
@@ -1308,12 +1308,12 @@ function deriveSkillSourceInfo(skill: CompanySkill): {
 } {
   const metadata = getSkillMeta(skill);
   const localSkillDir = normalizeSkillDirectory(skill);
-  if (metadata.sourceKind === "abacus_bundled") {
+  if (metadata.sourceKind === "runeach_bundled") {
     return {
       editable: false,
-      editableReason: "Bundled Abacus skills are read-only.",
-      sourceLabel: "Abacus bundled",
-      sourceBadge: "abacus",
+      editableReason: "Bundled RunEach skills are read-only.",
+      sourceLabel: "RunEach bundled",
+      sourceBadge: "runeach",
       sourcePath: null,
     };
   }
@@ -1361,8 +1361,8 @@ function deriveSkillSourceInfo(skill: CompanySkill): {
       return {
         editable: true,
         editableReason: null,
-        sourceLabel: "Abacus workspace",
-        sourceBadge: "abacus",
+        sourceLabel: "RunEach workspace",
+        sourceBadge: "runeach",
         sourcePath: managedRoot,
       };
     }
@@ -1440,12 +1440,12 @@ export function companySkillService(db: Db) {
             ...skill,
             metadata: {
               ...(skill.metadata ?? {}),
-              sourceKind: "abacus_bundled",
+              sourceKind: "runeach_bundled",
             },
           }),
           metadata: {
             ...(skill.metadata ?? {}),
-            sourceKind: "abacus_bundled",
+            sourceKind: "runeach_bundled",
           },
         })))
         .catch(() => [] as ImportedSkill[]);
@@ -1546,7 +1546,7 @@ export function companySkillService(db: Db) {
               adapterType: agent.adapterType,
               config: {
                 ...runtimeConfig,
-                abacusRuntimeSkills: runtimeSkillEntries,
+                runeachRuntimeSkills: runtimeSkillEntries,
               },
             });
             actualState = snapshot.entries.find((entry) => entry.key === key)?.state
@@ -2006,10 +2006,10 @@ export function companySkillService(db: Db) {
   async function listRuntimeSkillEntries(
     companyId: string,
     options: RuntimeSkillEntryOptions = {},
-  ): Promise<AbacusSkillEntry[]> {
+  ): Promise<RunEachSkillEntry[]> {
     const skills = await listFull(companyId);
 
-    const out: AbacusSkillEntry[] = [];
+    const out: RunEachSkillEntry[] = [];
     for (const skill of skills) {
       const sourceKind = asString(getSkillMeta(skill).sourceKind);
       let source = normalizeSkillDirectory(skill);
@@ -2020,14 +2020,14 @@ export function companySkillService(db: Db) {
       }
       if (!source) continue;
 
-      const required = sourceKind === "abacus_bundled";
+      const required = sourceKind === "runeach_bundled";
       out.push({
         key: skill.key,
         runtimeName: buildSkillRuntimeName(skill.key, skill.slug),
         source,
         required,
         requiredReason: required
-          ? "Bundled Abacus skills are always available for local adapters."
+          ? "Bundled RunEach skills are always available for local adapters."
           : null,
       });
     }
@@ -2168,10 +2168,10 @@ export function companySkillService(db: Db) {
       const incomingKind = asString(incomingMeta.sourceKind);
       if (
         existing
-        && existingMeta.sourceKind === "abacus_bundled"
+        && existingMeta.sourceKind === "runeach_bundled"
         && incomingKind === "github"
-        && incomingOwner === "abacus-lab"
-        && incomingRepo === "abacus"
+        && incomingOwner === "runeachai"
+        && incomingRepo === "runeach"
       ) {
         out.push(existing);
         continue;
@@ -2270,7 +2270,7 @@ export function companySkillService(db: Db) {
     const allSkills = await listFull(companyId);
     for (const agent of agentRows) {
       const config = agent.adapterConfig as Record<string, unknown>;
-      const preference = readAbacusSkillSyncPreference(config);
+      const preference = readRunEachSkillSyncPreference(config);
       const referencesSkill = preference.desiredSkills.some((ref) => {
         const resolved = resolveSkillReference(allSkills, ref);
         return resolved.skill?.id === skillId;
@@ -2281,7 +2281,7 @@ export function companySkillService(db: Db) {
           return resolved.skill?.id !== skillId;
         });
         await agents.update(agent.id, {
-          adapterConfig: writeAbacusSkillSyncPreference(config, filtered),
+          adapterConfig: writeRunEachSkillSyncPreference(config, filtered),
         });
       }
     }

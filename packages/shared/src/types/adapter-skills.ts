@@ -10,7 +10,7 @@ export type AgentSkillState =
 
 export type AgentSkillOrigin =
   | "company_managed"
-  | "abacus_required"
+  | "runeach_required"
   | "user_installed"
   | "external_unknown";
 

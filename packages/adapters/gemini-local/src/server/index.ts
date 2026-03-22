@@ -8,7 +8,7 @@ export {
   detectGeminiAuthRequired,
   isGeminiTurnLimitResult,
 } from "./parse.js";
-import type { AdapterSessionCodec } from "@abacus-lab/adapter-utils";
+import type { AdapterSessionCodec } from "@runeachai/adapter-utils";
 
 function readNonEmptyString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;

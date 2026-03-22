@@ -1,6 +1,6 @@
 import * as p from "@clack/prompts";
 import pc from "picocolors";
-import type { AbacusConfig } from "../config/schema.js";
+import type { RunEachConfig } from "../config/schema.js";
 import { publicCliCommand } from "../config/branding.js";
 import { configExists, readConfig, resolveConfigPath } from "../config/store.js";
 import {
@@ -11,7 +11,7 @@ import {
 import {
   resolveDefaultSecretsKeyFilePath,
   resolveDefaultStorageDir,
-  resolveAbacusInstanceId,
+  resolveRunEachInstanceId,
 } from "../config/home.js";
 
 type EnvSource = "env" | "config" | "file" | "default" | "missing";
@@ -25,23 +25,23 @@ type EnvVarRow = {
 };
 
 const DEFAULT_AGENT_JWT_TTL_SECONDS = "172800";
-const DEFAULT_AGENT_JWT_ISSUER = "abacus";
-const DEFAULT_AGENT_JWT_AUDIENCE = "abacus-api";
+const DEFAULT_AGENT_JWT_ISSUER = "runeach";
+const DEFAULT_AGENT_JWT_AUDIENCE = "runeach-api";
 const DEFAULT_HEARTBEAT_SCHEDULER_INTERVAL_MS = "30000";
 const DEFAULT_SECRETS_PROVIDER = "local_encrypted";
 const DEFAULT_STORAGE_PROVIDER = "local_disk";
 function defaultSecretsKeyFilePath(): string {
-  return resolveDefaultSecretsKeyFilePath(resolveAbacusInstanceId());
+  return resolveDefaultSecretsKeyFilePath(resolveRunEachInstanceId());
 }
 function defaultStorageBaseDir(): string {
-  return resolveDefaultStorageDir(resolveAbacusInstanceId());
+  return resolveDefaultStorageDir(resolveRunEachInstanceId());
 }
 
 export async function envCommand(opts: { config?: string }): Promise<void> {
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("env")} `)));
 
   const configPath = resolveConfigPath(opts.config);
-  let config: AbacusConfig | null = null;
+  let config: RunEachConfig | null = null;
   let configReadError: string | null = null;
 
   if (configExists(opts.config)) {
@@ -110,7 +110,7 @@ export async function envCommand(opts: { config?: string }): Promise<void> {
   p.outro("Done");
 }
 
-function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: string): EnvVarRow[] {
+function collectDeploymentEnvRows(config: RunEachConfig | null, configPath: string): EnvVarRow[] {
   const agentJwtEnvFile = resolveAgentJwtEnvFile(configPath);
   const jwtEnv = readAgentJwtSecretFromEnv(configPath);
   const jwtFile = jwtEnv ? null : readAgentJwtSecretFromEnvFile(agentJwtEnvFile);
@@ -120,16 +120,16 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
   const databaseMode = config?.database?.mode ?? "embedded-postgres";
   const dbUrlSource: EnvSource = process.env.DATABASE_URL ? "env" : config?.database?.connectionString ? "config" : "missing";
   const publicUrl =
-    process.env.ABACUS_PUBLIC_URL ??
-    process.env.ABACUS_AUTH_PUBLIC_BASE_URL ??
+    process.env.RUNEACH_PUBLIC_URL ??
+    process.env.RUNEACH_AUTH_PUBLIC_BASE_URL ??
     process.env.BETTER_AUTH_URL ??
     process.env.BETTER_AUTH_BASE_URL ??
     config?.auth?.publicBaseUrl ??
     "";
   const publicUrlSource: EnvSource =
-    process.env.ABACUS_PUBLIC_URL
+    process.env.RUNEACH_PUBLIC_URL
       ? "env"
-      : process.env.ABACUS_AUTH_PUBLIC_BASE_URL || process.env.BETTER_AUTH_URL || process.env.BETTER_AUTH_BASE_URL
+      : process.env.RUNEACH_AUTH_PUBLIC_BASE_URL || process.env.BETTER_AUTH_URL || process.env.BETTER_AUTH_BASE_URL
         ? "env"
         : config?.auth?.publicBaseUrl
           ? "config"
@@ -146,47 +146,47 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
   const heartbeatInterval = process.env.HEARTBEAT_SCHEDULER_INTERVAL_MS ?? DEFAULT_HEARTBEAT_SCHEDULER_INTERVAL_MS;
   const heartbeatEnabled = process.env.HEARTBEAT_SCHEDULER_ENABLED ?? "true";
   const secretsProvider =
-    process.env.ABACUS_SECRETS_PROVIDER ??
+    process.env.RUNEACH_SECRETS_PROVIDER ??
     config?.secrets?.provider ??
     DEFAULT_SECRETS_PROVIDER;
   const secretsStrictMode =
-    process.env.ABACUS_SECRETS_STRICT_MODE ??
+    process.env.RUNEACH_SECRETS_STRICT_MODE ??
     String(config?.secrets?.strictMode ?? false);
   const secretsKeyFilePath =
-    process.env.ABACUS_SECRETS_MASTER_KEY_FILE ??
+    process.env.RUNEACH_SECRETS_MASTER_KEY_FILE ??
     config?.secrets?.localEncrypted?.keyFilePath ??
     defaultSecretsKeyFilePath();
   const storageProvider =
-    process.env.ABACUS_STORAGE_PROVIDER ??
+    process.env.RUNEACH_STORAGE_PROVIDER ??
     config?.storage?.provider ??
     DEFAULT_STORAGE_PROVIDER;
   const storageLocalDir =
-    process.env.ABACUS_STORAGE_LOCAL_DIR ??
+    process.env.RUNEACH_STORAGE_LOCAL_DIR ??
     config?.storage?.localDisk?.baseDir ??
     defaultStorageBaseDir();
   const storageS3Bucket =
-    process.env.ABACUS_STORAGE_S3_BUCKET ??
+    process.env.RUNEACH_STORAGE_S3_BUCKET ??
     config?.storage?.s3?.bucket ??
-    "abacus";
+    "runeach";
   const storageS3Region =
-    process.env.ABACUS_STORAGE_S3_REGION ??
+    process.env.RUNEACH_STORAGE_S3_REGION ??
     config?.storage?.s3?.region ??
     "us-east-1";
   const storageS3Endpoint =
-    process.env.ABACUS_STORAGE_S3_ENDPOINT ??
+    process.env.RUNEACH_STORAGE_S3_ENDPOINT ??
     config?.storage?.s3?.endpoint ??
     "";
   const storageS3Prefix =
-    process.env.ABACUS_STORAGE_S3_PREFIX ??
+    process.env.RUNEACH_STORAGE_S3_PREFIX ??
     config?.storage?.s3?.prefix ??
     "";
   const storageS3ForcePathStyle =
-    process.env.ABACUS_STORAGE_S3_FORCE_PATH_STYLE ??
+    process.env.RUNEACH_STORAGE_S3_FORCE_PATH_STYLE ??
     String(config?.storage?.s3?.forcePathStyle ?? false);
 
   const rows: EnvVarRow[] = [
     {
-      key: "ABACUS_AGENT_JWT_SECRET",
+      key: "RUNEACH_AGENT_JWT_SECRET",
       value: jwtEnv ?? jwtFile ?? "",
       source: jwtSource,
       required: true,
@@ -217,7 +217,7 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
       note: "HTTP listen port",
     },
     {
-      key: "ABACUS_PUBLIC_URL",
+      key: "RUNEACH_PUBLIC_URL",
       value: publicUrl,
       source: publicUrlSource,
       required: false,
@@ -232,26 +232,26 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
           ? "default"
           : "missing",
       required: false,
-      note: "Comma-separated auth origin allowlist (auto-derived from ABACUS_PUBLIC_URL when possible)",
+      note: "Comma-separated auth origin allowlist (auto-derived from RUNEACH_PUBLIC_URL when possible)",
     },
     {
-      key: "ABACUS_AGENT_JWT_TTL_SECONDS",
-      value: process.env.ABACUS_AGENT_JWT_TTL_SECONDS ?? DEFAULT_AGENT_JWT_TTL_SECONDS,
-      source: process.env.ABACUS_AGENT_JWT_TTL_SECONDS ? "env" : "default",
+      key: "RUNEACH_AGENT_JWT_TTL_SECONDS",
+      value: process.env.RUNEACH_AGENT_JWT_TTL_SECONDS ?? DEFAULT_AGENT_JWT_TTL_SECONDS,
+      source: process.env.RUNEACH_AGENT_JWT_TTL_SECONDS ? "env" : "default",
       required: false,
       note: "JWT lifetime in seconds",
     },
     {
-      key: "ABACUS_AGENT_JWT_ISSUER",
-      value: process.env.ABACUS_AGENT_JWT_ISSUER ?? DEFAULT_AGENT_JWT_ISSUER,
-      source: process.env.ABACUS_AGENT_JWT_ISSUER ? "env" : "default",
+      key: "RUNEACH_AGENT_JWT_ISSUER",
+      value: process.env.RUNEACH_AGENT_JWT_ISSUER ?? DEFAULT_AGENT_JWT_ISSUER,
+      source: process.env.RUNEACH_AGENT_JWT_ISSUER ? "env" : "default",
       required: false,
       note: "JWT issuer",
     },
     {
-      key: "ABACUS_AGENT_JWT_AUDIENCE",
-      value: process.env.ABACUS_AGENT_JWT_AUDIENCE ?? DEFAULT_AGENT_JWT_AUDIENCE,
-      source: process.env.ABACUS_AGENT_JWT_AUDIENCE ? "env" : "default",
+      key: "RUNEACH_AGENT_JWT_AUDIENCE",
+      value: process.env.RUNEACH_AGENT_JWT_AUDIENCE ?? DEFAULT_AGENT_JWT_AUDIENCE,
+      source: process.env.RUNEACH_AGENT_JWT_AUDIENCE ? "env" : "default",
       required: false,
       note: "JWT audience",
     },
@@ -270,9 +270,9 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
       note: "Set to `false` to disable timer scheduling",
     },
     {
-      key: "ABACUS_SECRETS_PROVIDER",
+      key: "RUNEACH_SECRETS_PROVIDER",
       value: secretsProvider,
-      source: process.env.ABACUS_SECRETS_PROVIDER
+      source: process.env.RUNEACH_SECRETS_PROVIDER
         ? "env"
         : config?.secrets?.provider
           ? "config"
@@ -281,9 +281,9 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
       note: "Default provider for new secrets",
     },
     {
-      key: "ABACUS_SECRETS_STRICT_MODE",
+      key: "RUNEACH_SECRETS_STRICT_MODE",
       value: secretsStrictMode,
-      source: process.env.ABACUS_SECRETS_STRICT_MODE
+      source: process.env.RUNEACH_SECRETS_STRICT_MODE
         ? "env"
         : config?.secrets?.strictMode !== undefined
           ? "config"
@@ -292,9 +292,9 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
       note: "Require secret refs for sensitive env keys",
     },
     {
-      key: "ABACUS_SECRETS_MASTER_KEY_FILE",
+      key: "RUNEACH_SECRETS_MASTER_KEY_FILE",
       value: secretsKeyFilePath,
-      source: process.env.ABACUS_SECRETS_MASTER_KEY_FILE
+      source: process.env.RUNEACH_SECRETS_MASTER_KEY_FILE
         ? "env"
         : config?.secrets?.localEncrypted?.keyFilePath
           ? "config"
@@ -303,9 +303,9 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
       note: "Path to local encrypted secrets key file",
     },
     {
-      key: "ABACUS_STORAGE_PROVIDER",
+      key: "RUNEACH_STORAGE_PROVIDER",
       value: storageProvider,
-      source: process.env.ABACUS_STORAGE_PROVIDER
+      source: process.env.RUNEACH_STORAGE_PROVIDER
         ? "env"
         : config?.storage?.provider
           ? "config"
@@ -314,9 +314,9 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
       note: "Storage provider (local_disk or s3)",
     },
     {
-      key: "ABACUS_STORAGE_LOCAL_DIR",
+      key: "RUNEACH_STORAGE_LOCAL_DIR",
       value: storageLocalDir,
-      source: process.env.ABACUS_STORAGE_LOCAL_DIR
+      source: process.env.RUNEACH_STORAGE_LOCAL_DIR
         ? "env"
         : config?.storage?.localDisk?.baseDir
           ? "config"
@@ -325,9 +325,9 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
       note: "Local storage base directory for local_disk provider",
     },
     {
-      key: "ABACUS_STORAGE_S3_BUCKET",
+      key: "RUNEACH_STORAGE_S3_BUCKET",
       value: storageS3Bucket,
-      source: process.env.ABACUS_STORAGE_S3_BUCKET
+      source: process.env.RUNEACH_STORAGE_S3_BUCKET
         ? "env"
         : config?.storage?.s3?.bucket
           ? "config"
@@ -336,9 +336,9 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
       note: "S3 bucket name for s3 provider",
     },
     {
-      key: "ABACUS_STORAGE_S3_REGION",
+      key: "RUNEACH_STORAGE_S3_REGION",
       value: storageS3Region,
-      source: process.env.ABACUS_STORAGE_S3_REGION
+      source: process.env.RUNEACH_STORAGE_S3_REGION
         ? "env"
         : config?.storage?.s3?.region
           ? "config"
@@ -347,9 +347,9 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
       note: "S3 region for s3 provider",
     },
     {
-      key: "ABACUS_STORAGE_S3_ENDPOINT",
+      key: "RUNEACH_STORAGE_S3_ENDPOINT",
       value: storageS3Endpoint,
-      source: process.env.ABACUS_STORAGE_S3_ENDPOINT
+      source: process.env.RUNEACH_STORAGE_S3_ENDPOINT
         ? "env"
         : config?.storage?.s3?.endpoint
           ? "config"
@@ -358,9 +358,9 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
       note: "Optional custom endpoint for S3-compatible providers",
     },
     {
-      key: "ABACUS_STORAGE_S3_PREFIX",
+      key: "RUNEACH_STORAGE_S3_PREFIX",
       value: storageS3Prefix,
-      source: process.env.ABACUS_STORAGE_S3_PREFIX
+      source: process.env.RUNEACH_STORAGE_S3_PREFIX
         ? "env"
         : config?.storage?.s3?.prefix
           ? "config"
@@ -369,9 +369,9 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
       note: "Optional object key prefix",
     },
     {
-      key: "ABACUS_STORAGE_S3_FORCE_PATH_STYLE",
+      key: "RUNEACH_STORAGE_S3_FORCE_PATH_STYLE",
       value: storageS3ForcePathStyle,
-      source: process.env.ABACUS_STORAGE_S3_FORCE_PATH_STYLE
+      source: process.env.RUNEACH_STORAGE_S3_FORCE_PATH_STYLE
         ? "env"
         : config?.storage?.s3?.forcePathStyle !== undefined
           ? "config"
@@ -382,11 +382,11 @@ function collectDeploymentEnvRows(config: AbacusConfig | null, configPath: strin
   ];
 
   const defaultConfigPath = resolveConfigPath();
-  if (process.env.ABACUS_CONFIG || configPath !== defaultConfigPath) {
+  if (process.env.RUNEACH_CONFIG || configPath !== defaultConfigPath) {
     rows.push({
-      key: "ABACUS_CONFIG",
-      value: process.env.ABACUS_CONFIG ?? configPath,
-      source: process.env.ABACUS_CONFIG ? "env" : "default",
+      key: "RUNEACH_CONFIG",
+      value: process.env.RUNEACH_CONFIG ?? configPath,
+      source: process.env.RUNEACH_CONFIG ? "env" : "default",
       required: false,
       note: "Optional path override for config file",
     });

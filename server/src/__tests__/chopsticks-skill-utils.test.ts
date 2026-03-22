@@ -3,15 +3,15 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
-  listAbacusSkillEntries,
+  listRunEachSkillEntries,
   removeMaintainerOnlySkillSymlinks,
-} from "@abacus-lab/adapter-utils/server-utils";
+} from "@runeachai/adapter-utils/server-utils";
 
 async function makeTempDir(prefix: string): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), prefix));
 }
 
-describe("abacus skill utils", () => {
+describe("runeach skill utils", () => {
   const cleanupDirs = new Set<string>();
 
   afterEach(async () => {
@@ -20,27 +20,27 @@ describe("abacus skill utils", () => {
   });
 
   it("lists runtime skills from ./skills without pulling in .agents/skills", async () => {
-    const root = await makeTempDir("abacus-skill-roots-");
+    const root = await makeTempDir("runeach-skill-roots-");
     cleanupDirs.add(root);
 
     const moduleDir = path.join(root, "a", "b", "c", "d", "e");
     await fs.mkdir(moduleDir, { recursive: true });
-    await fs.mkdir(path.join(root, "skills", "abacus"), { recursive: true });
+    await fs.mkdir(path.join(root, "skills", "runeach"), { recursive: true });
     await fs.mkdir(path.join(root, ".agents", "skills", "release"), { recursive: true });
 
-    const entries = await listAbacusSkillEntries(moduleDir);
+    const entries = await listRunEachSkillEntries(moduleDir);
 
-    expect(entries.map((entry) => entry.key)).toEqual(["abacus-lab/abacus/abacus"]);
-    expect(entries.map((entry) => entry.runtimeName)).toEqual(["abacus"]);
-    expect(entries[0]?.source).toBe(path.join(root, "skills", "abacus"));
+    expect(entries.map((entry) => entry.key)).toEqual(["runeachai/runeach/runeach"]);
+    expect(entries.map((entry) => entry.runtimeName)).toEqual(["runeach"]);
+    expect(entries[0]?.source).toBe(path.join(root, "skills", "runeach"));
   });
 
   it("removes stale maintainer-only symlinks from a shared skills home", async () => {
-    const root = await makeTempDir("abacus-skill-cleanup-");
+    const root = await makeTempDir("runeach-skill-cleanup-");
     cleanupDirs.add(root);
 
     const skillsHome = path.join(root, "skills-home");
-    const runtimeSkill = path.join(root, "skills", "abacus");
+    const runtimeSkill = path.join(root, "skills", "runeach");
     const customSkill = path.join(root, "custom", "release-notes");
     const staleMaintainerSkill = path.join(root, ".agents", "skills", "release");
 
@@ -48,15 +48,15 @@ describe("abacus skill utils", () => {
     await fs.mkdir(runtimeSkill, { recursive: true });
     await fs.mkdir(customSkill, { recursive: true });
 
-    await fs.symlink(runtimeSkill, path.join(skillsHome, "abacus"));
+    await fs.symlink(runtimeSkill, path.join(skillsHome, "runeach"));
     await fs.symlink(customSkill, path.join(skillsHome, "release-notes"));
     await fs.symlink(staleMaintainerSkill, path.join(skillsHome, "release"));
 
-    const removed = await removeMaintainerOnlySkillSymlinks(skillsHome, ["abacus"]);
+    const removed = await removeMaintainerOnlySkillSymlinks(skillsHome, ["runeach"]);
 
     expect(removed).toEqual(["release"]);
     await expect(fs.lstat(path.join(skillsHome, "release"))).rejects.toThrow();
-    expect((await fs.lstat(path.join(skillsHome, "abacus"))).isSymbolicLink()).toBe(true);
+    expect((await fs.lstat(path.join(skillsHome, "runeach"))).isSymbolicLink()).toBe(true);
     expect((await fs.lstat(path.join(skillsHome, "release-notes"))).isSymbolicLink()).toBe(true);
   });
 });

@@ -1,5 +1,5 @@
-import type { Db } from "@abacus-lab/db";
-import { companies, instanceSettings } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
+import { companies, instanceSettings } from "@runeachai/db";
 import {
   instanceGeneralSettingsSchema,
   type InstanceGeneralSettings,
@@ -8,7 +8,7 @@ import {
   type PatchInstanceGeneralSettings,
   type InstanceSettings,
   type PatchInstanceExperimentalSettings,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { eq } from "drizzle-orm";
 
 const DEFAULT_SINGLETON_KEY = "default";

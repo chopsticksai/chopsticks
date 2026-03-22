@@ -1,5 +1,5 @@
-import type { Db } from "@abacus-lab/db";
-import { pluginLogs, agentTaskSessions as agentTaskSessionsTable } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
+import { pluginLogs, agentTaskSessions as agentTaskSessionsTable } from "@runeachai/db";
 import { eq, and, like, desc } from "drizzle-orm";
 import type {
   HostServices,
@@ -10,7 +10,7 @@ import type {
   Goal,
   PluginWorkspace,
   IssueComment,
-} from "@abacus-lab/plugin-sdk";
+} from "@runeachai/plugin-sdk";
 import { companyService } from "./companies.js";
 import { agentService } from "./agents.js";
 import { projectService } from "./projects.js";
@@ -424,7 +424,7 @@ if (_logFlushInterval.unref) _logFlushInterval.unref();
  * buildHostServices — creates a concrete implementation of the `HostServices`
  * interface for a specific plugin.
  *
- * This implementation delegates to the core Abacus domain services,
+ * This implementation delegates to the core RunEach domain services,
  * providing the bridge between the plugin worker's SDK and the host platform.
  *
  * @param db - Database connection instance.
@@ -559,7 +559,7 @@ export function buildHostServices(
         await scopedBus.emit(params.name, params.companyId, params.payload);
       },
       async subscribe(params: { eventPattern: string; filter?: Record<string, unknown> | null }) {
-        const handler = async (event: import("@abacus-lab/plugin-sdk").PluginEvent) => {
+        const handler = async (event: import("@runeachai/plugin-sdk").PluginEvent) => {
           if (notifyWorker) {
             notifyWorker("onEvent", { event });
           }

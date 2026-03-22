@@ -1,8 +1,8 @@
-import type { AbacusConfig } from "../config/schema.js";
+import type { RunEachConfig } from "../config/schema.js";
 import { checkPort } from "../utils/net.js";
 import type { CheckResult } from "./index.js";
 
-export async function portCheck(config: AbacusConfig): Promise<CheckResult> {
+export async function portCheck(config: RunEachConfig): Promise<CheckResult> {
   const port = config.server.port;
   const result = await checkPort(port);
 

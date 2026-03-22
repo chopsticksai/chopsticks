@@ -3,7 +3,7 @@ import type {
   HeartbeatRunEvent,
   InstanceSchedulerHeartbeatAgent,
   WorkspaceOperation,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { api } from "./client";
 
 export interface ActiveRunForIssue extends HeartbeatRun {

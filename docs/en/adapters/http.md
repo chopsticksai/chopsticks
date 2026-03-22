@@ -3,7 +3,7 @@ title: HTTP Adapter
 summary: HTTP webhook adapter
 ---
 
-The `http` adapter sends a webhook request to an external agent service. The agent runs externally and Abacus just triggers it.
+The `http` adapter sends a webhook request to an external agent service. The agent runs externally and RunEach just triggers it.
 
 ## When to Use
 
@@ -26,9 +26,9 @@ The `http` adapter sends a webhook request to an external agent service. The age
 
 ## How It Works
 
-1. Abacus sends a POST request to the configured URL
+1. RunEach sends a POST request to the configured URL
 2. The request body includes the execution context (agent ID, task info, wake reason)
-3. The external agent processes the request and calls back to the Abacus API
+3. The external agent processes the request and calls back to the RunEach API
 4. Response from the webhook is captured as the run result
 
 ## Request Body
@@ -48,4 +48,4 @@ The webhook receives a JSON payload with:
 }
 ```
 
-The external agent uses `ABACUS_API_URL` and an API key to call back to Abacus.
+The external agent uses `RUNEACH_API_URL` and an API key to call back to RunEach.

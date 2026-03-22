@@ -3,8 +3,8 @@ import path from "node:path";
 import { execFile as execFileCallback } from "node:child_process";
 import { promisify } from "node:util";
 import { and, asc, desc, eq, gt, inArray, sql } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
-import type { BillingType } from "@abacus-lab/shared";
+import type { Db } from "@runeachai/db";
+import type { BillingType } from "@runeachai/shared";
 import {
   agents,
   agentRuntimeState,
@@ -15,7 +15,7 @@ import {
   issues,
   projects,
   projectWorkspaces,
-} from "@abacus-lab/db";
+} from "@runeachai/db";
 import { conflict, notFound } from "../errors.js";
 import { logger } from "../middleware/logger.js";
 import { publishLiveEvent } from "./live-events.js";
@@ -55,15 +55,15 @@ import {
   hasSessionCompactionThresholds,
   resolveSessionCompactionPolicy,
   type SessionCompactionPolicy,
-} from "@abacus-lab/adapter-utils";
+} from "@runeachai/adapter-utils";
 
 const MAX_LIVE_LOG_CHUNK_BYTES = 8 * 1024;
 const HEARTBEAT_MAX_CONCURRENT_RUNS_DEFAULT = 1;
 const HEARTBEAT_MAX_CONCURRENT_RUNS_MAX = 10;
-const DEFERRED_WAKE_CONTEXT_KEY = "_abacusWakeContext";
+const DEFERRED_WAKE_CONTEXT_KEY = "_runeachWakeContext";
 const DETACHED_PROCESS_ERROR_CODE = "process_detached";
 const startLocksByAgent = new Map<string, Promise<void>>();
-const REPO_ONLY_CWD_SENTINEL = "/__abacus_repo_only__";
+const REPO_ONLY_CWD_SENTINEL = "/__runeach_repo_only__";
 const MANAGED_WORKSPACE_GIT_CLONE_TIMEOUT_MS = 10 * 60 * 1000;
 const execFile = promisify(execFileCallback);
 const SESSIONED_LOCAL_ADAPTERS = new Set([
@@ -506,7 +506,7 @@ export function shouldResetTaskSessionForWake(
 export function formatRuntimeWorkspaceWarningLog(warning: string) {
   return {
     stream: "stdout" as const,
-    chunk: `[abacus] ${warning}\n`,
+    chunk: `[runeach] ${warning}\n`,
   };
 }
 
@@ -933,7 +933,7 @@ export function heartbeatService(db: Db) {
       readNonEmptyString(latestRun.error);
 
     const handoffMarkdown = [
-      "Abacus session handoff:",
+      "RunEach session handoff:",
       `- Previous session: ${sessionId}`,
       issueId ? `- Issue: ${issueId}` : "",
       `- Rotation reason: ${reason}`,
@@ -1952,7 +1952,7 @@ export function heartbeatService(db: Db) {
     const runtimeSkillEntries = await companySkills.listRuntimeSkillEntries(agent.companyId);
     const runtimeConfig = {
       ...resolvedConfig,
-      abacusRuntimeSkills: runtimeSkillEntries,
+      runeachRuntimeSkills: runtimeSkillEntries,
     };
     const issueRef = issueContext
       ? {
@@ -2135,7 +2135,7 @@ export function heartbeatService(db: Db) {
           ]
         : []),
     ];
-    context.abacusWorkspace = {
+    context.runeachWorkspace = {
       cwd: executionWorkspace.cwd,
       source: executionWorkspace.source,
       mode: executionWorkspaceMode,
@@ -2152,7 +2152,7 @@ export function heartbeatService(db: Db) {
         return home;
       })(),
     };
-    context.abacusWorkspaces = resolvedWorkspace.workspaceHints;
+    context.runeachWorkspaces = resolvedWorkspace.workspaceHints;
     const runtimeServiceIntents = (() => {
       const runtimeConfig = parseObject(resolvedConfig.workspaceRuntime);
       return Array.isArray(runtimeConfig.services)
@@ -2162,9 +2162,9 @@ export function heartbeatService(db: Db) {
         : [];
     })();
     if (runtimeServiceIntents.length > 0) {
-      context.abacusRuntimeServiceIntents = runtimeServiceIntents;
+      context.runeachRuntimeServiceIntents = runtimeServiceIntents;
     } else {
-      delete context.abacusRuntimeServiceIntents;
+      delete context.runeachRuntimeServiceIntents;
     }
     if (executionWorkspace.projectId && !readNonEmptyString(context.projectId)) {
       context.projectId = executionWorkspace.projectId;
@@ -2186,9 +2186,9 @@ export function heartbeatService(db: Db) {
       issueId,
     });
     if (sessionCompaction.rotate) {
-      context.abacusSessionHandoffMarkdown = sessionCompaction.handoffMarkdown;
-      context.abacusSessionRotationReason = sessionCompaction.reason;
-      context.abacusPreviousSessionId = previousSessionDisplayId ?? runtimeSessionIdForAdapter;
+      context.runeachSessionHandoffMarkdown = sessionCompaction.handoffMarkdown;
+      context.runeachSessionRotationReason = sessionCompaction.reason;
+      context.runeachPreviousSessionId = previousSessionDisplayId ?? runtimeSessionIdForAdapter;
       runtimeSessionIdForAdapter = null;
       runtimeSessionParamsForAdapter = null;
       previousSessionDisplayId = null;
@@ -2198,9 +2198,9 @@ export function heartbeatService(db: Db) {
         );
       }
     } else {
-      delete context.abacusSessionHandoffMarkdown;
-      delete context.abacusSessionRotationReason;
-      delete context.abacusPreviousSessionId;
+      delete context.runeachSessionHandoffMarkdown;
+      delete context.runeachSessionRotationReason;
+      delete context.runeachPreviousSessionId;
     }
 
     const runtimeForAdapter = {
@@ -2329,8 +2329,8 @@ export function heartbeatService(db: Db) {
         onLog,
       });
       if (runtimeServices.length > 0) {
-        context.abacusRuntimeServices = runtimeServices;
-        context.abacusRuntimePrimaryUrl =
+        context.runeachRuntimeServices = runtimeServices;
+        context.runeachRuntimePrimaryUrl =
           runtimeServices.find((service) => readNonEmptyString(service.url))?.url ?? null;
         await db
           .update(heartbeatRuns)
@@ -2353,7 +2353,7 @@ export function heartbeatService(db: Db) {
         } catch (err) {
           await onLog(
             "stderr",
-            `[abacus] Failed to post workspace-ready comment: ${err instanceof Error ? err.message : String(err)}\n`,
+            `[runeach] Failed to post workspace-ready comment: ${err instanceof Error ? err.message : String(err)}\n`,
           );
         }
       }
@@ -2384,7 +2384,7 @@ export function heartbeatService(db: Db) {
             runId: run.id,
             adapterType: agent.adapterType,
           },
-          "local agent jwt secret missing or invalid; running without injected ABACUS_API_KEY",
+          "local agent jwt secret missing or invalid; running without injected RUNEACH_API_KEY",
         );
       }
       const adapterResult = await adapter.execute({
@@ -2420,8 +2420,8 @@ export function heartbeatService(db: Db) {
           ...runtimeServices,
           ...adapterManagedRuntimeServices,
         ];
-        context.abacusRuntimeServices = combinedRuntimeServices;
-        context.abacusRuntimePrimaryUrl =
+        context.runeachRuntimeServices = combinedRuntimeServices;
+        context.runeachRuntimePrimaryUrl =
           combinedRuntimeServices.find((service) => readNonEmptyString(service.url))?.url ?? null;
         await db
           .update(heartbeatRuns)
@@ -2443,7 +2443,7 @@ export function heartbeatService(db: Db) {
           } catch (err) {
             await onLog(
               "stderr",
-              `[abacus] Failed to post adapter-managed runtime comment: ${err instanceof Error ? err.message : String(err)}\n`,
+              `[runeach] Failed to post adapter-managed runtime comment: ${err instanceof Error ? err.message : String(err)}\n`,
             );
           }
         }

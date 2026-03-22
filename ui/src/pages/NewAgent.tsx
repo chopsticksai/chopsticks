@@ -6,7 +6,7 @@ import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { agentsApi } from "../api/agents";
 import { companySkillsApi } from "../api/companySkills";
 import { queryKeys } from "../lib/queryKeys";
-import { AGENT_ROLES } from "@abacus-lab/shared";
+import { AGENT_ROLES } from "@runeachai/shared";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -22,13 +22,13 @@ import { defaultCreateValues } from "../components/agent-config-defaults";
 import { getUIAdapter } from "../adapters";
 import { AgentIcon } from "../components/AgentIconPicker";
 import { useI18n } from "../context/I18nContext";
-import { DEFAULT_CODEBUDDY_LOCAL_MODEL } from "@abacus-lab/adapter-codebuddy-local";
+import { DEFAULT_CODEBUDDY_LOCAL_MODEL } from "@runeachai/adapter-codebuddy-local";
 import {
   DEFAULT_CODEX_LOCAL_BYPASS_APPROVALS_AND_SANDBOX,
   DEFAULT_CODEX_LOCAL_MODEL,
-} from "@abacus-lab/adapter-codex-local";
-import { DEFAULT_CURSOR_LOCAL_MODEL } from "@abacus-lab/adapter-cursor-local";
-import { DEFAULT_GEMINI_LOCAL_MODEL } from "@abacus-lab/adapter-gemini-local";
+} from "@runeachai/adapter-codex-local";
+import { DEFAULT_CURSOR_LOCAL_MODEL } from "@runeachai/adapter-cursor-local";
+import { DEFAULT_GEMINI_LOCAL_MODEL } from "@runeachai/adapter-gemini-local";
 
 const SUPPORTED_ADVANCED_ADAPTER_TYPES = new Set<CreateConfigValues["adapterType"]>([
   "claude_local",
@@ -228,7 +228,7 @@ export function NewAgent() {
   }
 
   const currentReportsTo = (agents ?? []).find((a) => a.id === reportsTo);
-  const availableSkills = (companySkills ?? []).filter((skill) => !skill.key.startsWith("abacus-lab/abacus/"));
+  const availableSkills = (companySkills ?? []).filter((skill) => !skill.key.startsWith("runeachai/runeach/"));
 
   function toggleSkill(key: string, checked: boolean) {
     setSelectedSkillKeys((prev) => {
@@ -362,7 +362,7 @@ export function NewAgent() {
             <div>
               <h2 className="text-sm font-medium">Company skills</h2>
               <p className="mt-1 text-xs text-muted-foreground">
-                Optional skills from the company library. Built-in Abacus runtime skills are added automatically.
+                Optional skills from the company library. Built-in RunEach runtime skills are added automatically.
               </p>
             </div>
             {availableSkills.length === 0 ? (

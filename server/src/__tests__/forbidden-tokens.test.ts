@@ -11,13 +11,13 @@ import { describe, expect, it, vi } from "vitest";
 describe("forbidden token check", () => {
   it("derives username tokens without relying on whoami", () => {
     const tokens = resolveDynamicForbiddenTokens(
-      { USER: "abacus", LOGNAME: "abacus", USERNAME: "pc" },
+      { USER: "runeach", LOGNAME: "runeach", USERNAME: "pc" },
       {
-        userInfo: () => ({ username: "abacus" }),
+        userInfo: () => ({ username: "runeach" }),
       },
     );
 
-    expect(tokens).toEqual(["abacus", "pc"]);
+    expect(tokens).toEqual(["runeach", "pc"]);
   });
 
   it("falls back cleanly when user resolution fails", () => {
@@ -35,14 +35,14 @@ describe("forbidden token check", () => {
 
   it("merges dynamic and file-based forbidden tokens", async () => {
     const tokensFile = path.join(os.tmpdir(), `forbidden-tokens-${Date.now()}.txt`);
-    fs.writeFileSync(tokensFile, "# comment\nabacus\ncustom-token\n");
+    fs.writeFileSync(tokensFile, "# comment\nruneach\ncustom-token\n");
 
     try {
-      const tokens = resolveForbiddenTokens(tokensFile, { USER: "abacus" }, {
-        userInfo: () => ({ username: "abacus" }),
+      const tokens = resolveForbiddenTokens(tokensFile, { USER: "runeach" }, {
+        userInfo: () => ({ username: "runeach" }),
       });
 
-      expect(tokens).toEqual(["abacus", "custom-token"]);
+      expect(tokens).toEqual(["runeach", "custom-token"]);
     } finally {
       fs.unlinkSync(tokensFile);
     }
@@ -60,7 +60,7 @@ describe("forbidden token check", () => {
 
     const exitCode = runForbiddenTokenCheck({
       repoRoot: "/repo",
-      tokens: ["abacus", "custom-token"],
+      tokens: ["runeach", "custom-token"],
       exec,
       log,
       error,

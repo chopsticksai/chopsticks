@@ -1,4 +1,4 @@
-# Abacus V1 Implementation Spec
+# RunEach V1 Implementation Spec
 
 Status: Implementation contract for first release (V1)
 Date: 2026-02-17
@@ -13,7 +13,7 @@ When there is a conflict, `SPEC-implementation.md` controls V1 behavior.
 
 ## 2. V1 Outcomes
 
-Abacus V1 must provide a full control-plane loop for autonomous agents:
+RunEach V1 must provide a full control-plane loop for autonomous agents:
 
 1. A human board creates a company and defines goals.
 2. The board creates and manages agents in an org tree.
@@ -76,7 +76,7 @@ V1 implementation extends this baseline into a company-centric, governance-aware
 - Plugin framework and third-party extension SDK
 - Revenue/expense accounting beyond model/token costs
 - Knowledge base subsystem
-- Public marketplace (AbacusHub)
+- Public marketplace (RunEachHub)
 - Multi-board governance or role-based human permission granularity
 - Automatic self-healing orchestration (auto-reassign/retry planners)
 
@@ -92,11 +92,11 @@ V1 implementation extends this baseline into a company-centric, governance-aware
 ## 6.2 Data Stores
 
 - Primary: PostgreSQL
-- Local default: embedded PostgreSQL at `~/.abacus/instances/default/db`
+- Local default: embedded PostgreSQL at `~/.runeach/instances/default/db`
 - Optional local prod-like: Docker Postgres
 - Optional hosted: Supabase/Postgres-compatible
 - File/object storage:
-  - local default: `~/.abacus/instances/default/data/storage` (`local_disk`)
+  - local default: `~/.runeach/instances/default/data/storage` (`local_disk`)
   - cloud: S3-compatible object storage (`s3`)
 
 ## 6.3 Background Processing
@@ -838,7 +838,7 @@ V1 is complete only when all criteria are true:
 - richer workflow-state customization per team
 - milestones/labels/dependency graph depth beyond V1 minimum
 - realtime transport optimization (SSE/WebSockets)
-- public template marketplace integration (AbacusHub)
+- public template marketplace integration (RunEachHub)
 
 ## 21. Company Portability Package (V1 Addendum)
 
@@ -846,7 +846,7 @@ V1 supports company import/export using a portable package contract:
 
 - markdown-first package rooted at `COMPANY.md`
 - implicit folder discovery by convention
-- `.abacus.yaml` sidecar for Abacus-specific fidelity
+- `.runeach.yaml` sidecar for RunEach-specific fidelity
 - canonical base package is vendor-neutral and aligned with `docs/companies/companies-spec.md`
 - common conventions:
   - `agents/<slug>/AGENTS.md`
@@ -860,7 +860,7 @@ V1 supports company import/export using a portable package contract:
 
 Export/import behavior in V1:
 
-- export emits a clean vendor-neutral markdown package plus `.abacus.yaml`
+- export emits a clean vendor-neutral markdown package plus `.runeach.yaml`
 - projects and starter tasks are opt-in export content rather than default package content
 - export strips environment-specific paths (`cwd`, local instruction file paths, inline prompt duplication)
 - export never includes secret values; env inputs are reported as portable declarations instead

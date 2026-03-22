@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
-import type { Db } from "@abacus-lab/db";
-import { workspaceOperations } from "@abacus-lab/db";
-import type { WorkspaceOperation, WorkspaceOperationPhase, WorkspaceOperationStatus } from "@abacus-lab/shared";
+import type { Db } from "@runeachai/db";
+import { workspaceOperations } from "@runeachai/db";
+import type { WorkspaceOperation, WorkspaceOperationPhase, WorkspaceOperationStatus } from "@runeachai/shared";
 import { asc, desc, eq, inArray, isNull, or, and } from "drizzle-orm";
 import { notFound } from "../errors.js";
 import { redactCurrentUserText, redactCurrentUserValue } from "../log-redaction.js";

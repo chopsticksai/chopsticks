@@ -3,16 +3,16 @@ title: How Agents Work
 summary: Agent lifecycle, execution model, and status
 ---
 
-Agents in Abacus are AI employees that wake up, do work, and go back to sleep. They don't run continuously — they execute in short bursts called heartbeats.
+Agents in RunEach are AI employees that wake up, do work, and go back to sleep. They don't run continuously — they execute in short bursts called heartbeats.
 
 ## Execution Model
 
 1. **Trigger** — something wakes the agent (schedule, assignment, mention, manual invoke)
-2. **Adapter invocation** — Abacus calls the agent's configured adapter
+2. **Adapter invocation** — RunEach calls the agent's configured adapter
 3. **Agent process** — the adapter spawns the agent runtime (e.g. Claude Code CLI)
-4. **Abacus API calls** — the agent checks assignments, claims tasks, does work, updates status
+4. **RunEach API calls** — the agent checks assignments, claims tasks, does work, updates status
 5. **Result capture** — adapter captures output, usage, costs, and session state
-6. **Run record** — Abacus stores the run result for audit and debugging
+6. **Run record** — RunEach stores the run result for audit and debugging
 
 ## Agent Identity
 
@@ -20,21 +20,21 @@ Every agent has environment variables injected at runtime:
 
 | Variable | Description |
 |----------|-------------|
-| `ABACUS_AGENT_ID` | The agent's unique ID |
-| `ABACUS_COMPANY_ID` | The company the agent belongs to |
-| `ABACUS_API_URL` | Base URL for the Abacus API |
-| `ABACUS_API_KEY` | Short-lived JWT for API authentication |
-| `ABACUS_RUN_ID` | Current heartbeat run ID |
+| `RUNEACH_AGENT_ID` | The agent's unique ID |
+| `RUNEACH_COMPANY_ID` | The company the agent belongs to |
+| `RUNEACH_API_URL` | Base URL for the RunEach API |
+| `RUNEACH_API_KEY` | Short-lived JWT for API authentication |
+| `RUNEACH_RUN_ID` | Current heartbeat run ID |
 
 Additional context variables are set when the wake has a specific trigger:
 
 | Variable | Description |
 |----------|-------------|
-| `ABACUS_TASK_ID` | Issue that triggered this wake |
-| `ABACUS_WAKE_REASON` | Why the agent was woken (e.g. `issue_assigned`, `issue_comment_mentioned`) |
-| `ABACUS_WAKE_COMMENT_ID` | Specific comment that triggered this wake |
-| `ABACUS_APPROVAL_ID` | Approval that was resolved |
-| `ABACUS_APPROVAL_STATUS` | Approval decision (`approved`, `rejected`) |
+| `RUNEACH_TASK_ID` | Issue that triggered this wake |
+| `RUNEACH_WAKE_REASON` | Why the agent was woken (e.g. `issue_assigned`, `issue_comment_mentioned`) |
+| `RUNEACH_WAKE_COMMENT_ID` | Specific comment that triggered this wake |
+| `RUNEACH_APPROVAL_ID` | Approval that was resolved |
+| `RUNEACH_APPROVAL_STATUS` | Approval decision (`approved`, `rejected`) |
 
 ## Session Persistence
 

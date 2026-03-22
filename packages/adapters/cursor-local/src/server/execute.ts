@@ -2,25 +2,25 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { inferOpenAiCompatibleBiller, type AdapterExecutionContext, type AdapterExecutionResult } from "@abacus-lab/adapter-utils";
+import { inferOpenAiCompatibleBiller, type AdapterExecutionContext, type AdapterExecutionResult } from "@runeachai/adapter-utils";
 import {
   asString,
   asNumber,
   asStringArray,
   parseObject,
-  buildAbacusEnv,
+  buildRunEachEnv,
   redactEnvForLogs,
   ensureAbsoluteDirectory,
   ensureCommandResolvable,
-  ensureAbacusSkillSymlink,
+  ensureRunEachSkillSymlink,
   ensurePathInEnv,
-  readAbacusRuntimeSkillEntries,
-  resolveAbacusDesiredSkillNames,
+  readRunEachRuntimeSkillEntries,
+  resolveRunEachDesiredSkillNames,
   removeMaintainerOnlySkillSymlinks,
   renderTemplate,
   joinPromptSections,
   runChildProcess,
-} from "@abacus-lab/adapter-utils/server-utils";
+} from "@runeachai/adapter-utils/server-utils";
 import { DEFAULT_CURSOR_LOCAL_MODEL } from "../index.js";
 import { parseCursorJsonl, isCursorUnknownSessionError } from "./parse.js";
 import { normalizeCursorStreamLine } from "../shared/stream.js";
@@ -75,14 +75,14 @@ function normalizeMode(rawMode: string): "plan" | "ask" | null {
   return null;
 }
 
-function renderAbacusEnvNote(env: Record<string, string>): string {
-  const abacusKeys = Object.keys(env)
-    .filter((key) => key.startsWith("ABACUS_"))
+function renderRunEachEnvNote(env: Record<string, string>): string {
+  const runeachKeys = Object.keys(env)
+    .filter((key) => key.startsWith("RUNEACH_"))
     .sort();
-  if (abacusKeys.length === 0) return "";
+  if (runeachKeys.length === 0) return "";
   return [
-    "Abacus runtime note:",
-    `The following ABACUS_* environment variables are available in this run: ${abacusKeys.join(", ")}`,
+    "RunEach runtime note:",
+    `The following RUNEACH_* environment variables are available in this run: ${runeachKeys.join(", ")}`,
     "Do not assume these variables are missing without checking your shell environment.",
     "",
     "",
@@ -120,7 +120,7 @@ export async function ensureCursorSkillsInjected(
             runtimeName: entry.name,
             source: path.join(options.skillsDir!, entry.name),
           }))
-      : await readAbacusRuntimeSkillEntries({}, __moduleDir));
+      : await readRunEachRuntimeSkillEntries({}, __moduleDir));
   if (skillsEntries.length === 0) return;
 
   const skillsHome = options.skillsHome ?? cursorSkillsHome();
@@ -129,7 +129,7 @@ export async function ensureCursorSkillsInjected(
   } catch (err) {
     await onLog(
       "stderr",
-      `[abacus] Failed to prepare Cursor skills directory ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
+      `[runeach] Failed to prepare Cursor skills directory ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
     );
     return;
   }
@@ -140,24 +140,24 @@ export async function ensureCursorSkillsInjected(
   for (const skillName of removedSkills) {
     await onLog(
       "stderr",
-      `[abacus] Removed maintainer-only Cursor skill "${skillName}" from ${skillsHome}\n`,
+      `[runeach] Removed maintainer-only Cursor skill "${skillName}" from ${skillsHome}\n`,
     );
   }
   const linkSkill = options.linkSkill ?? ((source: string, target: string) => fs.symlink(source, target));
   for (const entry of skillsEntries) {
     const target = path.join(skillsHome, entry.runtimeName);
     try {
-      const result = await ensureAbacusSkillSymlink(entry.source, target, linkSkill);
+      const result = await ensureRunEachSkillSymlink(entry.source, target, linkSkill);
       if (result === "skipped") continue;
 
       await onLog(
         "stderr",
-        `[abacus] ${result === "repaired" ? "Repaired" : "Injected"} Cursor skill "${entry.key}" into ${skillsHome}\n`,
+        `[runeach] ${result === "repaired" ? "Repaired" : "Injected"} Cursor skill "${entry.key}" into ${skillsHome}\n`,
       );
     } catch (err) {
       await onLog(
         "stderr",
-        `[abacus] Failed to inject Cursor skill "${entry.key}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
+        `[runeach] Failed to inject Cursor skill "${entry.key}" into ${skillsHome}: ${err instanceof Error ? err.message : String(err)}\n`,
       );
     }
   }
@@ -168,21 +168,21 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
 
   const promptTemplate = asString(
     config.promptTemplate,
-    "You are agent {{agent.id}} ({{agent.name}}). Continue your Abacus work.",
+    "You are agent {{agent.id}} ({{agent.name}}). Continue your RunEach work.",
   );
   const command = asString(config.command, "agent");
   const model = asString(config.model, DEFAULT_CURSOR_LOCAL_MODEL).trim();
   const mode = normalizeMode(asString(config.mode, ""));
 
-  const workspaceContext = parseObject(context.abacusWorkspace);
+  const workspaceContext = parseObject(context.runeachWorkspace);
   const workspaceCwd = asString(workspaceContext.cwd, "");
   const workspaceSource = asString(workspaceContext.source, "");
   const workspaceId = asString(workspaceContext.workspaceId, "");
   const workspaceRepoUrl = asString(workspaceContext.repoUrl, "");
   const workspaceRepoRef = asString(workspaceContext.repoRef, "");
   const agentHome = asString(workspaceContext.agentHome, "");
-  const workspaceHints = Array.isArray(context.abacusWorkspaces)
-    ? context.abacusWorkspaces.filter(
+  const workspaceHints = Array.isArray(context.runeachWorkspaces)
+    ? context.runeachWorkspaces.filter(
         (value): value is Record<string, unknown> => typeof value === "object" && value !== null,
       )
     : [];
@@ -192,16 +192,16 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   const cwd = effectiveWorkspaceCwd || configuredCwd || process.cwd();
   const envConfig = parseObject(config.env);
   await ensureAbsoluteDirectory(cwd, { createIfMissing: true });
-  const cursorSkillEntries = await readAbacusRuntimeSkillEntries(config, __moduleDir);
-  const desiredCursorSkillNames = resolveAbacusDesiredSkillNames(config, cursorSkillEntries);
+  const cursorSkillEntries = await readRunEachRuntimeSkillEntries(config, __moduleDir);
+  const desiredCursorSkillNames = resolveRunEachDesiredSkillNames(config, cursorSkillEntries);
   await ensureCursorSkillsInjected(onLog, {
     skillsHome: cursorSkillsHome(envConfig),
     skillsEntries: cursorSkillEntries.filter((entry) => desiredCursorSkillNames.includes(entry.key)),
   });
   const hasExplicitApiKey =
-    typeof envConfig.ABACUS_API_KEY === "string" && envConfig.ABACUS_API_KEY.trim().length > 0;
-  const env: Record<string, string> = { ...buildAbacusEnv(agent) };
-  env.ABACUS_RUN_ID = runId;
+    typeof envConfig.RUNEACH_API_KEY === "string" && envConfig.RUNEACH_API_KEY.trim().length > 0;
+  const env: Record<string, string> = { ...buildRunEachEnv(agent) };
+  env.RUNEACH_RUN_ID = runId;
   const wakeTaskId =
     (typeof context.taskId === "string" && context.taskId.trim().length > 0 && context.taskId.trim()) ||
     (typeof context.issueId === "string" && context.issueId.trim().length > 0 && context.issueId.trim()) ||
@@ -226,49 +226,49 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     ? context.issueIds.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     : [];
   if (wakeTaskId) {
-    env.ABACUS_TASK_ID = wakeTaskId;
+    env.RUNEACH_TASK_ID = wakeTaskId;
   }
   if (wakeReason) {
-    env.ABACUS_WAKE_REASON = wakeReason;
+    env.RUNEACH_WAKE_REASON = wakeReason;
   }
   if (wakeCommentId) {
-    env.ABACUS_WAKE_COMMENT_ID = wakeCommentId;
+    env.RUNEACH_WAKE_COMMENT_ID = wakeCommentId;
   }
   if (approvalId) {
-    env.ABACUS_APPROVAL_ID = approvalId;
+    env.RUNEACH_APPROVAL_ID = approvalId;
   }
   if (approvalStatus) {
-    env.ABACUS_APPROVAL_STATUS = approvalStatus;
+    env.RUNEACH_APPROVAL_STATUS = approvalStatus;
   }
   if (linkedIssueIds.length > 0) {
-    env.ABACUS_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
+    env.RUNEACH_LINKED_ISSUE_IDS = linkedIssueIds.join(",");
   }
   if (effectiveWorkspaceCwd) {
-    env.ABACUS_WORKSPACE_CWD = effectiveWorkspaceCwd;
+    env.RUNEACH_WORKSPACE_CWD = effectiveWorkspaceCwd;
   }
   if (workspaceSource) {
-    env.ABACUS_WORKSPACE_SOURCE = workspaceSource;
+    env.RUNEACH_WORKSPACE_SOURCE = workspaceSource;
   }
   if (workspaceId) {
-    env.ABACUS_WORKSPACE_ID = workspaceId;
+    env.RUNEACH_WORKSPACE_ID = workspaceId;
   }
   if (workspaceRepoUrl) {
-    env.ABACUS_WORKSPACE_REPO_URL = workspaceRepoUrl;
+    env.RUNEACH_WORKSPACE_REPO_URL = workspaceRepoUrl;
   }
   if (workspaceRepoRef) {
-    env.ABACUS_WORKSPACE_REPO_REF = workspaceRepoRef;
+    env.RUNEACH_WORKSPACE_REPO_REF = workspaceRepoRef;
   }
   if (agentHome) {
     env.AGENT_HOME = agentHome;
   }
   if (workspaceHints.length > 0) {
-    env.ABACUS_WORKSPACES_JSON = JSON.stringify(workspaceHints);
+    env.RUNEACH_WORKSPACES_JSON = JSON.stringify(workspaceHints);
   }
   for (const [k, v] of Object.entries(envConfig)) {
     if (typeof v === "string") env[k] = v;
   }
   if (!hasExplicitApiKey && authToken) {
-    env.ABACUS_API_KEY = authToken;
+    env.RUNEACH_API_KEY = authToken;
   }
   const effectiveEnv = Object.fromEntries(
     Object.entries({ ...process.env, ...env }).filter(
@@ -298,7 +298,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   if (runtimeSessionId && !canResumeSession) {
     await onLog(
       "stdout",
-      `[abacus] Cursor session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
+      `[runeach] Cursor session "${runtimeSessionId}" was saved for cwd "${runtimeSessionCwd}" and will not be resumed in "${cwd}".\n`,
     );
   }
 
@@ -316,13 +316,13 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
       instructionsChars = instructionsPrefix.length;
       await onLog(
         "stdout",
-        `[abacus] Loaded agent instructions file: ${instructionsFilePath}\n`,
+        `[runeach] Loaded agent instructions file: ${instructionsFilePath}\n`,
       );
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
       await onLog(
         "stdout",
-        `[abacus] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
+        `[runeach] Warning: could not read agent instructions file "${instructionsFilePath}": ${reason}\n`,
       );
     }
   }
@@ -361,13 +361,13 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     !sessionId && bootstrapPromptTemplate.trim().length > 0
       ? renderTemplate(bootstrapPromptTemplate, templateData).trim()
       : "";
-  const sessionHandoffNote = asString(context.abacusSessionHandoffMarkdown, "").trim();
-  const abacusEnvNote = renderAbacusEnvNote(env);
+  const sessionHandoffNote = asString(context.runeachSessionHandoffMarkdown, "").trim();
+  const runeachEnvNote = renderRunEachEnvNote(env);
   const prompt = joinPromptSections([
     instructionsPrefix,
     renderedBootstrapPrompt,
     sessionHandoffNote,
-    abacusEnvNote,
+    runeachEnvNote,
     renderedPrompt,
   ]);
   const promptMetrics = {
@@ -375,7 +375,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
     instructionsChars,
     bootstrapPromptChars: renderedBootstrapPrompt.length,
     sessionHandoffChars: sessionHandoffNote.length,
-    runtimeNoteChars: abacusEnvNote.length,
+    runtimeNoteChars: runeachEnvNote.length,
     heartbeatPromptChars: renderedPrompt.length,
   };
 
@@ -529,7 +529,7 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   ) {
     await onLog(
       "stdout",
-      `[abacus] Cursor resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
+      `[runeach] Cursor resume session "${sessionId}" is unavailable; retrying with a fresh session.\n`,
     );
     const retry = await runAttempt(null);
     return toResult(retry, true);

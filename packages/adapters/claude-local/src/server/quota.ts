@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import type { ProviderQuotaResult, QuotaWindow } from "@abacus-lab/adapter-utils";
+import type { ProviderQuotaResult, QuotaWindow } from "@runeachai/adapter-utils";
 
 const execFileAsync = promisify(execFile);
 
@@ -517,7 +517,7 @@ export async function getQuotaWindows(): Promise<ProviderQuotaResult> {
         error:
           errors.length > 0
             ? `${authDescription}, but quota polling failed (${errors.join("; ")})`
-            : `${authDescription}, but Abacus could not load subscription quota data`,
+            : `${authDescription}, but RunEach could not load subscription quota data`,
         windows: [],
       };
     }

@@ -1,6 +1,6 @@
 import { Router, type Request } from "express";
-import type { Db } from "@abacus-lab/db";
-import { patchInstanceExperimentalSettingsSchema, patchInstanceGeneralSettingsSchema } from "@abacus-lab/shared";
+import type { Db } from "@runeachai/db";
+import { patchInstanceExperimentalSettingsSchema, patchInstanceGeneralSettingsSchema } from "@runeachai/shared";
 import { forbidden } from "../errors.js";
 import { validate } from "../middleware/validate.js";
 import { instanceSettingsService, logActivity } from "../services/index.js";

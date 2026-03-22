@@ -18,7 +18,7 @@ await esbuild.build({
     "react",
     "react-dom",
     "react/jsx-runtime",
-    "@abacus-lab/plugin-sdk/ui",
+    "@runeachai/plugin-sdk/ui",
   ],
   logLevel: "info",
 });

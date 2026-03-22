@@ -27,7 +27,7 @@ import {
   thematicBreakPlugin,
   type RealmPlugin,
 } from "@mdxeditor/editor";
-import { buildProjectMentionHref, parseProjectMentionHref } from "@abacus-lab/shared";
+import { buildProjectMentionHref, parseProjectMentionHref } from "@runeachai/shared";
 import { cn } from "../lib/utils";
 import { useI18n } from "../context/I18nContext";
 
@@ -321,7 +321,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
       if (!parsed) {
         if (link.dataset.projectMention === "true") {
           link.dataset.projectMention = "false";
-          link.classList.remove("abacus-project-mention-chip");
+          link.classList.remove("runeach-project-mention-chip");
           link.removeAttribute("contenteditable");
           link.style.removeProperty("border-color");
           link.style.removeProperty("background-color");
@@ -332,7 +332,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
 
       const color = parsed.color ?? projectColorById.get(parsed.projectId) ?? null;
       link.dataset.projectMention = "true";
-      link.classList.add("abacus-project-mention-chip");
+      link.classList.add("runeach-project-mention-chip");
       link.setAttribute("contenteditable", "false");
       const style = mentionChipStyle(color);
       if (style) {
@@ -503,7 +503,7 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
     <div
       ref={containerRef}
       className={cn(
-        "relative abacus-mdxeditor-scope",
+        "relative runeach-mdxeditor-scope",
         bordered ? "rounded-md border border-border bg-transparent" : "bg-transparent",
         isDragOver && "ring-1 ring-primary/60 bg-accent/20",
         className,
@@ -585,9 +585,9 @@ export const MarkdownEditor = forwardRef<MarkdownEditorRef, MarkdownEditorProps>
           onChange(next);
         }}
         onBlur={() => onBlur?.()}
-        className={cn("abacus-mdxeditor", !bordered && "abacus-mdxeditor--borderless")}
+        className={cn("runeach-mdxeditor", !bordered && "runeach-mdxeditor--borderless")}
         contentEditableClassName={cn(
-          "abacus-mdxeditor-content focus:outline-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:list-item",
+          "runeach-mdxeditor-content focus:outline-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:list-item",
           contentClassName,
         )}
         plugins={plugins}

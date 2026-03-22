@@ -1,14 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
-import { abacusConfigSchema, type AbacusConfig } from "./schema.js";
+import { runeachConfigSchema, type RunEachConfig } from "./schema.js";
 import {
   resolveDefaultConfigPath,
-  resolveAbacusInstanceId,
+  resolveRunEachInstanceId,
 } from "./home.js";
 
 const DEFAULT_CONFIG_BASENAME = "config.json";
 const DEFAULT_ENV_BASENAME = ".env";
-const REPO_CONFIG_DIRNAME = ".abacus";
+const REPO_CONFIG_DIRNAME = ".runeach";
 
 function findConfigFileFromAncestors(startDir: string): string | null {
   const absoluteStartDir = path.resolve(startDir);
@@ -30,8 +30,8 @@ function findConfigFileFromAncestors(startDir: string): string | null {
 
 export function resolveConfigPath(overridePath?: string): string {
   if (overridePath) return path.resolve(overridePath);
-  if (process.env.ABACUS_CONFIG) return path.resolve(process.env.ABACUS_CONFIG);
-  return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath(resolveAbacusInstanceId());
+  if (process.env.RUNEACH_CONFIG) return path.resolve(process.env.RUNEACH_CONFIG);
+  return findConfigFileFromAncestors(process.cwd()) ?? resolveDefaultConfigPath(resolveRunEachInstanceId());
 }
 
 function parseJson(filePath: string): unknown {
@@ -57,11 +57,11 @@ function formatValidationError(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
 }
 
-export function readConfig(configPath?: string): AbacusConfig | null {
+export function readConfig(configPath?: string): RunEachConfig | null {
   const filePath = resolveConfigPath(configPath);
   if (!fs.existsSync(filePath)) return null;
   const raw = parseJson(filePath);
-  const parsed = abacusConfigSchema.safeParse(raw);
+  const parsed = runeachConfigSchema.safeParse(raw);
   if (!parsed.success) {
     throw new Error(`Invalid config at ${filePath}: ${formatValidationError(parsed.error)}`);
   }
@@ -69,7 +69,7 @@ export function readConfig(configPath?: string): AbacusConfig | null {
 }
 
 export function writeConfig(
-  config: AbacusConfig,
+  config: RunEachConfig,
   configPath?: string,
 ): void {
   const filePath = resolveConfigPath(configPath);

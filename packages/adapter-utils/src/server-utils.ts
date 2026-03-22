@@ -38,12 +38,12 @@ export const runningProcesses = new Map<string, RunningProcess>();
 export const MAX_CAPTURE_BYTES = 4 * 1024 * 1024;
 export const MAX_EXCERPT_BYTES = 32 * 1024;
 const SENSITIVE_ENV_KEY = /(key|token|secret|password|passwd|authorization|cookie)/i;
-const ABACUS_SKILL_ROOT_RELATIVE_CANDIDATES = [
+const RUNEACH_SKILL_ROOT_RELATIVE_CANDIDATES = [
   "../../skills",
   "../../../../../skills",
 ];
 
-export interface AbacusSkillEntry {
+export interface RunEachSkillEntry {
   key: string;
   runtimeName: string;
   source: string;
@@ -58,7 +58,7 @@ export interface InstalledSkillTarget {
 
 interface PersistentSkillSnapshotOptions {
   adapterType: string;
-  availableEntries: AbacusSkillEntry[];
+  availableEntries: RunEachSkillEntry[];
   desiredSkills: string[];
   installed: Map<string, InstalledSkillTarget>;
   skillsHome: string;
@@ -90,14 +90,14 @@ function buildManagedSkillOrigin(entry: { required?: boolean }): Pick<
 > {
   if (entry.required) {
     return {
-      origin: "abacus_required",
-      originLabel: "Required by Abacus",
+      origin: "runeach_required",
+      originLabel: "Required by RunEach",
       readOnly: false,
     };
   }
   return {
     origin: "company_managed",
-    originLabel: "Managed by Abacus",
+    originLabel: "Managed by RunEach",
     readOnly: false,
   };
 }
@@ -201,7 +201,7 @@ export function redactEnvForLogs(env: Record<string, string>): Record<string, st
   return redacted;
 }
 
-export function buildAbacusEnv(agent: { id: string; companyId: string }): Record<string, string> {
+export function buildRunEachEnv(agent: { id: string; companyId: string }): Record<string, string> {
   const resolveHostForUrl = (rawHost: string): string => {
     const host = rawHost.trim();
     if (!host || host === "0.0.0.0" || host === "::") return "localhost";
@@ -209,15 +209,15 @@ export function buildAbacusEnv(agent: { id: string; companyId: string }): Record
     return host;
   };
   const vars: Record<string, string> = {
-    ABACUS_AGENT_ID: agent.id,
-    ABACUS_COMPANY_ID: agent.companyId,
+    RUNEACH_AGENT_ID: agent.id,
+    RUNEACH_COMPANY_ID: agent.companyId,
   };
   const runtimeHost = resolveHostForUrl(
-    process.env.ABACUS_LISTEN_HOST ?? process.env.HOST ?? "localhost",
+    process.env.RUNEACH_LISTEN_HOST ?? process.env.HOST ?? "localhost",
   );
-  const runtimePort = process.env.ABACUS_LISTEN_PORT ?? process.env.PORT ?? "3100";
-  const apiUrl = process.env.ABACUS_API_URL ?? `http://${runtimeHost}:${runtimePort}`;
-  vars.ABACUS_API_URL = apiUrl;
+  const runtimePort = process.env.RUNEACH_LISTEN_PORT ?? process.env.PORT ?? "3100";
+  const apiUrl = process.env.RUNEACH_API_URL ?? `http://${runtimeHost}:${runtimePort}`;
+  vars.RUNEACH_API_URL = apiUrl;
   return vars;
 }
 
@@ -410,12 +410,12 @@ export async function ensureAbsoluteDirectory(
   }
 }
 
-export async function resolveAbacusSkillsDir(
+export async function resolveRunEachSkillsDir(
   moduleDir: string,
   additionalCandidates: string[] = [],
 ): Promise<string | null> {
   const candidates = [
-    ...ABACUS_SKILL_ROOT_RELATIVE_CANDIDATES.map((relativePath) => path.resolve(moduleDir, relativePath)),
+    ...RUNEACH_SKILL_ROOT_RELATIVE_CANDIDATES.map((relativePath) => path.resolve(moduleDir, relativePath)),
     ...additionalCandidates.map((candidate) => path.resolve(candidate)),
   ];
   const seenRoots = new Set<string>();
@@ -430,11 +430,11 @@ export async function resolveAbacusSkillsDir(
   return null;
 }
 
-export async function listAbacusSkillEntries(
+export async function listRunEachSkillEntries(
   moduleDir: string,
   additionalCandidates: string[] = [],
-): Promise<AbacusSkillEntry[]> {
-  const root = await resolveAbacusSkillsDir(moduleDir, additionalCandidates);
+): Promise<RunEachSkillEntry[]> {
+  const root = await resolveRunEachSkillsDir(moduleDir, additionalCandidates);
   if (!root) return [];
 
   try {
@@ -442,11 +442,11 @@ export async function listAbacusSkillEntries(
     return entries
       .filter((entry) => entry.isDirectory())
       .map((entry) => ({
-        key: `abacus-lab/abacus/${entry.name}`,
+        key: `runeachai/runeach/${entry.name}`,
         runtimeName: entry.name,
         source: path.join(root, entry.name),
         required: true,
-        requiredReason: "Bundled Abacus skills are always available for local adapters.",
+        requiredReason: "Bundled RunEach skills are always available for local adapters.",
       }));
   } catch {
     return [];
@@ -520,7 +520,7 @@ export function buildPersistentSkillSnapshot(
 
   for (const desiredSkill of desiredSkills) {
     if (availableByKey.has(desiredSkill)) continue;
-    warnings.push(`Desired skill "${desiredSkill}" is not available from the Abacus skills directory.`);
+    warnings.push(`Desired skill "${desiredSkill}" is not available from the RunEach skills directory.`);
     entries.push({
       key: desiredSkill,
       runtimeName: null,
@@ -529,7 +529,7 @@ export function buildPersistentSkillSnapshot(
       state: "missing",
       sourcePath: null,
       targetPath: null,
-      detail: "Abacus cannot find this skill in the local runtime skills directory.",
+      detail: "RunEach cannot find this skill in the local runtime skills directory.",
       origin: "external_unknown",
       originLabel: "External or unavailable",
       readOnly: false,
@@ -566,9 +566,9 @@ export function buildPersistentSkillSnapshot(
   };
 }
 
-function normalizeConfiguredAbacusRuntimeSkills(value: unknown): AbacusSkillEntry[] {
+function normalizeConfiguredRunEachRuntimeSkills(value: unknown): RunEachSkillEntry[] {
   if (!Array.isArray(value)) return [];
-  const out: AbacusSkillEntry[] = [];
+  const out: RunEachSkillEntry[] = [];
   for (const rawEntry of value) {
     const entry = parseObject(rawEntry);
     const key = asString(entry.key, asString(entry.name, "")).trim();
@@ -589,24 +589,24 @@ function normalizeConfiguredAbacusRuntimeSkills(value: unknown): AbacusSkillEntr
   return out;
 }
 
-export async function readAbacusRuntimeSkillEntries(
+export async function readRunEachRuntimeSkillEntries(
   config: Record<string, unknown>,
   moduleDir: string,
   additionalCandidates: string[] = [],
-): Promise<AbacusSkillEntry[]> {
-  const configuredEntries = normalizeConfiguredAbacusRuntimeSkills(config.abacusRuntimeSkills);
+): Promise<RunEachSkillEntry[]> {
+  const configuredEntries = normalizeConfiguredRunEachRuntimeSkills(config.runeachRuntimeSkills);
   if (configuredEntries.length > 0) return configuredEntries;
-  return listAbacusSkillEntries(moduleDir, additionalCandidates);
+  return listRunEachSkillEntries(moduleDir, additionalCandidates);
 }
 
-export async function readAbacusSkillMarkdown(
+export async function readRunEachSkillMarkdown(
   moduleDir: string,
   skillKey: string,
 ): Promise<string | null> {
   const normalized = skillKey.trim().toLowerCase();
   if (!normalized) return null;
 
-  const entries = await listAbacusSkillEntries(moduleDir);
+  const entries = await listRunEachSkillEntries(moduleDir);
   const match = entries.find((entry) => entry.key === normalized);
   if (!match) return null;
 
@@ -617,11 +617,11 @@ export async function readAbacusSkillMarkdown(
   }
 }
 
-export function readAbacusSkillSyncPreference(config: Record<string, unknown>): {
+export function readRunEachSkillSyncPreference(config: Record<string, unknown>): {
   explicit: boolean;
   desiredSkills: string[];
 } {
-  const raw = config.abacusSkillSync;
+  const raw = config.runeachSkillSync;
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
     return { explicit: false, desiredSkills: [] };
   }
@@ -639,7 +639,7 @@ export function readAbacusSkillSyncPreference(config: Record<string, unknown>): 
   };
 }
 
-function canonicalizeDesiredAbacusSkillReference(
+function canonicalizeDesiredRunEachSkillReference(
   reference: string,
   availableEntries: Array<{ key: string; runtimeName?: string | null }>,
 ): string {
@@ -662,11 +662,11 @@ function canonicalizeDesiredAbacusSkillReference(
   return normalizedReference;
 }
 
-export function resolveAbacusDesiredSkillNames(
+export function resolveRunEachDesiredSkillNames(
   config: Record<string, unknown>,
   availableEntries: Array<{ key: string; runtimeName?: string | null; required?: boolean }>,
 ): string[] {
-  const preference = readAbacusSkillSyncPreference(config);
+  const preference = readRunEachSkillSyncPreference(config);
   const requiredSkills = availableEntries
     .filter((entry) => entry.required)
     .map((entry) => entry.key);
@@ -674,17 +674,17 @@ export function resolveAbacusDesiredSkillNames(
     return Array.from(new Set(requiredSkills));
   }
   const desiredSkills = preference.desiredSkills
-    .map((reference) => canonicalizeDesiredAbacusSkillReference(reference, availableEntries))
+    .map((reference) => canonicalizeDesiredRunEachSkillReference(reference, availableEntries))
     .filter(Boolean);
   return Array.from(new Set([...requiredSkills, ...desiredSkills]));
 }
 
-export function writeAbacusSkillSyncPreference(
+export function writeRunEachSkillSyncPreference(
   config: Record<string, unknown>,
   desiredSkills: string[],
 ): Record<string, unknown> {
   const next = { ...config };
-  const raw = next.abacusSkillSync;
+  const raw = next.runeachSkillSync;
   const current =
     typeof raw === "object" && raw !== null && !Array.isArray(raw)
       ? { ...(raw as Record<string, unknown>) }
@@ -696,11 +696,11 @@ export function writeAbacusSkillSyncPreference(
         .filter(Boolean),
     ),
   );
-  next.abacusSkillSync = current;
+  next.runeachSkillSync = current;
   return next;
 }
 
-export async function ensureAbacusSkillSymlink(
+export async function ensureRunEachSkillSymlink(
   source: string,
   target: string,
   linkSkill: (source: string, target: string) => Promise<void> = (linkSource, linkTarget) =>
@@ -804,8 +804,8 @@ export async function runChildProcess(
 
     // Strip Claude Code nesting-guard env vars so spawned `claude` processes
     // don't refuse to start with "cannot be launched inside another session".
-    // These vars leak in when the Abacus server itself is started from
-    // within a Claude Code session (e.g. `npx abacus-lab run` in a terminal
+    // These vars leak in when the RunEach server itself is started from
+    // within a Claude Code session (e.g. `npx runeachai run` in a terminal
     // owned by Claude Code) or when cron inherits a contaminated shell env.
     const CLAUDE_CODE_NESTING_VARS = [
       "CLAUDECODE",

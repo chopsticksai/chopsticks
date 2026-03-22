@@ -19,7 +19,7 @@ export const agentConfigurationDoc = `# codebuddy_local agent configuration
 Adapter: codebuddy_local
 
 Use when:
-- You want Abacus to run CodeBuddy CLI locally on the host machine
+- You want RunEach to run CodeBuddy CLI locally on the host machine
 - You want CodeBuddy conversation resume across wake-ups via --resume
 - You want CodeBuddy's local multi-model runtime with structured stream-json logs
 
@@ -48,6 +48,6 @@ Notes:
 - Runs are executed with: codebuddy -p --output-format stream-json ...
 - Prompts are piped to CodeBuddy via stdin.
 - Sessions are resumed with --resume when stored session cwd matches current cwd.
-- Abacus auto-injects shared skills into "~/.codebuddy/skills" when missing so CodeBuddy can discover "$abacus" and related skills on local runs.
-- Abacus auto-adds -y unless one of -y, --dangerously-skip-permissions, or --permission-mode is already present in extraArgs.
+- RunEach auto-injects shared skills into "~/.codebuddy/skills" when missing so CodeBuddy can discover "$runeach" and related skills on local runs.
+- RunEach auto-adds -y unless one of -y, --dangerously-skip-permissions, or --permission-mode is already present in extraArgs.
 `;

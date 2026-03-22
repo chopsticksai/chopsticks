@@ -136,19 +136,19 @@ export function OpenClawGatewayConfigFields({
 
       {!isCreate && (
         <>
-          <Field label="Abacus API URL override">
+          <Field label="RunEach API URL override">
             <DraftInput
               value={
                 eff(
                   "adapterConfig",
-                  "abacusApiUrl",
-                  String(config.abacusApiUrl ?? ""),
+                  "runeachApiUrl",
+                  String(config.runeachApiUrl ?? ""),
                 )
               }
-              onCommit={(v) => mark("adapterConfig", "abacusApiUrl", v || undefined)}
+              onCommit={(v) => mark("adapterConfig", "runeachApiUrl", v || undefined)}
               immediate
               className={inputClass}
-              placeholder="https://abacus.example"
+              placeholder="https://runeach.example"
             />
           </Field>
 
@@ -167,11 +167,11 @@ export function OpenClawGatewayConfigFields({
           {sessionStrategy === "fixed" && (
             <Field label="Session key">
               <DraftInput
-                value={eff("adapterConfig", "sessionKey", String(config.sessionKey ?? "abacus"))}
+                value={eff("adapterConfig", "sessionKey", String(config.sessionKey ?? "runeach"))}
                 onCommit={(v) => mark("adapterConfig", "sessionKey", v || undefined)}
                 immediate
                 className={inputClass}
-                placeholder="abacus"
+                placeholder="runeach"
               />
             </Field>
           )}
@@ -229,7 +229,7 @@ export function OpenClawGatewayConfigFields({
           <Field label="Device auth">
             <div className="text-xs text-muted-foreground leading-relaxed">
               {t(
-                "Always enabled for gateway agents. Abacus persists a device key during onboarding so pairing approvals remain stable across runs."
+                "Always enabled for gateway agents. RunEach persists a device key during onboarding so pairing approvals remain stable across runs."
               )}
             </div>
           </Field>

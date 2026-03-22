@@ -1,8 +1,8 @@
 import { Router } from "express";
-import type { Db } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
 import { and, count, eq, gt, inArray, isNull, sql } from "drizzle-orm";
-import { heartbeatRuns, instanceUserRoles, invites } from "@abacus-lab/db";
-import type { DeploymentExposure, DeploymentMode } from "@abacus-lab/shared";
+import { heartbeatRuns, instanceUserRoles, invites } from "@runeachai/db";
+import type { DeploymentExposure, DeploymentMode } from "@runeachai/shared";
 import { readPersistedDevServerStatus, toDevServerHealthStatus } from "../dev-server-status.js";
 import { instanceSettingsService } from "../services/instance-settings.js";
 import { serverVersion } from "../version.js";

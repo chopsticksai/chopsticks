@@ -24,7 +24,7 @@ import {
   rewriteLocalUrlPort,
   sanitizeWorktreeInstanceId,
 } from "../commands/worktree-lib.js";
-import type { AbacusConfig } from "../config/schema.js";
+import type { RunEachConfig } from "../config/schema.js";
 
 const ORIGINAL_CWD = process.cwd();
 const ORIGINAL_ENV = { ...process.env };
@@ -40,7 +40,7 @@ afterEach(() => {
   }
 });
 
-function buildSourceConfig(): AbacusConfig {
+function buildSourceConfig(): RunEachConfig {
   return {
     $meta: {
       version: 1,
@@ -81,7 +81,7 @@ function buildSourceConfig(): AbacusConfig {
         baseDir: "/tmp/main/storage",
       },
       s3: {
-        bucket: "abacus",
+        bucket: "runeach",
         region: "us-east-1",
         prefix: "",
         forcePathStyle: false,
@@ -104,13 +104,13 @@ describe("worktree helpers", () => {
   });
 
   it("resolves worktree:make target paths under the user home directory", () => {
-    expect(resolveWorktreeMakeTargetPath("abacus-pr-432")).toBe(
-      path.resolve(os.homedir(), "abacus-pr-432"),
+    expect(resolveWorktreeMakeTargetPath("runeach-pr-432")).toBe(
+      path.resolve(os.homedir(), "runeach-pr-432"),
     );
   });
 
   it("rejects worktree:make names that are not safe directory/branch names", () => {
-    expect(() => resolveWorktreeMakeTargetPath("abacus/pr-432")).toThrow(
+    expect(() => resolveWorktreeMakeTargetPath("runeach/pr-432")).toThrow(
       "Worktree name must contain only letters, numbers, dots, underscores, or dashes.",
     );
   });
@@ -157,13 +157,13 @@ describe("worktree helpers", () => {
 
   it("rewrites loopback auth URLs to the new port only", () => {
     expect(rewriteLocalUrlPort("http://127.0.0.1:3100", 3110)).toBe("http://127.0.0.1:3110/");
-    expect(rewriteLocalUrlPort("https://abacus.example", 3110)).toBe("https://abacus.example");
+    expect(rewriteLocalUrlPort("https://runeach.example", 3110)).toBe("https://runeach.example");
   });
 
   it("builds isolated config and env paths for a worktree", () => {
     const paths = resolveWorktreeLocalPaths({
-      cwd: "/tmp/abacus-feature",
-      homeDir: "/tmp/abacus-worktrees",
+      cwd: "/tmp/runeach-feature",
+      homeDir: "/tmp/runeach-worktrees",
       instanceId: "feature-worktree-support",
     });
     const config = buildWorktreeConfig({
@@ -175,25 +175,25 @@ describe("worktree helpers", () => {
     });
 
     expect(config.database.embeddedPostgresDataDir).toBe(
-      path.resolve("/tmp/abacus-worktrees", "instances", "feature-worktree-support", "db"),
+      path.resolve("/tmp/runeach-worktrees", "instances", "feature-worktree-support", "db"),
     );
     expect(config.database.embeddedPostgresPort).toBe(54339);
     expect(config.server.port).toBe(3110);
     expect(config.auth.publicBaseUrl).toBe("http://127.0.0.1:3110/");
     expect(config.storage.localDisk.baseDir).toBe(
-      path.resolve("/tmp/abacus-worktrees", "instances", "feature-worktree-support", "data", "storage"),
+      path.resolve("/tmp/runeach-worktrees", "instances", "feature-worktree-support", "data", "storage"),
     );
 
     const env = buildWorktreeEnvEntries(paths, {
       name: "feature-worktree-support",
       color: "#3abf7a",
     });
-    expect(env.ABACUS_HOME).toBe(path.resolve("/tmp/abacus-worktrees"));
-    expect(env.ABACUS_INSTANCE_ID).toBe("feature-worktree-support");
-    expect(env.ABACUS_IN_WORKTREE).toBe("true");
-    expect(env.ABACUS_WORKTREE_NAME).toBe("feature-worktree-support");
-    expect(env.ABACUS_WORKTREE_COLOR).toBe("#3abf7a");
-    expect(formatShellExports(env)).toContain("export ABACUS_INSTANCE_ID='feature-worktree-support'");
+    expect(env.RUNEACH_HOME).toBe(path.resolve("/tmp/runeach-worktrees"));
+    expect(env.RUNEACH_INSTANCE_ID).toBe("feature-worktree-support");
+    expect(env.RUNEACH_IN_WORKTREE).toBe("true");
+    expect(env.RUNEACH_WORKTREE_NAME).toBe("feature-worktree-support");
+    expect(env.RUNEACH_WORKTREE_COLOR).toBe("#3abf7a");
+    expect(formatShellExports(env)).toContain("export RUNEACH_INSTANCE_ID='feature-worktree-support'");
   });
 
   it("falls back across storage roots before skipping a missing attachment object", async () => {
@@ -252,12 +252,12 @@ describe("worktree helpers", () => {
   });
 
   it("copies the source local_encrypted secrets key into the seeded worktree instance", () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-secrets-"));
-    const originalInlineMasterKey = process.env.ABACUS_SECRETS_MASTER_KEY;
-    const originalKeyFile = process.env.ABACUS_SECRETS_MASTER_KEY_FILE;
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-worktree-secrets-"));
+    const originalInlineMasterKey = process.env.RUNEACH_SECRETS_MASTER_KEY;
+    const originalKeyFile = process.env.RUNEACH_SECRETS_MASTER_KEY_FILE;
     try {
-      delete process.env.ABACUS_SECRETS_MASTER_KEY;
-      delete process.env.ABACUS_SECRETS_MASTER_KEY_FILE;
+      delete process.env.RUNEACH_SECRETS_MASTER_KEY;
+      delete process.env.RUNEACH_SECRETS_MASTER_KEY_FILE;
       const sourceConfigPath = path.join(tempRoot, "source", "config.json");
       const sourceKeyPath = path.join(tempRoot, "source", "secrets", "master.key");
       const targetKeyPath = path.join(tempRoot, "target", "secrets", "master.key");
@@ -277,21 +277,21 @@ describe("worktree helpers", () => {
       expect(fs.readFileSync(targetKeyPath, "utf8")).toBe("source-master-key");
     } finally {
       if (originalInlineMasterKey === undefined) {
-        delete process.env.ABACUS_SECRETS_MASTER_KEY;
+        delete process.env.RUNEACH_SECRETS_MASTER_KEY;
       } else {
-        process.env.ABACUS_SECRETS_MASTER_KEY = originalInlineMasterKey;
+        process.env.RUNEACH_SECRETS_MASTER_KEY = originalInlineMasterKey;
       }
       if (originalKeyFile === undefined) {
-        delete process.env.ABACUS_SECRETS_MASTER_KEY_FILE;
+        delete process.env.RUNEACH_SECRETS_MASTER_KEY_FILE;
       } else {
-        process.env.ABACUS_SECRETS_MASTER_KEY_FILE = originalKeyFile;
+        process.env.RUNEACH_SECRETS_MASTER_KEY_FILE = originalKeyFile;
       }
       fs.rmSync(tempRoot, { recursive: true, force: true });
     }
   });
 
   it("writes the source inline secrets master key into the seeded worktree instance", () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-secrets-"));
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-worktree-secrets-"));
     try {
       const sourceConfigPath = path.join(tempRoot, "source", "config.json");
       const targetKeyPath = path.join(tempRoot, "target", "secrets", "master.key");
@@ -300,7 +300,7 @@ describe("worktree helpers", () => {
         sourceConfigPath,
         sourceConfig: buildSourceConfig(),
         sourceEnvEntries: {
-          ABACUS_SECRETS_MASTER_KEY: "inline-source-master-key",
+          RUNEACH_SECRETS_MASTER_KEY: "inline-source-master-key",
         },
         targetKeyFilePath: targetKeyPath,
       });
@@ -312,75 +312,75 @@ describe("worktree helpers", () => {
   });
 
   it("persists the current agent jwt secret into the worktree env file", async () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-jwt-"));
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-worktree-jwt-"));
     const repoRoot = path.join(tempRoot, "repo");
     const originalCwd = process.cwd();
-    const originalJwtSecret = process.env.ABACUS_AGENT_JWT_SECRET;
+    const originalJwtSecret = process.env.RUNEACH_AGENT_JWT_SECRET;
 
     try {
       fs.mkdirSync(repoRoot, { recursive: true });
-      process.env.ABACUS_AGENT_JWT_SECRET = "worktree-shared-secret";
+      process.env.RUNEACH_AGENT_JWT_SECRET = "worktree-shared-secret";
       process.chdir(repoRoot);
 
       await worktreeInitCommand({
         seed: false,
         fromConfig: path.join(tempRoot, "missing", "config.json"),
-        home: path.join(tempRoot, ".abacus-worktrees"),
+        home: path.join(tempRoot, ".runeach-worktrees"),
       });
 
-      const envPath = path.join(repoRoot, ".abacus", ".env");
+      const envPath = path.join(repoRoot, ".runeach", ".env");
       const envContents = fs.readFileSync(envPath, "utf8");
-      expect(envContents).toContain("ABACUS_AGENT_JWT_SECRET=worktree-shared-secret");
-      expect(envContents).toContain("ABACUS_WORKTREE_NAME=repo");
-      expect(envContents).toMatch(/ABACUS_WORKTREE_COLOR=\"#[0-9a-f]{6}\"/);
+      expect(envContents).toContain("RUNEACH_AGENT_JWT_SECRET=worktree-shared-secret");
+      expect(envContents).toContain("RUNEACH_WORKTREE_NAME=repo");
+      expect(envContents).toMatch(/RUNEACH_WORKTREE_COLOR=\"#[0-9a-f]{6}\"/);
     } finally {
       process.chdir(originalCwd);
       if (originalJwtSecret === undefined) {
-        delete process.env.ABACUS_AGENT_JWT_SECRET;
+        delete process.env.RUNEACH_AGENT_JWT_SECRET;
       } else {
-        process.env.ABACUS_AGENT_JWT_SECRET = originalJwtSecret;
+        process.env.RUNEACH_AGENT_JWT_SECRET = originalJwtSecret;
       }
       fs.rmSync(tempRoot, { recursive: true, force: true });
     }
   });
 
-  it("defaults the seed source config to the current repo-local Abacus config", () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-source-config-"));
+  it("defaults the seed source config to the current repo-local RunEach config", () => {
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-worktree-source-config-"));
     const repoRoot = path.join(tempRoot, "repo");
-    const localConfigPath = path.join(repoRoot, ".abacus", "config.json");
+    const localConfigPath = path.join(repoRoot, ".runeach", "config.json");
     const originalCwd = process.cwd();
-    const originalAbacusConfig = process.env.ABACUS_CONFIG;
+    const originalRunEachConfig = process.env.RUNEACH_CONFIG;
 
     try {
       fs.mkdirSync(path.dirname(localConfigPath), { recursive: true });
       fs.writeFileSync(localConfigPath, JSON.stringify(buildSourceConfig()), "utf8");
-      delete process.env.ABACUS_CONFIG;
+      delete process.env.RUNEACH_CONFIG;
       process.chdir(repoRoot);
 
       expect(fs.realpathSync(resolveSourceConfigPath({}))).toBe(fs.realpathSync(localConfigPath));
     } finally {
       process.chdir(originalCwd);
-      if (originalAbacusConfig === undefined) {
-        delete process.env.ABACUS_CONFIG;
+      if (originalRunEachConfig === undefined) {
+        delete process.env.RUNEACH_CONFIG;
       } else {
-        process.env.ABACUS_CONFIG = originalAbacusConfig;
+        process.env.RUNEACH_CONFIG = originalRunEachConfig;
       }
       fs.rmSync(tempRoot, { recursive: true, force: true });
     }
   });
 
   it("preserves the source config path across worktree:make cwd changes", () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-source-override-"));
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-worktree-source-override-"));
     const sourceConfigPath = path.join(tempRoot, "source", "config.json");
     const targetRoot = path.join(tempRoot, "target");
     const originalCwd = process.cwd();
-    const originalAbacusConfig = process.env.ABACUS_CONFIG;
+    const originalRunEachConfig = process.env.RUNEACH_CONFIG;
 
     try {
       fs.mkdirSync(path.dirname(sourceConfigPath), { recursive: true });
       fs.mkdirSync(targetRoot, { recursive: true });
       fs.writeFileSync(sourceConfigPath, JSON.stringify(buildSourceConfig()), "utf8");
-      delete process.env.ABACUS_CONFIG;
+      delete process.env.RUNEACH_CONFIG;
       process.chdir(targetRoot);
 
       expect(resolveSourceConfigPath({ sourceConfigPathOverride: sourceConfigPath })).toBe(
@@ -388,18 +388,18 @@ describe("worktree helpers", () => {
       );
     } finally {
       process.chdir(originalCwd);
-      if (originalAbacusConfig === undefined) {
-        delete process.env.ABACUS_CONFIG;
+      if (originalRunEachConfig === undefined) {
+        delete process.env.RUNEACH_CONFIG;
       } else {
-        process.env.ABACUS_CONFIG = originalAbacusConfig;
+        process.env.RUNEACH_CONFIG = originalRunEachConfig;
       }
       fs.rmSync(tempRoot, { recursive: true, force: true });
     }
   });
 
   it("rebinds same-repo workspace paths onto the current worktree root", () => {
-    const sourceRepoRoot = path.resolve("/Users/example/abacus");
-    const targetRepoRoot = path.resolve("/Users/example/abacus-pr-432");
+    const sourceRepoRoot = path.resolve("/Users/example/runeach");
+    const targetRepoRoot = path.resolve("/Users/example/runeach-pr-432");
 
     expect(
       rebindWorkspaceCwd({
@@ -421,15 +421,15 @@ describe("worktree helpers", () => {
   it("does not rebind paths outside the source repo root", () => {
     expect(
       rebindWorkspaceCwd({
-        sourceRepoRoot: "/Users/example/abacus",
-        targetRepoRoot: "/Users/example/abacus-pr-432",
+        sourceRepoRoot: "/Users/example/runeach",
+        targetRepoRoot: "/Users/example/runeach-pr-432",
         workspaceCwd: "/Users/example/other-project",
       }),
     ).toBeNull();
   });
 
   it("copies shared git hooks into a linked worktree git dir", () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-hooks-"));
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-worktree-hooks-"));
     const repoRoot = path.join(tempRoot, "repo");
     const worktreePath = path.join(tempRoot, "repo-feature");
 
@@ -479,10 +479,10 @@ describe("worktree helpers", () => {
   });
 
   it("creates and initializes a worktree from the top-level worktree:make command", async () => {
-    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-worktree-make-"));
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-worktree-make-"));
     const repoRoot = path.join(tempRoot, "repo");
     const fakeHome = path.join(tempRoot, "home");
-    const worktreePath = path.join(fakeHome, "abacus-make-test");
+    const worktreePath = path.join(fakeHome, "runeach-make-test");
     const originalCwd = process.cwd();
     const homedirSpy = vi.spyOn(os, "homedir").mockReturnValue(fakeHome);
 
@@ -498,14 +498,14 @@ describe("worktree helpers", () => {
 
       process.chdir(repoRoot);
 
-      await worktreeMakeCommand("abacus-make-test", {
+      await worktreeMakeCommand("runeach-make-test", {
         seed: false,
-        home: path.join(tempRoot, ".abacus-worktrees"),
+        home: path.join(tempRoot, ".runeach-worktrees"),
       });
 
       expect(fs.existsSync(path.join(worktreePath, ".git"))).toBe(true);
-      expect(fs.existsSync(path.join(worktreePath, ".abacus", "config.json"))).toBe(true);
-      expect(fs.existsSync(path.join(worktreePath, ".abacus", ".env"))).toBe(true);
+      expect(fs.existsSync(path.join(worktreePath, ".runeach", "config.json"))).toBe(true);
+      expect(fs.existsSync(path.join(worktreePath, ".runeach", ".env"))).toBe(true);
     } finally {
       process.chdir(originalCwd);
       homedirSpy.mockRestore();

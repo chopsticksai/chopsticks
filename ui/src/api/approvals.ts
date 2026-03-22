@@ -1,4 +1,4 @@
-import type { Approval, ApprovalComment, Issue } from "@abacus-lab/shared";
+import type { Approval, ApprovalComment, Issue } from "@runeachai/shared";
 import { api } from "./client";
 
 export const approvalsApi = {

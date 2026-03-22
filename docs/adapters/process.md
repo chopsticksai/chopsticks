@@ -7,7 +7,7 @@ summary: 通用 shell 进程适配器
 
 ## 适用场景
 
-- 运行会调用 Abacus API 的 Python 脚本
+- 运行会调用 RunEach API 的 Python 脚本
 - 执行自定义代理循环
 - 任何可以通过 shell 命令启动的运行时
 
@@ -27,8 +27,8 @@ summary: 通用 shell 进程适配器
 
 ## 工作方式
 
-1. Abacus 将已配置命令作为子进程启动
-2. 注入标准的 Abacus 环境变量（例如 `ABACUS_AGENT_ID`、`ABACUS_API_KEY`）
+1. RunEach 将已配置命令作为子进程启动
+2. 注入标准的 RunEach 环境变量（例如 `RUNEACH_AGENT_ID`、`RUNEACH_API_KEY`）
 3. 进程运行直到结束
 4. 由退出码决定成功或失败
 
@@ -47,4 +47,4 @@ summary: 通用 shell 进程适配器
 }
 ```
 
-脚本可以使用注入的环境变量向 Abacus API 完成认证，并执行实际工作。
+脚本可以使用注入的环境变量向 RunEach API 完成认证，并执行实际工作。

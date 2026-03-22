@@ -3,7 +3,7 @@ import { promises as fs } from "node:fs";
 import { execFile } from "node:child_process";
 import path from "node:path";
 import { promisify } from "node:util";
-import type { Db } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
 import type {
   CompanyPortabilityAgentManifestEntry,
   CompanyPortabilityCollisionStrategy,
@@ -23,18 +23,18 @@ import type {
   CompanyPortabilityIssueManifestEntry,
   CompanyPortabilitySkillManifestEntry,
   CompanySkill,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import {
   ISSUE_PRIORITIES,
   ISSUE_STATUSES,
   PROJECT_STATUSES,
   deriveProjectUrlKey,
   normalizeAgentUrlKey,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import {
-  readAbacusSkillSyncPreference,
-  writeAbacusSkillSyncPreference,
-} from "@abacus-lab/adapter-utils/server-utils";
+  readRunEachSkillSyncPreference,
+  writeRunEachSkillSyncPreference,
+} from "@runeachai/adapter-utils/server-utils";
 import { notFound, unprocessable } from "../errors.js";
 import type { StorageService } from "../storage/types.js";
 import { accessService } from "./access.js";
@@ -117,7 +117,7 @@ function resolveSkillConflictStrategy(mode: ImportMode, collisionStrategy: Compa
 function classifyPortableFileKind(pathValue: string): CompanyPortabilityExportPreviewResult["fileInventory"][number]["kind"] {
   const normalized = normalizePortablePath(pathValue);
   if (normalized === "COMPANY.md") return "company";
-  if (normalized === ".abacus.yaml" || normalized === ".abacus.yml") return "extension";
+  if (normalized === ".runeach.yaml" || normalized === ".runeach.yml") return "extension";
   if (normalized === "README.md") return "readme";
   if (normalized.startsWith("agents/")) return "agent";
   if (normalized.startsWith("skills/")) return "skill";
@@ -141,15 +141,15 @@ function normalizeSkillKey(value: string | null | undefined) {
 
 function readSkillKey(frontmatter: Record<string, unknown>) {
   const metadata = isPlainRecord(frontmatter.metadata) ? frontmatter.metadata : null;
-  const abacus = isPlainRecord(metadata?.abacus) ? metadata?.abacus as Record<string, unknown> : null;
+  const runeach = isPlainRecord(metadata?.runeach) ? metadata?.runeach as Record<string, unknown> : null;
   return normalizeSkillKey(
     asString(frontmatter.key)
     ?? asString(frontmatter.skillKey)
     ?? asString(metadata?.skillKey)
     ?? asString(metadata?.canonicalKey)
-    ?? asString(metadata?.abacusSkillKey)
-    ?? asString(abacus?.skillKey)
-    ?? asString(abacus?.key),
+    ?? asString(metadata?.runeachSkillKey)
+    ?? asString(runeach?.skillKey)
+    ?? asString(runeach?.key),
   );
 }
 
@@ -169,8 +169,8 @@ function deriveManifestSkillKey(
   if ((sourceType === "github" || sourceType === "skills_sh" || sourceKind === "github" || sourceKind === "skills_sh") && owner && repo) {
     return `${owner}/${repo}/${slug}`;
   }
-  if (sourceKind === "abacus_bundled") {
-    return `abacus-lab/abacus/${slug}`;
+  if (sourceKind === "runeach_bundled") {
+    return `runeachai/runeach/${slug}`;
   }
   if (sourceType === "url" || sourceKind === "url") {
     try {
@@ -289,8 +289,8 @@ function deriveSkillExportDirCandidates(
     }
   };
 
-  if (sourceKind === "abacus_bundled") {
-    pushSuffix("abacus");
+  if (sourceKind === "runeach_bundled") {
+    pushSuffix("runeach");
   }
 
   if (skill.sourceType === "github" || skill.sourceType === "skills_sh") {
@@ -389,7 +389,7 @@ type CompanyPackageIncludeEntry = {
   path: string;
 };
 
-type AbacusExtensionDoc = {
+type RunEachExtensionDoc = {
   schema?: string;
   company?: Record<string, unknown> | null;
   agents?: Record<string, Record<string, unknown>> | null;
@@ -499,7 +499,7 @@ const ADAPTER_DEFAULT_RULES_BY_TYPE: Record<string, Array<{ path: string[]; valu
     { path: ["timeoutSec"], value: 120 },
     { path: ["waitTimeoutMs"], value: 120000 },
     { path: ["sessionKeyStrategy"], value: "fixed" },
-    { path: ["sessionKey"], value: "abacus" },
+    { path: ["sessionKey"], value: "runeach" },
     { path: ["role"], value: "operator" },
     { path: ["scopes"], value: ["operator.admin"] },
   ],
@@ -779,7 +779,7 @@ function filterPortableExtensionYaml(yaml: string, selectedFiles: Set<string>) {
 function filterExportFiles(
   files: Record<string, CompanyPortabilityFileEntry>,
   selectedFilesInput: string[] | undefined,
-  abacusExtensionPath: string,
+  runeachExtensionPath: string,
 ) {
   if (!selectedFilesInput || selectedFilesInput.length === 0) {
     return files;
@@ -796,18 +796,18 @@ function filterExportFiles(
     filtered[filePath] = content;
   }
 
-  const extensionEntry = filtered[abacusExtensionPath];
-  if (selectedFiles.has(abacusExtensionPath) && typeof extensionEntry === "string") {
-    filtered[abacusExtensionPath] = filterPortableExtensionYaml(extensionEntry, selectedFiles);
+  const extensionEntry = filtered[runeachExtensionPath];
+  if (selectedFiles.has(runeachExtensionPath) && typeof extensionEntry === "string") {
+    filtered[runeachExtensionPath] = filterPortableExtensionYaml(extensionEntry, selectedFiles);
   }
 
   return filtered;
 }
 
-function findAbacusExtensionPath(files: Record<string, CompanyPortabilityFileEntry>) {
-  if (typeof files[".abacus.yaml"] === "string") return ".abacus.yaml";
-  if (typeof files[".abacus.yml"] === "string") return ".abacus.yml";
-  return Object.keys(files).find((entry) => entry.endsWith("/.abacus.yaml") || entry.endsWith("/.abacus.yml")) ?? null;
+function findRunEachExtensionPath(files: Record<string, CompanyPortabilityFileEntry>) {
+  if (typeof files[".runeach.yaml"] === "string") return ".runeach.yaml";
+  if (typeof files[".runeach.yml"] === "string") return ".runeach.yml";
+  return Object.keys(files).find((entry) => entry.endsWith("/.runeach.yaml") || entry.endsWith("/.runeach.yml")) ?? null;
 }
 
 function ensureMarkdownPath(pathValue: string) {
@@ -834,7 +834,7 @@ function normalizePortableConfig(
       key === "instructionsEntryFile" ||
       key === "promptTemplate" ||
       key === "bootstrapPromptTemplate" ||
-      key === "abacusSkillSync"
+      key === "runeachSkillSync"
     ) continue;
     if (key === "env") continue;
     next[key] = entry;
@@ -1219,15 +1219,15 @@ async function resolveBundledSkillsCommit() {
 
 async function buildSkillSourceEntry(skill: CompanySkill) {
   const metadata = isPlainRecord(skill.metadata) ? skill.metadata : null;
-  if (asString(metadata?.sourceKind) === "abacus_bundled") {
+  if (asString(metadata?.sourceKind) === "runeach_bundled") {
     const commit = await resolveBundledSkillsCommit();
     return {
       kind: "github-dir",
-      repo: "abacus-lab/abacus",
+      repo: "runeachai/runeach",
       path: `skills/${skill.slug}`,
       commit,
       trackingRef: "master",
-      url: `https://github.com/abacus-lab/abacus/tree/master/skills/${skill.slug}`,
+      url: `https://github.com/runeachai/runeach/tree/master/skills/${skill.slug}`,
     };
   }
 
@@ -1259,7 +1259,7 @@ async function buildSkillSourceEntry(skill: CompanySkill) {
 function shouldReferenceSkillOnExport(skill: CompanySkill, expandReferencedSkills: boolean) {
   if (expandReferencedSkills) return false;
   const metadata = isPlainRecord(skill.metadata) ? skill.metadata : null;
-  if (asString(metadata?.sourceKind) === "abacus_bundled") return true;
+  if (asString(metadata?.sourceKind) === "runeach_bundled") return true;
   return skill.sourceType === "github" || skill.sourceType === "skills_sh" || skill.sourceType === "url";
 }
 
@@ -1292,9 +1292,9 @@ async function withSkillSourceMetadata(skill: CompanySkill, markdown: string) {
     metadata.sources = [...existingSources, sourceEntry];
   }
   metadata.skillKey = skill.key;
-  metadata.abacusSkillKey = skill.key;
-  metadata.abacus = {
-    ...(isPlainRecord(metadata.abacus) ? metadata.abacus : {}),
+  metadata.runeachSkillKey = skill.key;
+  metadata.runeach = {
+    ...(isPlainRecord(metadata.runeach) ? metadata.runeach : {}),
     skillKey: skill.key,
     slug: skill.slug,
   };
@@ -1596,14 +1596,14 @@ function buildManifestFromPackageFiles(
   }
   const companyDoc = parseFrontmatterMarkdown(companyMarkdown);
   const companyFrontmatter = companyDoc.frontmatter;
-  const abacusExtensionPath = findAbacusExtensionPath(normalizedFiles);
-  const abacusExtension = abacusExtensionPath
-    ? parseYamlFile(readPortableTextFile(normalizedFiles, abacusExtensionPath) ?? "")
+  const runeachExtensionPath = findRunEachExtensionPath(normalizedFiles);
+  const runeachExtension = runeachExtensionPath
+    ? parseYamlFile(readPortableTextFile(normalizedFiles, runeachExtensionPath) ?? "")
     : {};
-  const abacusCompany = isPlainRecord(abacusExtension.company) ? abacusExtension.company : {};
-  const abacusAgents = isPlainRecord(abacusExtension.agents) ? abacusExtension.agents : {};
-  const abacusProjects = isPlainRecord(abacusExtension.projects) ? abacusExtension.projects : {};
-  const abacusTasks = isPlainRecord(abacusExtension.tasks) ? abacusExtension.tasks : {};
+  const runeachCompany = isPlainRecord(runeachExtension.company) ? runeachExtension.company : {};
+  const runeachAgents = isPlainRecord(runeachExtension.agents) ? runeachExtension.agents : {};
+  const runeachProjects = isPlainRecord(runeachExtension.projects) ? runeachExtension.projects : {};
+  const runeachTasks = isPlainRecord(runeachExtension.tasks) ? runeachExtension.tasks : {};
   const companyName =
     asString(companyFrontmatter.name)
     ?? opts?.sourceLabel?.companyName
@@ -1658,11 +1658,11 @@ function buildManifestFromPackageFiles(
       path: resolvedCompanyPath,
       name: companyName,
       description: asString(companyFrontmatter.description),
-      brandColor: asString(abacusCompany.brandColor),
-      logoPath: asString(abacusCompany.logoPath) ?? asString(abacusCompany.logo),
+      brandColor: asString(runeachCompany.brandColor),
+      logoPath: asString(runeachCompany.logoPath) ?? asString(runeachCompany.logo),
       requireBoardApprovalForNewAgents:
-        typeof abacusCompany.requireBoardApprovalForNewAgents === "boolean"
-          ? abacusCompany.requireBoardApprovalForNewAgents
+        typeof runeachCompany.requireBoardApprovalForNewAgents === "boolean"
+          ? runeachCompany.requireBoardApprovalForNewAgents
           : readCompanyApprovalDefault(companyFrontmatter),
     },
     agents: [],
@@ -1686,7 +1686,7 @@ function buildManifestFromPackageFiles(
     const frontmatter = agentDoc.frontmatter;
     const fallbackSlug = normalizeAgentUrlKey(path.posix.basename(path.posix.dirname(agentPath))) ?? "agent";
     const slug = asString(frontmatter.slug) ?? fallbackSlug;
-    const extension = isPlainRecord(abacusAgents[slug]) ? abacusAgents[slug] : {};
+    const extension = isPlainRecord(runeachAgents[slug]) ? runeachAgents[slug] : {};
     const extensionAdapter = isPlainRecord(extension.adapter) ? extension.adapter : null;
     const extensionRuntime = isPlainRecord(extension.runtime) ? extension.runtime : null;
     const extensionPermissions = isPlainRecord(extension.permissions) ? extension.permissions : null;
@@ -1823,7 +1823,7 @@ function buildManifestFromPackageFiles(
       projectPath,
     );
     const slug = asString(frontmatter.slug) ?? fallbackSlug;
-    const extension = isPlainRecord(abacusProjects[slug]) ? abacusProjects[slug] : {};
+    const extension = isPlainRecord(runeachProjects[slug]) ? runeachProjects[slug] : {};
     manifest.projects.push({
       slug,
       name: asString(frontmatter.name) ?? slug,
@@ -1854,7 +1854,7 @@ function buildManifestFromPackageFiles(
     const frontmatter = taskDoc.frontmatter;
     const fallbackSlug = normalizeAgentUrlKey(path.posix.basename(path.posix.dirname(taskPath))) ?? "task";
     const slug = asString(frontmatter.slug) ?? fallbackSlug;
-    const extension = isPlainRecord(abacusTasks[slug]) ? abacusTasks[slug] : {};
+    const extension = isPlainRecord(runeachTasks[slug]) ? runeachTasks[slug] : {};
     const schedule = isPlainRecord(frontmatter.schedule) ? frontmatter.schedule : null;
     const recurrence = schedule && isPlainRecord(schedule.recurrence)
       ? schedule.recurrence
@@ -1996,8 +1996,8 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
         return (
           relative.endsWith(".md") ||
           relative.startsWith("skills/") ||
-          relative === ".abacus.yaml" ||
-          relative === ".abacus.yml"
+          relative === ".runeach.yaml" ||
+          relative === ".runeach.yml"
         );
       });
     for (const repoPath of candidatePaths) {
@@ -2233,9 +2233,9 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
       }
     }
 
-    const abacusAgentsOut: Record<string, Record<string, unknown>> = {};
-    const abacusProjectsOut: Record<string, Record<string, unknown>> = {};
-    const abacusTasksOut: Record<string, Record<string, unknown>> = {};
+    const runeachAgentsOut: Record<string, Record<string, unknown>> = {};
+    const runeachProjectsOut: Record<string, Record<string, unknown>> = {};
+    const runeachTasksOut: Record<string, Record<string, unknown>> = {};
 
     const skillByReference = new Map<string, typeof companySkillRows[number]>();
     for (const skill of companySkillRows) {
@@ -2317,7 +2317,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
             .filter((inputValue) => inputValue.agentSlug === slug),
         );
         const reportsToSlug = agent.reportsTo ? (idToSlug.get(agent.reportsTo) ?? null) : null;
-        const desiredSkills = readAbacusSkillSyncPreference(
+        const desiredSkills = readRunEachSkillSyncPreference(
           (agent.adapterConfig as Record<string, unknown>) ?? {},
         ).desiredSkills;
 
@@ -2361,7 +2361,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
             env: buildEnvInputMap(agentEnvInputs),
           };
         }
-        abacusAgentsOut[slug] = isPlainRecord(extension) ? extension : {};
+        runeachAgentsOut[slug] = isPlainRecord(extension) ? extension : {};
       }
     }
 
@@ -2383,7 +2383,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
         status: project.status,
         executionWorkspacePolicy: project.executionWorkspacePolicy ?? undefined,
       });
-      abacusProjectsOut[slug] = isPlainRecord(extension) ? extension : {};
+      runeachProjectsOut[slug] = isPlainRecord(extension) ? extension : {};
     }
 
     for (const issue of selectedIssueRows) {
@@ -2409,35 +2409,35 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
         executionWorkspaceSettings: issue.executionWorkspaceSettings ?? undefined,
         assigneeAdapterOverrides: issue.assigneeAdapterOverrides ?? undefined,
       });
-      abacusTasksOut[taskSlug] = isPlainRecord(extension) ? extension : {};
+      runeachTasksOut[taskSlug] = isPlainRecord(extension) ? extension : {};
     }
 
-    const abacusExtensionPath = ".abacus.yaml";
-    const abacusAgents = Object.fromEntries(
-      Object.entries(abacusAgentsOut).filter(([, value]) => isPlainRecord(value) && Object.keys(value).length > 0),
+    const runeachExtensionPath = ".runeach.yaml";
+    const runeachAgents = Object.fromEntries(
+      Object.entries(runeachAgentsOut).filter(([, value]) => isPlainRecord(value) && Object.keys(value).length > 0),
     );
-    const abacusProjects = Object.fromEntries(
-      Object.entries(abacusProjectsOut).filter(([, value]) => isPlainRecord(value) && Object.keys(value).length > 0),
+    const runeachProjects = Object.fromEntries(
+      Object.entries(runeachProjectsOut).filter(([, value]) => isPlainRecord(value) && Object.keys(value).length > 0),
     );
-    const abacusTasks = Object.fromEntries(
-      Object.entries(abacusTasksOut).filter(([, value]) => isPlainRecord(value) && Object.keys(value).length > 0),
+    const runeachTasks = Object.fromEntries(
+      Object.entries(runeachTasksOut).filter(([, value]) => isPlainRecord(value) && Object.keys(value).length > 0),
     );
-    files[abacusExtensionPath] = buildYamlFile(
+    files[runeachExtensionPath] = buildYamlFile(
       {
-        schema: "abacus/v1",
+        schema: "runeach/v1",
         company: stripEmptyValues({
           brandColor: company.brandColor ?? null,
           logoPath: companyLogoPath,
           requireBoardApprovalForNewAgents: company.requireBoardApprovalForNewAgents ? undefined : false,
         }),
-        agents: Object.keys(abacusAgents).length > 0 ? abacusAgents : undefined,
-        projects: Object.keys(abacusProjects).length > 0 ? abacusProjects : undefined,
-        tasks: Object.keys(abacusTasks).length > 0 ? abacusTasks : undefined,
+        agents: Object.keys(runeachAgents).length > 0 ? runeachAgents : undefined,
+        projects: Object.keys(runeachProjects).length > 0 ? runeachProjects : undefined,
+        tasks: Object.keys(runeachTasks).length > 0 ? runeachTasks : undefined,
       },
       { preserveEmptyStrings: true },
     );
 
-    let finalFiles = filterExportFiles(files, input.selectedFiles, abacusExtensionPath);
+    let finalFiles = filterExportFiles(files, input.selectedFiles, runeachExtensionPath);
     let resolved = buildManifestFromPackageFiles(finalFiles, {
       sourceLabel: {
         companyId: company.id,
@@ -2493,7 +2493,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
       manifest: resolved.manifest,
       files: finalFiles,
       warnings: resolved.warnings,
-      abacusExtensionPath,
+      runeachExtensionPath,
     };
   }
 
@@ -2632,7 +2632,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
           warnings.push(`Task markdown ${issue.path} does not declare kind: task in frontmatter.`);
         }
         if (issue.recurrence) {
-          warnings.push(`Task ${issue.slug} has recurrence metadata; Abacus will import it as a one-time issue for now.`);
+          warnings.push(`Task ${issue.slug} has recurrence metadata; RunEach will import it as a one-time issue for now.`);
         }
       }
     }
@@ -3063,7 +3063,7 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
           : { ...manifestAgent.adapterConfig } as Record<string, unknown>;
 
         const desiredSkills = (manifestAgent.skills ?? []).map((skillRef) => desiredSkillRefMap.get(skillRef) ?? skillRef);
-        const adapterConfigWithSkills = writeAbacusSkillSyncPreference(
+        const adapterConfigWithSkills = writeRunEachSkillSyncPreference(
           baseAdapterConfig,
           desiredSkills,
         );

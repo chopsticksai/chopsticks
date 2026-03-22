@@ -1,4 +1,4 @@
-import type { CreateConfigValues } from "@abacus-lab/adapter-utils";
+import type { CreateConfigValues } from "@runeachai/adapter-utils";
 
 function parseCommaArgs(value: string): string[] {
   return value

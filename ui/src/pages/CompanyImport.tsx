@@ -6,7 +6,7 @@ import type {
   CompanyPortabilityPreviewResult,
   CompanyPortabilitySource,
   CompanyPortabilityAdapterOverride,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { useCompany } from "../context/CompanyContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { useToast } from "../context/ToastContext";
@@ -31,7 +31,7 @@ import {
 import { Field, adapterLabels } from "../components/agent-config-primitives";
 import { defaultCreateValues } from "../components/agent-config-defaults";
 import { getUIAdapter, listUIAdapters } from "../adapters";
-import type { CreateConfigValues } from "@abacus-lab/adapter-utils";
+import type { CreateConfigValues } from "@runeachai/adapter-utils";
 import {
   type FileTreeNode,
   type FrontmatterData,
@@ -676,7 +676,7 @@ export function CompanyImport() {
   );
 
   const localZipHelpText = t(
-    "Upload a .zip exported directly from Abacus. Re-zipped archives created by Finder, Explorer, or other zip tools may not import correctly."
+    "Upload a .zip exported directly from RunEach. Re-zipped archives created by Finder, Explorer, or other zip tools may not import correctly."
   );
 
   useEffect(() => {
@@ -1060,7 +1060,7 @@ export function CompanyImport() {
         <div>
           <h2 className="text-base font-semibold">{t("Import source")}</h2>
           <p className="text-xs text-muted-foreground mt-1">
-            {t("Choose a GitHub repo or upload a local Abacus zip package.")}
+            {t("Choose a GitHub repo or upload a local RunEach zip package.")}
           </p>
         </div>
 

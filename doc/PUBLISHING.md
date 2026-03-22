@@ -1,6 +1,6 @@
 # Publishing to npm
 
-Low-level reference for how Abacus packages are prepared and published to npm.
+Low-level reference for how RunEach packages are prepared and published to npm.
 
 For the maintainer workflow, use [doc/RELEASING.md](RELEASING.md). This document focuses on packaging internals.
 
@@ -13,15 +13,15 @@ Use these scripts:
 - [`scripts/rollback-latest.sh`](../scripts/rollback-latest.sh) to repoint `latest`
 - [`scripts/build-npm.sh`](../scripts/build-npm.sh) for the CLI packaging build
 
-Abacus no longer uses release branches or Changesets for publishing.
+RunEach no longer uses release branches or Changesets for publishing.
 
 ## Why the CLI needs special packaging
 
-The CLI package, `@abacus-lab/abacus`, imports code from workspace packages such as:
+The CLI package, `@runeachai/runeach`, imports code from workspace packages such as:
 
-- `@abacus-lab/server`
-- `@abacus-lab/db`
-- `@abacus-lab/shared`
+- `@runeachai/server`
+- `@runeachai/db`
+- `@runeachai/shared`
 - adapter packages under `packages/adapters/`
 
 Those workspace references are valid in development but not in a publishable npm package. The release flow rewrites versions temporarily, then builds a publishable CLI bundle.
@@ -67,7 +67,7 @@ Those rewrites are temporary. The working tree is restored after publish or dry-
 
 ## Version formats
 
-Abacus uses calendar versions:
+RunEach uses calendar versions:
 
 - stable: `YYYY.MDD.P`
 - canary: `YYYY.MDD.P-canary.N`
@@ -85,12 +85,12 @@ Canaries publish under the npm dist-tag `canary`.
 
 Example:
 
-- `@abacus-lab/abacus@2026.318.1-canary.2`
+- `@runeachai/runeach@2026.318.1-canary.2`
 
 This keeps the default install path unchanged while allowing explicit installs with:
 
 ```bash
-npx @abacus-lab/abacus@canary onboard
+npx @runeachai/runeach@canary onboard
 ```
 
 ### Stable
@@ -99,7 +99,7 @@ Stable publishes use the npm dist-tag `latest`.
 
 Example:
 
-- `@abacus-lab/abacus@2026.318.0`
+- `@runeachai/runeach@2026.318.0`
 
 Stable publishes do not create a release commit. Instead:
 

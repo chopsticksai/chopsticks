@@ -4,7 +4,7 @@ import path from "node:path";
 const DEFAULT_INSTANCE_ID = "default";
 const INSTANCE_ID_RE = /^[a-zA-Z0-9_-]+$/;
 const PATH_SEGMENT_RE = /^[a-zA-Z0-9_-]+$/;
-const DEFAULT_HOME_BASENAME = ".abacus";
+const DEFAULT_HOME_BASENAME = ".runeach";
 const FRIENDLY_PATH_SEGMENT_RE = /[^a-zA-Z0-9._-]+/g;
 
 function expandHomePrefix(value: string): string {
@@ -13,46 +13,46 @@ function expandHomePrefix(value: string): string {
   return value;
 }
 
-export function resolveAbacusHomeDir(): string {
-  const envHome = process.env.ABACUS_HOME?.trim();
+export function resolveRunEachHomeDir(): string {
+  const envHome = process.env.RUNEACH_HOME?.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
   return path.resolve(os.homedir(), DEFAULT_HOME_BASENAME);
 }
 
-export function resolveAbacusInstanceId(): string {
-  const raw = process.env.ABACUS_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
+export function resolveRunEachInstanceId(): string {
+  const raw = process.env.RUNEACH_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
   if (!INSTANCE_ID_RE.test(raw)) {
-    throw new Error(`Invalid ABACUS_INSTANCE_ID '${raw}'.`);
+    throw new Error(`Invalid RUNEACH_INSTANCE_ID '${raw}'.`);
   }
   return raw;
 }
 
-export function resolveAbacusInstanceRoot(): string {
-  return path.resolve(resolveAbacusHomeDir(), "instances", resolveAbacusInstanceId());
+export function resolveRunEachInstanceRoot(): string {
+  return path.resolve(resolveRunEachHomeDir(), "instances", resolveRunEachInstanceId());
 }
 
 export function resolveDefaultConfigPath(): string {
-  return path.resolve(resolveAbacusInstanceRoot(), "config.json");
+  return path.resolve(resolveRunEachInstanceRoot(), "config.json");
 }
 
 export function resolveDefaultEmbeddedPostgresDir(): string {
-  return path.resolve(resolveAbacusInstanceRoot(), "db");
+  return path.resolve(resolveRunEachInstanceRoot(), "db");
 }
 
 export function resolveDefaultLogsDir(): string {
-  return path.resolve(resolveAbacusInstanceRoot(), "logs");
+  return path.resolve(resolveRunEachInstanceRoot(), "logs");
 }
 
 export function resolveDefaultSecretsKeyFilePath(): string {
-  return path.resolve(resolveAbacusInstanceRoot(), "secrets", "master.key");
+  return path.resolve(resolveRunEachInstanceRoot(), "secrets", "master.key");
 }
 
 export function resolveDefaultStorageDir(): string {
-  return path.resolve(resolveAbacusInstanceRoot(), "data", "storage");
+  return path.resolve(resolveRunEachInstanceRoot(), "data", "storage");
 }
 
 export function resolveDefaultBackupDir(): string {
-  return path.resolve(resolveAbacusInstanceRoot(), "data", "backups");
+  return path.resolve(resolveRunEachInstanceRoot(), "data", "backups");
 }
 
 export function resolveDefaultAgentWorkspaceDir(agentId: string): string {
@@ -60,7 +60,7 @@ export function resolveDefaultAgentWorkspaceDir(agentId: string): string {
   if (!PATH_SEGMENT_RE.test(trimmed)) {
     throw new Error(`Invalid agent id for workspace path '${agentId}'.`);
   }
-  return path.resolve(resolveAbacusInstanceRoot(), "workspaces", trimmed);
+  return path.resolve(resolveRunEachInstanceRoot(), "workspaces", trimmed);
 }
 
 function sanitizeFriendlyPathSegment(value: string | null | undefined, fallback = "_default"): string {
@@ -83,7 +83,7 @@ export function resolveManagedProjectWorkspaceDir(input: {
     throw new Error("Managed project workspace path requires companyId and projectId.");
   }
   return path.resolve(
-    resolveAbacusInstanceRoot(),
+    resolveRunEachInstanceRoot(),
     "projects",
     sanitizeFriendlyPathSegment(companyId, "company"),
     sanitizeFriendlyPathSegment(projectId, "project"),

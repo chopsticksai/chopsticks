@@ -1,7 +1,7 @@
 import * as p from "@clack/prompts";
 import pc from "picocolors";
 import { readConfig, writeConfig, configExists, resolveConfigPath } from "../config/store.js";
-import type { AbacusConfig } from "../config/schema.js";
+import type { RunEachConfig } from "../config/schema.js";
 import { ensureLocalSecretsKeyFile } from "../config/secrets-key.js";
 import { promptDatabase } from "../prompts/database.js";
 import { promptLlm } from "../prompts/llm.js";
@@ -13,10 +13,10 @@ import {
   resolveDefaultBackupDir,
   resolveDefaultEmbeddedPostgresDir,
   resolveDefaultLogsDir,
-  resolveAbacusInstanceId,
+  resolveRunEachInstanceId,
 } from "../config/home.js";
 import { publicCliCommand } from "../config/branding.js";
-import { printAbacusCliBanner } from "../utils/banner.js";
+import { printRunEachCliBanner } from "../utils/banner.js";
 
 type Section = "llm" | "database" | "logging" | "server" | "storage" | "secrets";
 
@@ -29,8 +29,8 @@ const SECTION_LABELS: Record<Section, string> = {
   secrets: "Secrets",
 };
 
-function defaultConfig(): AbacusConfig {
-  const instanceId = resolveAbacusInstanceId();
+function defaultConfig(): RunEachConfig {
+  const instanceId = resolveRunEachInstanceId();
   return {
     $meta: {
       version: 1,
@@ -73,7 +73,7 @@ export async function configure(opts: {
   config?: string;
   section?: string;
 }): Promise<void> {
-  printAbacusCliBanner();
+  printRunEachCliBanner();
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("configure")} `)));
   const configPath = resolveConfigPath(opts.config);
 
@@ -83,7 +83,7 @@ export async function configure(opts: {
     return;
   }
 
-  let config: AbacusConfig;
+  let config: RunEachConfig;
   try {
     config = readConfig(opts.config) ?? defaultConfig();
   } catch (err) {
@@ -165,7 +165,7 @@ export async function configure(opts: {
           } else if (keyResult.status === "skipped_provider") {
             p.log.message(pc.dim("Skipping local key file management for non-local provider"));
           } else {
-            p.log.message(pc.dim("Skipping local key file management because ABACUS_SECRETS_MASTER_KEY is set"));
+            p.log.message(pc.dim("Skipping local key file management because RUNEACH_SECRETS_MASTER_KEY is set"));
           }
         }
         break;

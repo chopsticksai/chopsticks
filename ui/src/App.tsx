@@ -57,11 +57,11 @@ function BootstrapPendingPage({ hasActiveInvite = false }: { hasActiveInvite?: b
         <h1 className="text-xl font-semibold">{t("Instance setup required")}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {hasActiveInvite
-            ? t("No instance admin exists yet. A bootstrap invite is already active. Check your Abacus startup logs for the first admin invite URL, or run this command to rotate it:")
-            : t("No instance admin exists yet. Run this command in your Abacus environment to generate the first admin invite URL:")}
+            ? t("No instance admin exists yet. A bootstrap invite is already active. Check your RunEach startup logs for the first admin invite URL, or run this command to rotate it:")
+            : t("No instance admin exists yet. Run this command in your RunEach environment to generate the first admin invite URL:")}
         </p>
         <pre className="mt-4 overflow-x-auto rounded-md border border-border bg-muted/30 p-3 text-xs">
-          {`pnpm abacus auth bootstrap-ceo`}
+          {`pnpm runeach auth bootstrap-ceo`}
         </pre>
       </div>
     </div>

@@ -3,7 +3,7 @@
 ## Summary
 
 This document is the normative rule set for merging upstream `paperclipai/paperclip`
-changes into this Abacus fork.
+changes into this RunEach fork.
 
 Use this document to answer:
 
@@ -31,7 +31,7 @@ flow, use [`doc/UPSTREAM-MERGE-RUNBOOK.md`](./UPSTREAM-MERGE-RUNBOOK.md).
 - `upstream`: the semantic role for the canonical `paperclipai/paperclip`
   repo. In this
   checkout the default remote name is `origin`.
-- `private fork`: the semantic role for the Abacus repo. In this checkout
+- `private fork`: the semantic role for the RunEach repo. In this checkout
   the default remote name is `private`.
 - `base branch`: the private-fork branch used as the PR comparison target. By
   default this is `private/master`.
@@ -52,7 +52,7 @@ When the same area contains both upstream logic changes and local rename/UI
 customizations, resolve in this order:
 
 1. Keep upstream behavior changes, bug fixes, and contract alignment.
-2. Keep Abacus naming, branding, package scopes, and user-visible links.
+2. Keep RunEach naming, branding, package scopes, and user-visible links.
 3. Keep existing repository invariants, especially company-scoped boundaries,
    audit/approval semantics, budget hard-stop behavior, and UI-localized
    behavior.
@@ -62,16 +62,16 @@ customizations, resolve in this order:
 
 Apply the following replacements when upstream code introduces legacy names:
 
-| Upstream token | Abacus token | Typical locations                             |
+| Upstream token | RunEach token | Typical locations                             |
 |----------------|--------------|-----------------------------------------------|
-| `paperclipai`  | `abacus-lab` | npm scope, import path, GitHub org/URL, URL slug |
-| `paperclipai`  | `abacus`     | class names, components, title-cased branding |
-| `PAPERCLIPAI`  | `ABACUS`     | env vars, constants                           |
-| `papercli`     | `abacus`     | legacy short names                            |
-| `Papercli`     | `Abacus`     | legacy short names                            |
-| `PAPERCLI`     | `ABACUS`     | legacy short names                            |
-| `paperclip`    | `abacus`     | user-visible brand text                       |
-| `paperclip`    | `abacus`     | lowercase product references, config values, CLI names |
+| `paperclipai`  | `runeachai` | npm scope, import path, GitHub org/URL, URL slug |
+| `paperclipai`  | `runeach`     | class names, components, title-cased branding |
+| `PAPERCLIPAI`  | `RUNEACH`     | env vars, constants                           |
+| `papercli`     | `runeach`     | legacy short names                            |
+| `Papercli`     | `RunEach`     | legacy short names                            |
+| `PAPERCLI`     | `RUNEACH`     | legacy short names                            |
+| `paperclip`    | `runeach`     | user-visible brand text                       |
+| `paperclip`    | `runeach`     | lowercase product references, config values, CLI names |
 
 > [!IMPORTANT]
 > Match case exactly and prefer longer matches before shorter matches. For
@@ -85,40 +85,40 @@ Apply the following replacements when upstream code introduces legacy names:
   paths, env var names, CLI-facing strings, RPC/app identity fields, and
   user-visible brand text.
 - If upstream adds new logic in a conflicting block, keep the upstream logic and
-  re-apply Abacus naming on top.
+  re-apply RunEach naming on top.
 - Rename obligations include user-visible error messages, helper text, brand
   labels, and product links. Do not stop at import-path fixes.
 - Do not mechanically rename every matching identifier. First verify whether
-  the token is actually Abacus-owned naming or an external/library symbol whose
+  the token is actually RunEach-owned naming or an external/library symbol whose
   spelling only happens to match upstream branding.
 
 ### `package.json`
 
-- Keep `"name"` aligned to `@abacus-lab/abacus` for the published CLI package
-  and `@abacus-lab/*` for scoped workspace packages. The private repo root
-  manifest may remain `abacus`.
+- Keep `"name"` aligned to `@runeachai/runeach` for the published CLI package
+  and `@runeachai/*` for scoped workspace packages. The private repo root
+  manifest may remain `runeach`.
 - Keep `"repository"` aligned to
-  `https://github.com/abacus-lab/abacus`.
-- Replace dependency scopes from `@paperclipai/*` to `@abacus-lab/*` for packages
+  `https://github.com/runeachai/runeach`.
+- Replace dependency scopes from `@paperclipai/*` to `@runeachai/*` for packages
   owned by this fork.
-- Keep the installed CLI command name as `abacus` even though the npm package is
-  `@abacus-lab/abacus`.
+- Keep the installed CLI command name as `runeach` even though the npm package is
+  `@runeachai/runeach`.
 - When versions conflict, prefer the newer upstream version unless the private
   fork has an explicit release constraint.
 
 ### Markdown / Docs
 
-- Replace user-visible `Paperclip` branding with `Abacus`.
+- Replace user-visible `Paperclip` branding with `RunEach`.
 - Replace `github.com/paperclipai/paperclip` with
-  `github.com/abacus-lab/abacus` in user-visible current-product links.
-- Replace `github.com/paperclipai/` with `github.com/abacus-lab/` when it is
+  `github.com/runeachai/runeach` in user-visible current-product links.
+- Replace `github.com/paperclipai/` with `github.com/runeachai/` when it is
   referring to the current product rather than historical upstream context.
 - If the merged docs add UI-visible copy or prompt text, they must also satisfy
   [`doc/UI-LOCALIZATION.md`](./UI-LOCALIZATION.md).
 
 ### Config / Templates
 
-- Replace `PAPERCLIP` / `PAPERCLIPAI` env var names with `ABACUS`.
+- Replace `PAPERCLIP` / `PAPERCLIPAI` env var names with `RUNEACH`.
 - Replace legacy config values using the mapping table above.
 
 ### Lockfiles and CI-Managed Files
@@ -142,9 +142,9 @@ The following may keep the upstream name unchanged:
 - explicit fork-source statements such as `Forked from paperclip`
 - historical commit hashes or commit message references
 - upstream changelog or release-note history references
-- third-party dependency names outside the Abacus namespace
+- third-party dependency names outside the RunEach namespace
 - external package identifiers, binary names, or library symbols that are not
-  owned by Abacus, even if they contain `paperclip` text
+  owned by RunEach, even if they contain `paperclip` text
 - lockfile entries or package-manager metadata that reflect real third-party
   published package names, including transitive `@paperclipai/*` dependencies
 - comments explicitly marked as `upstream reference`
@@ -161,7 +161,7 @@ The following may keep the upstream name unchanged:
 After an upstream merge is considered done, all of the following must be true:
 
 - merged behavior keeps the upstream logic changes
-- merged code and docs keep Abacus naming
+- merged code and docs keep RunEach naming
 - merged UI is UI-localized according to
   [`doc/UI-LOCALIZATION.md`](./UI-LOCALIZATION.md)
 - the PR diff against the base branch does not include `pnpm-lock.yaml`, unless

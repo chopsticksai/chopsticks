@@ -1,4 +1,4 @@
-import type { AgentSkillEntry } from "@abacus-lab/shared";
+import type { AgentSkillEntry } from "@runeachai/shared";
 
 export interface AgentSkillDraftState {
   draft: string[];

@@ -13,10 +13,10 @@ const autoRestartPollIntervalMs = 2500;
 const gracefulShutdownTimeoutMs = 10_000;
 const changedPathSampleLimit = 5;
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const devServerStatusFilePath = path.join(repoRoot, ".abacus", "dev-server-status.json");
+const devServerStatusFilePath = path.join(repoRoot, ".runeach", "dev-server-status.json");
 
 const watchedDirectories = [
-  ".abacus",
+  ".runeach",
   "cli",
   "scripts",
   "server",
@@ -47,7 +47,7 @@ const ignoredDirectoryNames = new Set([
 ]);
 
 const ignoredRelativePaths = new Set([
-  ".abacus/dev-server-status.json",
+  ".runeach/dev-server-status.json",
 ]);
 
 const tailscaleAuthFlagNames = new Set([
@@ -75,26 +75,26 @@ if (process.env.npm_config_authenticated_private === "true") {
 
 const env = {
   ...process.env,
-  ABACUS_UI_DEV_MIDDLEWARE: "true",
+  RUNEACH_UI_DEV_MIDDLEWARE: "true",
 };
 
 if (mode === "dev") {
-  env.ABACUS_DEV_SERVER_STATUS_FILE = devServerStatusFilePath;
+  env.RUNEACH_DEV_SERVER_STATUS_FILE = devServerStatusFilePath;
 }
 
 if (mode === "watch") {
-  env.ABACUS_MIGRATION_PROMPT ??= "never";
-  env.ABACUS_MIGRATION_AUTO_APPLY ??= "true";
+  env.RUNEACH_MIGRATION_PROMPT ??= "never";
+  env.RUNEACH_MIGRATION_AUTO_APPLY ??= "true";
 }
 
 if (tailscaleAuth) {
-  env.ABACUS_DEPLOYMENT_MODE = "authenticated";
-  env.ABACUS_DEPLOYMENT_EXPOSURE = "private";
-  env.ABACUS_AUTH_BASE_URL_MODE = "auto";
+  env.RUNEACH_DEPLOYMENT_MODE = "authenticated";
+  env.RUNEACH_DEPLOYMENT_EXPOSURE = "private";
+  env.RUNEACH_AUTH_BASE_URL_MODE = "auto";
   env.HOST = "0.0.0.0";
-  console.log("[abacus] dev mode: authenticated/private (tailscale-friendly) on 0.0.0.0");
+  console.log("[runeach] dev mode: authenticated/private (tailscale-friendly) on 0.0.0.0");
 } else {
-  console.log("[abacus] dev mode: local_trusted (default)");
+  console.log("[runeach] dev mode: local_trusted (default)");
 }
 
 const pnpmBin = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
@@ -280,14 +280,14 @@ async function runPnpm(args, options = {}) {
 
 async function getMigrationStatusPayload() {
   const status = await runPnpm(
-    ["--filter", "@abacus-lab/db", "exec", "tsx", "src/migration-status.ts", "--json"],
+    ["--filter", "@runeachai/db", "exec", "tsx", "src/migration-status.ts", "--json"],
     { env },
   );
   if (status.code !== 0) {
     process.stderr.write(
       status.stderr ||
         status.stdout ||
-        `[abacus] Command failed with code ${status.code}: pnpm --filter @abacus-lab/db exec tsx src/migration-status.ts --json\n`,
+        `[runeach] Command failed with code ${status.code}: pnpm --filter @runeachai/db exec tsx src/migration-status.ts --json\n`,
     );
     process.exit(status.code);
   }
@@ -298,7 +298,7 @@ async function getMigrationStatusPayload() {
     process.stderr.write(
       status.stderr ||
         status.stdout ||
-        "[abacus] migration-status returned invalid JSON payload\n",
+        "[runeach] migration-status returned invalid JSON payload\n",
     );
     throw toError(error, "Unable to parse migration-status JSON output");
   }
@@ -316,7 +316,7 @@ async function refreshPendingMigrations() {
 
 async function maybePreflightMigrations(options = {}) {
   const interactive = options.interactive ?? mode === "watch";
-  const autoApply = options.autoApply ?? env.ABACUS_MIGRATION_AUTO_APPLY === "true";
+  const autoApply = options.autoApply ?? env.RUNEACH_MIGRATION_AUTO_APPLY === "true";
   const exitOnDecline = options.exitOnDecline ?? mode === "watch";
 
   const payload = await refreshPendingMigrations();
@@ -349,7 +349,7 @@ async function maybePreflightMigrations(options = {}) {
   if (!shouldApply) {
     if (exitOnDecline) {
       process.stderr.write(
-        `[abacus] Pending migrations detected (${formatPendingMigrationSummary(pendingMigrations)}). ` +
+        `[runeach] Pending migrations detected (${formatPendingMigrationSummary(pendingMigrations)}). ` +
           "Refusing to start watch mode against a stale schema.\n",
       );
       process.exit(1);
@@ -377,9 +377,9 @@ async function maybePreflightMigrations(options = {}) {
 }
 
 async function buildPluginSdk() {
-  console.log("[abacus] building plugin sdk...");
+  console.log("[runeach] building plugin sdk...");
   const result = await runPnpm(
-    ["--filter", "@abacus-lab/plugin-sdk", "build"],
+    ["--filter", "@runeachai/plugin-sdk", "build"],
     { stdio: "inherit" },
   );
   if (result.signal) {
@@ -387,7 +387,7 @@ async function buildPluginSdk() {
     return;
   }
   if (result.code !== 0) {
-    console.error("[abacus] plugin sdk build failed");
+    console.error("[runeach] plugin sdk build failed");
     process.exit(result.code);
   }
 }
@@ -457,7 +457,7 @@ async function startServerChild() {
   const serverScript = mode === "watch" ? "dev:watch" : "dev";
   child = spawn(
     pnpmBin,
-    ["--filter", "@abacus-lab/server", serverScript, ...forwardedArgs],
+    ["--filter", "@runeachai/server", serverScript, ...forwardedArgs],
     { stdio: "inherit", env, shell: process.platform === "win32" },
   );
 

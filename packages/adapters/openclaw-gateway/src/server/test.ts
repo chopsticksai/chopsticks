@@ -2,8 +2,8 @@ import type {
   AdapterEnvironmentCheck,
   AdapterEnvironmentTestContext,
   AdapterEnvironmentTestResult,
-} from "@abacus-lab/adapter-utils";
-import { asString, parseObject } from "@abacus-lab/adapter-utils/server-utils";
+} from "@runeachai/adapter-utils";
+import { asString, parseObject } from "@runeachai/adapter-utils/server-utils";
 import { randomUUID } from "node:crypto";
 import { WebSocket } from "ws";
 
@@ -149,7 +149,7 @@ async function probeGateway(input: {
               maxProtocol: 3,
               client: {
                 id: "gateway-client",
-                version: "abacus-probe",
+                version: "runeach-probe",
                 platform: process.platform,
                 mode: "probe",
               },
@@ -296,7 +296,7 @@ export async function testEnvironment(
           code: "openclaw_gateway_probe_failed",
           level: "warn",
           message: "Gateway probe failed.",
-          hint: "Verify network reachability and gateway URL from the Abacus server host.",
+          hint: "Verify network reachability and gateway URL from the RunEach server host.",
         });
       }
     } catch (err) {

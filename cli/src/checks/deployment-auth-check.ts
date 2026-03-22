@@ -1,4 +1,4 @@
-import type { AbacusConfig } from "../config/schema.js";
+import type { RunEachConfig } from "../config/schema.js";
 import { publicCliCommand } from "../config/branding.js";
 import type { CheckResult } from "./index.js";
 
@@ -7,7 +7,7 @@ function isLoopbackHost(host: string) {
   return normalized === "127.0.0.1" || normalized === "localhost" || normalized === "::1";
 }
 
-export function deploymentAuthCheck(config: AbacusConfig): CheckResult {
+export function deploymentAuthCheck(config: RunEachConfig): CheckResult {
   const mode = config.server.deploymentMode;
   const exposure = config.server.exposure;
   const auth = config.auth;
@@ -31,14 +31,14 @@ export function deploymentAuthCheck(config: AbacusConfig): CheckResult {
 
   const secret =
     process.env.BETTER_AUTH_SECRET?.trim() ??
-    process.env.ABACUS_AGENT_JWT_SECRET?.trim();
+    process.env.RUNEACH_AGENT_JWT_SECRET?.trim();
   if (!secret) {
     return {
       name: "Deployment/auth mode",
       status: "fail",
-      message: "authenticated mode requires BETTER_AUTH_SECRET (or ABACUS_AGENT_JWT_SECRET)",
+      message: "authenticated mode requires BETTER_AUTH_SECRET (or RUNEACH_AGENT_JWT_SECRET)",
       canRepair: false,
-      repairHint: "Set BETTER_AUTH_SECRET before starting Abacus",
+      repairHint: "Set BETTER_AUTH_SECRET before starting RunEach",
     };
   }
 

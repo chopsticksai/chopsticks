@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Company } from "@abacus-lab/shared";
+import type { Company } from "@runeachai/shared";
 import { assertDeleteConfirmation, resolveCompanyForDeletion } from "../commands/client/company.js";
 
 function makeCompany(overrides: Partial<Company>): Company {
@@ -33,7 +33,7 @@ describe("resolveCompanyForDeletion", () => {
     }),
     makeCompany({
       id: "22222222-2222-2222-2222-222222222222",
-      name: "Abacus",
+      name: "RunEach",
       issuePrefix: "PAP",
     }),
   ];

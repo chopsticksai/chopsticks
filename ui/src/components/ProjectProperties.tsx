@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@/lib/router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Project } from "@abacus-lab/shared";
+import type { Project } from "@runeachai/shared";
 import { StatusBadge } from "./StatusBadge";
 import { cn, formatDate } from "../lib/utils";
 import { getStatusLabel, translateText } from "../lib/i18n";
@@ -691,7 +691,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
                     {codebase.effectiveLocalFolder}
                   </div>
                   {codebase.origin === "managed_checkout" && (
-                    <div className="text-[11px] text-muted-foreground">{t("Abacus-managed folder.")}</div>
+                    <div className="text-[11px] text-muted-foreground">{t("RunEach-managed folder.")}</div>
                   )}
                 </div>
                 <div className="flex items-center gap-1">
@@ -723,7 +723,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
 
             {hasAdditionalLegacyWorkspaces && (
               <div className="text-[11px] text-muted-foreground">
-                {t("Additional legacy workspace records exist on this project. Abacus is using the primary workspace as the codebase view.")}
+                {t("Additional legacy workspace records exist on this project. RunEach is using the primary workspace as the codebase view.")}
               </div>
             )}
 
@@ -1042,7 +1042,7 @@ export function ProjectProperties({ project, onUpdate, onFieldUpdate, getFieldSa
                               })}
                             immediate
                             className="w-full rounded border border-border bg-transparent px-2 py-1 text-xs font-mono outline-none"
-                            placeholder={t(".abacus/worktrees")}
+                            placeholder={t(".runeach/worktrees")}
                           />
                         </div>
                         <div>

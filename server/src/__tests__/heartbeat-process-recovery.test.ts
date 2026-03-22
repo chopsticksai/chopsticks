@@ -16,7 +16,7 @@ import {
   heartbeatRunEvents,
   heartbeatRuns,
   issues,
-} from "@abacus-lab/db";
+} from "@runeachai/db";
 import { runningProcesses } from "../adapters/index.ts";
 import { heartbeatService } from "../services/heartbeat.ts";
 
@@ -63,13 +63,13 @@ async function getAvailablePort(): Promise<number> {
 }
 
 async function startTempDatabase() {
-  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-heartbeat-recovery-"));
+  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-heartbeat-recovery-"));
   const port = await getAvailablePort();
   const EmbeddedPostgres = await getEmbeddedPostgresCtor();
   const instance = new EmbeddedPostgres({
     databaseDir: dataDir,
-    user: "abacus",
-    password: "abacus",
+    user: "runeach",
+    password: "runeach",
     port,
     persistent: true,
     initdbFlags: ["--encoding=UTF8", "--locale=C"],
@@ -79,9 +79,9 @@ async function startTempDatabase() {
   await instance.initialise();
   await instance.start();
 
-  const adminConnectionString = `postgres://abacus:abacus@127.0.0.1:${port}/postgres`;
-  await ensurePostgresDatabase(adminConnectionString, "abacus");
-  const connectionString = `postgres://abacus:abacus@127.0.0.1:${port}/abacus`;
+  const adminConnectionString = `postgres://runeach:runeach@127.0.0.1:${port}/postgres`;
+  await ensurePostgresDatabase(adminConnectionString, "runeach");
+  const connectionString = `postgres://runeach:runeach@127.0.0.1:${port}/runeach`;
   await applyPendingMigrations(connectionString);
   return { connectionString, instance, dataDir };
 }
@@ -173,7 +173,7 @@ describe("heartbeat orphaned process recovery", () => {
 
     await db.insert(companies).values({
       id: companyId,
-      name: "Abacus",
+      name: "RunEach",
       issuePrefix,
       requireBoardApprovalForNewAgents: false,
     });

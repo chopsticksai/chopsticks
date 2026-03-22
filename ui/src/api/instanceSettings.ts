@@ -3,7 +3,7 @@ import type {
   InstanceGeneralSettings,
   PatchInstanceGeneralSettings,
   PatchInstanceExperimentalSettings,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { api } from "./client";
 
 export const instanceSettingsApi = {

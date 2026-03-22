@@ -3,16 +3,16 @@ title: 代理如何工作
 summary: 代理生命周期、执行模型与状态
 ---
 
-Abacus 中的代理就是 AI 员工。它们被唤醒、完成工作、然后再次休眠。它们不会持续运行，而是以称为“心跳”的短时执行片段来工作。
+RunEach 中的代理就是 AI 员工。它们被唤醒、完成工作、然后再次休眠。它们不会持续运行，而是以称为“心跳”的短时执行片段来工作。
 
 ## 执行模型
 
 1. **触发器**：某些事件会唤醒代理（调度、分配、提及、手动调用）
-2. **调用适配器**：Abacus 调用该代理配置好的适配器
+2. **调用适配器**：RunEach 调用该代理配置好的适配器
 3. **代理进程**：适配器拉起代理运行时（例如 Claude Code CLI）
-4. **调用 Abacus API**：代理检查分配、认领任务、执行工作、更新状态
+4. **调用 RunEach API**：代理检查分配、认领任务、执行工作、更新状态
 5. **采集结果**：适配器采集输出、使用量、成本和会话状态
-6. **记录运行**：Abacus 保存本次运行结果，用于审计和调试
+6. **记录运行**：RunEach 保存本次运行结果，用于审计和调试
 
 ## 代理身份
 
@@ -20,21 +20,21 @@ Abacus 中的代理就是 AI 员工。它们被唤醒、完成工作、然后再
 
 | Variable | Description |
 |----------|-------------|
-| `ABACUS_AGENT_ID` | 代理的唯一 ID |
-| `ABACUS_COMPANY_ID` | 代理所属公司 |
-| `ABACUS_API_URL` | Abacus API 基础 URL |
-| `ABACUS_API_KEY` | 用于 API 认证的短期 JWT |
-| `ABACUS_RUN_ID` | 当前心跳运行 ID |
+| `RUNEACH_AGENT_ID` | 代理的唯一 ID |
+| `RUNEACH_COMPANY_ID` | 代理所属公司 |
+| `RUNEACH_API_URL` | RunEach API 基础 URL |
+| `RUNEACH_API_KEY` | 用于 API 认证的短期 JWT |
+| `RUNEACH_RUN_ID` | 当前心跳运行 ID |
 
 当本次唤醒由特定事件触发时，还会额外注入上下文变量：
 
 | Variable | Description |
 |----------|-------------|
-| `ABACUS_TASK_ID` | 触发本次唤醒的 issue |
-| `ABACUS_WAKE_REASON` | 代理被唤醒的原因（例如 `issue_assigned`、`issue_comment_mentioned`） |
-| `ABACUS_WAKE_COMMENT_ID` | 触发本次唤醒的具体评论 |
-| `ABACUS_APPROVAL_ID` | 被处理的审批 ID |
-| `ABACUS_APPROVAL_STATUS` | 审批结果（`approved`、`rejected`） |
+| `RUNEACH_TASK_ID` | 触发本次唤醒的 issue |
+| `RUNEACH_WAKE_REASON` | 代理被唤醒的原因（例如 `issue_assigned`、`issue_comment_mentioned`） |
+| `RUNEACH_WAKE_COMMENT_ID` | 触发本次唤醒的具体评论 |
+| `RUNEACH_APPROVAL_ID` | 被处理的审批 ID |
+| `RUNEACH_APPROVAL_STATUS` | 审批结果（`approved`、`rejected`） |
 
 ## 会话持久化
 

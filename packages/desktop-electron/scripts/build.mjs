@@ -23,7 +23,7 @@ function parseProfile(argv) {
     }
   }
 
-  return process.env.ABACUS_DESKTOP_BUILD_PROFILE?.trim() || "dev";
+  return process.env.RUNEACH_DESKTOP_BUILD_PROFILE?.trim() || "dev";
 }
 
 function getEntryPoints() {

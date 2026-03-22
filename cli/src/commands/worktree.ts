@@ -41,14 +41,14 @@ import {
   projects,
   runDatabaseBackup,
   runDatabaseRestore,
-} from "@abacus-lab/db";
+} from "@runeachai/db";
 import type { Command } from "commander";
-import { ensureAgentJwtSecret, loadAbacusEnvFile, mergeAbacusEnvEntries, readAbacusEnvEntries, resolveAbacusEnvFile } from "../config/env.js";
+import { ensureAgentJwtSecret, loadRunEachEnvFile, mergeRunEachEnvEntries, readRunEachEnvEntries, resolveRunEachEnvFile } from "../config/env.js";
 import { publicCliCommand } from "../config/branding.js";
-import { expandHomePrefix, resolveAbacusHomeDir } from "../config/home.js";
-import type { AbacusConfig } from "../config/schema.js";
+import { expandHomePrefix, resolveRunEachHomeDir } from "../config/home.js";
+import type { RunEachConfig } from "../config/schema.js";
 import { readConfig, resolveConfigPath, writeConfig } from "../config/store.js";
-import { printAbacusCliBanner } from "../utils/banner.js";
+import { printRunEachCliBanner } from "../utils/banner.js";
 import { resolveRuntimeLikePath } from "../utils/path-resolver.js";
 import {
   buildWorktreeConfig,
@@ -165,14 +165,14 @@ function nonEmpty(value: string | null | undefined): string | null {
 }
 
 function isCurrentSourceConfigPath(sourceConfigPath: string): boolean {
-  const currentConfigPath = process.env.ABACUS_CONFIG;
+  const currentConfigPath = process.env.RUNEACH_CONFIG;
   if (!currentConfigPath || currentConfigPath.trim().length === 0) {
     return false;
   }
   return path.resolve(currentConfigPath) === path.resolve(sourceConfigPath);
 }
 
-const WORKTREE_NAME_PREFIX = "abacus-";
+const WORKTREE_NAME_PREFIX = "runeach-";
 
 function resolveWorktreeMakeName(name: string): string {
   const value = nonEmpty(name);
@@ -191,11 +191,11 @@ function resolveWorktreeMakeName(name: string): string {
 }
 
 function resolveWorktreeHome(explicit?: string): string {
-  return explicit ?? process.env.ABACUS_WORKTREES_DIR ?? DEFAULT_WORKTREE_HOME;
+  return explicit ?? process.env.RUNEACH_WORKTREES_DIR ?? DEFAULT_WORKTREE_HOME;
 }
 
 function resolveWorktreeStartPoint(explicit?: string): string | undefined {
-  return explicit ?? nonEmpty(process.env.ABACUS_WORKTREE_START_POINT) ?? undefined;
+  return explicit ?? nonEmpty(process.env.RUNEACH_WORKTREE_START_POINT) ?? undefined;
 }
 
 type ConfiguredStorage = {
@@ -274,7 +274,7 @@ function buildS3ObjectKey(prefix: string, objectKey: string): string {
 
 const dynamicImport = new Function("specifier", "return import(specifier);") as (specifier: string) => Promise<any>;
 
-function createConfiguredStorageFromAbacusConfig(config: AbacusConfig): ConfiguredStorage {
+function createConfiguredStorageFromRunEachConfig(config: RunEachConfig): ConfiguredStorage {
   if (config.storage.provider === "local_disk") {
     const baseDir = expandHomePrefix(config.storage.localDisk.baseDir);
     return {
@@ -343,7 +343,7 @@ function openConfiguredStorage(configPath: string): ConfiguredStorage {
   if (!config) {
     throw new Error(`Config not found at ${configPath}.`);
   }
-  return createConfiguredStorageFromAbacusConfig(config);
+  return createConfiguredStorageFromRunEachConfig(config);
 }
 
 async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
@@ -664,12 +664,12 @@ export function resolveSourceConfigPath(opts: WorktreeInitOptions): string {
   }
   const sourceHome = opts.fromDataDir
     ? path.resolve(expandHomePrefix(opts.fromDataDir))
-    : resolveAbacusHomeDir();
+    : resolveRunEachHomeDir();
   const sourceInstanceId = sanitizeWorktreeInstanceId(opts.fromInstance ?? "default");
   return path.resolve(sourceHome, "instances", sourceInstanceId, "config.json");
 }
 
-function resolveSourceConnectionString(config: AbacusConfig, envEntries: Record<string, string>, portOverride?: number): string {
+function resolveSourceConnectionString(config: RunEachConfig, envEntries: Record<string, string>, portOverride?: number): string {
   if (config.database.mode === "postgres") {
     const connectionString = nonEmpty(envEntries.DATABASE_URL) ?? nonEmpty(config.database.connectionString);
     if (!connectionString) {
@@ -681,12 +681,12 @@ function resolveSourceConnectionString(config: AbacusConfig, envEntries: Record<
   }
 
   const port = portOverride ?? config.database.embeddedPostgresPort;
-  return `postgres://abacus:abacus@127.0.0.1:${port}/abacus`;
+  return `postgres://runeach:runeach@127.0.0.1:${port}/runeach`;
 }
 
 export function copySeededSecretsKey(input: {
   sourceConfigPath: string;
-  sourceConfig: AbacusConfig;
+  sourceConfig: RunEachConfig;
   sourceEnvEntries: Record<string, string>;
   targetKeyFilePath: string;
 }): void {
@@ -698,8 +698,8 @@ export function copySeededSecretsKey(input: {
 
   const allowProcessEnvFallback = isCurrentSourceConfigPath(input.sourceConfigPath);
   const sourceInlineMasterKey =
-    nonEmpty(input.sourceEnvEntries.ABACUS_SECRETS_MASTER_KEY) ??
-    (allowProcessEnvFallback ? nonEmpty(process.env.ABACUS_SECRETS_MASTER_KEY) : null);
+    nonEmpty(input.sourceEnvEntries.RUNEACH_SECRETS_MASTER_KEY) ??
+    (allowProcessEnvFallback ? nonEmpty(process.env.RUNEACH_SECRETS_MASTER_KEY) : null);
   if (sourceInlineMasterKey) {
     writeFileSync(input.targetKeyFilePath, sourceInlineMasterKey, {
       encoding: "utf8",
@@ -714,8 +714,8 @@ export function copySeededSecretsKey(input: {
   }
 
   const sourceKeyFileOverride =
-    nonEmpty(input.sourceEnvEntries.ABACUS_SECRETS_MASTER_KEY_FILE) ??
-    (allowProcessEnvFallback ? nonEmpty(process.env.ABACUS_SECRETS_MASTER_KEY_FILE) : null);
+    nonEmpty(input.sourceEnvEntries.RUNEACH_SECRETS_MASTER_KEY_FILE) ??
+    (allowProcessEnvFallback ? nonEmpty(process.env.RUNEACH_SECRETS_MASTER_KEY_FILE) : null);
   const sourceConfiguredKeyPath = sourceKeyFileOverride ?? input.sourceConfig.secrets.localEncrypted.keyFilePath;
   const sourceKeyFilePath = resolveRuntimeLikePath(sourceConfiguredKeyPath, input.sourceConfigPath);
 
@@ -758,8 +758,8 @@ async function ensureEmbeddedPostgres(dataDir: string, preferredPort: number): P
   const port = await findAvailablePort(preferredPort);
   const instance = new EmbeddedPostgres({
     databaseDir: dataDir,
-    user: "abacus",
-    password: "abacus",
+    user: "runeach",
+    password: "runeach",
     port,
     persistent: true,
     initdbFlags: ["--encoding=UTF8", "--locale=C"],
@@ -786,15 +786,15 @@ async function ensureEmbeddedPostgres(dataDir: string, preferredPort: number): P
 
 async function seedWorktreeDatabase(input: {
   sourceConfigPath: string;
-  sourceConfig: AbacusConfig;
-  targetConfig: AbacusConfig;
+  sourceConfig: RunEachConfig;
+  targetConfig: RunEachConfig;
   targetPaths: WorktreeLocalPaths;
   instanceId: string;
   seedMode: WorktreeSeedMode;
 }): Promise<SeedWorktreeDatabaseResult> {
   const seedPlan = resolveWorktreeSeedPlan(input.seedMode);
-  const sourceEnvFile = resolveAbacusEnvFile(input.sourceConfigPath);
-  const sourceEnvEntries = readAbacusEnvEntries(sourceEnvFile);
+  const sourceEnvFile = resolveRunEachEnvFile(input.sourceConfigPath);
+  const sourceEnvEntries = readRunEachEnvEntries(sourceEnvFile);
   copySeededSecretsKey({
     sourceConfigPath: input.sourceConfigPath,
     sourceConfig: input.sourceConfig,
@@ -831,9 +831,9 @@ async function seedWorktreeDatabase(input: {
       input.targetConfig.database.embeddedPostgresPort,
     );
 
-    const adminConnectionString = `postgres://abacus:abacus@127.0.0.1:${targetHandle.port}/postgres`;
-    await ensurePostgresDatabase(adminConnectionString, "abacus");
-    const targetConnectionString = `postgres://abacus:abacus@127.0.0.1:${targetHandle.port}/abacus`;
+    const adminConnectionString = `postgres://runeach:runeach@127.0.0.1:${targetHandle.port}/postgres`;
+    await ensurePostgresDatabase(adminConnectionString, "runeach");
+    const targetConnectionString = `postgres://runeach:runeach@127.0.0.1:${targetHandle.port}/runeach`;
     await runDatabaseRestore({
       connectionString: targetConnectionString,
       backupFile: backup.backupFile,
@@ -904,19 +904,19 @@ async function runWorktreeInit(opts: WorktreeInitOptions): Promise<void> {
   });
 
   writeConfig(targetConfig, paths.configPath);
-  const sourceEnvEntries = readAbacusEnvEntries(resolveAbacusEnvFile(sourceConfigPath));
+  const sourceEnvEntries = readRunEachEnvEntries(resolveRunEachEnvFile(sourceConfigPath));
   const existingAgentJwtSecret =
-    nonEmpty(sourceEnvEntries.ABACUS_AGENT_JWT_SECRET) ??
-    nonEmpty(process.env.ABACUS_AGENT_JWT_SECRET);
-  mergeAbacusEnvEntries(
+    nonEmpty(sourceEnvEntries.RUNEACH_AGENT_JWT_SECRET) ??
+    nonEmpty(process.env.RUNEACH_AGENT_JWT_SECRET);
+  mergeRunEachEnvEntries(
     {
       ...buildWorktreeEnvEntries(paths, branding),
-      ...(existingAgentJwtSecret ? { ABACUS_AGENT_JWT_SECRET: existingAgentJwtSecret } : {}),
+      ...(existingAgentJwtSecret ? { RUNEACH_AGENT_JWT_SECRET: existingAgentJwtSecret } : {}),
     },
     paths.envPath,
   );
   ensureAgentJwtSecret(paths.configPath);
-  loadAbacusEnvFile(paths.configPath);
+  loadRunEachEnvFile(paths.configPath);
   const copiedGitHooks = copyGitHooksToWorktreeGitDir(cwd);
 
   let seedSummary: string | null = null;
@@ -969,19 +969,19 @@ async function runWorktreeInit(opts: WorktreeInitOptions): Promise<void> {
   }
   p.outro(
     pc.green(
-      `Worktree ready. Run Abacus inside this repo and the CLI/server will use ${paths.instanceId} automatically.`,
+      `Worktree ready. Run RunEach inside this repo and the CLI/server will use ${paths.instanceId} automatically.`,
     ),
   );
 }
 
 export async function worktreeInitCommand(opts: WorktreeInitOptions): Promise<void> {
-  printAbacusCliBanner();
+  printRunEachCliBanner();
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("worktree init")} `)));
   await runWorktreeInit(opts);
 }
 
 export async function worktreeMakeCommand(nameArg: string, opts: WorktreeMakeOptions): Promise<void> {
-  printAbacusCliBanner();
+  printRunEachCliBanner();
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("worktree:make")} `)));
 
   const name = resolveWorktreeMakeName(nameArg);
@@ -1071,7 +1071,7 @@ type MergeSourceChoice = {
   worktree: string;
   branch: string | null;
   branchLabel: string;
-  hasAbacusConfig: boolean;
+  hasRunEachConfig: boolean;
   isCurrent: boolean;
 };
 
@@ -1129,7 +1129,7 @@ function toMergeSourceChoices(cwd: string): MergeSourceChoice[] {
       worktree: worktreePath,
       branch: entry.branch,
       branchLabel,
-      hasAbacusConfig: existsSync(path.resolve(worktreePath, ".abacus", "config.json")),
+      hasRunEachConfig: existsSync(path.resolve(worktreePath, ".runeach", "config.json")),
       isCurrent: worktreePath === currentCwd,
     };
   });
@@ -1175,7 +1175,7 @@ function worktreePathHasUncommittedChanges(worktreePath: string): boolean {
 }
 
 export async function worktreeCleanupCommand(nameArg: string, opts: WorktreeCleanupOptions): Promise<void> {
-  printAbacusCliBanner();
+  printRunEachCliBanner();
   p.intro(pc.bgCyan(pc.black(` ${publicCliCommand("worktree:cleanup")} `)));
 
   const name = resolveWorktreeMakeName(nameArg);
@@ -1312,13 +1312,13 @@ export async function worktreeCleanupCommand(nameArg: string, opts: WorktreeClea
 
 export async function worktreeEnvCommand(opts: WorktreeEnvOptions): Promise<void> {
   const configPath = resolveConfigPath(opts.config);
-  const envPath = resolveAbacusEnvFile(configPath);
-  const envEntries = readAbacusEnvEntries(envPath);
+  const envPath = resolveRunEachEnvFile(configPath);
+  const envEntries = readRunEachEnvEntries(envPath);
   const out = {
-    ABACUS_CONFIG: configPath,
-    ...(envEntries.ABACUS_HOME ? { ABACUS_HOME: envEntries.ABACUS_HOME } : {}),
-    ...(envEntries.ABACUS_INSTANCE_ID ? { ABACUS_INSTANCE_ID: envEntries.ABACUS_INSTANCE_ID } : {}),
-    ...(envEntries.ABACUS_CONTEXT ? { ABACUS_CONTEXT: envEntries.ABACUS_CONTEXT } : {}),
+    RUNEACH_CONFIG: configPath,
+    ...(envEntries.RUNEACH_HOME ? { RUNEACH_HOME: envEntries.RUNEACH_HOME } : {}),
+    ...(envEntries.RUNEACH_INSTANCE_ID ? { RUNEACH_INSTANCE_ID: envEntries.RUNEACH_INSTANCE_ID } : {}),
+    ...(envEntries.RUNEACH_CONTEXT ? { RUNEACH_CONTEXT: envEntries.RUNEACH_CONTEXT } : {}),
     ...envEntries,
   };
 
@@ -1367,8 +1367,8 @@ function resolveAttachmentLookupStorages(input: {
     resolveCurrentEndpoint().configPath,
     input.targetEndpoint.configPath,
     ...toMergeSourceChoices(process.cwd())
-      .filter((choice) => choice.hasAbacusConfig)
-      .map((choice) => path.resolve(choice.worktree, ".abacus", "config.json")),
+      .filter((choice) => choice.hasRunEachConfig)
+      .map((choice) => path.resolve(choice.worktree, ".runeach", "config.json")),
   ];
   const seen = new Set<string>();
   const storages: ConfiguredStorage[] = [];
@@ -1386,7 +1386,7 @@ async function openConfiguredDb(configPath: string): Promise<OpenDbHandle> {
   if (!config) {
     throw new Error(`Config not found at ${configPath}.`);
   }
-  const envEntries = readAbacusEnvEntries(resolveAbacusEnvFile(configPath));
+  const envEntries = readRunEachEnvEntries(resolveRunEachEnvFile(configPath));
   let embeddedHandle: EmbeddedPostgresHandle | null = null;
 
   try {
@@ -1404,7 +1404,7 @@ async function openConfiguredDb(configPath: string): Promise<OpenDbHandle> {
           ? ` Pending migrations: ${migrationState.pendingMigrations.join(", ")}.`
           : "";
       throw new Error(
-        `Database for ${configPath} is not up to date.${pending} Run \`pnpm db:migrate\` (or start Abacus once) before using worktree merge history.`,
+        `Database for ${configPath} is not up to date.${pending} Run \`pnpm db:migrate\` (or start RunEach once) before using worktree merge history.`,
       );
     }
     const db = createDb(connectionString) as ClosableDb;
@@ -1875,7 +1875,7 @@ export async function worktreeListCommand(opts: WorktreeListOptions): Promise<vo
   for (const choice of choices) {
     const flags = [
       choice.isCurrent ? "current" : null,
-      choice.hasAbacusConfig ? "abacus" : "no-abacus-config",
+      choice.hasRunEachConfig ? "runeach" : "no-runeach-config",
     ].filter((value): value is string => value !== null);
     p.log.message(`${choice.branchLabel}  ${choice.worktree}  [${flags.join(", ")}]`);
   }
@@ -1887,7 +1887,7 @@ function resolveEndpointFromChoice(choice: MergeSourceChoice): ResolvedWorktreeE
   }
   return {
     rootPath: choice.worktree,
-    configPath: path.resolve(choice.worktree, ".abacus", "config.json"),
+    configPath: path.resolve(choice.worktree, ".runeach", "config.json"),
     label: choice.branchLabel,
     isCurrent: false,
   };
@@ -1914,9 +1914,9 @@ function resolveWorktreeEndpointFromSelector(
     if (allowCurrent && directPath === currentEndpoint.rootPath) {
       return currentEndpoint;
     }
-    const configPath = path.resolve(directPath, ".abacus", "config.json");
+    const configPath = path.resolve(directPath, ".runeach", "config.json");
     if (!existsSync(configPath)) {
-      throw new Error(`Resolved worktree path ${directPath} does not contain .abacus/config.json.`);
+      throw new Error(`Resolved worktree path ${directPath} does not contain .runeach/config.json.`);
     }
     return {
       rootPath: directPath,
@@ -1937,8 +1937,8 @@ function resolveWorktreeEndpointFromSelector(
       `Could not resolve worktree "${selector}". Use a path, a listed worktree directory name, branch name, or "current".`,
     );
   }
-  if (!matched.hasAbacusConfig && !matched.isCurrent) {
-    throw new Error(`Resolved worktree "${selector}" does not look like a Abacus worktree.`);
+  if (!matched.hasRunEachConfig && !matched.isCurrent) {
+    throw new Error(`Resolved worktree "${selector}" does not look like a RunEach worktree.`);
   }
   return resolveEndpointFromChoice(matched);
 }
@@ -1947,7 +1947,7 @@ async function promptForSourceEndpoint(excludeWorktreePath?: string): Promise<Re
   const excluded = excludeWorktreePath ? path.resolve(excludeWorktreePath) : null;
   const currentEndpoint = resolveCurrentEndpoint();
   const choices = toMergeSourceChoices(process.cwd())
-    .filter((choice) => choice.hasAbacusConfig || choice.isCurrent)
+    .filter((choice) => choice.hasRunEachConfig || choice.isCurrent)
     .filter((choice) => path.resolve(choice.worktree) !== excluded)
     .map((choice) => ({
       value: choice.isCurrent ? "__current__" : choice.worktree,
@@ -1955,7 +1955,7 @@ async function promptForSourceEndpoint(excludeWorktreePath?: string): Promise<Re
       hint: `${choice.worktree}${choice.isCurrent ? " (current)" : ""}`,
     }));
   if (choices.length === 0) {
-    throw new Error("No Abacus worktrees were found. Run `abacus-lab worktree:list` to inspect the repo worktrees.");
+    throw new Error("No RunEach worktrees were found. Run `runeachai worktree:list` to inspect the repo worktrees.");
   }
   const selection = await p.select<string>({
     message: "Choose the source worktree to import from",
@@ -2309,7 +2309,7 @@ export async function worktreeMergeHistoryCommand(sourceArg: string | undefined,
       : await promptForSourceEndpoint(targetEndpoint.rootPath);
 
   if (path.resolve(sourceEndpoint.configPath) === path.resolve(targetEndpoint.configPath)) {
-    throw new Error("Source and target Abacus configs are the same. Choose different --from/--to worktrees.");
+    throw new Error("Source and target RunEach configs are the same. Choose different --from/--to worktrees.");
   }
 
   const scopes = parseWorktreeMergeScopes(opts.scope);
@@ -2395,17 +2395,17 @@ export async function worktreeMergeHistoryCommand(sourceArg: string | undefined,
 }
 
 export function registerWorktreeCommands(program: Command): void {
-  const worktree = program.command("worktree").description("Worktree-local Abacus instance helpers");
+  const worktree = program.command("worktree").description("Worktree-local RunEach instance helpers");
 
   program
     .command("worktree:make")
-    .description("Create ~/NAME as a git worktree, then initialize an isolated Abacus instance inside it")
-    .argument("<name>", "Worktree name — auto-prefixed with abacus- if needed (created at ~/abacus-NAME)")
-    .option("--start-point <ref>", "Remote ref to base the new branch on (env: ABACUS_WORKTREE_START_POINT)")
+    .description("Create ~/NAME as a git worktree, then initialize an isolated RunEach instance inside it")
+    .argument("<name>", "Worktree name — auto-prefixed with runeach- if needed (created at ~/runeach-NAME)")
+    .option("--start-point <ref>", "Remote ref to base the new branch on (env: RUNEACH_WORKTREE_START_POINT)")
     .option("--instance <id>", "Explicit isolated instance id")
-    .option("--home <path>", `Home root for worktree instances (env: ABACUS_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
+    .option("--home <path>", `Home root for worktree instances (env: RUNEACH_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
     .option("--from-config <path>", "Source config.json to seed from")
-    .option("--from-data-dir <path>", "Source ABACUS_HOME used when deriving the source config")
+    .option("--from-data-dir <path>", "Source RUNEACH_HOME used when deriving the source config")
     .option("--from-instance <id>", "Source instance id when deriving the source config", "default")
     .option("--server-port <port>", "Preferred server port", (value) => Number(value))
     .option("--db-port <port>", "Preferred embedded Postgres port", (value) => Number(value))
@@ -2419,9 +2419,9 @@ export function registerWorktreeCommands(program: Command): void {
     .description("Create repo-local config/env and an isolated instance for this worktree")
     .option("--name <name>", "Display name used to derive the instance id")
     .option("--instance <id>", "Explicit isolated instance id")
-    .option("--home <path>", `Home root for worktree instances (env: ABACUS_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
+    .option("--home <path>", `Home root for worktree instances (env: RUNEACH_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
     .option("--from-config <path>", "Source config.json to seed from")
-    .option("--from-data-dir <path>", "Source ABACUS_HOME used when deriving the source config")
+    .option("--from-data-dir <path>", "Source RUNEACH_HOME used when deriving the source config")
     .option("--from-instance <id>", "Source instance id when deriving the source config", "default")
     .option("--server-port <port>", "Preferred server port", (value) => Number(value))
     .option("--db-port <port>", "Preferred embedded Postgres port", (value) => Number(value))
@@ -2432,14 +2432,14 @@ export function registerWorktreeCommands(program: Command): void {
 
   worktree
     .command("env")
-    .description("Print shell exports for the current worktree-local Abacus instance")
+    .description("Print shell exports for the current worktree-local RunEach instance")
     .option("-c, --config <path>", "Path to config file")
     .option("--json", "Print JSON instead of shell exports")
     .action(worktreeEnvCommand);
 
   program
     .command("worktree:list")
-    .description("List git worktrees visible from this repo and whether they look like Abacus worktrees")
+    .description("List git worktrees visible from this repo and whether they look like RunEach worktrees")
     .option("--json", "Print JSON instead of text output")
     .action(worktreeListCommand);
 
@@ -2459,9 +2459,9 @@ export function registerWorktreeCommands(program: Command): void {
   program
     .command("worktree:cleanup")
     .description("Safely remove a worktree, its branch, and its isolated instance data")
-    .argument("<name>", "Worktree name — auto-prefixed with abacus- if needed")
+    .argument("<name>", "Worktree name — auto-prefixed with runeach- if needed")
     .option("--instance <id>", "Explicit instance id (if different from the worktree name)")
-    .option("--home <path>", `Home root for worktree instances (env: ABACUS_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
+    .option("--home <path>", `Home root for worktree instances (env: RUNEACH_WORKTREES_DIR, default: ${DEFAULT_WORKTREE_HOME})`)
     .option("--force", "Bypass safety checks (uncommitted changes, unique commits)", false)
     .action(worktreeCleanupCommand);
 }

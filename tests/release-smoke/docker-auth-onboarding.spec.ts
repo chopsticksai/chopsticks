@@ -1,13 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const ADMIN_EMAIL =
-  process.env.ABACUS_RELEASE_SMOKE_EMAIL ??
+  process.env.RUNEACH_RELEASE_SMOKE_EMAIL ??
   process.env.SMOKE_ADMIN_EMAIL ??
-  "smoke-admin@abacus.local";
+  "smoke-admin@runeach.local";
 const ADMIN_PASSWORD =
-  process.env.ABACUS_RELEASE_SMOKE_PASSWORD ??
+  process.env.RUNEACH_RELEASE_SMOKE_PASSWORD ??
   process.env.SMOKE_ADMIN_PASSWORD ??
-  "abacus-smoke-password";
+  "runeach-smoke-password";
 
 const COMPANY_NAME = `Release-Smoke-${Date.now()}`;
 const AGENT_NAME = "CEO";

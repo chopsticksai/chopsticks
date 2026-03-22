@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   agentSkillEntrySchema,
   agentSkillSnapshotSchema,
-} from "@abacus-lab/shared/validators/adapter-skills";
+} from "@runeachai/shared/validators/adapter-skills";
 
 describe("agent skill contract", () => {
   it("accepts optional provenance metadata on skill entries", () => {
@@ -16,7 +16,7 @@ describe("agent skill contract", () => {
       originLabel: "User-installed",
       locationLabel: "~/.claude/skills",
       readOnly: true,
-      detail: "Installed outside Abacus management.",
+      detail: "Installed outside RunEach management.",
     })).toMatchObject({
       origin: "user_installed",
       locationLabel: "~/.claude/skills",
@@ -31,8 +31,8 @@ describe("agent skill contract", () => {
       mode: "ephemeral",
       desiredSkills: [],
       entries: [{
-        key: "abacus-lab/abacus/abacus",
-        runtimeName: "abacus",
+        key: "runeachai/runeach/runeach",
+        runtimeName: "runeach",
         desired: true,
         managed: true,
         state: "configured",
@@ -41,7 +41,7 @@ describe("agent skill contract", () => {
     })).toMatchObject({
       adapterType: "claude_local",
       entries: [{
-        key: "abacus-lab/abacus/abacus",
+        key: "runeachai/runeach/runeach",
         state: "configured",
       }],
     });

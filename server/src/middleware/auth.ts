@@ -1,10 +1,10 @@
 import { createHash } from "node:crypto";
 import type { Request, RequestHandler } from "express";
 import { and, eq, isNull } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
-import { agentApiKeys, agents, companyMemberships, instanceUserRoles } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
+import { agentApiKeys, agents, companyMemberships, instanceUserRoles } from "@runeachai/db";
 import { verifyLocalAgentJwt } from "../agent-auth-jwt.js";
-import type { DeploymentMode } from "@abacus-lab/shared";
+import type { DeploymentMode } from "@runeachai/shared";
 import type { BetterAuthSessionResult } from "../auth/better-auth.js";
 import { logger } from "./logger.js";
 
@@ -24,7 +24,7 @@ export function actorMiddleware(db: Db, opts: ActorMiddlewareOptions): RequestHa
         ? { type: "board", userId: "local-board", isInstanceAdmin: true, source: "local_implicit" }
         : { type: "none", source: "none" };
 
-    const runIdHeader = req.header("x-abacus-run-id");
+    const runIdHeader = req.header("x-runeach-run-id");
 
     const authHeader = req.header("authorization");
     if (!authHeader?.toLowerCase().startsWith("bearer ")) {

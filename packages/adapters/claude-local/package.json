@@ -1,14 +1,14 @@
 {
-  "name": "@abacus-lab/adapter-claude-local",
+  "name": "@runeachai/adapter-claude-local",
   "version": "0.3.1",
   "license": "MIT",
-  "homepage": "https://github.com/abacus-lab/abacus",
+  "homepage": "https://github.com/runeachai/runeach",
   "bugs": {
-    "url": "https://github.com/abacus-lab/abacus/issues"
+    "url": "https://github.com/runeachai/runeach/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/abacus-lab/abacus",
+    "url": "https://github.com/runeachai/runeach",
     "directory": "packages/adapters/claude-local"
   },
   "type": "module",
@@ -53,7 +53,7 @@
     "probe:quota:raw": "pnpm exec tsx src/cli/quota-probe.ts --json --raw-cli"
   },
   "dependencies": {
-    "@abacus-lab/adapter-utils": "workspace:*",
+    "@runeachai/adapter-utils": "workspace:*",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {

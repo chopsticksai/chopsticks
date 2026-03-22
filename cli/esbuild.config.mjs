@@ -1,7 +1,7 @@
 /**
- * esbuild configuration for building the abacus CLI for npm.
+ * esbuild configuration for building the runeach CLI for npm.
  *
- * Bundles all workspace packages (@abacus-lab/*) into a single file.
+ * Bundles all workspace packages (@runeachai/*) into a single file.
  * External npm packages remain as regular dependencies.
  */
 
@@ -25,9 +25,9 @@ const workspacePaths = [
 ];
 
 // Workspace packages that should NOT be bundled — they'll be published
-// to npm and resolved at runtime (e.g. @abacus-lab/server uses dynamic import).
+// to npm and resolved at runtime (e.g. @runeachai/server uses dynamic import).
 const externalWorkspacePackages = new Set([
-  "@abacus-lab/server",
+  "@runeachai/server",
 ]);
 
 // Collect all external (non-workspace) npm package names
@@ -37,7 +37,7 @@ for (const p of workspacePaths) {
   for (const name of Object.keys(pkg.dependencies || {})) {
     if (externalWorkspacePackages.has(name)) {
       externals.add(name);
-    } else if (!name.startsWith("@abacus-lab/")) {
+    } else if (!name.startsWith("@runeachai/")) {
       externals.add(name);
     }
   }

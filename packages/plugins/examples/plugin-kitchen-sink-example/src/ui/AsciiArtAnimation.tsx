@@ -4,7 +4,7 @@ const CHARS = [" ", ".", "·", "▪", "▫", "○"] as const;
 const TARGET_FPS = 24;
 const FRAME_INTERVAL_MS = 1000 / TARGET_FPS;
 
-const ABACUS_SPRITES = [
+const RUNEACH_SPRITES = [
   [
     "  ╭────╮ ",
     " ╭╯╭──╮│ ",
@@ -27,7 +27,7 @@ const ABACUS_SPRITES = [
   ],
 ] as const;
 
-type AbacusSprite = (typeof ABACUS_SPRITES)[number];
+type RunEachSprite = (typeof RUNEACH_SPRITES)[number];
 
 interface Clip {
   x: number;
@@ -37,7 +37,7 @@ interface Clip {
   life: number;
   maxLife: number;
   drift: number;
-  sprite: AbacusSprite;
+  sprite: RunEachSprite;
   width: number;
   height: number;
 }
@@ -53,7 +53,7 @@ function measureChar(container: HTMLElement): { w: number; h: number } {
   return { w: rect.width, h: rect.height };
 }
 
-function spriteSize(sprite: AbacusSprite): { width: number; height: number } {
+function spriteSize(sprite: RunEachSprite): { width: number; height: number } {
   let width = 0;
   for (const row of sprite) width = Math.max(width, row.length);
   return { width, height: sprite.length };
@@ -130,7 +130,7 @@ export function AsciiArtAnimation() {
       for (let baseRow = 1; baseRow < rows - 9; baseRow += gapY) {
         const startX = Math.floor(baseRow / gapY) % 2 === 0 ? 2 : 10;
         for (let baseCol = startX; baseCol < cols - 10; baseCol += gapX) {
-          const sprite = ABACUS_SPRITES[(baseCol + baseRow) % ABACUS_SPRITES.length]!;
+          const sprite = RUNEACH_SPRITES[(baseCol + baseRow) % RUNEACH_SPRITES.length]!;
           for (let sr = 0; sr < sprite.length; sr++) {
             const line = sprite[sr]!;
             for (let sc = 0; sc < line.length; sc++) {
@@ -151,7 +151,7 @@ export function AsciiArtAnimation() {
     }
 
     function spawnClip() {
-      const sprite = ABACUS_SPRITES[Math.floor(Math.random() * ABACUS_SPRITES.length)]!;
+      const sprite = RUNEACH_SPRITES[Math.floor(Math.random() * RUNEACH_SPRITES.length)]!;
       const size = spriteSize(sprite);
       const edge = Math.random();
       let x = 0;

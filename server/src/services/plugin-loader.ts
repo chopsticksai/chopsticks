@@ -4,8 +4,8 @@
  * This service is the entry point for the plugin system's I/O boundary:
  *
  * 1. **Discovery** — Scans the local plugin directory
- *    (`~/.abacus/plugins/`) and `node_modules` for packages matching
- *    the `abacus-plugin-*` naming convention. Aggregates results with
+ *    (`~/.runeach/plugins/`) and `node_modules` for packages matching
+ *    the `runeach-plugin-*` naming convention. Aggregates results with
  *    path-based deduplication.
  *
  * 2. **Installation** — `installPlugin()` downloads from npm (or reads a
@@ -31,13 +31,13 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import type { Db } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
 import type {
-  AbacusPluginManifestV1,
+  RunEachPluginManifestV1,
   PluginLauncherDeclaration,
   PluginRecord,
   PluginUiSlotDeclaration,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { logger } from "../middleware/logger.js";
 import { pluginManifestValidator } from "./plugin-manifest-validator.js";
 import { pluginCapabilityValidator } from "./plugin-capability-validator.js";
@@ -57,12 +57,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // ---------------------------------------------------------------------------
 
 /**
- * Naming convention for npm-published Abacus plugins.
- * Packages matching this pattern are considered Abacus plugins.
+ * Naming convention for npm-published RunEach plugins.
+ * Packages matching this pattern are considered RunEach plugins.
  *
  * @see PLUGIN_SPEC.md §10 — Package Contract
  */
-export const NPM_PLUGIN_PACKAGE_PREFIX = "abacus-plugin-";
+export const NPM_PLUGIN_PACKAGE_PREFIX = "runeach-plugin-";
 
 /**
  * Default local plugin directory.  The loader scans this directory for
@@ -72,7 +72,7 @@ export const NPM_PLUGIN_PACKAGE_PREFIX = "abacus-plugin-";
  */
 export const DEFAULT_LOCAL_PLUGIN_DIR = path.join(
   os.homedir(),
-  ".abacus",
+  ".runeach",
   "plugins",
 );
 
@@ -95,7 +95,7 @@ export interface DiscoveredPlugin {
   /** Source that found this package. */
   source: PluginSource;
   /** The parsed and validated manifest if available, null if discovery-only. */
-  manifest: AbacusPluginManifestV1 | null;
+  manifest: RunEachPluginManifestV1 | null;
 }
 
 /**
@@ -104,8 +104,8 @@ export interface DiscoveredPlugin {
  * @see PLUGIN_SPEC.md §8.1 — On-Disk Layout
  */
 export type PluginSource =
-  | "local-filesystem"  // ~/.abacus/plugins/ local directory
-  | "npm"               // npm packages matching abacus-plugin-* convention
+  | "local-filesystem"  // ~/.runeach/plugins/ local directory
+  | "npm"               // npm packages matching runeach-plugin-* convention
   | "registry";         // future: remote plugin registry URL
 
 type ParsedSemver = {
@@ -127,7 +127,7 @@ export interface PluginDiscoveryResult {
   sources: PluginSource[];
 }
 
-function getDeclaredPageRoutePaths(manifest: AbacusPluginManifestV1): string[] {
+function getDeclaredPageRoutePaths(manifest: RunEachPluginManifestV1): string[] {
   return (manifest.ui?.slots ?? [])
     .filter((slot): slot is PluginUiSlotDeclaration => slot.type === "page" && typeof slot.routePath === "string" && slot.routePath.length > 0)
     .map((slot) => slot.routePath!);
@@ -143,7 +143,7 @@ function getDeclaredPageRoutePaths(manifest: AbacusPluginManifestV1): string[] {
 export interface PluginLoaderOptions {
   /**
    * Path to the local plugin directory to scan.
-   * Defaults to ~/.abacus/plugins/
+   * Defaults to ~/.runeach/plugins/
    */
   localPluginDir?: string;
 
@@ -154,7 +154,7 @@ export interface PluginLoaderOptions {
   enableLocalFilesystem?: boolean;
 
   /**
-   * Whether to discover installed npm packages matching the abacus-plugin-*
+   * Whether to discover installed npm packages matching the runeach-plugin-*
    * naming convention.
    * Defaults to true.
    */
@@ -177,7 +177,7 @@ export interface PluginLoaderOptions {
  */
 export interface PluginInstallOptions {
   /**
-   * npm package name to install (e.g. "abacus-plugin-linear" or "@acme/plugin-linear").
+   * npm package name to install (e.g. "runeach-plugin-linear" or "@acme/plugin-linear").
    * Either packageName or localPath must be set.
    */
   packageName?: string;
@@ -236,7 +236,7 @@ export interface PluginRuntimeServices {
    * events.emit, config.get). Each plugin gets its own set of handlers
    * scoped to its capabilities and plugin ID.
    */
-  buildHostHandlers: (pluginId: string, manifest: AbacusPluginManifestV1) => WorkerToHostHandlers;
+  buildHostHandlers: (pluginId: string, manifest: RunEachPluginManifestV1) => WorkerToHostHandlers;
   /**
    * Host instance information passed to the worker during initialization.
    * Includes the instance ID and host version.
@@ -336,8 +336,8 @@ export interface PluginLoader {
   discoverFromLocalFilesystem(dir?: string): Promise<PluginDiscoveryResult>;
 
   /**
-   * Discover Abacus plugins installed as npm packages in the current
-   * Node.js environment matching the "abacus-plugin-*" naming convention.
+   * Discover RunEach plugins installed as npm packages in the current
+   * Node.js environment matching the "runeach-plugin-*" naming convention.
    *
    * Looks for packages in node_modules that match the naming convention.
    *
@@ -349,15 +349,15 @@ export interface PluginLoader {
    * Load and parse the plugin manifest from a package directory.
    *
    * Reads the package.json, finds the manifest entrypoint declared under
-   * the "abacusPlugin.manifest" key, loads the manifest module, and
+   * the "runeachPlugin.manifest" key, loads the manifest module, and
    * validates it against the plugin manifest schema.
    *
-   * Returns null if the package is not a Abacus plugin.
-   * Throws if the package is a Abacus plugin but the manifest is invalid.
+   * Returns null if the package is not a RunEach plugin.
+   * Throws if the package is a RunEach plugin but the manifest is invalid.
    *
    * @see PLUGIN_SPEC.md §10 — Package Contract
    */
-  loadManifest(packagePath: string): Promise<AbacusPluginManifestV1 | null>;
+  loadManifest(packagePath: string): Promise<RunEachPluginManifestV1 | null>;
 
   /**
    * Install a plugin package and register it in the database.
@@ -390,8 +390,8 @@ export interface PluginLoader {
    * @see PLUGIN_SPEC.md §25.3 — Upgrade Lifecycle
    */
   upgradePlugin(pluginId: string, options: Omit<PluginInstallOptions, "installDir">): Promise<{
-    oldManifest: AbacusPluginManifestV1;
-    newManifest: AbacusPluginManifestV1;
+    oldManifest: RunEachPluginManifestV1;
+    newManifest: RunEachPluginManifestV1;
     discovered: DiscoveredPlugin;
   }>;
 
@@ -500,14 +500,14 @@ export interface PluginLoader {
 // ---------------------------------------------------------------------------
 
 /**
- * Check whether a package name matches the Abacus plugin naming convention.
- * Accepts both the "abacus-plugin-" prefix and scoped "@scope/plugin-" packages.
+ * Check whether a package name matches the RunEach plugin naming convention.
+ * Accepts both the "runeach-plugin-" prefix and scoped "@scope/plugin-" packages.
  *
  * @see PLUGIN_SPEC.md §10 — Package Contract
  */
 export function isPluginPackageName(name: string): boolean {
   if (name.startsWith(NPM_PLUGIN_PACKAGE_PREFIX)) return true;
-  // Also accept scoped packages like @acme/plugin-linear or @abacus-lab/plugin-*
+  // Also accept scoped packages like @acme/plugin-linear or @runeachai/plugin-*
   if (name.includes("/")) {
     const localPart = name.split("/")[1] ?? "";
     return localPart.startsWith("plugin-");
@@ -536,7 +536,7 @@ async function readPackageJson(
 /**
  * Resolve the manifest entrypoint from a package.json and package root.
  *
- * The spec defines a "abacusPlugin" key in package.json with a "manifest"
+ * The spec defines a "runeachPlugin" key in package.json with a "manifest"
  * subkey pointing to the manifest module.  This helper resolves the path.
  *
  * @see PLUGIN_SPEC.md §10 — Package Contract
@@ -545,13 +545,13 @@ function resolveManifestPath(
   packageRoot: string,
   pkgJson: Record<string, unknown>,
 ): string | null {
-  const abacusPlugin = pkgJson["abacusPlugin"];
+  const runeachPlugin = pkgJson["runeachPlugin"];
   if (
-    abacusPlugin !== null &&
-    typeof abacusPlugin === "object" &&
-    !Array.isArray(abacusPlugin)
+    runeachPlugin !== null &&
+    typeof runeachPlugin === "object" &&
+    !Array.isArray(runeachPlugin)
   ) {
-    const manifestRelPath = (abacusPlugin as Record<string, unknown>)[
+    const manifestRelPath = (runeachPlugin as Record<string, unknown>)[
       "manifest"
     ];
     if (typeof manifestRelPath === "string") {
@@ -639,8 +639,8 @@ function compareSemver(left: string, right: string): number {
   return 0;
 }
 
-function getMinimumHostVersion(manifest: AbacusPluginManifestV1): string | undefined {
-  return manifest.minimumHostVersion ?? manifest.minimumAbacusVersion;
+function getMinimumHostVersion(manifest: RunEachPluginManifestV1): string | undefined {
+  return manifest.minimumHostVersion ?? manifest.minimumRunEachVersion;
 }
 
 /**
@@ -651,7 +651,7 @@ function getMinimumHostVersion(manifest: AbacusPluginManifestV1): string | undef
  * `launchers` field and the preferred `ui.launchers` field.
  */
 export function getPluginUiContributionMetadata(
-  manifest: AbacusPluginManifestV1,
+  manifest: RunEachPluginManifestV1,
 ): PluginUiContributionMetadata | null {
   const slots = manifest.ui?.slots ?? [];
   const launchers = [
@@ -695,7 +695,7 @@ export function getPluginUiContributionMetadata(
  *
  * // Install a specific plugin
  * const discovered = await loader.installPlugin({
- *   packageName: "abacus-plugin-linear",
+ *   packageName: "runeach-plugin-linear",
  *   version: "^1.0.0",
  * });
  * ```
@@ -745,7 +745,7 @@ export function pluginLoader(
   const log = logger.child({ service: "plugin-loader" });
   const hostVersion = runtimeServices?.instanceInfo.hostVersion;
 
-  async function assertPageRoutePathsAvailable(manifest: AbacusPluginManifestV1): Promise<void> {
+  async function assertPageRoutePathsAvailable(manifest: RunEachPluginManifestV1): Promise<void> {
     const requestedRoutePaths = getDeclaredPageRoutePaths(manifest);
     if (requestedRoutePaths.length === 0) return;
 
@@ -757,7 +757,7 @@ export function pluginLoader(
     const installedPlugins = await registry.listInstalled();
     for (const plugin of installedPlugins) {
       if (plugin.pluginKey === manifest.id) continue;
-      const installedManifest = plugin.manifestJson as AbacusPluginManifestV1 | null;
+      const installedManifest = plugin.manifestJson as RunEachPluginManifestV1 | null;
       if (!installedManifest) continue;
       const installedRoutePaths = new Set(getDeclaredPageRoutePaths(installedManifest));
       const conflictingRoute = requestedRoutePaths.find((routePath) => installedRoutePaths.has(routePath));
@@ -868,7 +868,7 @@ export function pluginLoader(
     const manifestPath = resolveManifestPath(resolvedPackagePath, pkgJson);
     if (!manifestPath || !existsSync(manifestPath)) {
       throw new Error(
-        `Package ${resolvedPackageName} at ${resolvedPackagePath} does not appear to be a Abacus plugin (no manifest found).`,
+        `Package ${resolvedPackageName} at ${resolvedPackagePath} does not appear to be a RunEach plugin (no manifest found).`,
       );
     }
 
@@ -922,7 +922,7 @@ export function pluginLoader(
    */
   async function loadManifestFromPath(
     manifestPath: string,
-  ): Promise<AbacusPluginManifestV1> {
+  ): Promise<RunEachPluginManifestV1> {
     let raw: unknown;
 
     try {
@@ -941,7 +941,7 @@ export function pluginLoader(
 
   /**
    * Build a DiscoveredPlugin from a resolved package directory, or null
-   * if the package is not a Abacus plugin.
+   * if the package is not a RunEach plugin.
    */
   async function buildDiscoveredPlugin(
     packagePath: string,
@@ -954,10 +954,10 @@ export function pluginLoader(
     const version = typeof pkgJson["version"] === "string" ? pkgJson["version"] : "0.0.0";
 
     // Determine if this is a plugin package at all
-    const hasAbacusPlugin = "abacusPlugin" in pkgJson;
+    const hasRunEachPlugin = "runeachPlugin" in pkgJson;
     const nameMatchesConvention = isPluginPackageName(packageName);
 
-    if (!hasAbacusPlugin && !nameMatchesConvention) {
+    if (!hasRunEachPlugin && !nameMatchesConvention) {
       return null;
     }
 
@@ -1227,15 +1227,15 @@ export function pluginLoader(
     // loadManifest
     // -----------------------------------------------------------------------
 
-    async loadManifest(packagePath: string): Promise<AbacusPluginManifestV1 | null> {
+    async loadManifest(packagePath: string): Promise<RunEachPluginManifestV1 | null> {
       const pkgJson = await readPackageJson(packagePath);
       if (!pkgJson) return null;
 
-      const hasAbacusPlugin = "abacusPlugin" in pkgJson;
+      const hasRunEachPlugin = "runeachPlugin" in pkgJson;
       const packageName = typeof pkgJson["name"] === "string" ? pkgJson["name"] : "";
       const nameMatchesConvention = isPluginPackageName(packageName);
 
-      if (!hasAbacusPlugin && !nameMatchesConvention) {
+      if (!hasRunEachPlugin && !nameMatchesConvention) {
         return null;
       }
 
@@ -1295,15 +1295,15 @@ export function pluginLoader(
       pluginId: string,
       upgradeOptions: Omit<PluginInstallOptions, "installDir">,
     ): Promise<{
-      oldManifest: AbacusPluginManifestV1;
-      newManifest: AbacusPluginManifestV1;
+      oldManifest: RunEachPluginManifestV1;
+      newManifest: RunEachPluginManifestV1;
       discovered: DiscoveredPlugin;
     }> {
       const plugin = (await registry.getById(pluginId)) as {
         id: string;
         packageName: string;
         packagePath: string | null;
-        manifestJson: AbacusPluginManifestV1;
+        manifestJson: RunEachPluginManifestV1;
       } | null;
       if (!plugin) throw new Error(`Plugin not found: ${pluginId}`);
 
@@ -1735,7 +1735,7 @@ export function pluginLoader(
       };
 
       // Repo-local plugin installs can resolve workspace TS sources at runtime
-      // (for example @abacus-lab/shared exports). Run those workers through
+      // (for example @runeachai/shared exports). Run those workers through
       // the tsx loader so first-party example plugins work in development.
       if (plugin.packagePath && existsSync(DEV_TSX_LOADER_PATH)) {
         workerOptions.execArgv = ["--import", DEV_TSX_LOADER_PATH];

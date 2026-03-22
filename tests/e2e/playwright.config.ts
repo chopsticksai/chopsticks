@@ -1,10 +1,10 @@
 import path from "node:path";
 import { defineConfig } from "@playwright/test";
 
-const PORT = Number(process.env.ABACUS_E2E_PORT ?? 3100);
+const PORT = Number(process.env.RUNEACH_E2E_PORT ?? 3100);
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 const DATA_DIR =
-  process.env.ABACUS_E2E_DATA_DIR ??
+  process.env.RUNEACH_E2E_DATA_DIR ??
   path.resolve(process.cwd(), "test-results", `e2e-data-${PORT}-${Date.now()}`);
 
 export default defineConfig({
@@ -35,7 +35,7 @@ export default defineConfig({
     env: {
       ...process.env,
       PORT: String(PORT),
-      ABACUS_HOME: DATA_DIR,
+      RUNEACH_HOME: DATA_DIR,
     },
   },
   outputDir: "./test-results",

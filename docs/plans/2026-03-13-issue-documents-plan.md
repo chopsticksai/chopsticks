@@ -7,7 +7,7 @@ Primary issue: `PAP-448`
 
 ## Summary
 
-Add first-class **documents** to abacus as editable, revisioned, company-scoped text artifacts that can be linked to issues.
+Add first-class **documents** to runeach as editable, revisioned, company-scoped text artifacts that can be linked to issues.
 
 The first required convention is a document with key `plan`.
 
@@ -72,7 +72,7 @@ Key rules:
 - machine-oriented and stable
 - title is separate and user-facing
 
-The `plan` key is conventional and reserved by abacus workflow/docs.
+The `plan` key is conventional and reserved by runeach workflow/docs.
 
 ### 2. Text-first v1
 
@@ -370,11 +370,11 @@ If there is no stored `plan` document but legacy `<plan>` exists:
 
 ## Agent Protocol and Skills
 
-Update the abacus agent workflow so planning no longer edits the issue description.
+Update the runeach agent workflow so planning no longer edits the issue description.
 
 Required changes:
 
-- update `skills/abacus/SKILL.md`
+- update `skills/runeach/SKILL.md`
 - replace the `<plan>` instructions with document creation/update instructions
 - document the new endpoints in `docs/api/issues.md`
 - update any internal planning docs that still teach inline `<plan>` blocks
@@ -480,7 +480,7 @@ Acceptance:
 
 Files:
 
-- `skills/abacus/SKILL.md`
+- `skills/runeach/SKILL.md`
 - `docs/api/issues.md`
 - `doc/SPEC-implementation.md`
 - relevant plan/docs that mention `<plan>`

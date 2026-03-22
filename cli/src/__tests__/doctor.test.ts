@@ -4,16 +4,16 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { doctor } from "../commands/doctor.js";
 import { writeConfig } from "../config/store.js";
-import type { AbacusConfig } from "../config/schema.js";
+import type { RunEachConfig } from "../config/schema.js";
 
 const ORIGINAL_ENV = { ...process.env };
 
 function createTempConfig(): string {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-doctor-"));
-  const configPath = path.join(root, ".abacus", "config.json");
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-doctor-"));
+  const configPath = path.join(root, ".runeach", "config.json");
   const runtimeRoot = path.join(root, "runtime");
 
-  const config: AbacusConfig = {
+  const config: RunEachConfig = {
     $meta: {
       version: 1,
       updatedAt: "2026-03-10T00:00:00.000Z",
@@ -52,7 +52,7 @@ function createTempConfig(): string {
         baseDir: path.join(runtimeRoot, "storage"),
       },
       s3: {
-        bucket: "abacus",
+        bucket: "runeach",
         region: "us-east-1",
         prefix: "",
         forcePathStyle: false,
@@ -74,9 +74,9 @@ function createTempConfig(): string {
 describe("doctor", () => {
   beforeEach(() => {
     process.env = { ...ORIGINAL_ENV };
-    delete process.env.ABACUS_AGENT_JWT_SECRET;
-    delete process.env.ABACUS_SECRETS_MASTER_KEY;
-    delete process.env.ABACUS_SECRETS_MASTER_KEY_FILE;
+    delete process.env.RUNEACH_AGENT_JWT_SECRET;
+    delete process.env.RUNEACH_SECRETS_MASTER_KEY;
+    delete process.env.RUNEACH_SECRETS_MASTER_KEY_FILE;
   });
 
   afterEach(() => {
@@ -94,6 +94,6 @@ describe("doctor", () => {
 
     expect(summary.failed).toBe(0);
     expect(summary.warned).toBe(0);
-    expect(process.env.ABACUS_AGENT_JWT_SECRET).toBeTruthy();
+    expect(process.env.RUNEACH_AGENT_JWT_SECRET).toBeTruthy();
   });
 });

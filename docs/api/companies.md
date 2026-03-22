@@ -3,7 +3,7 @@ title: 公司
 summary: 公司 CRUD 端点
 ---
 
-在你的 Abacus 实例中管理公司。
+在你的 RunEach 实例中管理公司。
 
 ## 列出公司
 
@@ -61,7 +61,7 @@ Content-Type: multipart/form-data
 - `image/gif`
 - `image/svg+xml`
 
-公司 logo 上传沿用 Abacus 常规附件大小限制。
+公司 logo 上传沿用 RunEach 常规附件大小限制。
 
 随后可将返回的 `assetId` PATCH 到 `logoAssetId` 字段来设置公司 logo。
 
@@ -82,7 +82,7 @@ POST /api/companies/{companyId}/archive
 | `description` | string | 公司描述 |
 | `status` | string | `active`、`paused`、`archived` |
 | `logoAssetId` | string | 可选的已存储 logo 资源 ID |
-| `logoUrl` | string | 可选的 Abacus 资源内容路径 |
+| `logoUrl` | string | 可选的 RunEach 资源内容路径 |
 | `budgetMonthlyCents` | number | 月度预算上限 |
 | `createdAt` | string | ISO 时间戳 |
 | `updatedAt` | string | ISO 时间戳 |

@@ -5,15 +5,15 @@ Date: 2026-03-13
 Audience: Product and engineering
 Supersedes for package-format direction:
 - `doc/plans/2026-02-16-module-system.md` sections that describe company templates as JSON-only
-- `docs/specs/abacushub-plan.md` assumptions about blueprint bundle shape where they conflict with the markdown-first package model
+- `docs/specs/runeachhub-plan.md` assumptions about blueprint bundle shape where they conflict with the markdown-first package model
 
 ## 1. Purpose
 
-This document defines the next-stage plan for Abacus company import/export.
+This document defines the next-stage plan for RunEach company import/export.
 
 The core shift is:
 
-- move from a Abacus-specific JSON-first portability package toward a markdown-first package format
+- move from a RunEach-specific JSON-first portability package toward a markdown-first package format
 - make GitHub repositories first-class package sources
 - treat the company package model as an extension of the existing Agent Skills ecosystem instead of inventing a separate skill format
 - support company, team, agent, and skill reuse without requiring a central registry
@@ -22,7 +22,7 @@ The normative package format draft lives in:
 
 - `docs/companies/companies-spec.md`
 
-This plan is about implementation and rollout inside Abacus.
+This plan is about implementation and rollout inside RunEach.
 
 Adapter-wide skill rollout details live in:
 
@@ -30,7 +30,7 @@ Adapter-wide skill rollout details live in:
 
 ## 2. Executive Summary
 
-Abacus already has portability primitives in the repo:
+RunEach already has portability primitives in the repo:
 
 - server import/export/preview APIs
 - CLI import/export commands
@@ -42,21 +42,21 @@ The new direction is:
 
 1. markdown-first package authoring
 2. GitHub repo or local folder as the default source of truth
-3. a vendor-neutral base package spec for agent-company runtimes, not just Abacus
+3. a vendor-neutral base package spec for agent-company runtimes, not just RunEach
 4. the company package model is explicitly an extension of Agent Skills
-5. no future dependency on `abacus.manifest.json`
+5. no future dependency on `runeach.manifest.json`
 6. implicit folder discovery by convention for the common case
-7. an always-emitted `.abacus.yaml` sidecar for high-fidelity Abacus-specific details
+7. an always-emitted `.runeach.yaml` sidecar for high-fidelity RunEach-specific details
 8. package graph resolution at import time
 9. entity-level import UI with dependency-aware tree selection
 10. `skills.sh` compatibility is a V1 requirement for skill packages and skill installation flows
-11. adapter-aware skill sync surfaces so Abacus can read, diff, enable, disable, and reconcile skills where the adapter supports it
+11. adapter-aware skill sync surfaces so RunEach can read, diff, enable, disable, and reconcile skills where the adapter supports it
 
 ## 3. Product Goals
 
 ### 3.1 Goals
 
-- A user can point Abacus at a local folder or GitHub repo and import a company package without any registry.
+- A user can point RunEach at a local folder or GitHub repo and import a company package without any registry.
 - A package is readable and writable by humans with normal git workflows.
 - A package can contain:
   - company definition
@@ -75,7 +75,7 @@ The new direction is:
   - what is referenced externally
   - what needs secrets or approvals
 - Export preserves attribution, licensing, and pinned upstream references.
-- Export produces a clean vendor-neutral package plus a Abacus sidecar.
+- Export produces a clean vendor-neutral package plus a RunEach sidecar.
 - `companies.sh` can later act as a discovery/index layer over repos implementing this format.
 
 ### 3.2 Non-Goals
@@ -127,15 +127,15 @@ The normative draft is:
 
 ### 5.2 Relationship To Agent Skills
 
-Abacus must not redefine `SKILL.md`.
+RunEach must not redefine `SKILL.md`.
 
 Rules:
 
 - `SKILL.md` stays Agent Skills compatible
 - the company package model is an extension of Agent Skills
 - the base package is vendor-neutral and intended for any agent-company runtime
-- Abacus-specific fidelity lives in `.abacus.yaml`
-- Abacus may resolve and install `SKILL.md` packages, but it must not require a Abacus-only skill format
+- RunEach-specific fidelity lives in `.runeach.yaml`
+- RunEach may resolve and install `SKILL.md` packages, but it must not require a RunEach-only skill format
 - `skills.sh` compatibility is a V1 requirement, not a future nice-to-have
 
 ### 5.3 Agent-To-Skill Association
@@ -152,22 +152,22 @@ Resolution model:
 - if the skill is external or referenced, the skill package owns that complexity
 - exporters should prefer shortname-based associations in `AGENTS.md`
 - importers should resolve the shortname against local package skills first, then referenced or installed company skills
-### 5.4 Base Package Vs Abacus Extension
+### 5.4 Base Package Vs RunEach Extension
 
 The repo format should have two layers:
 
 - base package:
   - minimal, readable, social, vendor-neutral
   - implicit folder discovery by convention
-  - no Abacus-only runtime fields by default
-- Abacus extension:
-  - `.abacus.yaml`
+  - no RunEach-only runtime fields by default
+- RunEach extension:
+  - `.runeach.yaml`
   - adapter/runtime/permissions/budget/workspace fidelity
-  - emitted by Abacus tools as a sidecar while the base package stays readable
+  - emitted by RunEach tools as a sidecar while the base package stays readable
 
 ### 5.5 Relationship To Current V1 Manifest
 
-`abacus.manifest.json` is not part of the future package direction.
+`runeach.manifest.json` is not part of the future package direction.
 
 This should be treated as a hard cutover in product direction.
 
@@ -179,7 +179,7 @@ This should be treated as a hard cutover in product direction.
 
 ### 6.1 Entity Kinds
 
-Abacus import/export should support these entity kinds:
+RunEach import/export should support these entity kinds:
 
 - company
 - team
@@ -192,7 +192,7 @@ Abacus import/export should support these entity kinds:
 
 `team` is a package concept first, not a database-table requirement.
 
-In Abacus V2 portability:
+In RunEach V2 portability:
 
 - a team is an importable org subtree
 - it is rooted at a manager agent
@@ -203,7 +203,7 @@ This avoids blocking portability on a future runtime `teams` model.
 Imported-team tracking should initially be package/provenance-based:
 
 - if a team package was imported, the imported agents should carry enough provenance to reconstruct that grouping
-- Abacus can treat “this set of agents came from team package X” as the imported-team model
+- RunEach can treat “this set of agents came from team package X” as the imported-team model
 - provenance grouping is the intended near- and medium-term team model for import/export
 - only add a first-class runtime `teams` table later if product needs move beyond what provenance grouping can express
 
@@ -232,7 +232,7 @@ Some packages will:
 
 ### 7.2 Policy
 
-Abacus should support source references in package metadata with:
+RunEach should support source references in package metadata with:
 
 - repo
 - path
@@ -320,7 +320,7 @@ People want skill management in the UI, but skills are adapter-dependent.
 
 That means portability and UI planning must include an adapter capability model for skills.
 
-Abacus should define a new adapter surface area around skills:
+RunEach should define a new adapter surface area around skills:
 
 - list currently enabled skills for an agent
 - report how those skills are represented by the adapter
@@ -349,11 +349,11 @@ Baseline adapter interface:
 - `removeSkill(agent, skillId)` optional
 - `getSkillSyncState(agent, desiredSkills)` optional
 
-Planned Abacus behavior:
+Planned RunEach behavior:
 
-- if an adapter supports read, Abacus should show current skills in the UI
-- if an adapter supports write, Abacus should let the user enable/disable imported skills
-- if an adapter supports sync, Abacus should compute desired vs actual state and offer reconcile actions
+- if an adapter supports read, RunEach should show current skills in the UI
+- if an adapter supports write, RunEach should let the user enable/disable imported skills
+- if an adapter supports sync, RunEach should compute desired vs actual state and offer reconcile actions
 - if an adapter does not support these capabilities, the UI should still show the package-level desired skills but mark them unmanaged
 
 ## 9. Export Behavior
@@ -380,9 +380,9 @@ Exports should:
 - omit timestamps and counters unless explicitly needed
 - omit secret values
 - omit local absolute paths
-- omit duplicated inline prompt content from `.abacus.yaml` when `AGENTS.md` already carries the instructions
+- omit duplicated inline prompt content from `.runeach.yaml` when `AGENTS.md` already carries the instructions
 - preserve references and attribution
-- emit `.abacus.yaml` alongside the base package
+- emit `.runeach.yaml` alongside the base package
 - express adapter env/secrets as portable env input declarations rather than exported secret binding ids
 - preserve compatible `SKILL.md` content as-is
 
@@ -409,7 +409,7 @@ Later optional units:
 - skill pack export
 - seed projects/tasks bundle
 
-## 10. Storage Model Inside Abacus
+## 10. Storage Model Inside RunEach
 
 ### 10.1 Short-Term
 
@@ -422,7 +422,7 @@ In the first phase, imported entities can continue mapping onto current runtime 
 
 ### 10.2 Medium-Term
 
-Abacus should add managed package/provenance records so imports are not anonymous one-off copies.
+RunEach should add managed package/provenance records so imports are not anonymous one-off copies.
 
 Needed capabilities:
 
@@ -483,9 +483,9 @@ The CLI should continue to support direct import/export without a registry.
 
 Target commands:
 
-- `abacus-lab company export <company-id> --out <path>`
-- `abacus-lab company import --from <path-or-url> --dry-run`
-- `abacus-lab company import --from <path-or-url> --target existing -C <company-id>`
+- `runeachai company export <company-id> --out <path>`
+- `runeachai company import --from <path-or-url> --dry-run`
+- `runeachai company import --from <path-or-url> --target existing -C <company-id>`
 
 Planned additions:
 
@@ -614,11 +614,11 @@ Docs to update later as implementation lands:
 
 ## 16. Open Questions
 
-1. Should imported skill packages be stored as managed package files in Abacus storage, or only referenced at import time?
+1. Should imported skill packages be stored as managed package files in RunEach storage, or only referenced at import time?
    Decision: managed package files should support both company-scoped reuse and agent-scoped attachment.
 2. What is the minimum adapter skill interface needed to make the UI useful across Claude Code, Codex, OpenClaw, and future adapters?
    Decision: use the baseline interface in section 8.5.
-3. Should Abacus support direct local folder selection in the web UI, or keep that CLI-only initially?
+3. Should RunEach support direct local folder selection in the web UI, or keep that CLI-only initially?
 4. Do we want optional generated lock files in phase 2, or defer them until provenance work?
 5. How strict should pinning be by default for GitHub references:
    - warn on unpinned
@@ -634,10 +634,10 @@ Immediate next steps:
 
 1. accept `docs/companies/companies-spec.md` as the package-format draft
 2. implement phase 1 stabilization work
-3. build phase 2 markdown-first package reader before expanding AbacusHub or `companies.sh`
+3. build phase 2 markdown-first package reader before expanding RunEachHub or `companies.sh`
 4. treat the old manifest-based format as deprecated and not part of the future surface
 
-This keeps Abacus aligned with:
+This keeps RunEach aligned with:
 
 - GitHub-native distribution
 - Agent Skills compatibility

@@ -1,7 +1,7 @@
 import type { UIAdapterModule } from "../types";
-import { parseCursorStdoutLine } from "@abacus-lab/adapter-cursor-local/ui";
+import { parseCursorStdoutLine } from "@runeachai/adapter-cursor-local/ui";
 import { CursorLocalConfigFields } from "./config-fields";
-import { buildCursorLocalConfig } from "@abacus-lab/adapter-cursor-local/ui";
+import { buildCursorLocalConfig } from "@runeachai/adapter-cursor-local/ui";
 
 export const cursorLocalUIAdapter: UIAdapterModule = {
   type: "cursor",

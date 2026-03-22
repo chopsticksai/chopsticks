@@ -3,16 +3,16 @@ import path from "node:path";
 
 const DEFAULT_INSTANCE_ID = "default";
 const INSTANCE_ID_RE = /^[a-zA-Z0-9_-]+$/;
-const DEFAULT_HOME_BASENAME = ".abacus";
+const DEFAULT_HOME_BASENAME = ".runeach";
 
-export function resolveAbacusHomeDir(): string {
-  const envHome = process.env.ABACUS_HOME?.trim();
+export function resolveRunEachHomeDir(): string {
+  const envHome = process.env.RUNEACH_HOME?.trim();
   if (envHome) return path.resolve(expandHomePrefix(envHome));
   return path.resolve(os.homedir(), DEFAULT_HOME_BASENAME);
 }
 
-export function resolveAbacusInstanceId(override?: string): string {
-  const raw = override?.trim() || process.env.ABACUS_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
+export function resolveRunEachInstanceId(override?: string): string {
+  const raw = override?.trim() || process.env.RUNEACH_INSTANCE_ID?.trim() || DEFAULT_INSTANCE_ID;
   if (!INSTANCE_ID_RE.test(raw)) {
     throw new Error(
       `Invalid instance id '${raw}'. Allowed characters: letters, numbers, '_' and '-'.`,
@@ -21,37 +21,37 @@ export function resolveAbacusInstanceId(override?: string): string {
   return raw;
 }
 
-export function resolveAbacusInstanceRoot(instanceId?: string): string {
-  const id = resolveAbacusInstanceId(instanceId);
-  return path.resolve(resolveAbacusHomeDir(), "instances", id);
+export function resolveRunEachInstanceRoot(instanceId?: string): string {
+  const id = resolveRunEachInstanceId(instanceId);
+  return path.resolve(resolveRunEachHomeDir(), "instances", id);
 }
 
 export function resolveDefaultConfigPath(instanceId?: string): string {
-  return path.resolve(resolveAbacusInstanceRoot(instanceId), "config.json");
+  return path.resolve(resolveRunEachInstanceRoot(instanceId), "config.json");
 }
 
 export function resolveDefaultContextPath(): string {
-  return path.resolve(resolveAbacusHomeDir(), "context.json");
+  return path.resolve(resolveRunEachHomeDir(), "context.json");
 }
 
 export function resolveDefaultEmbeddedPostgresDir(instanceId?: string): string {
-  return path.resolve(resolveAbacusInstanceRoot(instanceId), "db");
+  return path.resolve(resolveRunEachInstanceRoot(instanceId), "db");
 }
 
 export function resolveDefaultLogsDir(instanceId?: string): string {
-  return path.resolve(resolveAbacusInstanceRoot(instanceId), "logs");
+  return path.resolve(resolveRunEachInstanceRoot(instanceId), "logs");
 }
 
 export function resolveDefaultSecretsKeyFilePath(instanceId?: string): string {
-  return path.resolve(resolveAbacusInstanceRoot(instanceId), "secrets", "master.key");
+  return path.resolve(resolveRunEachInstanceRoot(instanceId), "secrets", "master.key");
 }
 
 export function resolveDefaultStorageDir(instanceId?: string): string {
-  return path.resolve(resolveAbacusInstanceRoot(instanceId), "data", "storage");
+  return path.resolve(resolveRunEachInstanceRoot(instanceId), "data", "storage");
 }
 
 export function resolveDefaultBackupDir(instanceId?: string): string {
-  return path.resolve(resolveAbacusInstanceRoot(instanceId), "data", "backups");
+  return path.resolve(resolveRunEachInstanceRoot(instanceId), "data", "backups");
 }
 
 export function expandHomePrefix(value: string): string {
@@ -61,10 +61,10 @@ export function expandHomePrefix(value: string): string {
 }
 
 export function describeLocalInstancePaths(instanceId?: string) {
-  const resolvedInstanceId = resolveAbacusInstanceId(instanceId);
-  const instanceRoot = resolveAbacusInstanceRoot(resolvedInstanceId);
+  const resolvedInstanceId = resolveRunEachInstanceId(instanceId);
+  const instanceRoot = resolveRunEachInstanceRoot(resolvedInstanceId);
   return {
-    homeDir: resolveAbacusHomeDir(),
+    homeDir: resolveRunEachHomeDir(),
     instanceId: resolvedInstanceId,
     instanceRoot,
     configPath: resolveDefaultConfigPath(resolvedInstanceId),

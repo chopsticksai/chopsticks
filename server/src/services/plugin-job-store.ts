@@ -31,14 +31,14 @@
  */
 
 import { and, desc, eq } from "drizzle-orm";
-import type { Db } from "@abacus-lab/db";
-import { plugins, pluginJobs, pluginJobRuns } from "@abacus-lab/db";
+import type { Db } from "@runeachai/db";
+import { plugins, pluginJobs, pluginJobRuns } from "@runeachai/db";
 import type {
   PluginJobDeclaration,
   PluginJobRunStatus,
   PluginJobRunTrigger,
   PluginJobRecord,
-} from "@abacus-lab/shared";
+} from "@runeachai/shared";
 import { notFound } from "../errors.js";
 
 /**

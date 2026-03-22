@@ -19,14 +19,14 @@ afterEach(() => {
 });
 
 describe("resolveConfigPath", () => {
-  it("prefers repo-local .abacus config files", () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "abacus-config-store-"));
+  it("prefers repo-local .runeach config files", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "runeach-config-store-"));
     const projectDir = path.join(tempDir, "repo");
-    fs.mkdirSync(path.join(projectDir, ".abacus"), { recursive: true });
-    fs.writeFileSync(path.join(projectDir, ".abacus", "config.json"), "{}\n");
-    delete process.env.ABACUS_CONFIG;
+    fs.mkdirSync(path.join(projectDir, ".runeach"), { recursive: true });
+    fs.writeFileSync(path.join(projectDir, ".runeach", "config.json"), "{}\n");
+    delete process.env.RUNEACH_CONFIG;
     process.chdir(projectDir);
 
-    expect(resolveConfigPath()).toBe(path.join(projectDir, ".abacus", "config.json"));
+    expect(resolveConfigPath()).toBe(path.join(projectDir, ".runeach", "config.json"));
   });
 });

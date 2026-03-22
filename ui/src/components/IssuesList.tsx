@@ -24,7 +24,7 @@ import { Checkbox } from "./ui/checkbox";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { CircleDot, Plus, Filter, ArrowUpDown, Layers, Check, X, ChevronRight, List, Columns3, User, Search } from "lucide-react";
 import { KanbanBoard } from "./KanbanBoard";
-import type { Issue } from "@abacus-lab/shared";
+import type { Issue } from "@runeachai/shared";
 
 /* ── Helpers ── */
 

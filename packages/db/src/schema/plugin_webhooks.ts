@@ -8,7 +8,7 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 import { plugins } from "./plugins.js";
-import type { PluginWebhookDeliveryStatus } from "@abacus-lab/shared";
+import type { PluginWebhookDeliveryStatus } from "@runeachai/shared";
 
 /**
  * `plugin_webhook_deliveries` table — inbound webhook delivery history for plugins.

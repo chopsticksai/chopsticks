@@ -313,7 +313,7 @@ function parseSystemActivity(text: string): { activityId?: string; name: string;
 
 function shouldHideNiceModeStderr(text: string): boolean {
   const normalized = compactWhitespace(text).toLowerCase();
-  return normalized.startsWith("[abacus] skipping saved session resume");
+  return normalized.startsWith("[runeach] skipping saved session resume");
 }
 
 function groupCommandBlocks(blocks: TranscriptBlock[]): TranscriptBlock[] {

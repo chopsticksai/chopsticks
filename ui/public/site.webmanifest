@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Abacus",
-  "short_name": "Abacus",
+  "name": "RunEach",
+  "short_name": "RunEach",
   "description": "AI-powered project management and agent coordination platform",
   "start_url": "/",
   "scope": "/",

@@ -3,7 +3,7 @@ import type { Command } from "commander";
 import { PUBLIC_PRODUCT_NAME, publicCliCommand } from "../../config/branding.js";
 import { readConfig } from "../../config/store.js";
 import { readContext, resolveProfile, type ClientContextProfile } from "../../client/context.js";
-import { ApiRequestError, AbacusApiClient } from "../../client/http.js";
+import { ApiRequestError, RunEachApiClient } from "../../client/http.js";
 
 export interface BaseClientOptions {
   config?: string;
@@ -17,7 +17,7 @@ export interface BaseClientOptions {
 }
 
 export interface ResolvedClientContext {
-  api: AbacusApiClient;
+  api: RunEachApiClient;
   companyId?: string;
   profileName: string;
   profile: ClientContextProfile;
@@ -27,7 +27,7 @@ export interface ResolvedClientContext {
 export function addCommonClientOptions(command: Command, opts?: { includeCompany?: boolean }): Command {
   command
     .option("-c, --config <path>", `Path to ${PUBLIC_PRODUCT_NAME} config file`)
-    .option("-d, --data-dir <path>", `${PUBLIC_PRODUCT_NAME} data directory root (isolates state from ~/.abacus)`)
+    .option("-d, --data-dir <path>", `${PUBLIC_PRODUCT_NAME} data directory root (isolates state from ~/.runeach)`)
     .option("--context <path>", "Path to CLI context file")
     .option("--profile <name>", "CLI context profile name")
     .option("--api-base <url>", `Base URL for the ${PUBLIC_PRODUCT_NAME} API`)
@@ -50,28 +50,28 @@ export function resolveCommandContext(
 
   const apiBase =
     options.apiBase?.trim() ||
-    process.env.ABACUS_API_URL?.trim() ||
+    process.env.RUNEACH_API_URL?.trim() ||
     profile.apiBase ||
     inferApiBaseFromConfig(options.config);
 
   const apiKey =
     options.apiKey?.trim() ||
-    process.env.ABACUS_API_KEY?.trim() ||
+    process.env.RUNEACH_API_KEY?.trim() ||
     readKeyFromProfileEnv(profile);
 
   const companyId =
     options.companyId?.trim() ||
-    process.env.ABACUS_COMPANY_ID?.trim() ||
+    process.env.RUNEACH_COMPANY_ID?.trim() ||
     profile.companyId;
 
   if (opts?.requireCompany && !companyId) {
     throw new Error(
-      "Company ID is required. Pass --company-id, set ABACUS_COMPANY_ID, " +
+      "Company ID is required. Pass --company-id, set RUNEACH_COMPANY_ID, " +
       `or set context profile companyId via \`${publicCliCommand("context set")}\`.`,
     );
   }
 
-  const api = new AbacusApiClient({ apiBase, apiKey });
+  const api = new RunEachApiClient({ apiBase, apiKey });
   return {
     api,
     companyId,
@@ -152,8 +152,8 @@ function renderValue(value: unknown): string {
 }
 
 function inferApiBaseFromConfig(configPath?: string): string {
-  const envHost = process.env.ABACUS_SERVER_HOST?.trim() || "localhost";
-  let port = Number(process.env.ABACUS_SERVER_PORT || "");
+  const envHost = process.env.RUNEACH_SERVER_HOST?.trim() || "localhost";
+  let port = Number(process.env.RUNEACH_SERVER_PORT || "");
 
   if (!Number.isFinite(port) || port <= 0) {
     try {

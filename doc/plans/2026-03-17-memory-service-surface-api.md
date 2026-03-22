@@ -1,16 +1,16 @@
-# abacus Memory Service Plan
+# runeach Memory Service Plan
 
 ## Goal
 
-Define a abacus memory service and surface API that can sit above multiple memory backends, while preserving abacus's control-plane requirements:
+Define a runeach memory service and surface API that can sit above multiple memory backends, while preserving runeach's control-plane requirements:
 
 - company scoping
 - auditability
-- provenance back to abacus work objects
+- provenance back to runeach work objects
 - budget / cost visibility
 - plugin-first extensibility
 
-This plan is based on the external landscape summarized in `doc/memory-landscape.md` and on the current abacus architecture in:
+This plan is based on the external landscape summarized in `doc/memory-landscape.md` and on the current runeach architecture in:
 
 - `doc/SPEC-implementation.md`
 - `doc/plugins/PLUGIN_SPEC.md`
@@ -19,7 +19,7 @@ This plan is based on the external landscape summarized in `doc/memory-landscape
 
 ## Recommendation In One Sentence
 
-abacus should not embed one opinionated memory engine into core. It should add a company-scoped memory control plane with a small normalized adapter contract, then let built-ins and plugins implement the provider-specific behavior.
+runeach should not embed one opinionated memory engine into core. It should add a company-scoped memory control plane with a small normalized adapter contract, then let built-ins and plugins implement the provider-specific behavior.
 
 ## Product Decisions
 
@@ -48,15 +48,15 @@ Agents and services resolve the active provider by key, not by hard-coded vendor
 
 ### 3. Plugins are the primary provider path
 
-Built-ins are useful for a zero-config local path, but most providers should arrive through the existing abacus plugin runtime.
+Built-ins are useful for a zero-config local path, but most providers should arrive through the existing runeach plugin runtime.
 
 That keeps the core small and matches the current direction that optional knowledge-like systems live at the edges.
 
-### 4. abacus owns routing, provenance, and accounting
+### 4. runeach owns routing, provenance, and accounting
 
-Providers should not decide how abacus entities map to governance.
+Providers should not decide how runeach entities map to governance.
 
-abacus core should own:
+runeach core should own:
 
 - who is allowed to call a memory operation
 - which company / agent / project scope is active
@@ -96,7 +96,7 @@ This is the object selected by key.
 
 ### Memory scope
 
-The normalized abacus scope passed into a provider request.
+The normalized runeach scope passed into a provider request.
 
 At minimum:
 
@@ -123,9 +123,9 @@ Supported source kinds should include:
 
 ### Memory operation
 
-A normalized write, query, browse, or delete action performed through abacus.
+A normalized write, query, browse, or delete action performed through runeach.
 
-abacus should log every operation, whether the provider is local or external.
+runeach should log every operation, whether the provider is local or external.
 
 ## Required Adapter Contract
 
@@ -242,11 +242,11 @@ These should be capability-gated, not required:
 - `sync(source)` for connectors or background ingestion
 - `explain(queryResult)` for providers that can expose retrieval traces
 
-## What abacus Should Persist
+## What runeach Should Persist
 
-abacus should not mirror the full provider memory corpus into Postgres unless the provider is a abacus-managed local provider.
+runeach should not mirror the full provider memory corpus into Postgres unless the provider is a runeach-managed local provider.
 
-abacus core should persist:
+runeach core should persist:
 
 - memory bindings and overrides
 - provider keys and capability metadata
@@ -264,13 +264,13 @@ For external providers, the memory payload itself can remain in the provider.
 These should be low-risk and easy to reason about:
 
 1. `pre-run hydrate`
-   Before an agent run starts, abacus may call `query(... intent = "agent_preamble")` using the active binding.
+   Before an agent run starts, runeach may call `query(... intent = "agent_preamble")` using the active binding.
 
 2. `post-run capture`
-   After a run finishes, abacus may write a summary or transcript-derived note tied to the run.
+   After a run finishes, runeach may write a summary or transcript-derived note tied to the run.
 
 3. `issue comment / document capture`
-   When enabled on the binding, abacus may capture selected issue comments or issue documents as memory sources.
+   When enabled on the binding, runeach may capture selected issue comments or issue documents as memory sources.
 
 ### Explicit hooks
 
@@ -292,7 +292,7 @@ These should be tool- or UI-driven first:
 
 ## Agent UX Rules
 
-abacus should give agents both automatic recall and explicit tools, with simple guidance:
+runeach should give agents both automatic recall and explicit tools, with simple guidance:
 
 - use `memory.search` when the task depends on prior decisions, people, projects, or long-running context that is not in the current issue thread
 - use `memory.note` when a durable fact, preference, or decision should survive this run
@@ -303,7 +303,7 @@ This keeps memory available without forcing every agent prompt to become a memor
 
 ## Browse And Inspect Surface
 
-abacus needs a first-class UI for memory, otherwise providers become black boxes.
+runeach needs a first-class UI for memory, otherwise providers become black boxes.
 
 The initial browse surface should support:
 
@@ -320,7 +320,7 @@ When a provider supports richer browsing, the plugin can add deeper views throug
 
 Every adapter response should be able to return usage records.
 
-abacus should roll up:
+runeach should roll up:
 
 - memory inference tokens
 - embedding tokens
@@ -336,7 +336,7 @@ It should also record evaluation-oriented metrics where possible:
 - manual correction count
 - per-binding success / failure counts
 
-This is important because a memory system that "works" but silently burns budget is not acceptable in abacus.
+This is important because a memory system that "works" but silently burns budget is not acceptable in runeach.
 
 ## Suggested Data Model Additions
 
@@ -370,7 +370,7 @@ The best zero-config built-in is a local markdown-first provider with optional s
 
 Why:
 
-- it matches abacus's local-first posture
+- it matches runeach's local-first posture
 - it is inspectable
 - it is easy to back up and debug
 - it gives the system a baseline even without external API keys
@@ -412,7 +412,7 @@ The design should still treat that built-in as just another provider behind the 
 ## Open Questions
 
 - Should project overrides exist in V1 of the memory service, or should we force company default + agent override first?
-- Do we want abacus-managed extraction pipelines at all, or should built-ins be the only place where abacus owns extraction?
+- Do we want runeach-managed extraction pipelines at all, or should built-ins be the only place where runeach owns extraction?
 - Should memory usage extend the current `cost_events` model directly, or should memory operations keep a parallel usage log and roll up into `cost_events` secondarily?
 - Do we want provider install / binding changes to require approvals for some companies?
 
@@ -420,7 +420,7 @@ The design should still treat that built-in as just another provider behind the 
 
 The right abstraction is:
 
-- abacus owns memory bindings, scopes, provenance, governance, and usage reporting.
+- runeach owns memory bindings, scopes, provenance, governance, and usage reporting.
 - Providers own extraction, ranking, storage, and provider-native memory semantics.
 
-That gives abacus a stable "memory service" without locking the product to one memory philosophy or one vendor.
+That gives runeach a stable "memory service" without locking the product to one memory philosophy or one vendor.

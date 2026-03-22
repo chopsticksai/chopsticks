@@ -1,4 +1,4 @@
-const CACHE_NAME = "abacus-v2";
+const CACHE_NAME = "runeach-v2";
 
 self.addEventListener("install", () => {
   self.skipWaiting();

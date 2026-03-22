@@ -7,7 +7,7 @@ import { readPersistedDevServerStatus, toDevServerHealthStatus } from "../dev-se
 const tempDirs = [];
 
 function createTempStatusFile(payload: unknown) {
-  const dir = mkdtempSync(path.join(os.tmpdir(), "abacus-dev-status-"));
+  const dir = mkdtempSync(path.join(os.tmpdir(), "runeach-dev-status-"));
   tempDirs.push(dir);
   const filePath = path.join(dir, "dev-server-status.json");
   writeFileSync(filePath, `${JSON.stringify(payload)}\n`, "utf8");
@@ -31,7 +31,7 @@ describe("dev server status helpers", () => {
       lastRestartAt: "2026-03-20T11:30:00.000Z",
     });
 
-    expect(readPersistedDevServerStatus({ ABACUS_DEV_SERVER_STATUS_FILE: filePath })).toEqual({
+    expect(readPersistedDevServerStatus({ RUNEACH_DEV_SERVER_STATUS_FILE: filePath })).toEqual({
       dirty: true,
       lastChangedAt: "2026-03-20T12:00:00.000Z",
       changedPathCount: 4,

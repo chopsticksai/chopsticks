@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   isClaudeMaxTurnsResult,
   prepareClaudeInstructionsFile,
-} from "@abacus-lab/adapter-claude-local/server";
+} from "@runeachai/adapter-claude-local/server";
 
 describe("claude_local max-turn detection", () => {
   it("detects max-turn exhaustion by subtype", () => {
@@ -46,8 +46,8 @@ describe("claude_local instructions file handling", () => {
     );
   });
 
-  it("logs an abacus warning and returns undefined when the instructions file is missing", async () => {
-    const skillsDir = await fs.mkdtemp(path.join(os.tmpdir(), "abacus-claude-test-"));
+  it("logs an runeach warning and returns undefined when the instructions file is missing", async () => {
+    const skillsDir = await fs.mkdtemp(path.join(os.tmpdir(), "runeach-claude-test-"));
     tempDirs.push(skillsDir);
 
     const logs: Array<{ stream: "stdout" | "stderr"; chunk: string }> = [];
@@ -62,7 +62,7 @@ describe("claude_local instructions file handling", () => {
     expect(result).toBeUndefined();
     expect(logs).toHaveLength(1);
     expect(logs[0]).toMatchObject({ stream: "stderr" });
-    expect(logs[0]?.chunk).toContain("[abacus] Warning: could not read agent instructions file");
+    expect(logs[0]?.chunk).toContain("[runeach] Warning: could not read agent instructions file");
     expect(logs[0]?.chunk).toContain("AGENTS.md");
   });
 });

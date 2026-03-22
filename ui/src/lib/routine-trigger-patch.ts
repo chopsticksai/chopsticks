@@ -1,4 +1,4 @@
-import type { RoutineTrigger } from "@abacus-lab/shared";
+import type { RoutineTrigger } from "@runeachai/shared";
 
 export type RoutineTriggerEditorDraft = {
   label: string;

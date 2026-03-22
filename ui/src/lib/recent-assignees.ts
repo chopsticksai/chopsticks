@@ -1,4 +1,4 @@
-const STORAGE_KEY = "abacus:recent-assignees";
+const STORAGE_KEY = "runeach:recent-assignees";
 const MAX_RECENT = 10;
 
 export function getRecentAssigneeIds(): string[] {

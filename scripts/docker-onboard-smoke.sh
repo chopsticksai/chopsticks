@@ -2,20 +2,20 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-IMAGE_NAME="${IMAGE_NAME:-abacus-onboard-smoke}"
+IMAGE_NAME="${IMAGE_NAME:-runeach-onboard-smoke}"
 HOST_PORT="${HOST_PORT:-3131}"
-ABACUS_VERSION="${ABACUS_VERSION:-latest}"
+RUNEACH_VERSION="${RUNEACH_VERSION:-latest}"
 DATA_DIR="${DATA_DIR:-$REPO_ROOT/data/docker-onboard-smoke}"
 HOST_UID="${HOST_UID:-$(id -u)}"
 SMOKE_DETACH="${SMOKE_DETACH:-false}"
 SMOKE_METADATA_FILE="${SMOKE_METADATA_FILE:-}"
-ABACUS_DEPLOYMENT_MODE="${ABACUS_DEPLOYMENT_MODE:-authenticated}"
-ABACUS_DEPLOYMENT_EXPOSURE="${ABACUS_DEPLOYMENT_EXPOSURE:-private}"
-ABACUS_PUBLIC_URL="${ABACUS_PUBLIC_URL:-http://localhost:${HOST_PORT}}"
+RUNEACH_DEPLOYMENT_MODE="${RUNEACH_DEPLOYMENT_MODE:-authenticated}"
+RUNEACH_DEPLOYMENT_EXPOSURE="${RUNEACH_DEPLOYMENT_EXPOSURE:-private}"
+RUNEACH_PUBLIC_URL="${RUNEACH_PUBLIC_URL:-http://localhost:${HOST_PORT}}"
 SMOKE_AUTO_BOOTSTRAP="${SMOKE_AUTO_BOOTSTRAP:-true}"
 SMOKE_ADMIN_NAME="${SMOKE_ADMIN_NAME:-Smoke Admin}"
-SMOKE_ADMIN_EMAIL="${SMOKE_ADMIN_EMAIL:-smoke-admin@abacus.local}"
-SMOKE_ADMIN_PASSWORD="${SMOKE_ADMIN_PASSWORD:-abacus-smoke-password}"
+SMOKE_ADMIN_EMAIL="${SMOKE_ADMIN_EMAIL:-smoke-admin@runeach.local}"
+SMOKE_ADMIN_PASSWORD="${SMOKE_ADMIN_PASSWORD:-runeach-smoke-password}"
 CONTAINER_NAME="${IMAGE_NAME//[^a-zA-Z0-9_.-]/-}"
 LOG_PID=""
 COOKIE_JAR=""
@@ -73,13 +73,13 @@ write_metadata_file() {
   fi
   mkdir -p "$(dirname "$SMOKE_METADATA_FILE")"
   {
-    printf 'SMOKE_BASE_URL=%q\n' "$ABACUS_PUBLIC_URL"
+    printf 'SMOKE_BASE_URL=%q\n' "$RUNEACH_PUBLIC_URL"
     printf 'SMOKE_ADMIN_EMAIL=%q\n' "$SMOKE_ADMIN_EMAIL"
     printf 'SMOKE_ADMIN_PASSWORD=%q\n' "$SMOKE_ADMIN_PASSWORD"
     printf 'SMOKE_CONTAINER_NAME=%q\n' "$CONTAINER_NAME"
     printf 'SMOKE_DATA_DIR=%q\n' "$DATA_DIR"
     printf 'SMOKE_IMAGE_NAME=%q\n' "$IMAGE_NAME"
-    printf 'SMOKE_ABACUS_VERSION=%q\n' "$ABACUS_VERSION"
+    printf 'SMOKE_RUNEACH_VERSION=%q\n' "$RUNEACH_VERSION"
   } >"$SMOKE_METADATA_FILE"
 }
 
@@ -88,12 +88,12 @@ generate_bootstrap_invite_url() {
   local bootstrap_status
   if bootstrap_output="$(
     docker exec \
-      -e ABACUS_DEPLOYMENT_MODE="$ABACUS_DEPLOYMENT_MODE" \
-      -e ABACUS_DEPLOYMENT_EXPOSURE="$ABACUS_DEPLOYMENT_EXPOSURE" \
-      -e ABACUS_PUBLIC_URL="$ABACUS_PUBLIC_URL" \
-      -e ABACUS_HOME="/abacus" \
+      -e RUNEACH_DEPLOYMENT_MODE="$RUNEACH_DEPLOYMENT_MODE" \
+      -e RUNEACH_DEPLOYMENT_EXPOSURE="$RUNEACH_DEPLOYMENT_EXPOSURE" \
+      -e RUNEACH_PUBLIC_URL="$RUNEACH_PUBLIC_URL" \
+      -e RUNEACH_HOME="/runeach" \
       "$CONTAINER_NAME" bash -lc \
-      'timeout 20s npx --yes "@abacus-lab/abacus@${ABACUS_VERSION}" auth bootstrap-ceo --data-dir "$ABACUS_HOME" --base-url "$ABACUS_PUBLIC_URL"' \
+      'timeout 20s npx --yes "@runeachai/runeach@${RUNEACH_VERSION}" auth bootstrap-ceo --data-dir "$RUNEACH_HOME" --base-url "$RUNEACH_PUBLIC_URL"' \
       2>&1
   )"; then
     bootstrap_status=0
@@ -137,7 +137,7 @@ post_json_with_cookies() {
     -c "$COOKIE_JAR" \
     -b "$COOKIE_JAR" \
     -H "Content-Type: application/json" \
-    -H "Origin: $ABACUS_PUBLIC_URL" \
+    -H "Origin: $RUNEACH_PUBLIC_URL" \
     -X POST \
     "$url" \
     --data "$body"
@@ -156,7 +156,7 @@ sign_up_or_sign_in() {
   local signup_response="$TMP_DIR/signup.json"
   local signup_status
   signup_status="$(post_json_with_cookies \
-    "$ABACUS_PUBLIC_URL/api/auth/sign-up/email" \
+    "$RUNEACH_PUBLIC_URL/api/auth/sign-up/email" \
     "{\"name\":\"$SMOKE_ADMIN_NAME\",\"email\":\"$SMOKE_ADMIN_EMAIL\",\"password\":\"$SMOKE_ADMIN_PASSWORD\"}" \
     "$signup_response")"
   if [[ "$signup_status" =~ ^2 ]]; then
@@ -167,7 +167,7 @@ sign_up_or_sign_in() {
   local signin_response="$TMP_DIR/signin.json"
   local signin_status
   signin_status="$(post_json_with_cookies \
-    "$ABACUS_PUBLIC_URL/api/auth/sign-in/email" \
+    "$RUNEACH_PUBLIC_URL/api/auth/sign-in/email" \
     "{\"email\":\"$SMOKE_ADMIN_EMAIL\",\"password\":\"$SMOKE_ADMIN_PASSWORD\"}" \
     "$signin_response")"
   if [[ "$signin_status" =~ ^2 ]]; then
@@ -186,7 +186,7 @@ sign_up_or_sign_in() {
 }
 
 auto_bootstrap_authenticated_smoke() {
-  local health_url="$ABACUS_PUBLIC_URL/api/health"
+  local health_url="$RUNEACH_PUBLIC_URL/api/health"
   local health_json
   health_json="$(curl -fsS "$health_url")"
   if [[ "$health_json" != *'"deploymentMode":"authenticated"'* ]]; then
@@ -206,7 +206,7 @@ auto_bootstrap_authenticated_smoke() {
     local accept_response="$TMP_DIR/accept.json"
     local accept_status
     accept_status="$(post_json_with_cookies \
-      "$ABACUS_PUBLIC_URL/api/invites/$invite_token/accept" \
+      "$RUNEACH_PUBLIC_URL/api/invites/$invite_token/accept" \
       '{"requestType":"human"}' \
       "$accept_response")"
     if [[ ! "$accept_status" =~ ^2 ]]; then
@@ -219,7 +219,7 @@ auto_bootstrap_authenticated_smoke() {
   fi
 
   local session_json
-  session_json="$(get_with_cookies "$ABACUS_PUBLIC_URL/api/auth/get-session")"
+  session_json="$(get_with_cookies "$RUNEACH_PUBLIC_URL/api/auth/get-session")"
   if [[ "$session_json" != *'"userId"'* ]]; then
     echo "Smoke bootstrap failed: no authenticated session after bootstrap" >&2
     echo "$session_json" >&2
@@ -227,7 +227,7 @@ auto_bootstrap_authenticated_smoke() {
   fi
 
   local companies_json
-  companies_json="$(get_with_cookies "$ABACUS_PUBLIC_URL/api/companies")"
+  companies_json="$(get_with_cookies "$RUNEACH_PUBLIC_URL/api/companies")"
   if [[ "${companies_json:0:1}" != "[" ]]; then
     echo "Smoke bootstrap failed: board companies endpoint did not return JSON array" >&2
     echo "$companies_json" >&2
@@ -240,7 +240,7 @@ auto_bootstrap_authenticated_smoke() {
 
 echo "==> Building onboard smoke image"
 docker build \
-  --build-arg ABACUS_VERSION="$ABACUS_VERSION" \
+  --build-arg RUNEACH_VERSION="$RUNEACH_VERSION" \
   --build-arg HOST_UID="$HOST_UID" \
   -f "$REPO_ROOT/Dockerfile.onboard-smoke" \
   -t "$IMAGE_NAME" \
@@ -248,11 +248,11 @@ docker build \
 
 echo "==> Running onboard smoke container"
 echo "    UI should be reachable at: http://localhost:$HOST_PORT"
-echo "    Public URL: $ABACUS_PUBLIC_URL"
+echo "    Public URL: $RUNEACH_PUBLIC_URL"
 echo "    Smoke auto-bootstrap: $SMOKE_AUTO_BOOTSTRAP"
 echo "    Detached mode: $SMOKE_DETACH"
 echo "    Data dir: $DATA_DIR"
-echo "    Deployment: $ABACUS_DEPLOYMENT_MODE/$ABACUS_DEPLOYMENT_EXPOSURE"
+echo "    Deployment: $RUNEACH_DEPLOYMENT_MODE/$RUNEACH_DEPLOYMENT_EXPOSURE"
 if [[ "$SMOKE_DETACH" != "true" ]]; then
   echo "    Live output: onboard banner and server logs stream in this terminal (Ctrl+C to stop)"
 fi
@@ -264,10 +264,10 @@ docker run -d --rm \
   -p "$HOST_PORT:3100" \
   -e HOST=0.0.0.0 \
   -e PORT=3100 \
-  -e ABACUS_DEPLOYMENT_MODE="$ABACUS_DEPLOYMENT_MODE" \
-  -e ABACUS_DEPLOYMENT_EXPOSURE="$ABACUS_DEPLOYMENT_EXPOSURE" \
-  -e ABACUS_PUBLIC_URL="$ABACUS_PUBLIC_URL" \
-  -v "$DATA_DIR:/abacus" \
+  -e RUNEACH_DEPLOYMENT_MODE="$RUNEACH_DEPLOYMENT_MODE" \
+  -e RUNEACH_DEPLOYMENT_EXPOSURE="$RUNEACH_DEPLOYMENT_EXPOSURE" \
+  -e RUNEACH_PUBLIC_URL="$RUNEACH_PUBLIC_URL" \
+  -v "$DATA_DIR:/runeach" \
   "$IMAGE_NAME" >/dev/null
 
 if [[ "$SMOKE_DETACH" != "true" ]]; then
@@ -275,15 +275,15 @@ if [[ "$SMOKE_DETACH" != "true" ]]; then
   LOG_PID=$!
 fi
 
-TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/abacus-onboard-smoke.XXXXXX")"
+TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/runeach-onboard-smoke.XXXXXX")"
 COOKIE_JAR="$TMP_DIR/cookies.txt"
 
-if ! wait_for_http "$ABACUS_PUBLIC_URL/api/health" 90 1; then
-  echo "Smoke bootstrap failed: server did not become ready at $ABACUS_PUBLIC_URL/api/health" >&2
+if ! wait_for_http "$RUNEACH_PUBLIC_URL/api/health" 90 1; then
+  echo "Smoke bootstrap failed: server did not become ready at $RUNEACH_PUBLIC_URL/api/health" >&2
   exit 1
 fi
 
-if [[ "$SMOKE_AUTO_BOOTSTRAP" == "true" && "$ABACUS_DEPLOYMENT_MODE" == "authenticated" ]]; then
+if [[ "$SMOKE_AUTO_BOOTSTRAP" == "true" && "$RUNEACH_DEPLOYMENT_MODE" == "authenticated" ]]; then
   auto_bootstrap_authenticated_smoke
 fi
 
@@ -292,7 +292,7 @@ write_metadata_file
 if [[ "$SMOKE_DETACH" == "true" ]]; then
   PRESERVE_CONTAINER_ON_EXIT="true"
   echo "==> Smoke container ready for automation"
-  echo "    Smoke base URL: $ABACUS_PUBLIC_URL"
+  echo "    Smoke base URL: $RUNEACH_PUBLIC_URL"
   echo "    Smoke admin credentials: $SMOKE_ADMIN_EMAIL / $SMOKE_ADMIN_PASSWORD"
   if [[ -n "$SMOKE_METADATA_FILE" ]]; then
     echo "    Smoke metadata file: $SMOKE_METADATA_FILE"
