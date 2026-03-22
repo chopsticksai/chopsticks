@@ -265,23 +265,52 @@ else
   release_info "==> Step 6/7: Confirming npm package availability..."
   VERIFY_ATTEMPTS="${NPM_PUBLISH_VERIFY_ATTEMPTS:-12}"
   VERIFY_DELAY_SECONDS="${NPM_PUBLISH_VERIFY_DELAY_SECONDS:-5}"
-  MISSING_PUBLISHED_PACKAGES=""
+  PENDING_PUBLISHED_PACKAGES="$VERSIONED_PACKAGE_INFO"
+  ROUND=1
 
-  while IFS=$'\t' read -r _pkg_dir pkg_name pkg_version; do
-    [ -z "$pkg_name" ] && continue
-    release_info "  Checking $pkg_name@$pkg_version"
-    if wait_for_npm_package_version "$pkg_name" "$pkg_version" "$VERIFY_ATTEMPTS" "$VERIFY_DELAY_SECONDS"; then
-      release_info "    ✓ Found on npm"
-      continue
+  while [ -n "$PENDING_PUBLISHED_PACKAGES" ] && [ "$ROUND" -le "$VERIFY_ATTEMPTS" ]; do
+    if [ "$ROUND" -gt 1 ]; then
+      release_info "  Retry round $ROUND/$VERIFY_ATTEMPTS for packages still propagating..."
     fi
 
-    if [ -n "$MISSING_PUBLISHED_PACKAGES" ]; then
-      MISSING_PUBLISHED_PACKAGES="${MISSING_PUBLISHED_PACKAGES}, "
-    fi
-    MISSING_PUBLISHED_PACKAGES="${MISSING_PUBLISHED_PACKAGES}${pkg_name}@${pkg_version}"
-  done <<< "$VERSIONED_PACKAGE_INFO"
+    STILL_PENDING_PUBLISHED_PACKAGES=""
 
-  [ -z "$MISSING_PUBLISHED_PACKAGES" ] || release_fail "publish completed but npm never exposed: $MISSING_PUBLISHED_PACKAGES"
+    while IFS=$'\t' read -r pkg_dir pkg_name pkg_version; do
+      [ -z "$pkg_name" ] && continue
+      release_info "  Checking $pkg_name@$pkg_version"
+      if npm_package_version_exists "$pkg_name" "$pkg_version"; then
+        release_info "    ✓ Found on npm"
+        continue
+      fi
+
+      if [ -n "$STILL_PENDING_PUBLISHED_PACKAGES" ]; then
+        STILL_PENDING_PUBLISHED_PACKAGES="${STILL_PENDING_PUBLISHED_PACKAGES}"$'\n'
+      fi
+      STILL_PENDING_PUBLISHED_PACKAGES="${STILL_PENDING_PUBLISHED_PACKAGES}${pkg_dir}"$'\t'"${pkg_name}"$'\t'"${pkg_version}"
+      release_info "    … not visible on npm yet"
+    done <<< "$PENDING_PUBLISHED_PACKAGES"
+
+    PENDING_PUBLISHED_PACKAGES="$STILL_PENDING_PUBLISHED_PACKAGES"
+    [ -z "$PENDING_PUBLISHED_PACKAGES" ] && break
+
+    if [ "$ROUND" -lt "$VERIFY_ATTEMPTS" ]; then
+      sleep "$VERIFY_DELAY_SECONDS"
+    fi
+    ROUND=$((ROUND + 1))
+  done
+
+  if [ -n "$PENDING_PUBLISHED_PACKAGES" ]; then
+    MISSING_PUBLISHED_PACKAGES=""
+    while IFS=$'\t' read -r _pkg_dir pkg_name pkg_version; do
+      [ -z "$pkg_name" ] && continue
+      if [ -n "$MISSING_PUBLISHED_PACKAGES" ]; then
+        MISSING_PUBLISHED_PACKAGES="${MISSING_PUBLISHED_PACKAGES}, "
+      fi
+      MISSING_PUBLISHED_PACKAGES="${MISSING_PUBLISHED_PACKAGES}${pkg_name}@${pkg_version}"
+    done <<< "$PENDING_PUBLISHED_PACKAGES"
+
+    release_fail "publish completed but npm never exposed: $MISSING_PUBLISHED_PACKAGES"
+  fi
 
   release_info "  ✓ Verified all versioned packages are available on npm"
 fi
