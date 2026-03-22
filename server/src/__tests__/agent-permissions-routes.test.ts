@@ -35,6 +35,7 @@ const baseAgent = {
 const mockAgentService = vi.hoisted(() => ({
   getById: vi.fn(),
   create: vi.fn(),
+  update: vi.fn(),
   updatePermissions: vi.fn(),
   getChainOfCommand: vi.fn(),
   resolveByReference: vi.fn(),
@@ -85,6 +86,15 @@ const mockCompanySkillService = vi.hoisted(() => ({
 }));
 const mockWorkspaceOperationService = vi.hoisted(() => ({}));
 const mockLogActivity = vi.hoisted(() => vi.fn());
+const mockEnsurePiModelConfiguredAndAvailable = vi.hoisted(() => vi.fn());
+
+vi.mock("@abacus-lab/adapter-pi-local/server", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@abacus-lab/adapter-pi-local/server")>();
+  return {
+    ...actual,
+    ensurePiModelConfiguredAndAvailable: mockEnsurePiModelConfiguredAndAvailable,
+  };
+});
 
 vi.mock("../services/index.js", () => ({
   agentService: () => mockAgentService,
@@ -137,6 +147,7 @@ describe("agent permission routes", () => {
     mockAgentService.getChainOfCommand.mockResolvedValue([]);
     mockAgentService.resolveByReference.mockResolvedValue({ ambiguous: false, agent: baseAgent });
     mockAgentService.create.mockResolvedValue(baseAgent);
+    mockAgentService.update.mockResolvedValue(baseAgent);
     mockAgentService.updatePermissions.mockResolvedValue(baseAgent);
     mockAccessService.getMembership.mockResolvedValue({
       id: "membership-1",
@@ -174,6 +185,7 @@ describe("agent permission routes", () => {
     mockSecretService.normalizeAdapterConfigForPersistence.mockImplementation(async (_companyId, config) => config);
     mockSecretService.resolveAdapterConfigForRuntime.mockImplementation(async (_companyId, config) => ({ config }));
     mockLogActivity.mockResolvedValue(undefined);
+    mockEnsurePiModelConfiguredAndAvailable.mockResolvedValue(undefined);
   });
 
   it("grants tasks:assign by default when board creates a new agent", async () => {
@@ -209,6 +221,57 @@ describe("agent permission routes", () => {
       "tasks:assign",
       true,
       "board-user",
+    );
+  });
+
+  it("rejects creating a pi_local agent without a model", async () => {
+    mockEnsurePiModelConfiguredAndAvailable.mockRejectedValueOnce(
+      new Error("Pi requires `adapterConfig.model` in provider/model format."),
+    );
+
+    const app = createApp({
+      type: "board",
+      userId: "board-user",
+      source: "local_implicit",
+      isInstanceAdmin: true,
+      companyIds: [companyId],
+    });
+
+    const res = await request(app)
+      .post(`/api/companies/${companyId}/agents`)
+      .send({
+        name: "Pi Builder",
+        role: "engineer",
+        adapterType: "pi_local",
+        adapterConfig: {},
+      });
+
+    expect(res.status).toBe(422);
+    expect(res.body.error).toContain("Invalid pi_local adapterConfig");
+    expect(mockAgentService.create).not.toHaveBeenCalled();
+  });
+
+  it("allows creating a pi_local agent with a valid model", async () => {
+    const app = createApp({
+      type: "board",
+      userId: "board-user",
+      source: "local_implicit",
+      isInstanceAdmin: true,
+      companyIds: [companyId],
+    });
+
+    const res = await request(app)
+      .post(`/api/companies/${companyId}/agents`)
+      .send({
+        name: "Pi Builder",
+        role: "engineer",
+        adapterType: "pi_local",
+        adapterConfig: { model: "openai/gpt-4.1-mini" },
+      });
+
+    expect(res.status).toBe(201);
+    expect(mockEnsurePiModelConfiguredAndAvailable).toHaveBeenCalledWith(
+      expect.objectContaining({ model: "openai/gpt-4.1-mini" }),
     );
   });
 
@@ -271,5 +334,34 @@ describe("agent permission routes", () => {
     );
     expect(res.body.access.canAssignTasks).toBe(true);
     expect(res.body.access.taskAssignSource).toBe("agent_creator");
+  });
+
+  it("rejects clearing the model on an existing pi_local agent", async () => {
+    mockAgentService.getById.mockResolvedValue({
+      ...baseAgent,
+      adapterType: "pi_local",
+      adapterConfig: { model: "openai/gpt-4.1-mini" },
+    });
+    mockEnsurePiModelConfiguredAndAvailable.mockRejectedValueOnce(
+      new Error("Pi requires `adapterConfig.model` in provider/model format."),
+    );
+
+    const app = createApp({
+      type: "board",
+      userId: "board-user",
+      source: "local_implicit",
+      isInstanceAdmin: true,
+      companyIds: [companyId],
+    });
+
+    const res = await request(app)
+      .patch(`/api/agents/${agentId}`)
+      .send({
+        adapterConfig: { model: "" },
+      });
+
+    expect(res.status).toBe(422);
+    expect(res.body.error).toContain("Invalid pi_local adapterConfig");
+    expect(mockAgentService.update).not.toHaveBeenCalled();
   });
 });

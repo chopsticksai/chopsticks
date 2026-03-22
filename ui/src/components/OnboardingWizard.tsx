@@ -276,6 +276,8 @@ export function OnboardingWizard() {
     adapterType === "claude_local" &&
     adapterEnvResult?.status === "fail" &&
     hasAnthropicApiKeyOverrideCheck;
+  const requiresExplicitProviderModel =
+    adapterType === "opencode_local" || adapterType === "pi_local";
   const filteredModels = useMemo(() => {
     const query = modelSearch.trim().toLowerCase();
     return (adapterModels ?? []).filter((entry) => {
@@ -289,7 +291,7 @@ export function OnboardingWizard() {
     });
   }, [adapterModels, modelSearch]);
   const groupedModels = useMemo(() => {
-    if (adapterType !== "opencode_local") {
+    if (!requiresExplicitProviderModel) {
       return [
         {
           provider: "models",
@@ -310,7 +312,7 @@ export function OnboardingWizard() {
         provider,
         entries: [...entries].sort((a, b) => a.id.localeCompare(b.id))
       }));
-  }, [filteredModels, adapterType]);
+  }, [filteredModels, requiresExplicitProviderModel]);
 
   function reset() {
     setStep(1);
@@ -452,32 +454,54 @@ export function OnboardingWizard() {
     setLoading(true);
     setError(null);
     try {
-      if (adapterType === "opencode_local") {
+      if (adapterType === "opencode_local" || adapterType === "pi_local") {
         const selectedModelId = model.trim();
+        const isPiAdapter = adapterType === "pi_local";
         if (!selectedModelId) {
-          setError(t("OpenCode requires an explicit model in provider/model format."));
+          setError(
+            t(
+              isPiAdapter
+                ? "Pi requires an explicit model in provider/model format."
+                : "OpenCode requires an explicit model in provider/model format.",
+            ),
+          );
           return;
         }
         if (adapterModelsError) {
           setError(
             adapterModelsError instanceof Error
               ? adapterModelsError.message
-              : t("Failed to load OpenCode models."),
+              : t(isPiAdapter ? "Failed to load Pi models." : "Failed to load OpenCode models."),
           );
           return;
         }
         if (adapterModelsLoading || adapterModelsFetching) {
-          setError(t("OpenCode models are still loading. Please wait and try again."));
+          setError(
+            t(
+              isPiAdapter
+                ? "Pi models are still loading. Please wait and try again."
+                : "OpenCode models are still loading. Please wait and try again.",
+            ),
+          );
           return;
         }
         const discoveredModels = adapterModels ?? [];
         if (!discoveredModels.some((entry) => entry.id === selectedModelId)) {
           setError(
             discoveredModels.length === 0
-              ? t("No OpenCode models discovered. Run `opencode models` and authenticate providers.")
-              : t("Configured OpenCode model is unavailable: {model}", {
-                model: selectedModelId,
-              }),
+              ? t(
+                  isPiAdapter
+                    ? "No Pi models discovered. Run `pi --list-models` and authenticate providers."
+                    : "No OpenCode models discovered. Run `opencode models` and authenticate providers.",
+                )
+              : t(
+                  isPiAdapter
+                    ? "Configured Pi model is unavailable: {model}"
+                    : "Configured OpenCode model is unavailable: {model}",
+                  {
+                    model: selectedModelId,
+                  },
+                ),
           );
           return;
         }
@@ -974,7 +998,7 @@ export function OnboardingWizard() {
                                   {selectedModel
                                     ? selectedModel.label
                                     : model ||
-                                    (adapterType === "opencode_local"
+                                    (requiresExplicitProviderModel
                                       ? t("Select model (required)")
                                       : t("Default"))}
                                 </span>
@@ -992,7 +1016,7 @@ export function OnboardingWizard() {
                                 onChange={(e) => setModelSearch(e.target.value)}
                                 autoFocus
                               />
-                              {adapterType !== "opencode_local" && (
+                              {!requiresExplicitProviderModel && (
                                 <button
                                   className={cn(
                                     "flex items-center gap-2 w-full px-2 py-1.5 text-sm rounded hover:bg-accent/50",
@@ -1012,7 +1036,7 @@ export function OnboardingWizard() {
                                     key={group.provider}
                                     className="mb-1 last:mb-0"
                                   >
-                                    {adapterType === "opencode_local" && (
+                                    {requiresExplicitProviderModel && (
                                       <div className="px-2 py-1 text-[10px] uppercase tracking-wide text-muted-foreground">
                                         {group.provider} ({group.entries.length})
                                       </div>
@@ -1033,7 +1057,7 @@ export function OnboardingWizard() {
                                           className="block w-full text-left truncate"
                                           title={m.id}
                                         >
-                                          {adapterType === "opencode_local"
+                                          {requiresExplicitProviderModel
                                             ? extractModelName(m.id)
                                             : m.label}
                                         </span>

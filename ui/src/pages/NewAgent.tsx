@@ -156,30 +156,52 @@ export function NewAgent() {
   function handleSubmit() {
     if (!selectedCompanyId || !name.trim()) return;
     setFormError(null);
-    if (configValues.adapterType === "opencode_local") {
+    if (configValues.adapterType === "opencode_local" || configValues.adapterType === "pi_local") {
       const selectedModel = configValues.model.trim();
+      const isPiAdapter = configValues.adapterType === "pi_local";
       if (!selectedModel) {
-        setFormError(t("OpenCode requires an explicit model in provider/model format."));
+        setFormError(
+          t(
+            isPiAdapter
+              ? "Pi requires an explicit model in provider/model format."
+              : "OpenCode requires an explicit model in provider/model format.",
+          ),
+        );
         return;
       }
       if (adapterModelsError) {
         setFormError(
           adapterModelsError instanceof Error
             ? adapterModelsError.message
-            : t("Failed to load OpenCode models."),
+            : t(isPiAdapter ? "Failed to load Pi models." : "Failed to load OpenCode models."),
         );
         return;
       }
       if (adapterModelsLoading || adapterModelsFetching) {
-        setFormError(t("OpenCode models are still loading. Please wait and try again."));
+        setFormError(
+          t(
+            isPiAdapter
+              ? "Pi models are still loading. Please wait and try again."
+              : "OpenCode models are still loading. Please wait and try again.",
+          ),
+        );
         return;
       }
       const discovered = adapterModels ?? [];
       if (!discovered.some((entry) => entry.id === selectedModel)) {
         setFormError(
           discovered.length === 0
-            ? t("No OpenCode models discovered. Run `opencode models` and authenticate providers.")
-            : t("Configured OpenCode model is unavailable: {model}", { model: selectedModel }),
+            ? t(
+                isPiAdapter
+                  ? "No Pi models discovered. Run `pi --list-models` and authenticate providers."
+                  : "No OpenCode models discovered. Run `opencode models` and authenticate providers.",
+              )
+            : t(
+                isPiAdapter
+                  ? "Configured Pi model is unavailable: {model}"
+                  : "Configured OpenCode model is unavailable: {model}",
+                { model: selectedModel },
+              ),
         );
         return;
       }

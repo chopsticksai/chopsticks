@@ -57,6 +57,7 @@ import {
 import { DEFAULT_CURSOR_LOCAL_MODEL } from "@abacus-lab/adapter-cursor-local";
 import { DEFAULT_GEMINI_LOCAL_MODEL } from "@abacus-lab/adapter-gemini-local";
 import { ensureOpenCodeModelConfiguredAndAvailable } from "@abacus-lab/adapter-opencode-local/server";
+import { ensurePiModelConfiguredAndAvailable } from "@abacus-lab/adapter-pi-local/server";
 import {
   loadDefaultAgentInstructionsBundle,
   resolveDefaultAgentInstructionsBundleRole,
@@ -385,19 +386,28 @@ export function agentRoutes(db: Db) {
     adapterType: string | null | undefined,
     adapterConfig: Record<string, unknown>,
   ) {
-    if (adapterType !== "opencode_local") return;
+    if (adapterType !== "opencode_local" && adapterType !== "pi_local") return;
     const { config: runtimeConfig } = await secretsSvc.resolveAdapterConfigForRuntime(companyId, adapterConfig);
     const runtimeEnv = asRecord(runtimeConfig.env) ?? {};
     try {
-      await ensureOpenCodeModelConfiguredAndAvailable({
-        model: runtimeConfig.model,
-        command: runtimeConfig.command,
-        cwd: runtimeConfig.cwd,
-        env: runtimeEnv,
-      });
+      if (adapterType === "opencode_local") {
+        await ensureOpenCodeModelConfiguredAndAvailable({
+          model: runtimeConfig.model,
+          command: runtimeConfig.command,
+          cwd: runtimeConfig.cwd,
+          env: runtimeEnv,
+        });
+      } else {
+        await ensurePiModelConfiguredAndAvailable({
+          model: runtimeConfig.model,
+          command: runtimeConfig.command,
+          cwd: runtimeConfig.cwd,
+          env: runtimeEnv,
+        });
+      }
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
-      throw unprocessable(`Invalid opencode_local adapterConfig: ${reason}`);
+      throw unprocessable(`Invalid ${adapterType} adapterConfig: ${reason}`);
     }
   }
 
@@ -1724,7 +1734,10 @@ export function agentRoutes(db: Db) {
       );
       patchData.adapterConfig = syncInstructionsBundleConfigFromFilePath(existing, normalizedEffectiveAdapterConfig);
     }
-    if (touchesAdapterConfiguration && requestedAdapterType === "opencode_local") {
+    if (
+      touchesAdapterConfiguration &&
+      (requestedAdapterType === "opencode_local" || requestedAdapterType === "pi_local")
+    ) {
       const effectiveAdapterConfig = asRecord(patchData.adapterConfig) ?? {};
       await assertAdapterConfigConstraints(
         existing.companyId,
