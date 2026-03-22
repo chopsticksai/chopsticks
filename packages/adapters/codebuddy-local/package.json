@@ -1,6 +1,16 @@
 {
   "name": "@runeachai/adapter-codebuddy-local",
   "version": "0.3.0",
+  "license": "MIT",
+  "homepage": "https://github.com/runeachai/runeach",
+  "bugs": {
+    "url": "https://github.com/runeachai/runeach/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/runeachai/runeach",
+    "directory": "packages/adapters/codebuddy-local"
+  },
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
