@@ -1,17 +1,17 @@
 ---
-title: ClipHub Plan
+title: AbacusHub Plan
 summary: Marketplace concept for Abacus team blueprints, skills, and governance bundles
 ---
 
-# ClipHub: Marketplace for Abacus Team Configurations
+# AbacusHub: Marketplace for Abacus Team Configurations
 
 > The "app store" for whole-company AI teams — pre-built Abacus configurations, agent blueprints, skills, and governance templates that ship real work from day one.
 
 ## 1. Vision & Positioning
 
-**ClipHub** sells **entire team configurations** — org charts, agent roles, inter-agent workflows, governance rules, and project templates — for Abacus-managed companies.
+**AbacusHub** sells **entire team configurations** — org charts, agent roles, inter-agent workflows, governance rules, and project templates — for Abacus-managed companies.
 
-| Dimension | ClipHub |
+| Dimension | AbacusHub |
 |---|---|
 | Unit of sale | Team blueprint (multi-agent org) |
 | Buyer | Founder / team lead spinning up an AI company |
@@ -263,7 +263,7 @@ interface Review {
 | `/browse?type=governance_template` | Governance | Policy templates |
 | `/listings/:slug` | Listing detail | Full product page |
 | `/creators/:slug` | Creator profile | Bio, all listings, stats |
-| `/about` | About ClipHub | Mission, how it works |
+| `/about` | About AbacusHub | Mission, how it works |
 | `/pricing` | Pricing & fees | Creator revenue share, buyer info |
 
 ### 4.2 Authenticated Pages
@@ -310,7 +310,7 @@ Homepage → Browse marketplace → Filter by type/category
   → Click "Buy" → Stripe checkout (or free install)
   → Post-purchase: "Install to Company" button
   → Select target Abacus company (or create new)
-  → ClipHub API calls Abacus API to:
+  → AbacusHub API calls Abacus API to:
       1. Create agents with configs from blueprint
       2. Set up reporting chains
       3. Create projects with workspace configs
@@ -344,7 +344,7 @@ Running Abacus company → "Export as Blueprint" (CLI or UI)
       - Governance rules
       - Project templates
       - Skill files
-  → Upload to ClipHub as new listing
+  → Upload to AbacusHub as new listing
   → Edit details, set price, publish
 ```
 
@@ -361,7 +361,7 @@ Running Abacus company → "Export as Blueprint" (CLI or UI)
 
 ### 6.2 Key Design Elements
 
-| Element | ClipHub |
+| Element | AbacusHub |
 |---|---|
 | Product card | Org chart mini-preview + agent count badge |
 | Detail page | Interactive org chart + per-agent breakdown |
@@ -448,7 +448,7 @@ The install handler:
 | Fee | Amount | Notes |
 |---|---|---|
 | Creator revenue share | 90% of sale price | Minus Stripe processing (~2.9% + $0.30) |
-| Platform fee | 10% of sale price | ClipHub's cut |
+| Platform fee | 10% of sale price | AbacusHub's cut |
 | Free listings | $0 | No fees for free listings |
 | Stripe Connect | Standard rates | Handled by Stripe |
 
@@ -467,7 +467,7 @@ The install handler:
 
 ### 9.2 Integration with Abacus
 
-ClipHub can be:
+AbacusHub can be:
 - **Option A**: A separate app that calls Abacus's API to install blueprints
 - **Option B**: A built-in section of the Abacus UI (`/marketplace` route)
 

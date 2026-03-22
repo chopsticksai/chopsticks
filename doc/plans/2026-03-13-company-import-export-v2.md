@@ -5,7 +5,7 @@ Date: 2026-03-13
 Audience: Product and engineering
 Supersedes for package-format direction:
 - `doc/plans/2026-02-16-module-system.md` sections that describe company templates as JSON-only
-- `docs/specs/cliphub-plan.md` assumptions about blueprint bundle shape where they conflict with the markdown-first package model
+- `docs/specs/abacushub-plan.md` assumptions about blueprint bundle shape where they conflict with the markdown-first package model
 
 ## 1. Purpose
 
@@ -634,7 +634,7 @@ Immediate next steps:
 
 1. accept `docs/companies/companies-spec.md` as the package-format draft
 2. implement phase 1 stabilization work
-3. build phase 2 markdown-first package reader before expanding ClipHub or `companies.sh`
+3. build phase 2 markdown-first package reader before expanding AbacusHub or `companies.sh`
 4. treat the old manifest-based format as deprecated and not part of the future surface
 
 This keeps Abacus aligned with:

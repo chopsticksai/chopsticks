@@ -76,7 +76,7 @@ V1 implementation extends this baseline into a company-centric, governance-aware
 - Plugin framework and third-party extension SDK
 - Revenue/expense accounting beyond model/token costs
 - Knowledge base subsystem
-- Public marketplace (ClipHub)
+- Public marketplace (AbacusHub)
 - Multi-board governance or role-based human permission granularity
 - Automatic self-healing orchestration (auto-reassign/retry planners)
 
@@ -838,7 +838,7 @@ V1 is complete only when all criteria are true:
 - richer workflow-state customization per team
 - milestones/labels/dependency graph depth beyond V1 minimum
 - realtime transport optimization (SSE/WebSockets)
-- public template marketplace integration (ClipHub)
+- public template marketplace integration (AbacusHub)
 
 ## 21. Company Portability Package (V1 Addendum)
 
